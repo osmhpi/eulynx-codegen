@@ -54,7 +54,9 @@ class TheRegion : CodeGenerationItem
     if (isRegion) {
       return new TheRegion(x.Regions.Single(), name, _changeEvents, _timeEvents).MakeStateRecord(name);
     } else {
-      return $@"private record {name}() : {recordName}();";
+      return $@"private record {name}() : {recordName}() {{
+        public new static {name} New() => new {name}();
+      }}";
     }
   }
 
@@ -65,8 +67,8 @@ class TheRegion : CodeGenerationItem
     return @$"record {name} {{
     {string.Join("\n    ", subrecords)}
 
-    public {name} New() =>
-      {name}.{InPascalCase(y.Name)}();
+    public static {name} New() =>
+      {name}.{InPascalCase(y.Name)}.New();
 
     private {name}() {{}}
 
@@ -76,14 +78,14 @@ class TheRegion : CodeGenerationItem
   string.Join(",\n", $"{InPascalCase(fromState.Name)} => TransitionFrom{InPascalCase(fromState.Name)}()")))}
       }};
     }}
-}}
 
 {string.Join("\n", _states.Select(fromState => GenerateTransition(name, fromState)))}
+}}
 ";
 
   }
 
-  private object GenerateTransition(string name, Subvertex fromState)
+  private string GenerateTransition(string name, Subvertex fromState)
   {
     return $@"private {name} TransitionFrom{InPascalCase(fromState.Name)}() {{
       {GenerateConditions(fromState)}
@@ -108,32 +110,6 @@ class TheRegion : CodeGenerationItem
 
   public override string Write()
   {
-    var className = InPascalCase(_name);
-    var stateEnumName = $"{className}";
-
-    return MakeStateRecord(stateEnumName);
-
-// return $@"
-// {MakeStateRecord(stateEnumName)}
-
-// class {className} {{
-//     private {stateEnumName} _state;
-
-//     public {className}() {{
-//         _state = {stateEnumName}.{InPascalCase(y.Name)}();
-//     }}
-
-//     public void Transition() {{
-//       _state = _state switch {{
-// {string.Join(",\n", _states.Select(fromState =>
-//   string.Join(",\n", GetTransitionsFromState(fromState).Select(x =>
-//     $@"/*{GetTransitionConditions(x.transition)}*/
-//     {InPascalCase(fromState.Name)} => {stateEnumName}.{InPascalCase(x.state.Name)}()"
-//   ))))}
-//       }};
-//     }}
-
-// {string.Join("\n", _subregions.Select(x => x.Write()))}
-// }}";
+    return MakeStateRecord(InPascalCase(_name));
   }
 }
