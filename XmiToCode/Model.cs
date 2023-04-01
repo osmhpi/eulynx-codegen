@@ -76,6 +76,42 @@ namespace XmiToCode
 		public string MemberEnd { get; set; }
 		[XmlElement(ElementName="packagedElement", Namespace = "")]
 		public List<PackagedElement> PackagedElements { get; set; }
+		[XmlAttribute(AttributeName="operation")]
+		public string Operation { get; set; }
+		[XmlElement(ElementName="changeExpression")]
+		public ChangeExpression ChangeExpression { get; set; }
+    [XmlElement(ElementName="when")]
+		public When When { get; set; }
+	}
+
+	[XmlRoot(ElementName="expr")]
+	public class Expr {
+		[XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Id { get; set; }
+		[XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Type { get; set; }
+		[XmlAttribute(AttributeName="body")]
+		public string Body { get; set; }
+	}
+
+	[XmlRoot(ElementName="when")]
+	public class When {
+		[XmlElement(ElementName="expr")]
+		public Expr Expr { get; set; }
+		[XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Id { get; set; }
+		[XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Type { get; set; }
+	}
+
+	[XmlRoot(ElementName="changeExpression")]
+	public class ChangeExpression {
+		[XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Id { get; set; }
+		[XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+		public string Type { get; set; }
+		[XmlAttribute(AttributeName="body")]
+		public string Body { get; set; }
 	}
 
 	[XmlRoot(ElementName="ownedComment")]
@@ -98,6 +134,8 @@ namespace XmiToCode
 		public string Name { get; set; }
 		[XmlElement(ElementName="ownedRule")]
 		public List<OwnedRule> OwnedRule { get; set; }
+    [XmlElement(ElementName="region")]
+    public List<Region> Regions { get; set; }
 	}
 
 	[XmlRoot(ElementName="transition")]
@@ -141,7 +179,7 @@ namespace XmiToCode
 	[XmlRoot(ElementName="region")]
 	public class Region {
 		[XmlElement(ElementName="subvertex")]
-		public List<Subvertex> Subvertex { get; set; }
+		public List<Subvertex> Subvertices { get; set; }
 		[XmlElement(ElementName="transition")]
 		public List<Transition> Transition { get; set; }
 		[XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
