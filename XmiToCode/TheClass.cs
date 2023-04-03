@@ -50,14 +50,7 @@ internal class TheClass : CodeGenerationItem
         .Replace(" = ", " == ")
         .Replace(" <> ", " != ");
 
-      var match = Regex.Match(expression, @"^(\w+)(.*)$");
-      var tmp1 = $"{InPascalCase(match.Groups[1].Value)}{match.Groups[2].Value}";
-
-      var match2 = Regex.Match(tmp1, @"^(.*)(\s+)(\w+)$");
-      if (match2.Success) {
-        return $"{match2.Groups[1].Value}{match2.Groups[2].Value}{InPascalCase(match2.Groups[3].Value)}";
-      }
-      return tmp1;
+      return Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
     }
 
     if (_timeEvents.ContainsKey(evt)) {

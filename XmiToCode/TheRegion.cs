@@ -85,7 +85,7 @@ class TheRegion : CodeGenerationItem
     {string.Join("\n    ", subrecords)}
 
     public static new {name} New() =>
-      {name}.{z}.New();
+      {z}.New();
 
     private {name}() {{}}
 }}
