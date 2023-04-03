@@ -1,4 +1,4 @@
 ﻿using Eulynx;
 
-var point = FControlPointMachinePositionBehaviour.New();
+var point = new FControlPointMachinePosition();
 

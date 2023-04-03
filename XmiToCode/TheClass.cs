@@ -28,33 +28,84 @@ internal class TheClass : CodeGenerationItem
 ";
   }
 
-  private string GenerateConditions(Subvertex fromState)
+  private string GenerateConditions(Subvertex fromState, bool skipParentTransitions=false)
   {
-     var transitions = _behavior.GetTransitionsFromState(fromState)
-      // Temporarily only process change events, will take care of
-      // timed events later
-      .Where(x => _changeEvents.ContainsKey(x.transition.Trigger.Event));
+      var transitions = _behavior.GetTransitionsFromState(fromState, skipParentTransitions);
 
-     return string.Join("\n", transitions.Select(x =>
-     $@"if ({GetTransitionConditions(x.transition)}) {{
-      return {x.stateName}.New();
-     }}"));
+      var regularTransitions = transitions.Where(x => x.state.Type == "uml:State");
+      var regularConditions = string.Join("\n", regularTransitions.Select(x =>
+      $@"{GetTransitionConditions(x.transition)} {{
+        {GenerateEntry(x)}
+        return {x.stateName}.New();
+      }}"));
+
+      var junctions = transitions.Where(x => x.state.Kind == "junction");
+      var junctionConditions = string.Join("\n", junctions.Select(x =>
+      $@"{GetTransitionConditions(x.transition)} {{
+        {GenerateConditions(x.state, true)}
+      }}"));
+
+      return regularConditions + junctionConditions;
+  }
+
+  private string GenerateEntry((Transition transition, Subvertex state, string stateName) x)
+  {
+      var transitionEffect = (x.transition.Effect?.Body ?? "")
+          .Replace("TRUE", "\"TRUE\"")
+          .Replace("FALSE", "\"FALSE\"")
+          .Replace(" := ", " = ");
+      transitionEffect = Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+      var entry = (x.state.Entry?.Name ?? "")
+          .Replace("TRUE", "\"TRUE\"")
+          .Replace("FALSE", "\"FALSE\"")
+          .Replace(" := ", " = ");
+      entry = Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+      return string.Join("\n", transitionEffect, entry);
   }
 
   private string GetTransitionConditions(Transition transition) {
-    var evt = transition.Trigger.Event;
-    if (_changeEvents.ContainsKey(evt)) {
-      var expression = _changeEvents[evt].ChangeExpression.Body
-        .Replace(" AND ", " && ")
-        .Replace(" OR ", " || ")
-        .Replace(" = ", " == ")
-        .Replace(" <> ", " != ");
+    if (transition.Trigger != null) {
+      // Regular transition
+      string? result = null;
 
-      return Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-    }
+      var evt = transition.Trigger.Event;
+      if (_changeEvents.ContainsKey(evt)) {
+        var expression = _changeEvents[evt].ChangeExpression.Body
+          .Replace(" AND ", " && ")
+          .Replace(" OR ", " || ")
+          .Replace(" = ", " == ")
+          .Replace(" <> ", " != ");
 
-    if (_timeEvents.ContainsKey(evt)) {
-      return $"WHEN: {_timeEvents[evt].When.Expr.Body}";
+        result = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+      }
+
+      if (_timeEvents.ContainsKey(evt)) {
+        result = $"IsTimeoutExpired({InPascalCase(_timeEvents[evt].When.Expr.Body)})";
+      }
+
+      if (result != null) {
+          return $"if ({result})";
+      }
+
+    } else if (transition.OwnedRule != null && transition.OwnedRule.Specification != null) {
+        // Special constrained transition for junction elements
+        var specification = transition.OwnedRule.Specification.Body;
+
+        if (specification == "else") {
+          return "else";
+        }
+
+        var expression = transition.OwnedRule.Specification.Body
+          .Replace(" AND ", " && ")
+          .Replace(" OR ", " || ")
+          .Replace(" = ", " == ")
+          .Replace(" <> ", " != ");
+
+        expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+        return $"if ({expression})";
     }
 
     throw new Exception("Invalid event reference.");
@@ -68,11 +119,7 @@ internal class TheClass : CodeGenerationItem
     var states = _behavior.GetStates();
     var behaviorName = _behavior.GetName();
 
-    return @$"using System;
-using System.Text;
-using System.Linq;
-
-namespace Eulynx;
+    return @$"namespace Eulynx;
 
 class {className} {{
 {string.Join("\n", properties.Select(x => $"public string {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
@@ -80,6 +127,15 @@ class {className} {{
 {_behavior.Write()}
 
     private {behaviorName} _state;
+
+    public {className}() {{
+      _state = {behaviorName}.New();
+    }}
+
+    private bool IsTimeoutExpired(string timeout) {{
+        // TODO
+        return false;
+    }}
 
     public void Transition() {{
         _state = _state switch {{

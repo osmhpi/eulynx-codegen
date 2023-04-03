@@ -132,10 +132,14 @@ namespace XmiToCode
 		public string Type { get; set; }
 		[XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
 		public string Id { get; set; }
+		[XmlAttribute(AttributeName="kind")]
+		public string Kind { get; set; }
 		[XmlAttribute(AttributeName="name")]
 		public string Name { get; set; }
 		[XmlElement(ElementName="ownedRule")]
 		public List<OwnedRule> OwnedRule { get; set; }
+    [XmlElement(ElementName = "entry")]
+    public Subvertex Entry { get; set; }
     [XmlElement(ElementName="region")]
     public List<Region> Regions { get; set; }
 	}
@@ -152,6 +156,8 @@ namespace XmiToCode
 		public string Target { get; set; }
 		[XmlElement(ElementName="trigger")]
 		public Trigger Trigger { get; set; }
+		[XmlElement(ElementName="ownedRule")]
+		public OwnedRule OwnedRule { get; set; }
 		[XmlElement(ElementName="effect")]
 		public Effect Effect { get; set; }
 		[XmlAttribute(AttributeName="kind")]

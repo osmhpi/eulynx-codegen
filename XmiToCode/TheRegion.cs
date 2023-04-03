@@ -29,13 +29,17 @@ class TheRegion : CodeGenerationItem
     _subregions = _states.SelectMany(x => x.Regions.Select(region => new TheRegion(region, x.Name, changeEvents, timeEvents)));
   }
 
-  public IEnumerable<(Transition transition, Subvertex state, string stateName)> GetTransitionsFromState(Subvertex fromState) {
+  public IEnumerable<(Transition transition, Subvertex state, string stateName)> GetTransitionsFromState(Subvertex fromState, bool skipParentTransitions = false) {
       // Does fromState match one of our subregions?
       var subregionTransitions = _subregions
-        .Select(subregion => new { Subregion = subregion, Transitions = subregion.GetTransitionsFromState(fromState) })
+        .Select(subregion => new { Subregion = subregion, Transitions = subregion.GetTransitionsFromState(fromState, skipParentTransitions) })
         .SingleOrDefault(x => x.Transitions.Any());
 
       if (subregionTransitions != null) {
+        if (skipParentTransitions) {
+          return subregionTransitions.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}"));
+        }
+
         // Prepend the transitions from the enclosing state of the subregion
         var subregionState = _states.Single(x => x.Regions.Contains(subregionTransitions.Subregion.Region));
         return _region.Transition.Where(x => x.Source == subregionState.Id)

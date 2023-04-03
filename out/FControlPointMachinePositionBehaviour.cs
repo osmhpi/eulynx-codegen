@@ -1,7 +1,3 @@
-using System;
-using System.Text;
-using System.Linq;
-
 namespace Eulynx;
 
 class FControlPointMachinePosition
@@ -58,6 +54,17 @@ class FControlPointMachinePosition
 
   private FControlPointMachinePositionBehaviour _state;
 
+  public FControlPointMachinePosition()
+  {
+    _state = FControlPointMachinePositionBehaviour.New();
+  }
+
+  private bool IsTimeoutExpired(string timeout)
+  {
+    // TODO
+    return false;
+  }
+
   public void Transition()
   {
     _state = _state switch
@@ -73,26 +80,58 @@ class FControlPointMachinePosition
   {
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
+
+      MemLastCommandedPointPosition = "UNDEFINED";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.New();
+    }
+    if (IsTimeoutExpired(D39inConTmaxPmOperation))
+    {
+      D40outMsgPmTimeout = "TRUE";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
+      return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D10inPmPosition == MemLastCommandedPointPosition)
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D2inRequiredPointPosition == "RIGHT" && (D2inRequiredPointPosition != D10inPmPosition))
     {
+      D21outMoveLeft = "FALSE";
+      MemLastCommandedPointPosition = "RIGHT";
+      D22outMoveRight = "TRUE";
+      D40outMsgPmTimeout = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
     }
     if (D2inRequiredPointPosition == "UNCOMMANDED")
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D2inRequiredPointPosition == D10inPmPosition)
     {
+      MemLastCommandedPointPosition = "RIGHT";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D6inObservedAbilityToMovePoint == "UNABLE_TO_MOVE")
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
 
@@ -104,26 +143,58 @@ class FControlPointMachinePosition
   {
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
+
+      MemLastCommandedPointPosition = "UNDEFINED";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.New();
+    }
+    if (IsTimeoutExpired(D39inConTmaxPmOperation))
+    {
+      D40outMsgPmTimeout = "TRUE";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
+      return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D10inPmPosition == MemLastCommandedPointPosition)
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D2inRequiredPointPosition == "LEFT" && (D2inRequiredPointPosition != D10inPmPosition))
     {
+      D22outMoveRight = "FALSE";
+      MemLastCommandedPointPosition = "LEFT";
+      D21outMoveLeft = "TRUE";
+      D40outMsgPmTimeout = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
     }
     if (D2inRequiredPointPosition == "UNCOMMANDED")
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D2inRequiredPointPosition == D10inPmPosition)
     {
+      MemLastCommandedPointPosition = "LEFT";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
     if (D6inObservedAbilityToMovePoint == "UNABLE_TO_MOVE")
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
 
@@ -135,23 +206,61 @@ class FControlPointMachinePosition
   {
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
+
+      MemLastCommandedPointPosition = "UNDEFINED";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.New();
     }
     if (D10inPmPosition == "NO_END_POSITION")
     {
+
+      D22outMoveRight = "TRUE";
+      D40outMsgPmTimeout = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
     }
     if (D10inPmPosition == "NO_END_POSITION")
     {
+
+      D21outMoveLeft = "TRUE";
+      D40outMsgPmTimeout = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
     }
     if (D2inRequiredPointPosition == "LEFT")
     {
-      return FControlPointMachinePositionBehaviour.Operating.Junction1.New();
+      if (D2inRequiredPointPosition != D10inPmPosition && D6inObservedAbilityToMovePoint == "ABLE_TO_MOVE")
+      {
+
+        D21outMoveLeft = "TRUE";
+        D40outMsgPmTimeout = "FALSE";
+        return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
+      }
+      else
+      {
+
+        D21outMoveLeft = "FALSE";
+        D22outMoveRight = "FALSE";
+        D35outDriveStop = "TRUE";
+        return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+      }
     }
     if (D2inRequiredPointPosition == "RIGHT")
     {
-      return FControlPointMachinePositionBehaviour.Operating.Junction2.New();
+      if (D2inRequiredPointPosition != D10inPmPosition && D6inObservedAbilityToMovePoint == "ABLE_TO_MOVE")
+      {
+
+        D22outMoveRight = "TRUE";
+        D40outMsgPmTimeout = "FALSE";
+        return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
+      }
+      else
+      {
+
+        D21outMoveLeft = "FALSE";
+        D22outMoveRight = "FALSE";
+        D35outDriveStop = "TRUE";
+        return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+      }
     }
 
     // Do not transition
@@ -162,10 +271,18 @@ class FControlPointMachinePosition
   {
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
+
+      MemLastCommandedPointPosition = "UNDEFINED";
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.New();
     }
     if (D51inEstEfesState == "INITIALISING")
     {
+
+      D21outMoveLeft = "FALSE";
+      D22outMoveRight = "FALSE";
+      D35outDriveStop = "TRUE";
       return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
     }
 
