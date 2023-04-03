@@ -39,7 +39,9 @@ class FControlPointMachinePosition
 
   public FControlPointMachinePosition()
   {
-    // TODO: Generate entry
+    MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+    D21outMoveLeft = D21outMoveLeftValue.False;
+    D22outMoveRight = D22outMoveRightValue.False;
     _state = FControlPointMachinePositionBehaviour.New();
   }
 

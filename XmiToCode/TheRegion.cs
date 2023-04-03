@@ -3,6 +3,7 @@ using XmiToCode;
 class TheRegion : CodeGenerationItem
 {
   public Region Region { get { return _region; } }
+  public Subvertex InitialState { get { return _initialState; } }
   private readonly Region _region;
   private readonly string _name;
   private readonly Subvertex _initialState;

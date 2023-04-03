@@ -216,7 +216,7 @@ class {className} {{
     private {behaviorName} _state;
 
     public {className}() {{
-      // TODO: Generate entry
+      {GenerateInitialEntry(_behavior)}
       _state = {behaviorName}.New();
     }}
 
@@ -239,6 +239,27 @@ class {className} {{
     {GeneratePropertyValueTypes()}
 }}
 ";
+  }
+
+  private string GenerateInitialEntry(TheRegion behavior)
+  {
+      // TODO: Deduplicate code with GenerateActivities
+      var (x, y, z) = behavior.GetTransitionsFromState(behavior.InitialState).Single();
+      var entry = (y.Entry?.Name ?? "")
+          .Replace("TRUE", "\"TRUE\"")
+          .Replace("FALSE", "\"FALSE\"")
+          .Replace(" := ", " = ");
+      entry = Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+      foreach (Match m in Regex.Matches(entry, "(\\w+) = \"(\\w*)\"")) {
+          var lhs = m.Groups[1].Value;
+          var rhs = m.Groups[2].Value;
+          RecordPossibleValueForProperty(lhs, rhs);
+      }
+
+      entry = Regex.Replace(entry, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[2].Value)}");
+
+      return entry;
   }
 
   private string LookupPropertyValueType(string v)
