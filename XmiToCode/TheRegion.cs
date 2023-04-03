@@ -88,8 +88,7 @@ class TheRegion : CodeGenerationItem
     return @$"public record {name} : {basename} {{
     {string.Join("\n    ", subrecords)}
 
-    public static new {name} New() =>
-      {z}.New();
+    public static new {name} New() => {z}.New();
 
     private {name}() {{}}
 }}

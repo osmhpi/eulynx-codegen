@@ -7,6 +7,8 @@ internal class UmlClass : CodeGenerationItem
   private readonly Dictionary<string, PackagedElement> _changeEvents;
   private readonly Dictionary<string, PackagedElement> _timeEvents;
   private readonly TheRegion _behavior;
+  private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues;
+  private readonly Dictionary<string, string> _coercedValues;
 
   public UmlClass(PackagedElement theClass, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
   {
@@ -14,6 +16,8 @@ internal class UmlClass : CodeGenerationItem
     _changeEvents = changeEvents;
     _timeEvents = timeEvents;
     _behavior = new TheRegion(_class.OwnedBehavior.Region, _class.OwnedBehavior.Name, changeEvents, timeEvents);
+    _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
+    _coercedValues = new Dictionary<string, string>();
   }
 
   public string GetName() {
@@ -71,7 +75,17 @@ internal class UmlClass : CodeGenerationItem
           .Replace(" := ", " = ");
       entry = Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
 
-      return string.Join("\n", exit, transitionEffect, entry);
+      var result = string.Join("\n", exit, transitionEffect, entry);
+
+      foreach (Match m in Regex.Matches(result, "(\\w+) = \"(\\w*)\"")) {
+          var lhs = m.Groups[1].Value;
+          var rhs = m.Groups[2].Value;
+          RecordPossibleValueForProperty(lhs, rhs);
+      }
+
+      result = Regex.Replace(result, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[2].Value)}");
+
+      return result;
   }
 
   private string GetTransitionConditions(Transition transition) {
@@ -95,6 +109,19 @@ internal class UmlClass : CodeGenerationItem
       }
 
       if (result != null) {
+          foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            RecordCoerceValues(lhs, rhs);
+          }
+
+          foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) \"(\\w*)\"")) {
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            RecordPossibleValueForProperty(lhs, rhs);
+          }
+          result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[3].Value)}");
+
           return $"if ({result})";
       }
 
@@ -114,10 +141,52 @@ internal class UmlClass : CodeGenerationItem
 
         expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
 
+        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            RecordCoerceValues(lhs, rhs);
+          }
+
+        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"(\\w*)\"")) {
+          var lhs = m.Groups[1].Value;
+          var rhs = m.Groups[3].Value;
+          RecordPossibleValueForProperty(lhs, rhs);
+        }
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[3].Value)}");
+
         return $"if ({expression})";
     }
 
     throw new Exception("Invalid event reference.");
+  }
+
+  private void RecordCoerceValues(string lhs, string rhs)
+  {
+      if (_coercedValues.ContainsKey(lhs) == false) {
+        _coercedValues[lhs] = lhs;
+      }
+
+      if (_coercedValues.ContainsKey(rhs) == false) {
+        _coercedValues[rhs] = rhs;
+      }
+
+      var lhsPointsTo = _coercedValues[lhs];
+      var rhsPointsTo = _coercedValues[rhs];
+
+      foreach (var keyValue in _coercedValues) {
+        if (keyValue.Value == lhsPointsTo) {
+          _coercedValues[keyValue.Key] = rhsPointsTo;
+        }
+      }
+  }
+
+  private void RecordPossibleValueForProperty(string lhs, string rhs)
+  {
+      if (_allowedPropertyValues.ContainsKey(lhs) == false) {
+        _allowedPropertyValues[lhs] = new HashSet<string>();
+      }
+
+      _allowedPropertyValues[lhs].Add(rhs);
   }
 
   public override string Write() {
@@ -129,33 +198,69 @@ internal class UmlClass : CodeGenerationItem
     var states = _behavior.GetStates();
     var behaviorName = _behavior.GetName();
 
+    // Initialize property types
+    {
+      foreach (var property in properties) {
+        _allowedPropertyValues.Add(InPascalCase(property.Name), new HashSet<string>());
+      }
+      // Perform a dry run of generating transitions (which includes comparisons and assignments,
+      // where property types are coerced)
+      var ignored = states.Select(fromState => GenerateTransition(behaviorName, fromState.subvertex)).ToList();
+    }
+
     return @$"namespace Eulynx;
 
 class {className} {{
-{string.Join("\n", properties.Select(x => $"public string {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
-
-{_behavior.Write()}
+    {_behavior.Write()}
 
     private {behaviorName} _state;
 
     public {className}() {{
+      // TODO: Generate entry
       _state = {behaviorName}.New();
     }}
 
-    private bool IsTimeoutExpired(string timeout) {{
+    private bool IsTimeoutExpired(object timeout) {{
         // TODO
         return false;
     }}
 
     public void Transition() {{
         _state = _state switch {{
-{string.Join(",\n", states.Select(t =>
-  string.Join(",\n", $"{t.name} => TransitionFrom{InPascalCase(t.subvertex.Name)}()")))}
+            {string.Join(",\n", states.Select(t =>
+              string.Join(",\n", $"{t.name} => TransitionFrom{InPascalCase(t.subvertex.Name)}()")))}
       }};
     }}
 
-{string.Join("\n", states.Select(fromState => GenerateTransition(behaviorName, fromState.subvertex)))}
-}}";
+    {string.Join("\n", states.Select(fromState => GenerateTransition(behaviorName, fromState.subvertex)))}
+
+    {string.Join("\n", properties.Select(x => $"public {LookupPropertyValueType(InPascalCase(x.Name))}Value {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
+
+    {GeneratePropertyValueTypes()}
+}}
+";
+  }
+
+  private string LookupPropertyValueType(string v)
+  {
+    if (_coercedValues.ContainsKey(v) == false) {
+      _coercedValues[v] = v;
+    }
+    return _coercedValues[v];
+  }
+
+  private string GeneratePropertyValueTypes()
+  {
+    return string.Join("\n", _allowedPropertyValues.Select(x => {
+      // Collect all of the field values that point to the same alias
+      var aliases = _coercedValues.ContainsKey(x.Key)
+          ? _coercedValues.Keys.Where(key => _coercedValues[key] == _coercedValues[x.Key])
+            .SelectMany(key => _allowedPropertyValues[key]).ToHashSet() : _allowedPropertyValues[x.Key];
+      return $@"
+        public enum {x.Key}Value {{
+            {string.Join(",\n", aliases.Select(InPascalCase))}
+        }}";
+    }));
   }
 
   internal async Task Generate()
