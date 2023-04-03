@@ -140,6 +140,8 @@ namespace XmiToCode
 		public List<OwnedRule> OwnedRule { get; set; }
     [XmlElement(ElementName = "entry")]
     public Subvertex Entry { get; set; }
+    [XmlElement(ElementName = "exit")]
+    public Subvertex Exit { get; set; }
     [XmlElement(ElementName="region")]
     public List<Region> Regions { get; set; }
 	}

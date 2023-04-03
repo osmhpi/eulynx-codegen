@@ -81,6 +81,7 @@ class FControlPointMachinePosition
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
 
+
       MemLastCommandedPointPosition = "UNDEFINED";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -88,6 +89,7 @@ class FControlPointMachinePosition
     }
     if (IsTimeoutExpired(D39inConTmaxPmOperation))
     {
+      D35outDriveStop = "FALSE";
       D40outMsgPmTimeout = "TRUE";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -96,6 +98,7 @@ class FControlPointMachinePosition
     }
     if (D10inPmPosition == MemLastCommandedPointPosition)
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -104,6 +107,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == "RIGHT" && (D2inRequiredPointPosition != D10inPmPosition))
     {
+
       D21outMoveLeft = "FALSE";
       MemLastCommandedPointPosition = "RIGHT";
       D22outMoveRight = "TRUE";
@@ -112,6 +116,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == "UNCOMMANDED")
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -120,6 +125,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == D10inPmPosition)
     {
+      D35outDriveStop = "FALSE";
       MemLastCommandedPointPosition = "RIGHT";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -128,6 +134,7 @@ class FControlPointMachinePosition
     }
     if (D6inObservedAbilityToMovePoint == "UNABLE_TO_MOVE")
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -144,6 +151,7 @@ class FControlPointMachinePosition
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
 
+
       MemLastCommandedPointPosition = "UNDEFINED";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -151,6 +159,7 @@ class FControlPointMachinePosition
     }
     if (IsTimeoutExpired(D39inConTmaxPmOperation))
     {
+      D35outDriveStop = "FALSE";
       D40outMsgPmTimeout = "TRUE";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -159,6 +168,7 @@ class FControlPointMachinePosition
     }
     if (D10inPmPosition == MemLastCommandedPointPosition)
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -167,6 +177,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == "LEFT" && (D2inRequiredPointPosition != D10inPmPosition))
     {
+
       D22outMoveRight = "FALSE";
       MemLastCommandedPointPosition = "LEFT";
       D21outMoveLeft = "TRUE";
@@ -175,6 +186,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == "UNCOMMANDED")
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -183,6 +195,7 @@ class FControlPointMachinePosition
     }
     if (D2inRequiredPointPosition == D10inPmPosition)
     {
+      D35outDriveStop = "FALSE";
       MemLastCommandedPointPosition = "LEFT";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -191,6 +204,7 @@ class FControlPointMachinePosition
     }
     if (D6inObservedAbilityToMovePoint == "UNABLE_TO_MOVE")
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -207,6 +221,7 @@ class FControlPointMachinePosition
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
 
+
       MemLastCommandedPointPosition = "UNDEFINED";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -215,12 +230,14 @@ class FControlPointMachinePosition
     if (D10inPmPosition == "NO_END_POSITION")
     {
 
+
       D22outMoveRight = "TRUE";
       D40outMsgPmTimeout = "FALSE";
       return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
     }
     if (D10inPmPosition == "NO_END_POSITION")
     {
+
 
       D21outMoveLeft = "TRUE";
       D40outMsgPmTimeout = "FALSE";
@@ -231,12 +248,14 @@ class FControlPointMachinePosition
       if (D2inRequiredPointPosition != D10inPmPosition && D6inObservedAbilityToMovePoint == "ABLE_TO_MOVE")
       {
 
+
         D21outMoveLeft = "TRUE";
         D40outMsgPmTimeout = "FALSE";
         return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
       }
       else
       {
+        D35outDriveStop = "FALSE";
 
         D21outMoveLeft = "FALSE";
         D22outMoveRight = "FALSE";
@@ -249,12 +268,14 @@ class FControlPointMachinePosition
       if (D2inRequiredPointPosition != D10inPmPosition && D6inObservedAbilityToMovePoint == "ABLE_TO_MOVE")
       {
 
+
         D22outMoveRight = "TRUE";
         D40outMsgPmTimeout = "FALSE";
         return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
       }
       else
       {
+        D35outDriveStop = "FALSE";
 
         D21outMoveLeft = "FALSE";
         D22outMoveRight = "FALSE";
@@ -272,6 +293,7 @@ class FControlPointMachinePosition
     if (D51inEstEfesState == "NO_OPERATING_VOLTAGE" || D51inEstEfesState == "BOOTING" || D51inEstEfesState == "FALLBACK_MODE")
     {
 
+
       MemLastCommandedPointPosition = "UNDEFINED";
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";
@@ -279,6 +301,7 @@ class FControlPointMachinePosition
     }
     if (D51inEstEfesState == "INITIALISING")
     {
+      D35outDriveStop = "FALSE";
 
       D21outMoveLeft = "FALSE";
       D22outMoveRight = "FALSE";

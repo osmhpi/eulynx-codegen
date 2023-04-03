@@ -1,14 +1,14 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-internal class TheClass : CodeGenerationItem
+internal class UmlClass : CodeGenerationItem
 {
   private PackagedElement _class;
   private readonly Dictionary<string, PackagedElement> _changeEvents;
   private readonly Dictionary<string, PackagedElement> _timeEvents;
   private readonly TheRegion _behavior;
 
-  public TheClass(PackagedElement theClass, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+  public UmlClass(PackagedElement theClass, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
   {
     _class = theClass;
     _changeEvents = changeEvents;
@@ -16,6 +16,9 @@ internal class TheClass : CodeGenerationItem
     _behavior = new TheRegion(_class.OwnedBehavior.Region, _class.OwnedBehavior.Name, changeEvents, timeEvents);
   }
 
+  public string GetName() {
+    return InPascalCase(_class.Name);
+  }
 
   private string GenerateTransition(string name, Subvertex fromState)
   {
@@ -35,7 +38,7 @@ internal class TheClass : CodeGenerationItem
       var regularTransitions = transitions.Where(x => x.state.Type == "uml:State");
       var regularConditions = string.Join("\n", regularTransitions.Select(x =>
       $@"{GetTransitionConditions(x.transition)} {{
-        {GenerateEntry(x)}
+        {GenerateActivities(fromState, x)}
         return {x.stateName}.New();
       }}"));
 
@@ -48,8 +51,14 @@ internal class TheClass : CodeGenerationItem
       return regularConditions + junctionConditions;
   }
 
-  private string GenerateEntry((Transition transition, Subvertex state, string stateName) x)
+  private string GenerateActivities(Subvertex fromState, (Transition transition, Subvertex state, string stateName) x)
   {
+      var exit = (x.state.Exit?.Name ?? "")
+          .Replace("TRUE", "\"TRUE\"")
+          .Replace("FALSE", "\"FALSE\"")
+          .Replace(" := ", " = ");
+      exit = Regex.Replace(exit, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
       var transitionEffect = (x.transition.Effect?.Body ?? "")
           .Replace("TRUE", "\"TRUE\"")
           .Replace("FALSE", "\"FALSE\"")
@@ -62,7 +71,7 @@ internal class TheClass : CodeGenerationItem
           .Replace(" := ", " = ");
       entry = Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
 
-      return string.Join("\n", transitionEffect, entry);
+      return string.Join("\n", exit, transitionEffect, entry);
   }
 
   private string GetTransitionConditions(Transition transition) {
@@ -113,8 +122,9 @@ internal class TheClass : CodeGenerationItem
 
   public override string Write() {
     var className = InPascalCase(_class.Name);
-    var properties = _class.OwnedAttribute.ToList();
-      //.Where(x => x.XmiType.SingleOrDefault() == "uml:Property").ToList();
+    var properties = _class.OwnedAttribute
+      //.Where(x => x.XmiType.SingleOrDefault() == "uml:Property")
+      .ToList();
 
     var states = _behavior.GetStates();
     var behaviorName = _behavior.GetName();
@@ -146,5 +156,12 @@ class {className} {{
 
 {string.Join("\n", states.Select(fromState => GenerateTransition(behaviorName, fromState.subvertex)))}
 }}";
+  }
+
+  internal async Task Generate()
+  {
+    using var file = File.Create($"../out/{GetName()}.cs");
+    using var writer = new StreamWriter(file);
+    await writer.WriteAsync(Write());
   }
 }

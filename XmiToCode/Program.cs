@@ -21,11 +21,7 @@ var fControlPointPosition = entities.PackagedElements.Single(x => x.Name == "F_C
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 
-var sm = new UMLClass(fControlPointPosition, changeEvents, timeEvents);
-await sm.Generate();
-
-foreach (var element in fControlPointPosition.PackagedElements) {
-  Console.WriteLine($"{element.Type} - {element.Name}");
-}
+var theClass = new UmlClass(fControlPointPosition, changeEvents, timeEvents);
+await theClass.Generate();
 
 Console.WriteLine("Done.");
