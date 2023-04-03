@@ -210,7 +210,7 @@ internal class UmlClass : CodeGenerationItem
 
     return @$"namespace Eulynx;
 
-class {className} {{
+public class {className} {{
     {_behavior.Write()}
 
     private {behaviorName} _state;
@@ -286,7 +286,7 @@ class {className} {{
 
   internal async Task Generate()
   {
-    using var file = File.Create($"../out/{GetName()}.cs");
+    using var file = File.Create($"../Eulynx/{GetName()}.cs");
     using var writer = new StreamWriter(file);
     await writer.WriteAsync(Write());
   }

@@ -1,6 +1,6 @@
 namespace Eulynx;
 
-class FControlPointMachinePosition
+public class FControlPointMachinePosition
 {
   public record FControlPointMachinePositionBehaviour : object
   {
