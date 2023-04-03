@@ -1,14 +1,16 @@
 using XmiToCode;
 
-class StateMachine
+class UMLClass
 {
+  private PackagedElement _class;
   private OwnedBehavior _behavior;
   private readonly Dictionary<string, PackagedElement> _changeEvents;
   private readonly Dictionary<string, PackagedElement> _timeEvents;
 
-  public StateMachine(OwnedBehavior behavior, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+  public UMLClass(PackagedElement theClass, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
   {
-    _behavior = behavior;
+    _class = theClass;
+    _behavior = theClass.OwnedBehavior;
     _changeEvents = changeEvents;
     _timeEvents = timeEvents;
   }
@@ -22,16 +24,8 @@ class StateMachine
 
   private string GenerateFile()
   {
-    var rootRegion = _behavior.Region;
-    var region = new TheRegion(rootRegion, _behavior.Name, _changeEvents, _timeEvents);
+    var theClass = new TheClass(_class, _changeEvents, _timeEvents);
 
-    return @$"using System;
-using System.Text;
-using System.Linq;
-
-namespace Eulynx;
-
-{region.Write()}
-";
+    return theClass.Write();
   }
 }

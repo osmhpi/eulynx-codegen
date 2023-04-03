@@ -2,6 +2,7 @@ using XmiToCode;
 
 class TheRegion : CodeGenerationItem
 {
+  public Region Region { get { return _region; } }
   private readonly Region _region;
   private readonly string _name;
   private readonly Subvertex _initialState;
@@ -28,88 +29,72 @@ class TheRegion : CodeGenerationItem
     _subregions = _states.SelectMany(x => x.Regions.Select(region => new TheRegion(region, x.Name, changeEvents, timeEvents)));
   }
 
-  private IEnumerable<(Transition transition, Subvertex state)> GetTransitionsFromState(Subvertex fromState) {
+  public IEnumerable<(Transition transition, Subvertex state, string stateName)> GetTransitionsFromState(Subvertex fromState) {
+      // Does fromState match one of our subregions?
+      var subregionTransitions = _subregions
+        .Select(subregion => new { Subregion = subregion, Transitions = subregion.GetTransitionsFromState(fromState) })
+        .SingleOrDefault(x => x.Transitions.Any());
+
+      if (subregionTransitions != null) {
+        // Prepend the transitions from the enclosing state of the subregion
+        var subregionState = _states.Single(x => x.Regions.Contains(subregionTransitions.Subregion.Region));
+        return _region.Transition.Where(x => x.Source == subregionState.Id)
+          .Select(x => (x, _region.Subvertices.Single(state => state.Id == x.Target), $"{GetName()}.{InPascalCase(_region.Subvertices.Single(state => state.Id == x.Target).Name)}"))
+          .Concat(subregionTransitions.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}")));
+      }
+
       return _region.Transition.Where(x => x.Source == fromState.Id)
-        .Select(x => (x, _region.Subvertices.Single(state => state.Id == x.Target)));
+        .Select(x => (x, _region.Subvertices.Single(state => state.Id == x.Target), $"{GetName()}.{InPascalCase(_region.Subvertices.Single(state => state.Id == x.Target).Name)}"));
   }
 
-  private string GetTransitionConditions(Transition transition) {
-    var evt = transition.Trigger.Event;
-    if (_changeEvents.ContainsKey(evt)) {
-      return _changeEvents[evt].ChangeExpression.Body
-        .Replace(" AND ", " && ")
-        .Replace(" OR ", " || ")
-        .Replace(" = ", " == ")
-        .Replace(" <> ", " != ");
+  public string GetName() {
+    return InPascalCase(_name);
+  }
+
+  public IEnumerable<(Subvertex subvertex, string name)> GetStates() {
+    var hasSubstates = false;
+    foreach (var (subvertex, name) in _subregions.SelectMany(x => x.GetStates())) {
+      yield return (subvertex, $"{GetName()}.{name}");
+      hasSubstates = true;
     }
-    if (_timeEvents.ContainsKey(evt)) {
-      return $"WHEN: {_timeEvents[evt].When.Expr.Body}";
+
+    if (!hasSubstates) {
+      foreach (var state in _states) {
+        yield return (state, $"{GetName()}.{InPascalCase(state.Name)}");
+      }
     }
-    throw new Exception("Invalid event reference.");
   }
 
   private string MakeSubrecord(string recordName, Subvertex x) {
     var isRegion = x.Regions.Any();
     var name = InPascalCase(x.Name);
     if (isRegion) {
-      return new TheRegion(x.Regions.Single(), name, _changeEvents, _timeEvents).MakeStateRecord(name);
+      return new TheRegion(x.Regions.Single(), name, _changeEvents, _timeEvents).MakeStateRecord(name, recordName);
     } else {
-      return $@"private record {name}() : {recordName}() {{
-        public new static {name} New() => new {name}();
+      return $@"public record {name}() : {recordName}() {{
+        public static new {name} New() => new {name}();
       }}";
     }
   }
 
-  private string MakeStateRecord(string name) {
+  private string MakeStateRecord(string name, string basename) {
     var subrecords = _states.Select(x => MakeSubrecord(name, x));
-    var (x, y) = GetTransitionsFromState(_initialState).Single();
+    var (x, y, z) = GetTransitionsFromState(_initialState).Single();
 
-    return @$"record {name} {{
+    return @$"public record {name} : {basename} {{
     {string.Join("\n    ", subrecords)}
 
-    public static {name} New() =>
-      {name}.{InPascalCase(y.Name)}.New();
+    public static new {name} New() =>
+      {name}.{z}.New();
 
     private {name}() {{}}
-
-    public {name} Transition() {{
-        return this switch {{
-{string.Join(",\n", _states.Select(fromState =>
-  string.Join(",\n", $"{InPascalCase(fromState.Name)} => TransitionFrom{InPascalCase(fromState.Name)}()")))}
-      }};
-    }}
-
-{string.Join("\n", _states.Select(fromState => GenerateTransition(name, fromState)))}
 }}
 ";
 
   }
 
-  private string GenerateTransition(string name, Subvertex fromState)
-  {
-    return $@"private {name} TransitionFrom{InPascalCase(fromState.Name)}() {{
-      {GenerateConditions(fromState)}
-
-      // Do not transition
-      return this;
-    }}
-";
-  }
-
-  private string GenerateConditions(Subvertex fromState)
-  {
-     var transitions = GetTransitionsFromState(fromState)
-      // Temporarily only process change events, will take care of
-      // timed events later
-      .Where(x => _changeEvents.ContainsKey(x.transition.Trigger.Event));
-     return string.Join("\n", transitions.Select(x =>
-     $@"if ({GetTransitionConditions(x.transition)}) {{
-      return {InPascalCase(x.state.Name)}();
-     }}"));
-  }
-
   public override string Write()
   {
-    return MakeStateRecord(InPascalCase(_name));
+    return MakeStateRecord(InPascalCase(_name), "object");
   }
 }

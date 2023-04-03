@@ -18,12 +18,10 @@ var functionalViewpoint = requirements.PackagedElements.Single(x => x.Name == "S
 var entities = functionalViewpoint.PackagedElements.Single(x => x.Name == "Subsystem Point - Functional Entities");
 var fControlPointPosition = entities.PackagedElements.Single(x => x.Name == "F_Control_Point_Machine_Position");
 
-var behavior = fControlPointPosition.OwnedBehavior;
-
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 
-var sm = new StateMachine(behavior, changeEvents, timeEvents);
+var sm = new UMLClass(fControlPointPosition, changeEvents, timeEvents);
 await sm.Generate();
 
 foreach (var element in fControlPointPosition.PackagedElements) {
