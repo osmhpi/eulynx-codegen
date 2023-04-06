@@ -15,7 +15,7 @@ internal class UmlClass : CodeGenerationItem
     _class = theClass;
     _changeEvents = changeEvents;
     _timeEvents = timeEvents;
-    _behavior = new TheRegion(_class.OwnedBehavior.Region, _class.OwnedBehavior.Name, changeEvents, timeEvents);
+    _behavior = new TheRegion(theClass.StateMachine.Region, theClass.StateMachine.Name, changeEvents, timeEvents);
     _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
     _coercedValues = new Dictionary<string, string>();
   }
@@ -110,6 +110,7 @@ internal class UmlClass : CodeGenerationItem
         var expression = _changeEvents[evt].ChangeExpression.Body
           .Replace(" AND ", " && ")
           .Replace(" OR ", " || ")
+          .Replace(" NOT ", "!")
           .Replace(" = ", " == ")
           .Replace(" <> ", " != ");
 
@@ -155,6 +156,7 @@ internal class UmlClass : CodeGenerationItem
         var expression = transition.OwnedRule.Specification.Body
           .Replace(" AND ", " && ")
           .Replace(" OR ", " || ")
+          .Replace(" NOT ", "!")
           .Replace(" = ", " == ")
           .Replace(" <> ", " != ");
 

@@ -60,6 +60,8 @@ namespace XmiToCode
 
 	[XmlRoot(ElementName="packagedElement")]
 	public class PackagedElement {
+    public OwnedBehavior StateMachine => OwnedBehavior.SingleOrDefault(x => x.Type == "uml:StateMachine");
+
 		[XmlElement(ElementName="ownedAttribute")]
 		public List<OwnedAttribute> OwnedAttribute { get; set; }
 		[XmlElement(ElementName="ownedConnector")]
@@ -71,7 +73,7 @@ namespace XmiToCode
 		[XmlAttribute(AttributeName="name")]
 		public string Name { get; set; }
 		[XmlElement(ElementName="ownedBehavior")]
-		public OwnedBehavior OwnedBehavior { get; set; }
+		public List<OwnedBehavior> OwnedBehavior { get; set; }
 		[XmlElement(ElementName="ownedEnd")]
 		public OwnedEnd OwnedEnd { get; set; }
 		[XmlAttribute(AttributeName="memberEnd")]
