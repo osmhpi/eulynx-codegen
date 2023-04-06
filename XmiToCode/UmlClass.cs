@@ -40,16 +40,28 @@ internal class UmlClass : CodeGenerationItem
       var transitions = _behavior.GetTransitionsFromState(fromState, skipParentTransitions);
 
       var regularTransitions = transitions.Where(x => x.state.Type == "uml:State");
-      var regularConditions = string.Join("\n", regularTransitions.Select(x =>
-      $@"{GetTransitionConditions(x.transition)} {{
-        {GenerateActivities(fromState, x)}
-        return {x.stateName}.New();
-      }}"));
+      var noTriggerConditions = regularTransitions.All(x => x.transition.Trigger == null);
+      var regularConditions = string.Join("\n", noTriggerConditions
+        ? regularTransitions.Select(x =>
+            $@"{GetTransitionConstraints(x.transition)} {{
+                {GenerateActivities(fromState, x)}
+                return {x.stateName}.New();
+            }}")
+        : regularTransitions.Select(x =>
+          $@"{GetTransitionChangeTriggerExpression(x.transition)} {{
+            {GetTransitionConstraints(x.transition)} {{
+                {GenerateActivities(fromState, x)}
+                return {x.stateName}.New();
+            }}
+          }}"));
 
       var junctions = transitions.Where(x => x.state.Kind == "junction");
       var junctionConditions = string.Join("\n", junctions.Select(x =>
-      $@"{GetTransitionConditions(x.transition)} {{
-        {GenerateConditions(x.state, true)}
+      $@"{GetTransitionChangeTriggerExpression(x.transition)} {{
+        {GetTransitionConstraints(x.transition)} {{
+          {GenerateActivities(fromState, x)}
+          {GenerateConditions(x.state, true)}
+        }}
       }}"));
 
       return regularConditions + junctionConditions;
@@ -83,12 +95,12 @@ internal class UmlClass : CodeGenerationItem
           RecordPossibleValueForProperty(lhs, rhs);
       }
 
-      result = Regex.Replace(result, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[2].Value)}");
+      result = Regex.Replace(result, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[2].Value)}");
 
       return result;
   }
 
-  private string GetTransitionConditions(Transition transition) {
+  private string GetTransitionChangeTriggerExpression(Transition transition) {
     if (transition.Trigger != null) {
       // Regular transition
       string? result = null;
@@ -106,6 +118,8 @@ internal class UmlClass : CodeGenerationItem
 
       if (_timeEvents.ContainsKey(evt)) {
         result = $"IsTimeoutExpired({InPascalCase(_timeEvents[evt].When.Expr.Body)})";
+      } else {
+        result = $"IsConditionChanged({result})";
       }
 
       if (result != null) {
@@ -120,13 +134,18 @@ internal class UmlClass : CodeGenerationItem
             var rhs = m.Groups[3].Value;
             RecordPossibleValueForProperty(lhs, rhs);
           }
-          result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[3].Value)}");
+          result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)}");
 
           return $"if ({result})";
       }
 
-    } else if (transition.OwnedRule != null && transition.OwnedRule.Specification != null) {
-        // Special constrained transition for junction elements
+    }
+
+    return "";
+  }
+
+  private string GetTransitionConstraints(Transition transition) {
+    if (transition.OwnedRule != null && transition.OwnedRule.Specification != null) {
         var specification = transition.OwnedRule.Specification.Body;
 
         if (specification == "else") {
@@ -152,12 +171,11 @@ internal class UmlClass : CodeGenerationItem
           var rhs = m.Groups[3].Value;
           RecordPossibleValueForProperty(lhs, rhs);
         }
-        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[3].Value)}");
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)}");
 
         return $"if ({expression})";
     }
-
-    throw new Exception("Invalid event reference.");
+    return "";
   }
 
   private void RecordCoerceValues(string lhs, string rhs)
@@ -225,6 +243,11 @@ public class {className} {{
         return false;
     }}
 
+    private bool IsConditionChanged(bool condition) {{
+        // TODO: Keep in mind that this should only evaluate to true once
+        return condition;
+    }}
+
     public void Transition() {{
         _state = _state switch {{
             {string.Join(",\n", states.Select(t =>
@@ -234,7 +257,7 @@ public class {className} {{
 
     {string.Join("\n", states.Select(fromState => GenerateTransition(behaviorName, fromState.subvertex)))}
 
-    {string.Join("\n", properties.Select(x => $"public {LookupPropertyValueType(InPascalCase(x.Name))}Value {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
+    {string.Join("\n", properties.Select(x => $"public {LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 
     {GeneratePropertyValueTypes()}
 }}
@@ -257,7 +280,7 @@ public class {className} {{
           RecordPossibleValueForProperty(lhs, rhs);
       }
 
-      entry = Regex.Replace(entry, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}Value.{InPascalCase(m.Groups[2].Value)}");
+      entry = Regex.Replace(entry, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[2].Value)}");
 
       return entry;
   }
@@ -267,7 +290,13 @@ public class {className} {{
     if (_coercedValues.ContainsKey(v) == false) {
       _coercedValues[v] = v;
     }
-    return _coercedValues[v];
+    var result = _coercedValues[v];
+
+    if (_allowedPropertyValues[result].Count == 0) {
+      return "bool";
+    }
+
+    return $"{result}Value";
   }
 
   private string GeneratePropertyValueTypes()
@@ -277,6 +306,11 @@ public class {className} {{
       var aliases = _coercedValues.ContainsKey(x.Key)
           ? _coercedValues.Keys.Where(key => _coercedValues[key] == _coercedValues[x.Key])
             .SelectMany(key => _allowedPropertyValues[key]).ToHashSet() : _allowedPropertyValues[x.Key];
+
+      if (aliases.Count == 0) {
+        return "";
+      }
+
       return $@"
         public enum {x.Key}Value {{
             {string.Join(",\n", aliases.Select(InPascalCase))}
