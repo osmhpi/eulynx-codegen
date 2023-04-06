@@ -232,6 +232,7 @@ public class {className} {{
     {_behavior.Write()}
 
     private {behaviorName} _state;
+    public {behaviorName} State {{ get {{ return _state; }} }}
 
     public {className}() {{
       {GenerateInitialEntry(_behavior)}

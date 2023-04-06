@@ -36,6 +36,7 @@ public class FControlPointMachinePosition
 
 
   private FControlPointMachinePositionBehaviour _state;
+  public FControlPointMachinePositionBehaviour State { get { return _state; } }
 
   public FControlPointMachinePosition()
   {
