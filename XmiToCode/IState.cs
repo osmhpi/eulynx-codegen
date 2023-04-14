@@ -1,5 +1,8 @@
 using XmiToCode;
 
+// IState From, ,
+record OurTransition(IState From, IState To, Transition Transition);
+
 interface IState
 {
     bool IsInitialState { get; }
@@ -7,14 +10,15 @@ interface IState
     bool IsRegularState { get; }
     string Name { get; }
 
+    // i.e. a nested state machine
     OurRegion? Region { get; }
+    // List<OurTransition> Transitions { get; }
 
-    string VertexId { get; }
-
-
-    string GenerateExit(IState next, Transition transition);
-    string GenerateTransition(IState next, Transition transition);
-    string GenerateEntry(IState previous, Transition transition);
+    string GenerateExit(IState next, OurTransition transition);
+    string GenerateTransition(IState next, OurTransition transition);
+    string GenerateEntry(IState previous, OurTransition transition);
 
     StateMachine CreateChildStateMachine(Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents);
+    bool IsSourceOfTransition(Transition transition);
+    bool IsTargetOfTransition(Transition transition);
 }

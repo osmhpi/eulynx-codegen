@@ -10,9 +10,7 @@ record State(Subvertex Vertex, OurRegion? Region) : IState
 
     public string Name => Vertex.Name;
 
-    public string VertexId => Vertex.Id;
-
-    public string GenerateExit(IState next, Transition transition)
+    public string GenerateExit(IState next, OurTransition transition)
     {
         var exit = (Vertex.Exit?.Name ?? "")
           .Replace("TRUE", "\"TRUE\"")
@@ -21,16 +19,16 @@ record State(Subvertex Vertex, OurRegion? Region) : IState
         return Regex.Replace(exit, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
     }
 
-    public string GenerateTransition(IState next, Transition transition)
+    public string GenerateTransition(IState next, OurTransition transition)
     {
-        var transitionEffect = (transition.Effect?.Body ?? "")
+        var transitionEffect = (transition.Transition.Effect?.Body ?? "")
             .Replace("TRUE", "\"TRUE\"")
             .Replace("FALSE", "\"FALSE\"")
             .Replace(" := ", " = ");
         return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
     }
 
-    public string GenerateEntry(IState previous, Transition transition)
+    public string GenerateEntry(IState previous, OurTransition transition)
     {
         var entry = (Vertex.Entry?.Name ?? "")
             .Replace("TRUE", "\"TRUE\"")
@@ -51,11 +49,18 @@ record State(Subvertex Vertex, OurRegion? Region) : IState
     {
         if (Region != null) {
             return new StateMachine(Region, Name, changeEvents, timeEvents);
-            // return Region.States
-            //     .Where(x => x.Region != null)
-                // .Select(x => new StateMachine(x.Region, x.Name, changeEvents, timeEvents));
         }
 
         throw new InvalidOperationException("State has no region");
+    }
+
+    public bool IsSourceOfTransition(Transition transition)
+    {
+        return Vertex.Id == transition.Source;
+    }
+
+    public bool IsTargetOfTransition(Transition transition)
+    {
+        return Vertex.Id == transition.Target;
     }
 }

@@ -193,7 +193,7 @@ namespace XmiToCode
 		[XmlElement(ElementName="subvertex")]
 		public List<Subvertex> Subvertices { get; set; }
 		[XmlElement(ElementName="transition")]
-		public List<Transition> Transition { get; set; }
+		public List<Transition> Transitions { get; set; }
 		[XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
 		public string Type { get; set; }
 		[XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]

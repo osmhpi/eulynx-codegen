@@ -20,13 +20,19 @@ internal class UmlClass : CodeGenerationItem
     _coercedValues = new Dictionary<string, string>();
   }
 
-  public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
-      return new OurRegion(
-        region,
-        region.Subvertices.Select(
+    public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
+        var states = region.Subvertices.Select(
             x => new State(x, x.Regions.Select(TransformSubverticesIntoCompoundStates).SingleOrDefault())
-        ).OfType<IState>().ToList()
-    );
+        ).OfType<IState>().ToList();
+
+        var transitions = region.Transitions
+            .Select(transition => new OurTransition(
+                states.Single(x => x.IsSourceOfTransition(transition)),
+                states.Single(x => x.IsTargetOfTransition(transition)),
+                transition))
+            .ToList();
+
+      return new OurRegion(region, states, transitions);
   }
 
 //   private IEnumerable<CompoundState> FlattenStates(List<List<CompoundState>> regionStates) {
@@ -82,7 +88,7 @@ internal class UmlClass : CodeGenerationItem
       var transitions = _behavior.GetTransitionsFromState(fromState, skipParentTransitions);
 
       var regularTransitions = transitions.Where(x => x.state.IsRegularState);
-      var noTriggerConditions = regularTransitions.All(x => x.transition.Trigger == null);
+      var noTriggerConditions = regularTransitions.All(x => x.transition.Transition.Trigger == null);
       var regularConditions = string.Join("\n", noTriggerConditions
         ? regularTransitions.Select(x =>
             $@"{GetTransitionConstraints(x.transition)} {{
@@ -109,7 +115,7 @@ internal class UmlClass : CodeGenerationItem
       return regularConditions + junctionConditions;
   }
 
-  private string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x)
+  private string GenerateActivities(IState fromState, (OurTransition transition, IState state, string stateName) x)
   {
       // TODO: These signatures look implausible.
       var exit = x.state.GenerateExit(x.state, x.transition);
@@ -129,12 +135,12 @@ internal class UmlClass : CodeGenerationItem
       return result;
   }
 
-  private string GetTransitionChangeTriggerExpression(Transition transition) {
-    if (transition.Trigger != null) {
+  private string GetTransitionChangeTriggerExpression(OurTransition transition) {
+    if (transition.Transition.Trigger != null) {
       // Regular transition
       string? result = null;
 
-      var evt = transition.Trigger.Event;
+      var evt = transition.Transition.Trigger.Event;
       if (_changeEvents.ContainsKey(evt)) {
         var expression = _changeEvents[evt].ChangeExpression.Body
           .Replace(" AND ", " && ")
@@ -174,15 +180,15 @@ internal class UmlClass : CodeGenerationItem
     return "";
   }
 
-  private string GetTransitionConstraints(Transition transition) {
-    if (transition.OwnedRule != null && transition.OwnedRule.Specification != null) {
-        var specification = transition.OwnedRule.Specification.Body;
+  private string GetTransitionConstraints(OurTransition transition) {
+    if (transition.Transition.OwnedRule != null && transition.Transition.OwnedRule.Specification != null) {
+        var specification = transition.Transition.OwnedRule.Specification.Body;
 
         if (specification == "else") {
           return "else";
         }
 
-        var expression = transition.OwnedRule.Specification.Body
+        var expression = transition.Transition.OwnedRule.Specification.Body
           .Replace(" AND ", " && ")
           .Replace(" OR ", " || ")
           .Replace(" NOT ", "!")
@@ -298,7 +304,6 @@ public class {className} {{
 
   private string GenerateInitialEntry(StateMachine behavior)
   {
-      // TODO: Deduplicate code with GenerateActivities
       var (x, y, z) = behavior.GetTransitionsFromState(behavior.InitialState).Single();
       var entry = y.GenerateEntry(null, null);
 
