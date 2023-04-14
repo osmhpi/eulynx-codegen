@@ -20,29 +20,24 @@ internal class UmlClass : CodeGenerationItem
     _coercedValues = new Dictionary<string, string>();
   }
 
-  private Region TransformSubverticesIntoCompoundStates(Region region) {
-      region.Subvertices = region.Subvertices.Select(x => new CompoundState(new List<Subvertex> {x}) {
-        Entry = x.Entry,
-        Exit = x.Exit,
-        Id = x.Id,
-        Kind = x.Kind,
-        Name = x.Name,
-        OwnedRule = x.OwnedRule,
-        Type = x.Type,
-        Regions = x.Regions.Select(TransformSubverticesIntoCompoundStates).ToList()
-      }).OfType<Subvertex>().ToList();
-      return region;
+  public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
+      return new OurRegion(
+        region,
+        region.Subvertices.Select(
+            x => new State(x, x.Regions.Select(TransformSubverticesIntoCompoundStates).ToList())
+        ).ToList()
+    );
   }
 
-  private IEnumerable<CompoundState> FlattenStates(List<List<Subvertex>> regionStates) {
+  private IEnumerable<CompoundState> FlattenStates(List<List<CompoundState>> regionStates) {
     if (regionStates.Count == 0) {
       yield break;
     }
 
     if (regionStates.Count == 1) {
       foreach (var s in regionStates.First()) {
-        s.Regions = FlattenRegions(s.Regions);
-        yield return new CompoundState(new List<Subvertex> { s });
+        // s.Regions = FlattenRegions(s.Regions);
+        yield return s;
       }
       yield break;
     }
@@ -51,7 +46,7 @@ internal class UmlClass : CodeGenerationItem
     var rest = regionStates.Take(regionStates.Count-1).ToList();
 
     foreach (var regionAState in last) {
-      regionAState.Regions = FlattenRegions(regionAState.Regions);
+      // regionAState.Regions = FlattenRegions(regionAState.Regions);
       foreach (var regionBState in FlattenStates(rest)) {
         var newState = regionBState.State.Append(regionAState).ToList();
         yield return new CompoundState(newState);
@@ -62,7 +57,7 @@ internal class UmlClass : CodeGenerationItem
   private List<Region> FlattenRegions(List<Region> regions) {
       return new List<Region> {
         new Region {
-          Subvertices = FlattenStates(regions.Select(x => x.Subvertices).ToList()).OfType<Subvertex>().ToList()
+          Subvertices = FlattenStates(regions.Select(x => x.Subvertices.OfType<CompoundState>().ToList()).ToList()).OfType<Subvertex>().ToList()
         }
       };
   }
@@ -71,7 +66,7 @@ internal class UmlClass : CodeGenerationItem
     return InPascalCase(_class.Name);
   }
 
-  private string GenerateTransition(string name, Subvertex fromState)
+  private string GenerateTransition(string name, State fromState)
   {
     return $@"private {name} TransitionFrom{InPascalCase(fromState.Name)}() {{
       {GenerateConditions(fromState)}
@@ -82,11 +77,11 @@ internal class UmlClass : CodeGenerationItem
 ";
   }
 
-  private string GenerateConditions(Subvertex fromState, bool skipParentTransitions=false)
+  private string GenerateConditions(State fromState, bool skipParentTransitions=false)
   {
       var transitions = _behavior.GetTransitionsFromState(fromState, skipParentTransitions);
 
-      var regularTransitions = transitions.Where(x => x.state.Type == "uml:State");
+      var regularTransitions = transitions.Where(x => x.state.IsRegularState);
       var noTriggerConditions = regularTransitions.All(x => x.transition.Trigger == null);
       var regularConditions = string.Join("\n", noTriggerConditions
         ? regularTransitions.Select(x =>
@@ -102,7 +97,7 @@ internal class UmlClass : CodeGenerationItem
             }}
           }}"));
 
-      var junctions = transitions.Where(x => x.state.Kind == "junction");
+      var junctions = transitions.Where(x => x.state.IsJunction);
       var junctionConditions = string.Join("\n", junctions.Select(x =>
       $@"{GetTransitionChangeTriggerExpression(x.transition)} {{
         {GetTransitionConstraints(x.transition)} {{
@@ -114,7 +109,7 @@ internal class UmlClass : CodeGenerationItem
       return regularConditions + junctionConditions;
   }
 
-  private string GenerateActivities(Subvertex fromState, (Transition transition, Subvertex state, string stateName) x)
+  private string GenerateActivities(State fromState, (Transition transition, State state, string stateName) x)
   {
       // TODO: These signatures look implausible.
       var exit = x.state.GenerateExit(x.state, x.transition);
@@ -305,7 +300,7 @@ public class {className} {{
   {
       // TODO: Deduplicate code with GenerateActivities
       var (x, y, z) = behavior.GetTransitionsFromState(behavior.InitialState).Single();
-      var entry = (y.Entry?.Name ?? "")
+      var entry = (y.Vertex.Entry?.Name ?? "")
           .Replace("TRUE", "\"TRUE\"")
           .Replace("FALSE", "\"FALSE\"")
           .Replace(" := ", " = ");

@@ -7,13 +7,4 @@ class CompoundState : Subvertex {
   {
       State = state;
   }
-
-  // public string GetName() {
-  //   return string.Join("_", State.Select(y => InPascalCase(y.Name)));
-  // }
-
-  // public override string Write()
-  // {
-  //   throw new NotImplementedException();
-  // }
 }
