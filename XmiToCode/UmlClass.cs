@@ -6,18 +6,65 @@ internal class UmlClass : CodeGenerationItem
   private PackagedElement _class;
   private readonly Dictionary<string, PackagedElement> _changeEvents;
   private readonly Dictionary<string, PackagedElement> _timeEvents;
-  private readonly TheRegion _behavior;
+  private readonly StateMachine _behavior;
   private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues;
   private readonly Dictionary<string, string> _coercedValues;
 
-  public UmlClass(PackagedElement theClass, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+  public UmlClass(PackagedElement classPackage, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
   {
-    _class = theClass;
+    _class = classPackage;
     _changeEvents = changeEvents;
     _timeEvents = timeEvents;
-    _behavior = new TheRegion(theClass.StateMachine.Region, theClass.StateMachine.Name, changeEvents, timeEvents);
+    _behavior = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region), classPackage.StateMachine.Name, changeEvents, timeEvents);
     _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
     _coercedValues = new Dictionary<string, string>();
+  }
+
+  private Region TransformSubverticesIntoCompoundStates(Region region) {
+      region.Subvertices = region.Subvertices.Select(x => new CompoundState(new List<Subvertex> {x}) {
+        Entry = x.Entry,
+        Exit = x.Exit,
+        Id = x.Id,
+        Kind = x.Kind,
+        Name = x.Name,
+        OwnedRule = x.OwnedRule,
+        Type = x.Type,
+        Regions = x.Regions.Select(TransformSubverticesIntoCompoundStates).ToList()
+      }).OfType<Subvertex>().ToList();
+      return region;
+  }
+
+  private IEnumerable<CompoundState> FlattenStates(List<List<Subvertex>> regionStates) {
+    if (regionStates.Count == 0) {
+      yield break;
+    }
+
+    if (regionStates.Count == 1) {
+      foreach (var s in regionStates.First()) {
+        s.Regions = FlattenRegions(s.Regions);
+        yield return new CompoundState(new List<Subvertex> { s });
+      }
+      yield break;
+    }
+
+    var last = regionStates.Last();
+    var rest = regionStates.Take(regionStates.Count-1).ToList();
+
+    foreach (var regionAState in last) {
+      regionAState.Regions = FlattenRegions(regionAState.Regions);
+      foreach (var regionBState in FlattenStates(rest)) {
+        var newState = regionBState.State.Append(regionAState).ToList();
+        yield return new CompoundState(newState);
+      }
+    }
+  }
+
+  private List<Region> FlattenRegions(List<Region> regions) {
+      return new List<Region> {
+        new Region {
+          Subvertices = FlattenStates(regions.Select(x => x.Subvertices).ToList()).OfType<Subvertex>().ToList()
+        }
+      };
   }
 
   public string GetName() {
@@ -69,23 +116,10 @@ internal class UmlClass : CodeGenerationItem
 
   private string GenerateActivities(Subvertex fromState, (Transition transition, Subvertex state, string stateName) x)
   {
-      var exit = (x.state.Exit?.Name ?? "")
-          .Replace("TRUE", "\"TRUE\"")
-          .Replace("FALSE", "\"FALSE\"")
-          .Replace(" := ", " = ");
-      exit = Regex.Replace(exit, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-
-      var transitionEffect = (x.transition.Effect?.Body ?? "")
-          .Replace("TRUE", "\"TRUE\"")
-          .Replace("FALSE", "\"FALSE\"")
-          .Replace(" := ", " = ");
-      transitionEffect = Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-
-      var entry = (x.state.Entry?.Name ?? "")
-          .Replace("TRUE", "\"TRUE\"")
-          .Replace("FALSE", "\"FALSE\"")
-          .Replace(" := ", " = ");
-      entry = Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+      // TODO: These signatures look implausible.
+      var exit = x.state.GenerateExit(x.state, x.transition);
+      var transitionEffect = x.state.GenerateTransition(x.state, x.transition);
+      var entry = x.state.GenerateEntry(fromState, x.transition);
 
       var result = string.Join("\n", exit, transitionEffect, entry);
 
@@ -267,7 +301,7 @@ public class {className} {{
 ";
   }
 
-  private string GenerateInitialEntry(TheRegion behavior)
+  private string GenerateInitialEntry(StateMachine behavior)
   {
       // TODO: Deduplicate code with GenerateActivities
       var (x, y, z) = behavior.GetTransitionsFromState(behavior.InitialState).Single();

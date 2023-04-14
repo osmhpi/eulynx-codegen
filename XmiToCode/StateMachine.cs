@@ -1,6 +1,6 @@
 using XmiToCode;
 
-class TheRegion : CodeGenerationItem
+class StateMachine : CodeGenerationItem
 {
   public Region Region { get { return _region; } }
   public Subvertex InitialState { get { return _initialState; } }
@@ -10,11 +10,11 @@ class TheRegion : CodeGenerationItem
   private readonly List<Subvertex> _junctions;
   private readonly List<Subvertex> _states;
   private readonly IEnumerable<string> _stateEnum;
-  private readonly IEnumerable<TheRegion> _subregions;
+  private readonly IEnumerable<StateMachine> _subregions;
   private readonly Dictionary<string, PackagedElement> _changeEvents;
   private readonly Dictionary<string, PackagedElement> _timeEvents;
 
-  public TheRegion(Region region, string name, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+  public StateMachine(Region region, string name, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
   {
     _region = region;
     _name = name;
@@ -27,7 +27,7 @@ class TheRegion : CodeGenerationItem
 
     _stateEnum = _states.Select(x => x.Name).Select(InPascalCase);
 
-    _subregions = _states.SelectMany(x => x.Regions.Select(region => new TheRegion(region, x.Name, changeEvents, timeEvents)));
+    _subregions = _states.SelectMany(x => x.Regions.Select(region => new StateMachine(region, x.Name, changeEvents, timeEvents)));
   }
 
   public IEnumerable<(Transition transition, Subvertex state, string stateName)> GetTransitionsFromState(Subvertex fromState, bool skipParentTransitions = false) {
@@ -74,7 +74,7 @@ class TheRegion : CodeGenerationItem
     var isRegion = x.Regions.Any();
     var name = InPascalCase(x.Name);
     if (isRegion) {
-      return new TheRegion(x.Regions.Single(), name, _changeEvents, _timeEvents).MakeStateRecord(name, recordName);
+      return new StateMachine(x.Regions.Single(), name, _changeEvents, _timeEvents).MakeStateRecord(name, recordName);
     } else {
       return $@"public record {name}() : {recordName}() {{
         public static new {name} New() => new {name}();
