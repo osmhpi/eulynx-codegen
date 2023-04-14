@@ -4,7 +4,7 @@ using XmiToCode;
 
 record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : IState
 {
-    public bool IsInitialState => PartialStates.Any(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
+    public bool IsInitialState => PartialStates.All(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
 
     public bool IsJunction => PartialStates.Any(x => x.Vertex.Name.Contains("Junction") && x.Vertex.Type == "uml:Pseudostate");
 

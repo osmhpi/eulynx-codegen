@@ -22,66 +22,86 @@ internal class UmlClass : CodeGenerationItem
 
     public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
         var states = region.Subvertices.Select(
-            x => new CompoundState(new List<PartialState>() { new PartialState(x, region) }, x.Regions.Select(TransformSubverticesIntoCompoundStates).SingleOrDefault())
+            x => new CompoundState(
+                new List<PartialState>() { new PartialState(x, region) },
+                FlattenRegions(x.Regions)
+            )
         ).OfType<IState>().ToList();
 
         var transitions = region.Transitions
             .Select(transition => new OurTransition(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
-                transition))
+                transition
+            ))
             .ToList();
 
-      return new OurRegion(region, states, transitions);
+      return new OurRegion(states, transitions);
   }
 
-//   private IEnumerable<CompoundState> FlattenStates(List<List<CompoundState>> regionStates) {
-//     if (regionStates.Count == 0) {
-//       yield break;
-//     }
+    private static IEnumerable<CompoundState> FlattenStates(List<List<CompoundState>> regionStates) {
+        if (regionStates.Count == 0) {
+            yield break;
+        }
 
-//     if (regionStates.Count == 1) {
-//       foreach (var s in regionStates.First()) {
-//         // s.Regions = FlattenRegions(s.Regions);
-//         yield return s;
-//       }
-//       yield break;
-//     }
+        if (regionStates.Count == 1) {
+            foreach (var s in regionStates.First()) {
+                yield return s;
+            }
+            yield break;
+        }
 
-//     var last = regionStates.Last();
-//     var rest = regionStates.Take(regionStates.Count-1).ToList();
+        var last = regionStates.Last();
+        var rest = regionStates.Take(regionStates.Count-1).ToList();
 
-//     foreach (var regionAState in last) {
-//       // regionAState.Regions = FlattenRegions(regionAState.Regions);
-//       foreach (var regionBState in FlattenStates(rest)) {
-//         var newState = regionBState.State.Append(regionAState).ToList();
-//         yield return new CompoundState(newState);
-//       }
-//     }
-//   }
+        foreach (var regionAState in last) {
+            foreach (var regionBState in FlattenStates(rest)) {
+                yield return regionBState with {
+                    PartialStates = regionBState.PartialStates.Concat(regionAState.PartialStates).ToList()
+                };
+            }
+        }
+    }
 
-//   private List<Region> FlattenRegions(List<Region> regions) {
-//       return new List<Region> {
-//         new Region {
-//           Subvertices = FlattenStates(regions.Select(x => x.Subvertices.OfType<CompoundState>().ToList()).ToList()).OfType<Subvertex>().ToList()
-//         }
-//       };
-//   }
+    private static OurRegion? FlattenRegions(List<Region> regions) {
+        if (regions.Count == 0) {
+            return null;
+        }
 
-  public string GetName() {
-    return InPascalCase(_class.Name);
-  }
+        var states = regions.Select(region => region.Subvertices.Select(
+            x => new CompoundState(
+                new List<PartialState>() { new PartialState(x, region) },
+                FlattenRegions(x.Regions)
+            )
+        ).ToList()).ToList();
 
-  private string GenerateTransition(string name, IState fromState)
-  {
-    return $@"private {name} TransitionFrom{InPascalCase(fromState.Name)}() {{
-      {GenerateConditions(fromState)}
+        var flattenedStates = FlattenStates(states).OfType<IState>().ToList();
 
-      // Do not transition
-      return _state;
-    }}
+        var transitions = regions.SelectMany(region => region.Transitions
+            .Select(transition => new OurTransition(
+                flattenedStates.Single(x => x.IsSourceOfTransition(transition)),
+                flattenedStates.Single(x => x.IsTargetOfTransition(transition)),
+                transition
+            )
+        ).ToList()).ToList();
+
+        return new OurRegion(flattenedStates, transitions);
+    }
+
+    public string GetName() {
+        return InPascalCase(_class.Name);
+    }
+
+    private string GenerateTransition(string name, IState fromState)
+    {
+        return $@"private {name} TransitionFrom{InPascalCase(fromState.Name)}() {{
+        {GenerateConditions(fromState)}
+
+        // Do not transition
+        return _state;
+        }}
 ";
-  }
+    }
 
   private string GenerateConditions(IState fromState, bool skipParentTransitions=false)
   {
