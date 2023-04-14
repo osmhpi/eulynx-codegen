@@ -22,7 +22,7 @@ internal class UmlClass : CodeGenerationItem
 
     public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
         var states = region.Subvertices.Select(
-            x => new State(x, x.Regions.Select(TransformSubverticesIntoCompoundStates).SingleOrDefault())
+            x => new CompoundState(new List<PartialState>() { new PartialState(x, region) }, x.Regions.Select(TransformSubverticesIntoCompoundStates).SingleOrDefault())
         ).OfType<IState>().ToList();
 
         var transitions = region.Transitions
