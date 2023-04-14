@@ -25,33 +25,39 @@ class StateMachine : CodeGenerationItem
         _states = region.States.Where(x => x.IsRegularState).ToList();
 
         _childStateMachines = _states
-            .Where(x => x.Region != null)
-            .Select(x => x.CreateChildStateMachine(changeEvents, timeEvents)).ToList();
+            .Where(x => x.InternalStateMachine != null)
+            .Select(x => x.InternalStateMachine!).ToList();
     }
 
     public IEnumerable<(OurTransition transition, IState state, string stateName)> GetTransitionsFromState(IState fromState, bool skipParentTransitions = false) {
         // Does fromState match one of our child state machines?
-        var childStateMachineTransitions = _childStateMachines
-            .Select(childStateMachine => new {
-                ChildStateMachine = childStateMachine,
-                Transitions = childStateMachine.GetTransitionsFromState(fromState, skipParentTransitions)
+        var childStateMachineTransitions = _states
+            .Where(x => x.InternalStateMachine != null)
+            .Select(state => new {
+                FromState = state,
+                ChildStateMachine = state.InternalStateMachine!,
+                Transitions = state.InternalStateMachine!.GetTransitionsFromState(fromState, skipParentTransitions).ToList()
             })
-            .SingleOrDefault(x => x.Transitions.Any());
+            .Where(x => x.Transitions.Any())
+            .ToList();
 
-        if (childStateMachineTransitions != null) {
-            if (skipParentTransitions) {
-                return childStateMachineTransitions.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}"));
-            }
+        if (childStateMachineTransitions.Count > 0) {
+            return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
+                var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}"));
 
-            // Prepend the transitions from the enclosing state of the subregion
-            var subregionState = _states.Single(x => x.Region == childStateMachineTransitions.ChildStateMachine.Region);
-            return _region.Transitions.Where(x => x.From == subregionState)
-                .Select(x => (x, x.To, $"{GetName()}.{InPascalCase(x.To.Name)}"))
-                .Concat(childStateMachineTransitions.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}")));
+                if (skipParentTransitions) {
+                    return result;
+                }
+
+                // Prepend the transitions from the enclosing state of the child state machine
+                return _region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
+                        .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"))
+                        .Concat(result);
+            });
         }
 
         return _region.Transitions.Where(x => x.From == fromState)
-            .Select(x => (x, x.To, $"{GetName()}.{InPascalCase(x.To.Name)}"));
+            .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"));
     }
 
     public string GetName() {
@@ -67,18 +73,17 @@ class StateMachine : CodeGenerationItem
 
         if (!hasSubstates) {
             foreach (var state in _states) {
-                yield return (state, $"{GetName()}.{InPascalCase(state.Name)}");
+                yield return (state, $"{GetName()}.{state.Name}");
             }
         }
     }
 
     private string MakeSubrecord(string recordName, IState x) {
-        var name = InPascalCase(x.Name);
-        if (x.Region != null) {
-            return new StateMachine(x.Region, name, _changeEvents, _timeEvents).MakeStateRecord(name, recordName);
+        if (x.InternalStateMachine != null) {
+            return x.InternalStateMachine.MakeStateRecord(x.Name, recordName);
         } else {
-            return $@"public record {name}() : {recordName}() {{
-                public static new {name} New() => new {name}();
+            return $@"public record {x.Name}() : {recordName}() {{
+                public static new {x.Name} New() => new {x.Name}();
             }}";
         }
     }

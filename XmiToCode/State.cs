@@ -2,13 +2,13 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-record State(Subvertex Vertex, OurRegion? Region) : IState
+record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
 {
     public bool IsInitialState => Vertex.Name.Contains("Initial") && Vertex.Type == "uml:Pseudostate";
     public bool IsJunction => Vertex.Name.Contains("Junction") && Vertex.Type == "uml:Pseudostate";
     public bool IsRegularState => Vertex.Type == "uml:State";
 
-    public string Name => Vertex.Name;
+    public string Name => InPascalCase(Vertex.Name);
 
     public string GenerateExit(IState next, OurTransition transition)
     {
@@ -45,15 +45,6 @@ record State(Subvertex Vertex, OurRegion? Region) : IState
         var info = CultureInfo.CurrentCulture.TextInfo;
         result = info.ToTitleCase(result).Replace(" ", string.Empty);
         return result;
-    }
-
-    public StateMachine CreateChildStateMachine(Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
-    {
-        if (Region != null) {
-            return new StateMachine(Region, Name, changeEvents, timeEvents);
-        }
-
-        throw new InvalidOperationException("State has no region");
     }
 
     public bool IsSourceOfTransition(Transition transition)

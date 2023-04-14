@@ -15,18 +15,18 @@ internal class UmlClass : CodeGenerationItem
     _class = classPackage;
     _changeEvents = changeEvents;
     _timeEvents = timeEvents;
-    _behavior = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region), classPackage.StateMachine.Name, changeEvents, timeEvents);
+    _behavior = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name, changeEvents, timeEvents);
     _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
     _coercedValues = new Dictionary<string, string>();
   }
 
-    public static OurRegion TransformSubverticesIntoCompoundStates(Region region) {
-        var states = region.Subvertices.Select(
-            x => new CompoundState(
+    public static OurRegion TransformSubverticesIntoCompoundStates(Region region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
+        var states = region.Subvertices.Select(x => {
+            var subRegion = FlattenRegions(x.Regions, changeEvents, timeEvents);
+            return new CompoundState(
                 new List<PartialState>() { new PartialState(x, region) },
-                FlattenRegions(x.Regions)
-            )
-        ).OfType<IState>().ToList();
+                subRegion != null ? new StateMachine(subRegion, x.Name, changeEvents, timeEvents) : null);
+        }).OfType<IState>().ToList();
 
         var transitions = region.Transitions
             .Select(transition => new OurTransition(
@@ -63,17 +63,18 @@ internal class UmlClass : CodeGenerationItem
         }
     }
 
-    private static OurRegion? FlattenRegions(List<Region> regions) {
+    private static OurRegion? FlattenRegions(List<Region> regions, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
         if (regions.Count == 0) {
             return null;
         }
 
-        var states = regions.Select(region => region.Subvertices.Select(
-            x => new CompoundState(
-                new List<PartialState>() { new PartialState(x, region) },
-                FlattenRegions(x.Regions)
-            )
-        ).ToList()).ToList();
+        var states = regions.Select(region =>
+            region.Subvertices.Select(x => {
+                var subRegion = FlattenRegions(x.Regions, changeEvents, timeEvents);
+                return new CompoundState(
+                    new List<PartialState>() { new PartialState(x, region) },
+                    subRegion != null ? new StateMachine(subRegion, x.Name, changeEvents, timeEvents) : null);
+            }).ToList()).ToList();
 
         var flattenedStates = FlattenStates(states).ToList();
 
@@ -87,10 +88,6 @@ internal class UmlClass : CodeGenerationItem
             flattenedStates.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition))),
             initialTransitions
         );
-
-        // var regularTransitions = regions.SelectMany(region => region.Transitions
-        //     .SelectMany(transition => flattenedStates
-        //         .Where(x => x.IsSourceOfTransition(transition) && !x.IsInitialState)));
 
         var transitions = regions.SelectMany(region => region.Transitions
             .SelectMany(transition => flattenedStates

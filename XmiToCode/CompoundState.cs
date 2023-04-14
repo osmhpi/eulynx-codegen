@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : IState
+record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
 {
     public bool IsInitialState => PartialStates.All(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
 
@@ -10,7 +10,7 @@ record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : ISta
 
     public bool IsRegularState => PartialStates.All(x => x.Vertex.Type == "uml:State");
 
-    public string Name => string.Join("_", PartialStates.Select(x => x.Vertex.Name));
+    public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
     public string GenerateExit(IState next, OurTransition transition)
     {
@@ -53,15 +53,6 @@ record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : ISta
         return result;
     }
 
-    public StateMachine CreateChildStateMachine(Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
-    {
-        if (Region != null) {
-            return new StateMachine(Region, Name, changeEvents, timeEvents);
-        }
-
-        throw new InvalidOperationException("State has no region");
-    }
-
     public bool IsSourceOfTransition(Transition transition)
     {
         return PartialStates.Any(x => x.Vertex.Id == transition.Source);
@@ -74,12 +65,6 @@ record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : ISta
 
     internal bool IsNextStateAfterTransition(CompoundState fromState, Transition transition)
     {
-        // if (fromState.IsInitialState && !IsInitialState) {
-        //     // For the initial transition, we will allow a multitude of transitions
-        //     // This must be handled somewhere...
-        //     return true;
-        // }
-
         bool isTransitioned = false;
         foreach (var (from, to) in fromState.PartialStates.Zip(PartialStates)) {
             if (from.Vertex != to.Vertex) {
