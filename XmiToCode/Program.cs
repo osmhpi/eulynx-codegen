@@ -19,8 +19,6 @@ var interestingPackages = eulynxSystem.PackagedElements
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 
-Console.WriteLine("Done.");
-
 foreach (var umlClassPackage in interestingPackages.SelectMany(FindAllClasses)) {
     var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents);
     await umlClass.Generate();

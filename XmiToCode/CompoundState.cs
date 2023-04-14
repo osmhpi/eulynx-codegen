@@ -25,11 +25,13 @@ record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : ISta
 
     public string GenerateTransition(IState next, OurTransition transition)
     {
-        var transitionEffect = (transition.Transition.Effect?.Body ?? "")
-            .Replace("TRUE", "\"TRUE\"")
-            .Replace("FALSE", "\"FALSE\"")
-            .Replace(" := ", " = ");
-        return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+        return string.Join("\n", transition.Transitions.Select(transition => {
+            var transitionEffect = (transition.Effect?.Body ?? "")
+                .Replace("TRUE", "\"TRUE\"")
+                .Replace("FALSE", "\"FALSE\"")
+                .Replace(" := ", " = ");
+            return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+        }));
     }
 
     public string GenerateEntry(IState previous, OurTransition transition)
@@ -68,6 +70,32 @@ record CompoundState(List<PartialState> PartialStates, OurRegion? Region) : ISta
     public bool IsTargetOfTransition(Transition transition)
     {
         return PartialStates.Any(x => x.Vertex.Id == transition.Target);
+    }
+
+    internal bool IsNextStateAfterTransition(CompoundState fromState, Transition transition)
+    {
+        // if (fromState.IsInitialState && !IsInitialState) {
+        //     // For the initial transition, we will allow a multitude of transitions
+        //     // This must be handled somewhere...
+        //     return true;
+        // }
+
+        bool isTransitioned = false;
+        foreach (var (from, to) in fromState.PartialStates.Zip(PartialStates)) {
+            if (from.Vertex != to.Vertex) {
+                if (isTransitioned) {
+                    return false;
+                }
+
+                if (transition.Source != from.Vertex.Id
+                        && transition.Target != to.Vertex.Id) {
+                    return false;
+                }
+
+                isTransitioned = true;
+            }
+        }
+        return true;
     }
 }
 

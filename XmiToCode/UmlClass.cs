@@ -32,7 +32,7 @@ internal class UmlClass : CodeGenerationItem
             .Select(transition => new OurTransition(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
-                transition
+                new List<Transition> {transition}
             ))
             .ToList();
 
@@ -75,17 +75,34 @@ internal class UmlClass : CodeGenerationItem
             )
         ).ToList()).ToList();
 
-        var flattenedStates = FlattenStates(states).OfType<IState>().ToList();
+        var flattenedStates = FlattenStates(states).ToList();
+
+        // Combine initial transitions into one
+        var initialTransitions = regions.SelectMany(region => region.Transitions
+            .Where(transition => flattenedStates.Any(x => x.IsSourceOfTransition(transition) && x.IsInitialState)))
+            .ToList();
+
+        var initialTransition = new OurTransition(
+            flattenedStates.Single(x => initialTransitions.All(transition => x.IsSourceOfTransition(transition))),
+            flattenedStates.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition))),
+            initialTransitions
+        );
+
+        // var regularTransitions = regions.SelectMany(region => region.Transitions
+        //     .SelectMany(transition => flattenedStates
+        //         .Where(x => x.IsSourceOfTransition(transition) && !x.IsInitialState)));
 
         var transitions = regions.SelectMany(region => region.Transitions
-            .Select(transition => new OurTransition(
-                flattenedStates.Single(x => x.IsSourceOfTransition(transition)),
-                flattenedStates.Single(x => x.IsTargetOfTransition(transition)),
-                transition
-            )
-        ).ToList()).ToList();
+            .SelectMany(transition => flattenedStates
+                .Where(x => x.IsSourceOfTransition(transition) && !x.IsInitialState)
+                .SelectMany(from => flattenedStates
+                    .Where(x => x.IsTargetOfTransition(transition))
+                    .Where(x => x.IsNextStateAfterTransition(from, transition))
+                    .Select(to => new OurTransition(from, to, new List<Transition> { transition }))
+                )
+            ).ToList()).Append(initialTransition).ToList();
 
-        return new OurRegion(flattenedStates, transitions);
+        return new OurRegion(flattenedStates.OfType<IState>().ToList(), transitions);
     }
 
     public string GetName() {
@@ -108,7 +125,7 @@ internal class UmlClass : CodeGenerationItem
       var transitions = _behavior.GetTransitionsFromState(fromState, skipParentTransitions);
 
       var regularTransitions = transitions.Where(x => x.state.IsRegularState);
-      var noTriggerConditions = regularTransitions.All(x => x.transition.Transition.Trigger == null);
+      var noTriggerConditions = regularTransitions.All(x => x.transition.Transitions.Single().Trigger == null);
       var regularConditions = string.Join("\n", noTriggerConditions
         ? regularTransitions.Select(x =>
             $@"{GetTransitionConstraints(x.transition)} {{
@@ -156,11 +173,11 @@ internal class UmlClass : CodeGenerationItem
   }
 
   private string GetTransitionChangeTriggerExpression(OurTransition transition) {
-    if (transition.Transition.Trigger != null) {
+    if (transition.Transitions.Single().Trigger != null) {
       // Regular transition
       string? result = null;
 
-      var evt = transition.Transition.Trigger.Event;
+      var evt = transition.Transitions.Single().Trigger.Event;
       if (_changeEvents.ContainsKey(evt)) {
         var expression = _changeEvents[evt].ChangeExpression.Body
           .Replace(" AND ", " && ")
@@ -201,14 +218,14 @@ internal class UmlClass : CodeGenerationItem
   }
 
   private string GetTransitionConstraints(OurTransition transition) {
-    if (transition.Transition.OwnedRule != null && transition.Transition.OwnedRule.Specification != null) {
-        var specification = transition.Transition.OwnedRule.Specification.Body;
+    if (transition.Transitions.Single().OwnedRule != null && transition.Transitions.Single().OwnedRule.Specification != null) {
+        var specification = transition.Transitions.Single().OwnedRule.Specification.Body;
 
         if (specification == "else") {
           return "else";
         }
 
-        var expression = transition.Transition.OwnedRule.Specification.Body
+        var expression = transition.Transitions.Single().OwnedRule.Specification.Body
           .Replace(" AND ", " && ")
           .Replace(" OR ", " || ")
           .Replace(" NOT ", "!")

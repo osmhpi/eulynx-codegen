@@ -29,10 +29,6 @@ class StateMachine : CodeGenerationItem
             .Select(x => x.CreateChildStateMachine(changeEvents, timeEvents)).ToList();
     }
 
-    // private IEnumerable<OurTransition> GetSimpleTransitions(IState fromState) {
-    //     var transitions = _region.Region.Transition.Where(x => x.Source == fromState.)
-    // }
-
     public IEnumerable<(OurTransition transition, IState state, string stateName)> GetTransitionsFromState(IState fromState, bool skipParentTransitions = false) {
         // Does fromState match one of our child state machines?
         var childStateMachineTransitions = _childStateMachines

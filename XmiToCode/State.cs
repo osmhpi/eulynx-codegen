@@ -21,11 +21,13 @@ record State(Subvertex Vertex, OurRegion? Region) : IState
 
     public string GenerateTransition(IState next, OurTransition transition)
     {
-        var transitionEffect = (transition.Transition.Effect?.Body ?? "")
-            .Replace("TRUE", "\"TRUE\"")
-            .Replace("FALSE", "\"FALSE\"")
-            .Replace(" := ", " = ");
-        return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+        return string.Join("\n", transition.Transitions.Select(transition => {
+            var transitionEffect = (transition.Effect?.Body ?? "")
+                .Replace("TRUE", "\"TRUE\"")
+                .Replace("FALSE", "\"FALSE\"")
+                .Replace(" := ", " = ");
+            return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+        }));
     }
 
     public string GenerateEntry(IState previous, OurTransition transition)

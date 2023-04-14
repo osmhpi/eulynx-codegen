@@ -1,7 +1,6 @@
 using XmiToCode;
 
-// IState From, ,
-record OurTransition(IState From, IState To, Transition Transition);
+record OurTransition(IState From, IState To, List<Transition> Transitions);
 
 interface IState
 {
@@ -12,7 +11,6 @@ interface IState
 
     // i.e. a nested state machine
     OurRegion? Region { get; }
-    // List<OurTransition> Transitions { get; }
 
     string GenerateExit(IState next, OurTransition transition);
     string GenerateTransition(IState next, OurTransition transition);
