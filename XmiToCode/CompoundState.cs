@@ -6,13 +6,13 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 {
     public bool IsInitialState => PartialStates.All(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
 
-    public bool IsJunction => PartialStates.Any(x => x.Vertex.Name.Contains("Junction") && x.Vertex.Type == "uml:Pseudostate");
+    public bool IsJunction => PartialStates.Any(x => x.IsJunction);
 
     public bool IsRegularState => PartialStates.All(x => x.Vertex.Type == "uml:State");
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    public string GenerateExit(IState next, OurTransition transition)
+    public string GenerateExit(IState next, Transition transition)
     {
         return string.Join("\n", PartialStates.Select(x => {
            var exit = (x.Vertex.Exit?.Name ?? "")
@@ -23,7 +23,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }));
     }
 
-    public string GenerateTransition(IState next, OurTransition transition)
+    public string GenerateTransition(IState next, Transition transition)
     {
         return string.Join("\n", transition.Transitions.Select(transition => {
             var transitionEffect = (transition.Effect?.Body ?? "")
@@ -34,7 +34,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }));
     }
 
-    public string GenerateEntry(IState previous, OurTransition transition)
+    public string GenerateEntry(IState previous, Transition transition)
     {
         return string.Join("\n", PartialStates.Select(x => {
            var entry = (x.Vertex.Entry?.Name ?? "")
@@ -53,22 +53,36 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         return result;
     }
 
-    public bool IsSourceOfTransition(Transition transition)
+    public bool IsSourceOfTransition(UmlTransition transition)
     {
         return PartialStates.Any(x => x.Vertex.Id == transition.Source);
     }
 
-    public bool IsTargetOfTransition(Transition transition)
+    public bool IsTargetOfTransition(UmlTransition transition)
     {
         return PartialStates.Any(x => x.Vertex.Id == transition.Target);
     }
 
-    internal bool IsNextStateAfterTransition(CompoundState fromState, Transition transition)
+    internal bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
     {
+        UmlSubvertex? requireTransitionFromVertex = null;
+        if (fromState.IsJunction) {
+            // Special handling for transitions after junctions
+            // we must only include such transitions that
+            // change the partial state which is currently in a junction
+
+            var junctionPartialState = fromState.PartialStates.Single(x => x.IsJunction);
+            requireTransitionFromVertex = junctionPartialState.Vertex;
+        }
+
         bool isTransitioned = false;
         foreach (var (from, to) in fromState.PartialStates.Zip(PartialStates)) {
             if (from.Vertex != to.Vertex) {
                 if (isTransitioned) {
+                    return false;
+                }
+
+                if (requireTransitionFromVertex != null && from.Vertex != requireTransitionFromVertex) {
                     return false;
                 }
 
@@ -80,8 +94,11 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
                 isTransitioned = true;
             }
         }
+
         return true;
     }
 }
 
-record PartialState(Subvertex Vertex, Region EnclosingRegion);
+record PartialState(UmlSubvertex Vertex, UmlRegion EnclosingRegion) {
+    public bool IsJunction => Vertex.Name.Contains("Junction") && Vertex.Type == "uml:Pseudostate";
+}

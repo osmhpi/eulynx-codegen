@@ -1,7 +1,5 @@
 using XmiToCode;
 
-record OurTransition(IState From, IState To, List<Transition> Transitions);
-
 interface IState
 {
     bool IsInitialState { get; }
@@ -11,10 +9,10 @@ interface IState
 
     StateMachine? InternalStateMachine { get; }
 
-    string GenerateExit(IState next, OurTransition transition);
-    string GenerateTransition(IState next, OurTransition transition);
-    string GenerateEntry(IState previous, OurTransition transition);
+    string GenerateExit(IState next, Transition transition);
+    string GenerateTransition(IState next, Transition transition);
+    string GenerateEntry(IState previous, Transition transition);
 
-    bool IsSourceOfTransition(Transition transition);
-    bool IsTargetOfTransition(Transition transition);
+    bool IsSourceOfTransition(UmlTransition transition);
+    bool IsTargetOfTransition(UmlTransition transition);
 }

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
+record State(UmlSubvertex Vertex, StateMachine? InternalStateMachine) : IState
 {
     public bool IsInitialState => Vertex.Name.Contains("Initial") && Vertex.Type == "uml:Pseudostate";
     public bool IsJunction => Vertex.Name.Contains("Junction") && Vertex.Type == "uml:Pseudostate";
@@ -10,7 +10,7 @@ record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
 
     public string Name => InPascalCase(Vertex.Name);
 
-    public string GenerateExit(IState next, OurTransition transition)
+    public string GenerateExit(IState next, Transition transition)
     {
         var exit = (Vertex.Exit?.Name ?? "")
           .Replace("TRUE", "\"TRUE\"")
@@ -19,7 +19,7 @@ record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
         return Regex.Replace(exit, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
     }
 
-    public string GenerateTransition(IState next, OurTransition transition)
+    public string GenerateTransition(IState next, Transition transition)
     {
         return string.Join("\n", transition.Transitions.Select(transition => {
             var transitionEffect = (transition.Effect?.Body ?? "")
@@ -30,7 +30,7 @@ record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
         }));
     }
 
-    public string GenerateEntry(IState previous, OurTransition transition)
+    public string GenerateEntry(IState previous, Transition transition)
     {
         var entry = (Vertex.Entry?.Name ?? "")
             .Replace("TRUE", "\"TRUE\"")
@@ -47,12 +47,12 @@ record State(Subvertex Vertex, StateMachine? InternalStateMachine) : IState
         return result;
     }
 
-    public bool IsSourceOfTransition(Transition transition)
+    public bool IsSourceOfTransition(UmlTransition transition)
     {
         return Vertex.Id == transition.Source;
     }
 
-    public bool IsTargetOfTransition(Transition transition)
+    public bool IsTargetOfTransition(UmlTransition transition)
     {
         return Vertex.Id == transition.Target;
     }

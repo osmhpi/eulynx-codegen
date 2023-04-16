@@ -1,10 +1,10 @@
 ﻿using System.Xml.Serialization;
 using XmiToCode;
 
-using var infile = File.OpenRead("../cleaned.xmi");
+using var inFile = File.OpenRead("../cleaned.xmi");
 
 var xmlSerializer = new XmlSerializer(typeof(XMI), "");
-var xmi = xmlSerializer.Deserialize(infile) as XMI;
+var xmi = xmlSerializer.Deserialize(inFile) as XMI;
 
 var packages = xmi.Model.PackagedElements.Where(x => x.Type == "uml:Package").ToList();
 // foreach (var package in packages) {
