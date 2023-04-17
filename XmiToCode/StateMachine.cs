@@ -59,12 +59,6 @@ class StateMachine : CodeGenerationItem
             .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"));
     }
 
-    public List<string> GenerateTransitionFunctions(DataTypeHelper dataTypes) {
-        var states = GetStates();
-        var behaviorName = GetName();
-        return states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, behaviorName, dataTypes)).ToList();
-    }
-
     public string GenerateTransitionFunction(IState fromState, string name, DataTypeHelper dataTypes)
     {
         return $@"private {name} TransitionFrom{fromState.Name}() {{
@@ -173,7 +167,7 @@ class StateMachine : CodeGenerationItem
                 foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
                     var lhs = m.Groups[1].Value;
                     var rhs = m.Groups[3].Value;
-                    dataTypes.RecordCoerceValues(lhs, rhs);
+                    dataTypes.RecordCoalesceValues(lhs, rhs);
                 }
 
                 foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) \"(\\w*)\"")) {
@@ -219,7 +213,7 @@ class StateMachine : CodeGenerationItem
         return MakeStateRecord(InPascalCase(_name), "object");
     }
 
-    internal string GenerateBar(DataTypeHelper dataTypes)
+    internal string GenerateTransitionFunctions(DataTypeHelper dataTypes)
     {
         var states = GetStates();
         var behaviorName = GetName();

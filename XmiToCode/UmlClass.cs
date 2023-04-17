@@ -118,7 +118,7 @@ internal class UmlClass : CodeGenerationItem
     // Initialize property types
     {
         // Perform a dry run of generating transitions (which includes comparisons and assignments,
-        // where property types are coerced)
+        // where property types are coalesced)
         var ignored = _stateMachine.GenerateTransitionFunctions(_dataTypes);
     }
 
@@ -145,7 +145,7 @@ public class {className} {{
         return condition;
     }}
 
-    {_stateMachine.GenerateBar(_dataTypes)}
+    {_stateMachine.GenerateTransitionFunctions(_dataTypes)}
 
     {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 

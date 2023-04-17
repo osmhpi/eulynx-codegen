@@ -26,7 +26,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
             foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
                 var lhs = m.Groups[1].Value;
                 var rhs = m.Groups[3].Value;
-                dataTypes.RecordCoerceValues(lhs, rhs);
+                dataTypes.RecordCoalesceValues(lhs, rhs);
             }
 
             foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"(\\w*)\"")) {
