@@ -12,37 +12,33 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    public string GenerateExit(IState next, Transition transition)
-    {
-        return string.Join("\n", PartialStates.Select(x => {
-           var exit = (x.Vertex.Exit?.Name ?? "")
+    private string ConvertInstructions(string instructions) {
+        return string.Join(";\n", instructions.Split(";").Select(instruction => {
+            var fixedSyntax = instruction
                 .Replace("TRUE", "\"TRUE\"")
                 .Replace("FALSE", "\"FALSE\"")
-                .Replace(" := ", " = ");
-            return Regex.Replace(exit, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+                .Replace(" := ", " = ")
+                .Trim();
+
+            var fixedIdentifiers = Regex.Replace(fixedSyntax, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+            var fixedMessages = Regex.Replace(fixedIdentifiers, "^Send (.+)\\s?To (.+)$", m => $"SendMessage(\"{m.Groups[1].Value}\", \"{m.Groups[2].Value}\")");
+            return fixedMessages;
         }));
+    }
+
+    public string GenerateExit(IState next, Transition transition)
+    {
+        return string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "")));
     }
 
     public string GenerateTransition(IState next, Transition transition)
     {
-        return string.Join("\n", transition.Transitions.Select(transition => {
-            var transitionEffect = (transition.Effect?.Body ?? "")
-                .Replace("TRUE", "\"TRUE\"")
-                .Replace("FALSE", "\"FALSE\"")
-                .Replace(" := ", " = ");
-            return Regex.Replace(transitionEffect, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-        }));
+        return string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "")));
     }
 
     public string GenerateEntry(IState previous, Transition transition)
     {
-        return string.Join("\n", PartialStates.Select(x => {
-           var entry = (x.Vertex.Entry?.Name ?? "")
-                .Replace("TRUE", "\"TRUE\"")
-                .Replace("FALSE", "\"FALSE\"")
-                .Replace(" := ", " = ");
-            return Regex.Replace(entry, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-        }));
+        return string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "")));
     }
 
     private static string InPascalCase(string value)

@@ -145,6 +145,10 @@ public class {className} {{
         return condition;
     }}
 
+    private void SendMessage(string message, string port) {{
+        // TODO: Implement
+    }}
+
     {_stateMachine.GenerateTransitionFunctions(_dataTypes)}
 
     {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
@@ -45,6 +46,16 @@ class DataTypeHelper {
         _allowedPropertyValues[lhs].Add(rhs);
     }
 
+    public static string GenerateEnumMemberName(string value) {
+        var sanitizedValue = InPascalCase(value);
+
+        if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
+            sanitizedValue = "_" + sanitizedValue;
+        }
+
+        return sanitizedValue;
+    }
+
     public string GeneratePropertyValueTypes()
     {
         return string.Join("\n", _allowedPropertyValues.Select(x => {
@@ -59,7 +70,7 @@ class DataTypeHelper {
 
         return $@"
             public enum {x.Key}Value {{
-                {string.Join(",\n", aliases.Select(InPascalCase))}
+                {string.Join(",\n", aliases.Select(GenerateEnumMemberName))}
             }}";
         }));
     }

@@ -59,9 +59,9 @@ class StateMachine : CodeGenerationItem
             .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"));
     }
 
-    public string GenerateTransitionFunction(IState fromState, string name, DataTypeHelper dataTypes)
+    public string GenerateTransitionFunction(IState fromState, string name, string behaviorName, DataTypeHelper dataTypes)
     {
-        return $@"private {name} TransitionFrom{fromState.Name}() {{
+        return $@"private {name} TransitionFrom{name.Replace(".", "__")}() {{
         {GenerateConditions(fromState, dataTypes)}
 
         // Do not transition
@@ -148,9 +148,10 @@ class StateMachine : CodeGenerationItem
             var evt = transition.SingleTransition.Trigger.Event;
             if (_changeEvents.ContainsKey(evt)) {
                 var expression = _changeEvents[evt].ChangeExpression.Body
-                .Replace(" AND ", " && ")
+                .ReplaceLineEndings(" ")
+                .Replace("AND ", " && ")
                 .Replace(" OR ", " || ")
-                .Replace(" NOT ", "!")
+                .Replace("NOT ", "!")
                 .Replace(" = ", " == ")
                 .Replace(" <> ", " != ");
 
@@ -222,10 +223,10 @@ class StateMachine : CodeGenerationItem
     public void Transition() {{
         _state = _state switch {{
             {string.Join(",\n", states.Select(t =>
-              string.Join(",\n", $"{t.name} => TransitionFrom{InPascalCase(t.subvertex.Name)}()")))}
+              string.Join(",\n", $"{t.name} => TransitionFrom{t.name.Replace(".", "__")}()")))}
       }};
     }}
 
-    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, behaviorName, dataTypes)))}";
+    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, fromState.name, behaviorName, dataTypes)))}";
     }
 }
