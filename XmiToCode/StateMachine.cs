@@ -59,9 +59,9 @@ class StateMachine : CodeGenerationItem
             .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"));
     }
 
-    public string GenerateTransitionFunction(IState fromState, string name, string behaviorName, DataTypeHelper dataTypes)
+    public string GenerateTransitionFunction(IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes)
     {
-        return $@"private {name} TransitionFrom{name.Replace(".", "__")}() {{
+        return $@"private {theRootBehaviorName} TransitionFrom{name.Replace(".", "__")}() {{
         {GenerateConditions(fromState, dataTypes)}
 
         // Do not transition
@@ -214,7 +214,7 @@ class StateMachine : CodeGenerationItem
         return MakeStateRecord(InPascalCase(_name), "object");
     }
 
-    internal string GenerateTransitionFunctions(DataTypeHelper dataTypes)
+    internal string GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes)
     {
         var states = GetStates();
         var behaviorName = GetName();
@@ -227,6 +227,6 @@ class StateMachine : CodeGenerationItem
       }};
     }}
 
-    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, fromState.name, behaviorName, dataTypes)))}";
+    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes)))}";
     }
 }

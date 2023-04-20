@@ -113,13 +113,13 @@ internal class UmlClass : CodeGenerationItem
 
   public override string Write() {
     var className = InPascalCase(_class.Name);
-    var behaviorName = GetName();
+    var behaviorName = _stateMachine.GetName();
 
     // Initialize property types
     {
         // Perform a dry run of generating transitions (which includes comparisons and assignments,
         // where property types are coalesced)
-        var ignored = _stateMachine.GenerateTransitionFunctions(_dataTypes);
+        var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes);
     }
 
     return @$"namespace Eulynx;
@@ -149,7 +149,7 @@ public class {className} {{
         // TODO: Implement
     }}
 
-    {_stateMachine.GenerateTransitionFunctions(_dataTypes)}
+    {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes)}
 
     {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 
