@@ -23,13 +23,13 @@ public class SSciPCommandAndRecieve
     }
 
 
-    private SSciPCommandAndRecieve _state;
-    public SSciPCommandAndRecieve State { get { return _state; } }
+    private SSciPCommandAndRecieveBehaviour _state;
+    public SSciPCommandAndRecieveBehaviour State { get { return _state; } }
 
     public SSciPCommandAndRecieve()
     {
 
-        _state = SSciPCommandAndRecieve.New();
+        _state = SSciPCommandAndRecieveBehaviour.New();
     }
 
     private bool IsTimeoutExpired(object timeout)
@@ -44,30 +44,39 @@ public class SSciPCommandAndRecieve
         return condition;
     }
 
+    private void SendMessage(string message, string port)
+    {
+        // TODO: Implement
+    }
+
+    private bool IsMessageArrived(string message)
+    {
+        // TODO: Implement
+        return false;
+    }
+
+    private bool ReceivedMessage(string message)
+    {
+        // TODO: Implement
+        return false;
+    }
+
 
     public void Transition()
     {
         _state = _state switch
         {
-            SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport => TransitionFromSendingcommandsRecieveoverallpointpositionanddegradedpointpositionreportRecieveabilitytomovereportRecievetimeoutreport()
+            SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport => TransitionFromSSciPCommandAndRecieveBehaviour__Operating__SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport()
         };
     }
 
-    private SSciPCommandAndRecieveBehaviour TransitionFromSendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport()
+    private SSciPCommandAndRecieveBehaviour TransitionFromSSciPCommandAndRecieveBehaviour__Operating__SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport()
     {
         if (IsConditionChanged(T30inMovePoint))
         {
             if (D30inMovePoint == D30inMovePointValue.Right && D50inPdiConnectionState == D50inPdiConnectionStateValue.Established)
             {
-
-
-
-
-
-                Send CdMovePoint(Right)To P10inout;
-
-
-
+                SendMessage("CdMovePoint (Right)", "P10inout");
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
@@ -76,268 +85,155 @@ public class SSciPCommandAndRecieve
         {
             if (D30inMovePoint == D30inMovePointValue.Left && D50inPdiConnectionState == D50inPdiConnectionStateValue.Established)
             {
-
-
-
-
-
-                Send CdMovePoint(Left) To P10inout;
-
-
-
+                SendMessage("CdMovePoint (Left) ", "P10inout");
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Left && Reporteddegradedpointposition == Notapplicable)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Left  && ReportedDegradedPointPosition == NotApplicable]"))
             {
-
-
-
-
-                D32outPointPosition = "LEFT, NOT_APPLICABLE";
+                D32outPointPosition = D32outPointPositionValue.LeftAndNotApplicable;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Left && Reporteddegradedpointposition == Notdegraded)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Left  && ReportedDegradedPointPosition == NotDegraded]"))
             {
-
-
-
-
-                D32outPointPosition = "LEFT, NOT_DEGRADED";
+                D32outPointPosition = D32outPointPositionValue.LeftAndNotDegraded;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Right && Reporteddegradedpointposition == Notapplicable)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Right  && ReportedDegradedPointPosition == NotApplicable]"))
             {
-
-
-
-
-                D32outPointPosition = "RIGHT, NOT_APPLICABLE";
+                D32outPointPosition = D32outPointPositionValue.RightAndNotApplicable;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Right && Reporteddegradedpointposition == Notdegraded)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Right  && ReportedDegradedPointPosition == NotDegraded]"))
             {
-
-
-
-
-                D32outPointPosition = "RIGHT, NOT_DEGRADED";
+                D32outPointPosition = D32outPointPositionValue.RightAndNotDegraded;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Noendposition && Reporteddegradedpointposition == Degradedleft)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == DegradedLeft]"))
             {
-
-
-
-
-                D32outPointPosition = "NO_END_POSITION, DEGRADED_LEFT";
+                D32outPointPosition = D32outPointPositionValue.NoEndPositionAndDegradedLeft;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Noendposition && Reporteddegradedpointposition == Degradedright)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == DegradedRight]"))
             {
-
-
-
-
-                D32outPointPosition = "NO_END_POSITION, DEGRADED_RIGHT";
+                D32outPointPosition = D32outPointPositionValue.NoEndPositionAndDegradedRight;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Noendposition && Reporteddegradedpointposition == Notdegraded)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == NotDegraded]"))
             {
-
-
-
-
-                D32outPointPosition = "NO_END_POSITION, NOT_DEGRADED";
+                D32outPointPosition = D32outPointPositionValue.NoEndPositionAndNotDegraded;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Noendposition && Reporteddegradedpointposition == Notapplicable)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == NotApplicable]"))
             {
-
-
-
-
-                D32outPointPosition = "NO_END_POSITION, NOT_APPLICABLE";
+                D32outPointPosition = D32outPointPositionValue.NoEndPositionAndNotApplicable;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Trailed && Reporteddegradedpointposition == Degradedleft)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == DegradedLeft]"))
             {
-
-
-
-
-                D32outPointPosition = "TRAILED, DEGRADED_LEFT";
+                D32outPointPosition = D32outPointPositionValue.TrailedAndDegradedLeft;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Trailed && Reporteddegradedpointposition == Degradedright)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == DegradedRight]"))
             {
-
-
-
-
-                D32outPointPosition = "TRAILED, DEGRADED_RIGHT";
+                D32outPointPosition = D32outPointPositionValue.TrailedAndDegradedRight;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Trailed && Reporteddegradedpointposition == Notdegraded)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == NotDegraded]"))
             {
-
-
-
-
-                D32outPointPosition = "TRAILED, NOT_DEGRADED";
+                D32outPointPosition = D32outPointPositionValue.TrailedAndNotDegraded;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Point_Position"))
         {
-            if (Reportedpointpositionstate == Trailed && Reporteddegradedpointposition == Notapplicable)
+            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == NotApplicable]"))
             {
-
-
-
-
-                D32outPointPosition = "TRAILED, NOT_APPLICABLE";
+                D32outPointPosition = D32outPointPositionValue.TrailedAndNotApplicable;
                 T32outPointPosition = T32outPointPositionValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Ability_To_Move_Point"))
         {
-            if (Reportedabilitytomovestate == Unabletomove)
+            if (ReceivedMessage("Msg_Ability_To_Move_Point[ReportedAbilityToMoveState == UnableToMove]"))
             {
-
-
-
-
                 D33outAbilityToMove = D33outAbilityToMoveValue.UnableToMove;
                 T33outAbilityToMove = T33outAbilityToMoveValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Ability_To_Move_Point"))
         {
-            if (Reportedabilitytomovestate == Abletomove)
+            if (ReceivedMessage("Msg_Ability_To_Move_Point[ReportedAbilityToMoveState == AbleToMove]"))
             {
-
-
-
-
                 D33outAbilityToMove = D33outAbilityToMoveValue.AbleToMove;
                 T33outAbilityToMove = T33outAbilityToMoveValue.True;
 
-
-
-
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
         }
-        if (IsConditionChanged())
+        if (IsMessageArrived("Msg_Timeout"))
         {
             {
-
-
-
-
                 T31outTimeout = T31outTimeoutValue.True;
-
-
-
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New();
             }
@@ -348,9 +244,13 @@ public class SSciPCommandAndRecieve
     }
 
 
+    // Properties
+
+
+    // Ports
     public D30inMovePointValue D30inMovePoint { get; set; }
     public T31outTimeoutValue T31outTimeout { get; set; }
-    public bool D32outPointPosition { get; set; }
+    public D32outPointPositionValue D32outPointPosition { get; set; }
     public D50inPdiConnectionStateValue D50inPdiConnectionState { get; set; }
     public D33outAbilityToMoveValue D33outAbilityToMove { get; set; }
     public bool P11in { get; set; }
@@ -371,6 +271,21 @@ public class SSciPCommandAndRecieve
         True
     }
 
+    public enum D32outPointPositionValue
+    {
+        LeftAndNotApplicable,
+        LeftAndNotDegraded,
+        RightAndNotApplicable,
+        RightAndNotDegraded,
+        NoEndPositionAndDegradedLeft,
+        NoEndPositionAndDegradedRight,
+        NoEndPositionAndNotDegraded,
+        NoEndPositionAndNotApplicable,
+        TrailedAndDegradedLeft,
+        TrailedAndDegradedRight,
+        TrailedAndNotDegraded,
+        TrailedAndNotApplicable
+    }
 
     public enum D50inPdiConnectionStateValue
     {

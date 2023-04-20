@@ -28,8 +28,8 @@ var interestingPackages = eulynxSystem.PackagedElements
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 
-// var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve" };
-var classWhitelist = new List<string>();
+var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve", "S_SCI_Adj_Prim" };
+// var classWhitelist = new List<string>();
 
 foreach (var interestingPackage in interestingPackages) {
     // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
