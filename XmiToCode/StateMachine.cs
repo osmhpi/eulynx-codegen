@@ -9,7 +9,7 @@ class StateMachine : CodeGenerationItem
     private readonly string _name;
     private readonly IState _initialState;
     private readonly List<IState> _states;
-    private readonly List<StateMachine> _childStateMachines;
+    private readonly List<(IState State, StateMachine StateMachine)> _childStateMachines;
     private readonly Dictionary<string, PackagedElement> _changeEvents;
     private readonly Dictionary<string, PackagedElement> _timeEvents;
 
@@ -25,24 +25,24 @@ class StateMachine : CodeGenerationItem
 
         _childStateMachines = _states
             .Where(x => x.InternalStateMachine != null)
-            .Select(x => x.InternalStateMachine!).ToList();
+            .Select(x => (x, x.InternalStateMachine!)).ToList();
     }
 
-    public IEnumerable<(Transition transition, IState state, string stateName)> GetTransitionsFromState(IState fromState, bool skipParentTransitions = false) {
+    public IEnumerable<(Transition transition, IState state, string stateName)> GetTransitionsFromState(string thisName, IState fromState, bool skipParentTransitions = false) {
         // Does fromState match one of our child state machines?
         var childStateMachineTransitions = _states
             .Where(x => x.InternalStateMachine != null)
             .Select(state => new {
                 FromState = state,
                 ChildStateMachine = state.InternalStateMachine!,
-                Transitions = state.InternalStateMachine!.GetTransitionsFromState(fromState, skipParentTransitions).ToList()
+                Transitions = state.InternalStateMachine!.GetTransitionsFromState(state.Name, fromState, skipParentTransitions).ToList()
             })
             .Where(x => x.Transitions.Any())
             .ToList();
 
         if (childStateMachineTransitions.Count > 0) {
             return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
-                var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{GetName()}.{x.stateName}"));
+                var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{thisName}.{x.stateName}"));
 
                 if (skipParentTransitions) {
                     return result;
@@ -50,19 +50,19 @@ class StateMachine : CodeGenerationItem
 
                 // Prepend the transitions from the enclosing state of the child state machine
                 return _region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
-                        .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"))
+                        .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
                         .Concat(result);
             });
         }
 
         return _region.Transitions.Where(x => x.From == fromState)
-            .Select(x => (x, x.To, $"{GetName()}.{x.To.Name}"));
+            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
     }
 
-    public string GenerateTransitionFunction(IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes)
+    public string GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes)
     {
         return $@"private {theRootBehaviorName} TransitionFrom{name.Replace(".", "__")}() {{
-        {GenerateConditions(fromState, dataTypes)}
+        {GenerateConditions(thisName, fromState, dataTypes)}
 
         // Do not transition
         return _state;
@@ -70,9 +70,9 @@ class StateMachine : CodeGenerationItem
 ";
     }
 
-    private string GenerateConditions(IState fromState, DataTypeHelper dataTypes, bool skipParentTransitions=false)
+    private string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, bool skipParentTransitions=false)
     {
-        var transitions = GetTransitionsFromState(fromState, skipParentTransitions);
+        var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
@@ -95,7 +95,7 @@ class StateMachine : CodeGenerationItem
           $@"{GetTransitionChangeTriggerExpression(x.transition, dataTypes)} {{
             {x.transition.GetTransitionConstraints(dataTypes)} {{
               {GenerateActivities(fromState, x, dataTypes)}
-              {GenerateConditions(x.state, dataTypes, true)}
+              {GenerateConditions(thisName, x.state, dataTypes, true)}
             }}
           }}"));
 
@@ -106,16 +106,16 @@ class StateMachine : CodeGenerationItem
         return InPascalCase(_name);
     }
 
-    public IEnumerable<(IState subvertex, string name)> GetStates() {
+    public IEnumerable<(IState subvertex, string name)> GetStates(string thisName) {
         var hasSubstates = false;
-        foreach (var (subvertex, name) in _childStateMachines.SelectMany(x => x.GetStates())) {
-            yield return (subvertex, $"{GetName()}.{name}");
+        foreach (var (subvertex, name) in _childStateMachines.SelectMany(x => x.StateMachine.GetStates(x.State.Name))) {
+            yield return (subvertex, $"{thisName}.{name}");
             hasSubstates = true;
         }
 
         if (!hasSubstates) {
             foreach (var state in _states) {
-                yield return (state, $"{GetName()}.{state.Name}");
+                yield return (state, $"{thisName}.{state.Name}");
             }
         }
     }
@@ -197,7 +197,7 @@ class StateMachine : CodeGenerationItem
 
     private string MakeStateRecord(string name, string basename) {
         var subrecords = _states.Select(x => MakeSubrecord(name, x));
-        var (x, y, z) = GetTransitionsFromState(_initialState).Single();
+        var (x, y, z) = GetTransitionsFromState(name, _initialState).Single();
 
         return @$"public record {name} : {basename} {{
         {string.Join("\n    ", subrecords)}
@@ -211,13 +211,13 @@ class StateMachine : CodeGenerationItem
 
     public override string Write()
     {
-        return MakeStateRecord(InPascalCase(_name), "object");
+        return MakeStateRecord(GetName(), "object");
     }
 
     internal string GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes)
     {
-        var states = GetStates();
         var behaviorName = GetName();
+        var states = GetStates(behaviorName);
 
         return $@"
     public void Transition() {{
@@ -227,6 +227,6 @@ class StateMachine : CodeGenerationItem
       }};
     }}
 
-    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes)))}";
+    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes)))}";
     }
 }

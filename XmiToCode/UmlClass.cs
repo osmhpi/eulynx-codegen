@@ -160,7 +160,7 @@ public class {className} {{
 
   private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
   {
-      var (x, y, z) = behavior.GetTransitionsFromState(behavior.InitialState).Single();
+      var (x, y, z) = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
       var entry = y.GenerateEntry(null, null);
 
       foreach (Match m in Regex.Matches(entry, "(\\w+) = \"(\\w*)\"")) {
