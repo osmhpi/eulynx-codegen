@@ -26,19 +26,23 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }));
     }
 
-    public string GenerateExit(IState next, Transition transition)
-    {
-        return string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "")));
+    private string? NullWhitespace(string value) {
+        return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    public string GenerateTransition(IState next, Transition transition)
+    public string? GenerateExit(IState next, Transition transition)
     {
-        return string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "")));
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? ""))));
     }
 
-    public string GenerateEntry(IState previous, Transition transition)
+    public string? GenerateTransition(IState next, Transition transition)
     {
-        return string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "")));
+        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? ""))));
+    }
+
+    public string? GenerateEntry(IState previous, Transition transition)
+    {
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? ""))));
     }
 
     private static string InPascalCase(string value)

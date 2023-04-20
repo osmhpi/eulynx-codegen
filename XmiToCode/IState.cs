@@ -9,9 +9,9 @@ interface IState
 
     StateMachine? InternalStateMachine { get; }
 
-    string GenerateExit(IState next, Transition transition);
-    string GenerateTransition(IState next, Transition transition);
-    string GenerateEntry(IState previous, Transition transition);
+    string? GenerateExit(IState next, Transition transition);
+    string? GenerateTransition(IState next, Transition transition);
+    string? GenerateEntry(IState previous, Transition transition);
 
     bool IsSourceOfTransition(UmlTransition transition);
     bool IsTargetOfTransition(UmlTransition transition);

@@ -6,9 +6,35 @@ using static CodeGenerationItem;
 record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
+    private string GetMessageTriggeredTransitionConstraint(DataTypeHelper dataTypes, PackagedElement evt) {
+        var expression = SingleTransition.OwnedRule.Specification.Body
+            .ReplaceLineEndings(" ")
+            .Replace("AND ", " && ")
+            .Replace(" OR ", " || ")
+            .Replace("NOT ", "!")
+            .Replace(" = ", " == ")
+            .Replace(" <> ", " != ")
+            .Replace("\"", "\\\"");
+        return $"if (ReceivedMessage(\"{evt.Name}[{expression}]\"))";
+    }
+
     public string GetTransitionConstraints(DataTypeHelper dataTypes) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
+
+            if (SingleTransition.Trigger != null && SingleTransition.Trigger.Event != null) {
+                var evt = SingleTransition.Trigger.Event;
+                if (dataTypes.TimeEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.TimeEvents[evt];
+                } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.ChangeEvents[evt];
+                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.PackageEvents[evt];
+                    return GetMessageTriggeredTransitionConstraint(dataTypes, theEvent);
+                } else {
+                    throw new Exception("Could not resolve trigger event");
+                }
+            }
 
             if (specification == "else") {
                 return "else";

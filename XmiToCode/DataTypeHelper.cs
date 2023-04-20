@@ -5,15 +5,28 @@ using static CodeGenerationItem;
 class DataTypeHelper {
 
     public List<XmiToCode.OwnedAttribute> Properties { get; private set; }
+    public List<OwnedAttribute> Ports { get; }
+    public Dictionary<string, PackagedElement> ChangeEvents { get; }
+    public Dictionary<string, PackagedElement> TimeEvents { get; }
+    public Dictionary<string, PackagedElement> PackageEvents { get; }
 
     private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
     private readonly Dictionary<string, string> _coalescedValues = new Dictionary<string, string>();
 
-    public DataTypeHelper(List<OwnedAttribute> properties)
+    public DataTypeHelper(List<OwnedAttribute> properties, List<OwnedAttribute> ports, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, Dictionary<string, PackagedElement> packageEvents)
     {
         Properties = properties;
+        Ports = ports;
+        ChangeEvents = changeEvents;
+        TimeEvents = timeEvents;
+        PackageEvents = packageEvents;
+
         foreach (var property in Properties) {
             _allowedPropertyValues.Add(InPascalCase(property.Name), new HashSet<string>());
+        }
+
+        foreach (var port in Ports) {
+            _allowedPropertyValues.Add(InPascalCase(port.Name), new HashSet<string>());
         }
     }
 
@@ -47,7 +60,7 @@ class DataTypeHelper {
     }
 
     public static string GenerateEnumMemberName(string value) {
-        var sanitizedValue = InPascalCase(value);
+        var sanitizedValue = InPascalCase(value.Replace(",", " And "));
 
         if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
             sanitizedValue = "_" + sanitizedValue;

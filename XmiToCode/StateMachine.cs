@@ -10,15 +10,11 @@ class StateMachine : CodeGenerationItem
     private readonly IState _initialState;
     private readonly List<IState> _states;
     private readonly List<(IState State, StateMachine StateMachine)> _childStateMachines;
-    private readonly Dictionary<string, PackagedElement> _changeEvents;
-    private readonly Dictionary<string, PackagedElement> _timeEvents;
 
-    public StateMachine(Region region, string name, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+    public StateMachine(Region region, string name)
     {
         _region = region;
         _name = name;
-        _changeEvents = changeEvents;
-        _timeEvents = timeEvents;
 
         _initialState = region.InitialState;
         _states = region.States.Where(x => x.IsRegularState).ToList();
@@ -127,15 +123,16 @@ class StateMachine : CodeGenerationItem
         var transitionEffect = x.state.GenerateTransition(x.state, x.transition);
         var entry = x.state.GenerateEntry(fromState, x.transition);
 
-        var result = string.Join("\n", exit, transitionEffect, entry);
+        var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
 
-        foreach (Match m in Regex.Matches(result, "(\\w+) = \"(\\w*)\"")) {
+        foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
             var lhs = m.Groups[1].Value;
             var rhs = m.Groups[2].Value;
             dataTypes.RecordPossibleValueForProperty(lhs, rhs);
         }
 
-        result = Regex.Replace(result, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[2].Value)}");
+        result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
+            m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
 
         return result;
     }
@@ -146,23 +143,29 @@ class StateMachine : CodeGenerationItem
             string? result = null;
 
             var evt = transition.SingleTransition.Trigger.Event;
-            if (_changeEvents.ContainsKey(evt)) {
-                var expression = _changeEvents[evt].ChangeExpression.Body
-                .ReplaceLineEndings(" ")
-                .Replace("AND ", " && ")
-                .Replace(" OR ", " || ")
-                .Replace("NOT ", "!")
-                .Replace(" = ", " == ")
-                .Replace(" <> ", " != ");
+            if (evt != null) {
+                if (dataTypes.ChangeEvents.ContainsKey(evt)) {
+                    var expression = dataTypes.ChangeEvents[evt].ChangeExpression.Body
+                        .ReplaceLineEndings(" ")
+                        .Replace("AND ", " && ")
+                        .Replace(" OR ", " || ")
+                        .Replace("NOT ", "!")
+                        .Replace(" = ", " == ")
+                        .Replace(" <> ", " != ");
 
-                result = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-            }
-
-            if (_timeEvents.ContainsKey(evt)) {
-                result = $"IsTimeoutExpired({InPascalCase(_timeEvents[evt].When.Expr.Body)})";
+                    result = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+                    result = $"IsConditionChanged({result})";
+                } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
+                    result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
+                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
+                    result = $"IsMessageArrived(\"{dataTypes.PackageEvents[evt].Name}\")";
+                } else {
+                    throw new NotImplementedException();
+                }
             } else {
-                result = $"IsConditionChanged({result})";
+                // Event is null, interesting, moving on...
             }
+
 
             if (result != null) {
                 foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {

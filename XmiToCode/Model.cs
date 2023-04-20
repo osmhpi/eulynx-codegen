@@ -14,10 +14,11 @@ namespace XmiToCode
 
     [XmlRoot(ElementName="ownedAttribute")]
     public class OwnedAttribute {
-        [XmlElement(ElementName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
-        public List<string> Type { get; set; }
-        // [XmlElement(ElementName="type", Namespace="")]
-        // public List<string> Type { get; set; }
+        [XmlAttribute(AttributeName="type", Namespace="")]
+        public string Type { get; set; }
+
+        [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string XmiType { get; set; }
         [XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
         public string Id { get; set; }
         [XmlAttribute(AttributeName="name")]

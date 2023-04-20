@@ -6,28 +6,34 @@ internal class UmlClass : CodeGenerationItem
     private PackagedElement _class;
     private readonly Dictionary<string, PackagedElement> _changeEvents;
     private readonly Dictionary<string, PackagedElement> _timeEvents;
+    private readonly Dictionary<string, PackagedElement> _packageEvents;
     private readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
-    public UmlClass(PackagedElement classPackage, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents)
+    public UmlClass(PackagedElement classPackage, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, Dictionary<string, PackagedElement> packageEvents)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
         _timeEvents = timeEvents;
-        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name, changeEvents, timeEvents);
+        _packageEvents = packageEvents;
+
+        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
 
         var properties = _class.OwnedAttribute
-            //.Where(x => x.XmiType.SingleOrDefault() == "uml:Property")
+            .Where(x => x.XmiType == "uml:Property")
             .ToList();
-        _dataTypes = new DataTypeHelper(properties);
+        var ports = _class.OwnedAttribute
+            .Where(x => x.XmiType == "uml:Port")
+            .ToList();
+        _dataTypes = new DataTypeHelper(properties, ports, _changeEvents, _timeEvents, _packageEvents);
     }
 
     public static Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
         var states = region.Subvertices.Select(x => {
-            var subRegion = FlattenRegions(x.Regions, changeEvents, timeEvents);
+            var subRegion = FlattenRegions(x.Regions);
             return new CompoundState(
                 new List<PartialState>() { new PartialState(x, region) },
-                subRegion != null ? new StateMachine(subRegion, x.Name, changeEvents, timeEvents) : null);
+                subRegion != null ? new StateMachine(subRegion, x.Name) : null);
         }).OfType<IState>().ToList();
 
         var transitions = region.Transitions
@@ -65,17 +71,17 @@ internal class UmlClass : CodeGenerationItem
         }
     }
 
-    private static Region? FlattenRegions(List<UmlRegion> regions, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
+    private static Region? FlattenRegions(List<UmlRegion> regions) {
         if (regions.Count == 0) {
             return null;
         }
 
         var states = regions.Select(region =>
             region.Subvertices.Select(x => {
-                var subRegion = FlattenRegions(x.Regions, changeEvents, timeEvents);
+                var subRegion = FlattenRegions(x.Regions);
                 return new CompoundState(
                     new List<PartialState>() { new PartialState(x, region) },
-                    subRegion != null ? new StateMachine(subRegion, x.Name, changeEvents, timeEvents) : null);
+                    subRegion != null ? new StateMachine(subRegion, x.Name) : null);
             }).ToList()).ToList();
 
         var flattenedStates = FlattenStates(states)
@@ -149,9 +155,23 @@ public class {className} {{
         // TODO: Implement
     }}
 
+    private bool IsMessageArrived(string message) {{
+        // TODO: Implement
+        return false;
+    }}
+
+    private bool ReceivedMessage(string message) {{
+        // TODO: Implement
+        return false;
+    }}
+
     {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes)}
 
+    // Properties
     {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
+
+    // Ports
+    {string.Join("\n", _dataTypes.Ports.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 
     {_dataTypes.GeneratePropertyValueTypes()}
 }}
@@ -161,7 +181,7 @@ public class {className} {{
   private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
   {
       var (x, y, z) = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-      var entry = y.GenerateEntry(null, null);
+      var entry = y.GenerateEntry(null, null) ?? "";
 
       foreach (Match m in Regex.Matches(entry, "(\\w+) = \"(\\w*)\"")) {
           var lhs = m.Groups[1].Value;

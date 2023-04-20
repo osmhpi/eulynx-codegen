@@ -1,4 +1,4 @@
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using XmiToCode;
 
 using var inFile = File.OpenRead("../cleaned.xmi");
@@ -16,16 +16,33 @@ var packages = xmi.Model.PackagedElements.Where(x => x.Type == "uml:Package").To
 // }
 
 var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
+var genericFunctions = packages.Single(x => x.Name == "Generic Functions");
+
+var genericEvents = FindAllEvents(genericFunctions).ToList();
+
+var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI" };
 
 var interestingPackages = eulynxSystem.PackagedElements
-    .Where(x => x.Name == "Subsystem Point");
+    .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name));
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 
-foreach (var umlClassPackage in interestingPackages.SelectMany(FindAllClasses)) {
-    var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents);
-    await umlClass.Generate();
+// var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve" };
+var classWhitelist = new List<string>();
+
+foreach (var interestingPackage in interestingPackages) {
+    // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
+    // Dictionary<string, PackagedElement> packageEvents = new Dictionary<string, PackagedElement>();
+    // if (eventsSubpackage != null) {
+    //     packageEvents = eventsSubpackage.PackagedElements.Where(x => x.Type == "uml:SignalEvent").ToDictionary(x => x.Id);
+    // }
+    var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
+
+    foreach (var umlClassPackage in FindAllClasses(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
+        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents);
+        await umlClass.Generate();
+    }
 }
 
 static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
@@ -34,4 +51,15 @@ static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
         .Where(x => x.StateMachine != null);
     var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
     return classes.Concat(subpackages.SelectMany(FindAllClasses));
+}
+
+static IEnumerable<PackagedElement> FindAllEvents(PackagedElement package) {
+    // if (package.PackagedElements.SingleOrDefault(x => x.Type == "uml:SignalEvent" && x.Name == "Msg_Reset_PDI") != null)
+    // {
+    //     Console.WriteLine(string.Join(".", parents));
+    // }
+    var events = package.PackagedElements
+        .Where(x => x.Type == "uml:SignalEvent");
+    var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
+    return events.Concat(subpackages.SelectMany(x => FindAllEvents(x)));
 }
