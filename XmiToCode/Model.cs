@@ -1,5 +1,5 @@
 using System.Xml.Serialization;
-
+#nullable disable annotations
 namespace XmiToCode
 {
     [XmlRoot(ElementName="documentation")]
@@ -275,4 +275,4 @@ namespace XmiToCode
     }
 
 }
-
+#nullable restore annotations
