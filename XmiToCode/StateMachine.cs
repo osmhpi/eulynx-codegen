@@ -101,16 +101,12 @@ class StateMachine : CodeGenerationItem
     }
 
     public IEnumerable<(IState subvertex, string name)> GetStates(string thisName) {
-        var hasSubstates = false;
         foreach (var (subvertex, name) in _childStateMachines.SelectMany(x => x.StateMachine.GetStates(x.State.Name))) {
             yield return (subvertex, $"{thisName}.{name}");
-            hasSubstates = true;
         }
 
-        if (!hasSubstates) {
-            foreach (var state in _states) {
-                yield return (state, $"{thisName}.{state.Name}");
-            }
+        foreach (var state in _states) {
+            yield return (state, $"{thisName}.{state.Name}");
         }
     }
 
