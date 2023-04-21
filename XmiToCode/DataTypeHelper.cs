@@ -12,7 +12,10 @@ public class DataTypeHelper {
     public Dictionary<string, PackagedElement> PackageEvents { get; }
 
     private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues;
+    private readonly Dictionary<string, HashSet<string>> _allowedMessages;
     private readonly Dictionary<string, string> _coalescedValues;
+    private readonly Dictionary<string, HashSet<string>> _allowedMessageValues;
+    private readonly Dictionary<string, string> _coalescedMessageValues;
     private readonly Dictionary<string, string> _typeAliases;
 
     public DataTypeHelper(
@@ -31,8 +34,12 @@ public class DataTypeHelper {
         TimeEvents = timeEvents;
         PackageEvents = packageEvents;
         _typeAliases = typeAliases;
+
         _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
+        _allowedMessages = new Dictionary<string, HashSet<string>>();
         _coalescedValues = new Dictionary<string, string>();
+        _allowedMessageValues = new Dictionary<string, HashSet<string>>();
+        _coalescedMessageValues = new Dictionary<string, string>();
 
         foreach (var property in Properties) {
             _allowedPropertyValues.Add(InPascalCase(property.Name), new HashSet<string>());
@@ -41,6 +48,10 @@ public class DataTypeHelper {
         foreach (var port in Ports) {
             _allowedPropertyValues.Add(InPascalCase(port.Name), new HashSet<string>());
         }
+    }
+
+    public bool IsPropertyOrPort(string identifier) {
+        return _allowedPropertyValues.ContainsKey(identifier);
     }
 
     public void RecordCoalesceValues(string lhs, string rhs)
@@ -112,6 +123,10 @@ public class DataTypeHelper {
             return _typeAliases[v];
         }
 
+        if (_allowedMessages.ContainsKey(v)) {
+            return "Channel<EulynxMessages.Message>";
+        }
+
         if (_coalescedValues.ContainsKey(v) == false) {
             _coalescedValues[v] = v;
         }
@@ -122,5 +137,54 @@ public class DataTypeHelper {
         }
 
         return $"{result}Value";
+    }
+
+    internal void RecordPossibleMessageForPort(string port, string value)
+    {
+        if (_allowedMessages.ContainsKey(port) == false) {
+            _allowedMessages[port] = new HashSet<string>();
+        }
+
+        _allowedMessages[port].Add(value.Trim());
+    }
+
+    internal string GenerateMessages()
+    {
+        return string.Join("\n", _allowedMessages.SelectMany(x => {
+            var (port, messages) = x;
+            return messages.Select(message => {
+                var values = "";
+
+                if (_allowedMessageValues.ContainsKey(message)) {
+                    values = @$"public enum Values {{
+                        {string.Join(",\n", _allowedMessageValues[message])}
+                    }}";
+                }
+
+                var props = string.IsNullOrEmpty(values) ? "" : $"{message}.Values Value";
+                if (_coalescedMessageValues.ContainsKey(message)) {
+                    var valueType = LookupPropertyValueType(_coalescedMessageValues[message]);
+                    props = $"{valueType} Value";
+                }
+
+                return @$"public record {message}({props}) : Message {{
+                    {values}
+                }}";
+            });
+        }));
+    }
+
+    internal void RecordPossibleInitializerForMessage(string messageName, string messageInitializerValue)
+    {
+        if (_allowedMessageValues.ContainsKey(messageName) == false) {
+            _allowedMessageValues[messageName] = new HashSet<string>();
+        }
+
+        _allowedMessageValues[messageName].Add(messageInitializerValue);
+    }
+
+    internal void RecordCoalesceMessageValues(string parsedMessageName, string messageInitializerValue)
+    {
+        _coalescedMessageValues[parsedMessageName] = messageInitializerValue;
     }
 }

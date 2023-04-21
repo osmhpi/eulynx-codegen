@@ -1,3 +1,4 @@
+using EulynxLive.Messages.Baseline4R1;
 using static Eulynx.FControlPointMachinePosition;
 
 namespace Eulynx.Test;
@@ -8,7 +9,9 @@ public class FControlPointMachinePositionTest
     [TestMethod]
     public void InitialMemLastCommandedPointPositionShouldBeUndefined()
     {
-        var controlPointMachinePosition = new FControlPointMachinePosition();
+        var messageConverter = new MessageConverter("", "", ProtocolType.Point);
+
+        var controlPointMachinePosition = new FControlPointMachinePosition(messageConverter);
         controlPointMachinePosition.Init();
 
         Assert.AreEqual(controlPointMachinePosition.MemLastCommandedPointPosition, MemLastCommandedPointPositionValue.Undefined);
@@ -17,7 +20,9 @@ public class FControlPointMachinePositionTest
     [TestMethod]
     public void ShouldDrivePointToCorrectDirection()
     {
-        var controlPointMachinePosition = new FControlPointMachinePosition();
+        var messageConverter = new MessageConverter("", "", ProtocolType.Point);
+
+        var controlPointMachinePosition = new FControlPointMachinePosition(messageConverter);
         controlPointMachinePosition.Init();
 
         Assert.IsInstanceOfType(controlPointMachinePosition.State, typeof(FControlPointMachinePositionBehaviour.Operating.Waiting));

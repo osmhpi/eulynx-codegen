@@ -1,3 +1,6 @@
+using System.Threading.Channels;
+using EulynxMessages = EulynxLive.Messages.Baseline4R1;
+
 namespace Eulynx;
 
 public class SSciAdjPrim
@@ -47,8 +50,8 @@ public class SSciAdjPrim
 
                 public static new Establishing New(SSciAdjPrim This)
                 {
-                    This.SendMessage("EstablishingPdiConnection ", "P2inout");
-                    This.SendMessage("CdPdiVersionCheck(D3inConPdiVersion) ", "P1inout");
+                    This.SendMessage(new Message.EstablishingPdiConnection(), This.P2inout);
+                    This.SendMessage(new Message.CdPdiVersionCheck(This.D3inConPdiVersion), This.P1inout);
 
                     This.D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForVersionCheck;
 
@@ -90,6 +93,13 @@ public class SSciAdjPrim
     private SSciAdjsPrimBehaviour _state;
     public SSciAdjsPrimBehaviour State { get { return _state; } }
 
+    private readonly MessageConverter _messageConverter;
+
+    public SSciAdjPrim(MessageConverter messageConverter)
+    {
+        _messageConverter = messageConverter;
+    }
+
     public void Init()
     {
         _state = SSciAdjsPrimBehaviour.New(this);
@@ -107,9 +117,9 @@ public class SSciAdjPrim
         return condition;
     }
 
-    private void SendMessage(string message, string port)
+    private void SendMessage(Message message, Channel<EulynxMessages.Message> port)
     {
-        // TODO: Implement
+        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
     private bool IsMessageArrived(string message)
@@ -192,7 +202,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -203,7 +213,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -214,7 +224,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -224,8 +234,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -235,7 +245,7 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && ChecksumData == D4in_Con_Checksum_Data]"))
             {
-                SendMessage("CdInitialisationRequest ", "P1inout");
+                SendMessage(new Message.CdInitialisationRequest(), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitialisation;
 
@@ -247,7 +257,7 @@ public class SSciAdjPrim
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && !(ChecksumData == D4in_Con_Checksum_Data)]"))
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiChecksumMismatch;
-                SendMessage("CdClosePdi(Checksummismatch) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ChecksumMismatch), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -259,7 +269,7 @@ public class SSciAdjPrim
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"not match\"]"))
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
-                SendMessage("CdClosePdi(Otherversionrequired) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.OtherVersionRequired), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -319,7 +329,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -330,7 +340,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -341,7 +351,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -351,8 +361,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -419,7 +429,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -430,7 +440,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -441,7 +451,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -451,8 +461,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -520,7 +530,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -531,7 +541,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -542,7 +552,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -552,8 +562,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -562,7 +572,7 @@ public class SSciAdjPrim
         if (IsConditionChanged(T25inSecStatusReportComplete))
         {
             {
-                SendMessage("StartPrimStatusReport ", "P2inout");
+                SendMessage(new Message.StartPrimStatusReport(), P2inout);
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.SendingPrimStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.SendingPrimStatus.New(this);
@@ -621,7 +631,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -632,7 +642,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -643,7 +653,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -653,8 +663,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -663,7 +673,7 @@ public class SSciAdjPrim
         if (IsMessageArrived("Prim_Status_Report_Completed"))
         {
             {
-                SendMessage("MsgStatusReportCompleted ", "P1inout");
+                SendMessage(new Message.MsgStatusReportCompleted(), P1inout);
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitCompletion;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitCompletion.New(this);
@@ -722,7 +732,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -733,7 +743,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -744,7 +754,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -754,10 +764,10 @@ public class SSciAdjPrim
         if (IsMessageArrived("Msg_Initialisation_Completed"))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Established;
-                SendMessage("PdiConnectionEstablished ", "P2inout");
+                SendMessage(new Message.PdiConnectionEstablished(), P2inout);
 
                 return SSciAdjsPrimBehaviour.Active.Established.New(this);
             }
@@ -815,7 +825,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -826,7 +836,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -837,7 +847,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -847,8 +857,8 @@ public class SSciAdjPrim
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
-                SendMessage("PdiConnectionClosed ", "P2inout");
-                SendMessage("CdClosePdi(Timeout) ", "P1inout");
+                SendMessage(new Message.PdiConnectionClosed(), P2inout);
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
@@ -975,7 +985,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
-                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -986,7 +996,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
-                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -997,7 +1007,7 @@ public class SSciAdjPrim
         {
             {
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
-                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
@@ -1028,8 +1038,8 @@ public class SSciAdjPrim
     public bool T45inResetSevereError { get; set; }
     public D60outPdiCloseReasonValue D60outPdiCloseReason { get; set; }
     public T27outCheckSecStatusValue T27outCheckSecStatus { get; set; }
-    public bool P1inout { get; set; }
-    public bool P2inout { get; set; }
+    public Channel<EulynxMessages.Message> P1inout { get; set; }
+    public Channel<EulynxMessages.Message> P2inout { get; set; }
     public bool T25inSecStatusReportComplete { get; set; }
 
     // Operations
@@ -1040,6 +1050,7 @@ public class SSciAdjPrim
 
     }
 
+    // Value Types
 
     public enum MemPdiVersionCheckResultValue
     {
@@ -1095,4 +1106,49 @@ public class SSciAdjPrim
 
 
 
+
+    // Messages
+    public record Message
+    {
+        public record CdClosePdi(CdClosePdi.Values Value) : Message
+        {
+            public enum Values
+            {
+                ProtocolError,
+                FormalTelegramError,
+                ContentTelegramError,
+                Timeout,
+                ChecksumMismatch,
+                OtherVersionRequired
+            }
+        }
+        public record CdInitialisationRequest() : Message
+        {
+
+        }
+        public record MsgStatusReportCompleted() : Message
+        {
+
+        }
+        public record CdPdiVersionCheck(bool Value) : Message
+        {
+
+        }
+        public record PdiConnectionClosed() : Message
+        {
+
+        }
+        public record StartPrimStatusReport() : Message
+        {
+
+        }
+        public record PdiConnectionEstablished() : Message
+        {
+
+        }
+        public record EstablishingPdiConnection() : Message
+        {
+
+        }
+    }
 }

@@ -1,5 +1,5 @@
 using System.Threading.Channels;
-using static Eulynx.FControlPointMachinePosition;
+using EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx.Test;
 
@@ -9,8 +9,10 @@ class PointMachine {
         var outgoingMessages = Channel.CreateUnbounded<object>();
         var incomingMessages = Channel.CreateUnbounded<object>();
 
-        CommandAndReceive = new SSciPCommandAndRecieve();
-        Prim = new SSciAdjPrim();
+        var messageConverter = new MessageConverter("", "", ProtocolType.Point);
+
+        CommandAndReceive = new SSciPCommandAndRecieve(messageConverter);
+        Prim = new SSciAdjPrim(messageConverter);
 
         // According to Eu.P.3286
         CommandAndReceive.D50inPdiConnectionState = Prim.D50outPdiConnectionState;

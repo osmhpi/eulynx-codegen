@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="EulynxLive.Messages" Version="1.0.1-build.3" />
+  </ItemGroup>
+
 </Project>

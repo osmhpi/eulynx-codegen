@@ -1,3 +1,6 @@
+using System.Threading.Channels;
+using EulynxMessages = EulynxLive.Messages.Baseline4R1;
+
 namespace Eulynx;
 
 public class FControlPointMachinePosition
@@ -49,6 +52,13 @@ public class FControlPointMachinePosition
     private FControlPointMachinePositionBehaviour _state;
     public FControlPointMachinePositionBehaviour State { get { return _state; } }
 
+    private readonly MessageConverter _messageConverter;
+
+    public FControlPointMachinePosition(MessageConverter messageConverter)
+    {
+        _messageConverter = messageConverter;
+    }
+
     public void Init()
     {
         _state = FControlPointMachinePositionBehaviour.New(this);
@@ -66,9 +76,9 @@ public class FControlPointMachinePosition
         return condition;
     }
 
-    private void SendMessage(string message, string port)
+    private void SendMessage(Message message, Channel<EulynxMessages.Message> port)
     {
-        // TODO: Implement
+        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
     private bool IsMessageArrived(string message)
@@ -436,6 +446,7 @@ public class FControlPointMachinePosition
     // Operations
 
 
+    // Value Types
 
     public enum MemLastCommandedPointPositionValue
     {
@@ -511,5 +522,11 @@ public class FControlPointMachinePosition
     {
         Right,
         Left
+    }
+
+    // Messages
+    public record Message
+    {
+
     }
 }

@@ -1,3 +1,6 @@
+using System.Threading.Channels;
+using EulynxMessages = EulynxLive.Messages.Baseline4R1;
+
 namespace Eulynx;
 
 public class SSciPCommandAndRecieve
@@ -34,6 +37,13 @@ public class SSciPCommandAndRecieve
     private SSciPCommandAndRecieveBehaviour _state;
     public SSciPCommandAndRecieveBehaviour State { get { return _state; } }
 
+    private readonly MessageConverter _messageConverter;
+
+    public SSciPCommandAndRecieve(MessageConverter messageConverter)
+    {
+        _messageConverter = messageConverter;
+    }
+
     public void Init()
     {
         _state = SSciPCommandAndRecieveBehaviour.New(this);
@@ -51,9 +61,9 @@ public class SSciPCommandAndRecieve
         return condition;
     }
 
-    private void SendMessage(string message, string port)
+    private void SendMessage(Message message, Channel<EulynxMessages.Message> port)
     {
-        // TODO: Implement
+        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
     private bool IsMessageArrived(string message)
@@ -84,7 +94,7 @@ public class SSciPCommandAndRecieve
         {
             if (D30inMovePoint == D30inMovePointValue.Right && D50inPdiConnectionState == SSciAdjPrim.D50outPdiConnectionStateValue.Established)
             {
-                SendMessage("CdMovePoint (Right)", "P10inout");
+                SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Right), P10inout);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -93,7 +103,7 @@ public class SSciPCommandAndRecieve
         {
             if (D30inMovePoint == D30inMovePointValue.Left && D50inPdiConnectionState == SSciAdjPrim.D50outPdiConnectionStateValue.Established)
             {
-                SendMessage("CdMovePoint (Left) ", "P10inout");
+                SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Left), P10inout);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -271,13 +281,14 @@ public class SSciPCommandAndRecieve
     public D33outAbilityToMoveValue D33outAbilityToMove { get; set; }
     public bool P11in { get; set; }
     public bool T30inMovePoint { get; set; }
-    public bool P10inout { get; set; }
+    public Channel<EulynxMessages.Message> P10inout { get; set; }
     public T32outPointPositionValue T32outPointPosition { get; set; }
     public T33outAbilityToMoveValue T33outAbilityToMove { get; set; }
 
     // Operations
 
 
+    // Value Types
 
     public enum D30inMovePointValue
     {
@@ -324,5 +335,18 @@ public class SSciPCommandAndRecieve
     public enum T33outAbilityToMoveValue
     {
         True
+    }
+
+    // Messages
+    public record Message
+    {
+        public record CdMovePoint(CdMovePoint.Values Value) : Message
+        {
+            public enum Values
+            {
+                Right,
+                Left
+            }
+        }
     }
 }

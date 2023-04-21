@@ -4,7 +4,7 @@ namespace XmiToCode;
 
 public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
     public string Write(DataTypeHelper dataTypes) {
-        var insns = CompoundState.ConvertInstructions(Behavior.Body);
+        var insns = CompoundState.ConvertInstructions(Behavior.Body, null, dataTypes);
 
         foreach (Match m in Regex.Matches(insns, "(\\w+) = \"([^\"]*)\"")) {
             var lhs = m.Groups[1].Value;

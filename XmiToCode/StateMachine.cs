@@ -113,9 +113,9 @@ class StateMachine : CodeGenerationItem
     public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, string? prefixAssignments = null)
     {
         // TODO: These signatures look implausible.
-        var exit = x.state.GenerateExit(x.state, x.transition);
-        var transitionEffect = x.state.GenerateTransition(x.state, x.transition);
-        var entry = x.state.GenerateEntry(fromState, x.transition);
+        var exit = x.state.GenerateExit(x.state, x.transition, prefixAssignments, dataTypes);
+        var transitionEffect = x.state.GenerateTransition(x.state, x.transition, prefixAssignments, dataTypes);
+        var entry = x.state.GenerateEntry(fromState, x.transition, prefixAssignments, dataTypes);
 
         var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
 

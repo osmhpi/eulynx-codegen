@@ -1,6 +1,6 @@
-using System.Globalization;
 using System.Text.RegularExpressions;
 using XmiToCode;
+using static CodeGenerationItem;
 
 record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
 {
@@ -12,7 +12,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    public static string ConvertInstructions(string instructions) {
+    public static string ConvertInstructions(string instructions, string? prefixAssignments, DataTypeHelper dataTypes) {
         return string.Join(";\n", instructions.Split(";").Select(instruction => {
             var fixedSyntax = instruction
                 .Replace("TRUE", "\"TRUE\"")
@@ -21,7 +21,44 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
                 .Trim();
 
             var fixedIdentifiers = Regex.Replace(fixedSyntax, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-            var fixedMessages = Regex.Replace(fixedIdentifiers, "^Send (.+)\\s?To (.+)$", m => $"SendMessage(\"{m.Groups[1].Value}\", \"{m.Groups[2].Value}\")");
+
+            var fixedMessages = Regex.Replace(fixedIdentifiers,
+                "^Send (.+)\\s?To (.+)$",
+                m => {
+                    var prefix = prefixAssignments != null ? $"{prefixAssignments}." : "";
+                    var messageConstructor = m.Groups[1].Value.Replace(" ", "");
+
+                    if (!messageConstructor.EndsWith(")")) {
+                        messageConstructor += "()";
+                    }
+
+                    var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
+                    if (!messageName.Success) {
+                        throw new Exception($"Invalid message expression: {messageConstructor}");
+                    }
+                    var parsedMessageName = messageName.Groups[1].Value;
+
+                    var messageInitializerValue = "";
+
+                    var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
+                    if (messageInitializer.Success) {
+                        messageInitializerValue = messageInitializer.Groups[2].Value;
+                        // Guesswork: Is the initializer referring to a property/port or is it a constant?
+                        // TODO: If this is ambiguous, throw
+                        if (!dataTypes.IsPropertyOrPort(messageInitializerValue)) {
+                            dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, messageInitializerValue);
+                            messageInitializerValue = $"Message.{parsedMessageName}.Values.{messageInitializerValue}";
+                        } else {
+                            dataTypes.RecordCoalesceMessageValues(parsedMessageName, messageInitializerValue);
+                            if (prefixAssignments != null) {
+                                messageInitializerValue = $"{prefixAssignments}.{messageInitializerValue}";
+                            }
+                        }
+                    }
+
+                    dataTypes.RecordPossibleMessageForPort(m.Groups[2].Value, parsedMessageName);
+                    return $"SendMessage(new Message.{parsedMessageName}({messageInitializerValue}), {prefix}{m.Groups[2].Value})";
+                });
             return fixedMessages;
         }));
     }
@@ -30,27 +67,19 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    public string? GenerateExit(IState next, Transition transition)
+    public string? GenerateExit(IState next, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? ""))));
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", prefixAssignments, dataTypes))));
     }
 
-    public string? GenerateTransition(IState next, Transition transition)
+    public string? GenerateTransition(IState next, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? ""))));
+        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "", prefixAssignments, dataTypes))));
     }
 
-    public string? GenerateEntry(IState previous, Transition transition)
+    public string? GenerateEntry(IState previous, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? ""))));
-    }
-
-    private static string InPascalCase(string value)
-    {
-        var result = value.ToLower().Replace("_", " ").Replace("-", " ").Replace("\t", " ");
-        var info = CultureInfo.CurrentCulture.TextInfo;
-        result = info.ToTitleCase(result).Replace(" ", string.Empty);
-        return result;
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", prefixAssignments, dataTypes))));
     }
 
     public bool IsSourceOfTransition(UmlTransition transition)

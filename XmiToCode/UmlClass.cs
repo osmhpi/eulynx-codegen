@@ -159,13 +159,22 @@ internal class UmlClass : CodeGenerationItem
         // TODO: I think side effects of initial transitions are still missing
     }
 
-    return @$"namespace Eulynx;
+    return @$"using System.Threading.Channels;
+using EulynxMessages = EulynxLive.Messages.Baseline4R1;
+
+namespace Eulynx;
 
 public class {className} {{
     {_stateMachine.Write(className, _dataTypes)}
 
     private {behaviorName} _state;
     public {behaviorName} State {{ get {{ return _state; }} }}
+
+    private readonly MessageConverter _messageConverter;
+
+    public {className}(MessageConverter messageConverter) {{
+        _messageConverter = messageConverter;
+    }}
 
     public void Init() {{
         _state = {behaviorName}.New(this);
@@ -181,8 +190,8 @@ public class {className} {{
         return condition;
     }}
 
-    private void SendMessage(string message, string port) {{
-        // TODO: Implement
+    private void SendMessage(Message message, Channel<EulynxMessages.Message> port) {{
+        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
     private bool IsMessageArrived(string message) {{
@@ -206,7 +215,13 @@ public class {className} {{
     // Operations
     {string.Join("\n", _dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
 
+    // Value Types
     {_dataTypes.GeneratePropertyValueTypes()}
+
+    // Messages
+    public record Message {{
+        {_dataTypes.GenerateMessages()}
+    }}
 }}
 ";
   }

@@ -2,12 +2,20 @@ using System.Globalization;
 
 abstract class CodeGenerationItem {
 
-  public static string InPascalCase(string s) {
-      var result = s.ToLower().Replace("_", " ").Replace("-", " ").Replace("\t", " ");
-      var info = CultureInfo.CurrentCulture.TextInfo;
-      result = info.ToTitleCase(result).Replace(" ", string.Empty);
-      return result;
-  }
+    public static string InPascalCase(string s) {
+
+        if (!s.Contains(" ") && !s.Contains("_")
+            && s.Length > 0 && s.Substring(0, 1) == s.Substring(0, 1).ToUpper()
+            && s != s.ToUpper()) {
+            // This already seems to be in pascal case
+            return s;
+        }
+
+        var result = s.ToLower().Replace("_", " ").Replace("-", " ").Replace("\t", " ");
+        var info = CultureInfo.CurrentCulture.TextInfo;
+        result = info.ToTitleCase(result).Replace(" ", string.Empty);
+        return result;
+    }
 
   public abstract string Write();
 }
