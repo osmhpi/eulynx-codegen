@@ -12,7 +12,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    private string ConvertInstructions(string instructions) {
+    public static string ConvertInstructions(string instructions) {
         return string.Join(";\n", instructions.Split(";").Select(instruction => {
             var fixedSyntax = instruction
                 .Replace("TRUE", "\"TRUE\"")

@@ -74,13 +74,13 @@ class StateMachine : CodeGenerationItem
             ? regularTransitions.Select(x =>
                 $@"{x.transition.GetTransitionConstraints(dataTypes)} {{
                     {GenerateActivities(fromState, x, dataTypes)}
-                    return {x.stateName}.New();
+                    return {x.stateName}.New(this);
                 }}")
             : regularTransitions.Select(x =>
                 $@"{GetTransitionChangeTriggerExpression(x.transition, dataTypes)} {{
                     {x.transition.GetTransitionConstraints(dataTypes)} {{
                         {GenerateActivities(fromState, x, dataTypes)}
-                        return {x.stateName}.New();
+                        return {x.stateName}.New(this);
                     }}
                 }}"));
 
@@ -114,7 +114,7 @@ class StateMachine : CodeGenerationItem
         }
     }
 
-    private string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes)
+    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, string? prefixAssignments = null)
     {
         // TODO: These signatures look implausible.
         var exit = x.state.GenerateExit(x.state, x.transition);
@@ -131,6 +131,11 @@ class StateMachine : CodeGenerationItem
 
         result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
             m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
+
+        if (prefixAssignments != null) {
+            result = Regex.Replace(result, "(\\w+)(.*)",
+                m => $"{prefixAssignments}.{m.Groups[1].Value}{m.Groups[2].Value}");
+        }
 
         return result;
     }
@@ -186,24 +191,28 @@ class StateMachine : CodeGenerationItem
         return "";
     }
 
-    private string MakeSubrecord(string recordName, IState x) {
+    private string MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes) {
         if (x.InternalStateMachine != null) {
-            return x.InternalStateMachine.MakeStateRecord(x.Name, recordName);
+            return x.InternalStateMachine.MakeStateRecord(x.Name, recordName, className, dataTypes);
         } else {
             return $@"public record {x.Name}() : {recordName}() {{
-                public static new {x.Name} New() => new {x.Name}();
+                public static new {x.Name} New({className} This) => new {x.Name}();
             }}";
         }
     }
 
-    private string MakeStateRecord(string name, string basename) {
-        var subrecords = _states.Select(x => MakeSubrecord(name, x));
-        var (x, y, z) = GetTransitionsFromState(name, _initialState).Single();
+    private string MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes) {
+        var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes));
+        var initialTransition = GetTransitionsFromState(name, _initialState).Single();
+        var activities = GenerateActivities(_initialState, initialTransition, dataTypes, "This");
 
-        return @$"public record {name} : {basename} {{
+        return @$"public record {name} : {parentBehaviorName} {{
         {string.Join("\n    ", subrecords)}
 
-    public static new {name} New() => {z}.New();
+    public static new {name} New({className} This) {{
+        {activities}
+        return {initialTransition.stateName}.New(This);
+    }}
 
     private {name}() {{}}
 }}
@@ -212,7 +221,11 @@ class StateMachine : CodeGenerationItem
 
     public override string Write()
     {
-        return MakeStateRecord(GetName(), "object");
+        throw new NotImplementedException();
+    }
+
+    public string Write(string className, DataTypeHelper dataTypes) {
+        return MakeStateRecord(GetName(), "object", className, dataTypes);
     }
 
     public IEnumerable<(CompoundState FromState, UmlTransition Transition)> GetTransitionsOriginatingFromAnyState() {

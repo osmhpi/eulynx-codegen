@@ -29,8 +29,12 @@ internal class UmlClass : CodeGenerationItem
         var ports = _class.OwnedAttribute
             .Where(x => x.XmiType == "uml:Port")
             .ToList();
+        var operations = _class.OwnedOperation
+            .Where(x => x.XmiType == "uml:Operation")
+            .Select(x => new Operation(x, _class.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
+            .ToList();
 
-        _dataTypes = new DataTypeHelper(properties, ports, _changeEvents, _timeEvents, _packageEvents, typeAliases);
+        _dataTypes = new DataTypeHelper(properties, ports, operations, _changeEvents, _timeEvents, _packageEvents, typeAliases);
     }
 
     public static Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
@@ -114,7 +118,7 @@ internal class UmlClass : CodeGenerationItem
             initialTransitions
         );
 
-        // TODO: Move this to TransformSubverticesIntoCompoundStates (?)
+        // TODO: Some code duplication with TransformSubverticesIntoCompoundStates
         // There may be open-ended transitions in the subvertices (also deeply nested) that point towards a
         // state in the current region.
         var allSubstateTransitions = flattenedStates.Where(x => x.InternalStateMachine != null)
@@ -151,19 +155,20 @@ internal class UmlClass : CodeGenerationItem
         // Perform a dry run of generating transitions (which includes comparisons and assignments,
         // where property types are coalesced)
         var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes);
+        _dataTypes.Operations.Select(x => x.Write(_dataTypes)).ToList();
+        // TODO: I think side effects of initial transitions are still missing
     }
 
     return @$"namespace Eulynx;
 
 public class {className} {{
-    {_stateMachine.Write()}
+    {_stateMachine.Write(className, _dataTypes)}
 
     private {behaviorName} _state;
     public {behaviorName} State {{ get {{ return _state; }} }}
 
     public {className}() {{
-        {GenerateInitialEntry(_stateMachine, _dataTypes)}
-        _state = {behaviorName}.New();
+        _state = {behaviorName}.New(this);
     }}
 
     private bool IsTimeoutExpired(object timeout) {{
@@ -198,26 +203,19 @@ public class {className} {{
     // Ports
     {string.Join("\n", _dataTypes.Ports.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 
+    // Operations
+    {string.Join("\n", _dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
+
     {_dataTypes.GeneratePropertyValueTypes()}
 }}
 ";
   }
 
-  private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
-  {
-      var (x, y, z) = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-      var entry = y.GenerateEntry(null, null) ?? "";
-
-      foreach (Match m in Regex.Matches(entry, "(\\w+) = \"(\\w*)\"")) {
-          var lhs = m.Groups[1].Value;
-          var rhs = m.Groups[2].Value;
-          dataTypes.RecordPossibleValueForProperty(lhs, rhs);
-      }
-
-      entry = Regex.Replace(entry, "(\\w+) = \"(\\w*)\"", m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[2].Value)}");
-
-      return entry;
-  }
+    private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
+    {
+        var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
+        return _stateMachine.GenerateActivities(behavior.InitialState, transitionTuple, dataTypes);
+    }
 
   internal async Task Generate()
   {

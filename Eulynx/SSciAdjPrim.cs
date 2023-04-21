@@ -6,15 +6,15 @@ public class SSciAdjPrim
     {
         public record RequestedNoScp() : SSciAdjsPrimBehaviour()
         {
-            public static new RequestedNoScp New() => new RequestedNoScp();
+            public static new RequestedNoScp New(SSciAdjPrim This) => new RequestedNoScp();
         }
         public record ImpermissibleNoScp() : SSciAdjsPrimBehaviour()
         {
-            public static new ImpermissibleNoScp New() => new ImpermissibleNoScp();
+            public static new ImpermissibleNoScp New(SSciAdjPrim This) => new ImpermissibleNoScp();
         }
         public record Impermissible() : SSciAdjsPrimBehaviour()
         {
-            public static new Impermissible New() => new Impermissible();
+            public static new Impermissible New(SSciAdjPrim This) => new Impermissible();
         }
         public record Active : SSciAdjsPrimBehaviour
         {
@@ -22,46 +22,66 @@ public class SSciAdjPrim
             {
                 public record WaitingForVersionCheck() : Establishing()
                 {
-                    public static new WaitingForVersionCheck New() => new WaitingForVersionCheck();
+                    public static new WaitingForVersionCheck New(SSciAdjPrim This) => new WaitingForVersionCheck();
                 }
                 public record WaitingForInitialisation() : Establishing()
                 {
-                    public static new WaitingForInitialisation New() => new WaitingForInitialisation();
+                    public static new WaitingForInitialisation New(SSciAdjPrim This) => new WaitingForInitialisation();
                 }
                 public record ReceivingSecStatus() : Establishing()
                 {
-                    public static new ReceivingSecStatus New() => new ReceivingSecStatus();
+                    public static new ReceivingSecStatus New(SSciAdjPrim This) => new ReceivingSecStatus();
                 }
                 public record CheckingSecStatus() : Establishing()
                 {
-                    public static new CheckingSecStatus New() => new CheckingSecStatus();
+                    public static new CheckingSecStatus New(SSciAdjPrim This) => new CheckingSecStatus();
                 }
                 public record SendingPrimStatus() : Establishing()
                 {
-                    public static new SendingPrimStatus New() => new SendingPrimStatus();
+                    public static new SendingPrimStatus New(SSciAdjPrim This) => new SendingPrimStatus();
                 }
                 public record WaitingForInitCompletion() : Establishing()
                 {
-                    public static new WaitingForInitCompletion New() => new WaitingForInitCompletion();
+                    public static new WaitingForInitCompletion New(SSciAdjPrim This) => new WaitingForInitCompletion();
                 }
 
-                public static new Establishing New() => Establishing.WaitingForVersionCheck.New();
+                public static new Establishing New(SSciAdjPrim This)
+                {
+                    This.SendMessage("EstablishingPdiConnection ", "P2inout");
+                    This.SendMessage("CdPdiVersionCheck(D3inConPdiVersion) ", "P1inout");
+
+                    This.D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForVersionCheck;
+
+                    return Establishing.WaitingForVersionCheck.New(This);
+                }
 
                 private Establishing() { }
             }
 
             public record Established() : Active()
             {
-                public static new Established New() => new Established();
+                public static new Established New(SSciAdjPrim This) => new Established();
             }
 
-            public static new Active New() => Active.Establishing.New();
+            public static new Active New(SSciAdjPrim This)
+            {
+
+                return Active.Establishing.New(This);
+            }
 
             private Active() { }
         }
 
 
-        public static new SSciAdjsPrimBehaviour New() => SSciAdjsPrimBehaviour.RequestedNoScp.New();
+        public static new SSciAdjsPrimBehaviour New(SSciAdjPrim This)
+        {
+            This.Cop1Init();
+
+            This.D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
+            This.T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+
+            return SSciAdjsPrimBehaviour.RequestedNoScp.New(This);
+        }
 
         private SSciAdjsPrimBehaviour() { }
     }
@@ -72,10 +92,7 @@ public class SSciAdjPrim
 
     public SSciAdjPrim()
     {
-        D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-        T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
-
-        _state = SSciAdjsPrimBehaviour.New();
+        _state = SSciAdjsPrimBehaviour.New(this);
     }
 
     private bool IsTimeoutExpired(object timeout)
@@ -131,7 +148,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -142,7 +159,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -153,7 +170,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -162,7 +179,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -173,7 +190,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -184,7 +201,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -195,7 +212,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
@@ -205,7 +222,7 @@ public class SSciAdjPrim
                 SendMessage("CdClosePdi(Timeout) ", "P1inout");
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
         if (IsMessageArrived("Msg_PDI_Version_Check"))
@@ -216,7 +233,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitialisation;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitialisation.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitialisation.New(this);
             }
         }
         if (IsMessageArrived("Msg_PDI_Version_Check"))
@@ -228,7 +245,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_PDI_Version_Check"))
@@ -240,7 +257,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
 
@@ -258,7 +275,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -269,7 +286,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -280,7 +297,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -289,7 +306,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -300,7 +317,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -311,7 +328,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -322,7 +339,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
@@ -332,7 +349,7 @@ public class SSciAdjPrim
                 SendMessage("CdClosePdi(Timeout) ", "P1inout");
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
         if (IsMessageArrived("Msg_Start_Initialisation"))
@@ -340,7 +357,7 @@ public class SSciAdjPrim
             {
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.ReceivingSecStatus;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.ReceivingSecStatus.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.ReceivingSecStatus.New(this);
             }
         }
 
@@ -358,7 +375,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -369,7 +386,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -380,7 +397,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -389,7 +406,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -400,7 +417,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -411,7 +428,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -422,7 +439,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
@@ -432,7 +449,7 @@ public class SSciAdjPrim
                 SendMessage("CdClosePdi(Timeout) ", "P1inout");
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
         if (IsMessageArrived("Msg_Status_Report_Completed"))
@@ -441,7 +458,7 @@ public class SSciAdjPrim
                 T27outCheckSecStatus = T27outCheckSecStatusValue.True;
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.CheckingSecStatus;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.CheckingSecStatus.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.CheckingSecStatus.New(this);
             }
         }
 
@@ -459,7 +476,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -470,7 +487,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -481,7 +498,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -490,7 +507,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -501,7 +518,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -512,7 +529,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -523,7 +540,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
@@ -533,7 +550,7 @@ public class SSciAdjPrim
                 SendMessage("CdClosePdi(Timeout) ", "P1inout");
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
         if (IsConditionChanged(T25inSecStatusReportComplete))
@@ -542,7 +559,7 @@ public class SSciAdjPrim
                 SendMessage("StartPrimStatusReport ", "P2inout");
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.SendingPrimStatus;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.SendingPrimStatus.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.SendingPrimStatus.New(this);
             }
         }
 
@@ -560,7 +577,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -571,7 +588,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -582,7 +599,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -591,7 +608,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -602,7 +619,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -613,7 +630,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -624,7 +641,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
@@ -634,7 +651,7 @@ public class SSciAdjPrim
                 SendMessage("CdClosePdi(Timeout) ", "P1inout");
                 D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
         if (IsMessageArrived("Prim_Status_Report_Completed"))
@@ -643,7 +660,7 @@ public class SSciAdjPrim
                 SendMessage("MsgStatusReportCompleted ", "P1inout");
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitCompletion;
 
-                return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitCompletion.New();
+                return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitCompletion.New(this);
             }
         }
 
@@ -661,7 +678,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -672,7 +689,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Reset_PDI"))
@@ -683,7 +700,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T10inScpConnectionTerminated))
@@ -692,7 +709,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
                 T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
 
-                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
         if (IsConditionChanged(T20inProtocolError))
@@ -703,7 +720,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T21inFormalTelegramError))
@@ -714,7 +731,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsConditionChanged(T22inContentTelegramError))
@@ -725,7 +742,7 @@ public class SSciAdjPrim
 
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
 
-                return SSciAdjsPrimBehaviour.Impermissible.New();
+                return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
         if (IsMessageArrived("Msg_Initialisation_Completed"))
@@ -736,7 +753,7 @@ public class SSciAdjPrim
                 D50outPdiConnectionState = D50outPdiConnectionStateValue.Established;
                 SendMessage("PdiConnectionEstablished ", "P2inout");
 
-                return SSciAdjsPrimBehaviour.Active.Established.New();
+                return SSciAdjsPrimBehaviour.Active.Established.New(this);
             }
         }
 
@@ -746,7 +763,7 @@ public class SSciAdjPrim
 
 
     // Properties
-    public bool MemPdiVersionCheckResult { get; set; }
+    public MemPdiVersionCheckResultValue MemPdiVersionCheckResult { get; set; }
     public bool MemPdiVersionChecksumdata { get; set; }
 
     // Ports
@@ -767,7 +784,19 @@ public class SSciAdjPrim
     public bool P2inout { get; set; }
     public bool T25inSecStatusReportComplete { get; set; }
 
+    // Operations
+    public void Cop1Init()
+    {
+        MemPdiVersionCheckResult = MemPdiVersionCheckResultValue.Unknown;
+        MemPdiVersionChecksumdata = D4inConChecksumData;
 
+    }
+
+
+    public enum MemPdiVersionCheckResultValue
+    {
+        Unknown
+    }
 
 
 
@@ -782,7 +811,8 @@ public class SSciAdjPrim
         CheckingSecStatus,
         SendingPrimStatus,
         WaitingForInitCompletion,
-        Established
+        Established,
+        WaitingForVersionCheck
     }
 
     public enum T6outEstablishScpConnectionValue

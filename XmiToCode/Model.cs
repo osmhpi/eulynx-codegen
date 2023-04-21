@@ -35,6 +35,23 @@ namespace XmiToCode
         public string IsConjugated { get; set; }
     }
 
+    [XmlRoot(ElementName="ownedOperation")]
+    public class OwnedOperation {
+
+        [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string XmiType { get; set; }
+        [XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string Id { get; set; }
+        [XmlAttribute(AttributeName="name")]
+        public string Name { get; set; }
+        [XmlAttribute(AttributeName="visibility")]
+        public string Visibility { get; set; }
+        [XmlAttribute(AttributeName="method")]
+        public string Method { get; set; }
+        [XmlElement(ElementName="ownedComment")]
+        public OwnedComment OwnedComment { get; set; }
+    }
+
     [XmlRoot(ElementName="end")]
     public class End {
         [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
@@ -61,10 +78,13 @@ namespace XmiToCode
 
     [XmlRoot(ElementName="packagedElement")]
     public class PackagedElement {
-    public OwnedBehavior StateMachine => OwnedBehavior.SingleOrDefault(x => x.Type == "uml:StateMachine");
+        public OwnedBehavior StateMachine => OwnedBehavior.SingleOrDefault(x => x.Type == "uml:StateMachine");
 
         [XmlElement(ElementName="ownedAttribute")]
         public List<OwnedAttribute> OwnedAttribute { get; set; }
+
+        [XmlElement(ElementName="ownedOperation")]
+        public List<OwnedOperation> OwnedOperation { get; set; }
         [XmlElement(ElementName="ownedConnector")]
         public List<OwnedConnector> OwnedConnector { get; set; }
         [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
@@ -211,6 +231,8 @@ namespace XmiToCode
         public string Id { get; set; }
         [XmlAttribute(AttributeName="name")]
         public string Name { get; set; }
+        [XmlAttribute(AttributeName="body")]
+        public string Body { get; set; }
     }
 
     [XmlRoot(ElementName="ownedEnd")]

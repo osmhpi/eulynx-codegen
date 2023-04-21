@@ -2,10 +2,11 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
-class DataTypeHelper {
+public class DataTypeHelper {
 
     public List<XmiToCode.OwnedAttribute> Properties { get; private set; }
     public List<OwnedAttribute> Ports { get; }
+    public List<Operation> Operations { get; }
     public Dictionary<string, PackagedElement> ChangeEvents { get; }
     public Dictionary<string, PackagedElement> TimeEvents { get; }
     public Dictionary<string, PackagedElement> PackageEvents { get; }
@@ -17,6 +18,7 @@ class DataTypeHelper {
     public DataTypeHelper(
         List<OwnedAttribute> properties,
         List<OwnedAttribute> ports,
+        List<Operation> operations,
         Dictionary<string, PackagedElement> changeEvents,
         Dictionary<string, PackagedElement> timeEvents,
         Dictionary<string, PackagedElement> packageEvents,
@@ -24,6 +26,7 @@ class DataTypeHelper {
     {
         Properties = properties;
         Ports = ports;
+        Operations = operations;
         ChangeEvents = changeEvents;
         TimeEvents = timeEvents;
         PackageEvents = packageEvents;

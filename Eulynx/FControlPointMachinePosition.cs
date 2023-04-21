@@ -8,28 +8,39 @@ public class FControlPointMachinePosition
         {
             public record MovingLeft() : Operating()
             {
-                public static new MovingLeft New() => new MovingLeft();
+                public static new MovingLeft New(FControlPointMachinePosition This) => new MovingLeft();
             }
             public record MovingRight() : Operating()
             {
-                public static new MovingRight New() => new MovingRight();
+                public static new MovingRight New(FControlPointMachinePosition This) => new MovingRight();
             }
             public record Stopped() : Operating()
             {
-                public static new Stopped New() => new Stopped();
+                public static new Stopped New(FControlPointMachinePosition This) => new Stopped();
             }
             public record Waiting() : Operating()
             {
-                public static new Waiting New() => new Waiting();
+                public static new Waiting New(FControlPointMachinePosition This) => new Waiting();
             }
 
-            public static new Operating New() => Operating.Waiting.New();
+            public static new Operating New(FControlPointMachinePosition This)
+            {
+
+                return Operating.Waiting.New(This);
+            }
 
             private Operating() { }
         }
 
 
-        public static new FControlPointMachinePositionBehaviour New() => FControlPointMachinePositionBehaviour.Operating.New();
+        public static new FControlPointMachinePositionBehaviour New(FControlPointMachinePosition This)
+        {
+            This.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+            This.D21outMoveLeft = D21outMoveLeftValue.False;
+            This.D22outMoveRight = D22outMoveRightValue.False;
+
+            return FControlPointMachinePositionBehaviour.Operating.New(This);
+        }
 
         private FControlPointMachinePositionBehaviour() { }
     }
@@ -40,11 +51,7 @@ public class FControlPointMachinePosition
 
     public FControlPointMachinePosition()
     {
-        MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-        D21outMoveLeft = D21outMoveLeftValue.False;
-        D22outMoveRight = D22outMoveRightValue.False;
-
-        _state = FControlPointMachinePositionBehaviour.New();
+        _state = FControlPointMachinePositionBehaviour.New(this);
     }
 
     private bool IsTimeoutExpired(object timeout)
@@ -97,7 +104,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.False;
                 D22outMoveRight = D22outMoveRightValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.New();
+                return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
         }
         if (IsTimeoutExpired(D39inConTmaxPmOperation))
@@ -111,7 +118,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D10inPmPosition == MemLastCommandedPointPosition))
@@ -123,7 +130,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == MemLastCommandedPointPositionValue.Right && (D2inRequiredPointPosition != D10inPmPosition)))
@@ -135,7 +142,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.True;
                 D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
+                return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == MemLastCommandedPointPositionValue.Uncommanded))
@@ -147,7 +154,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == D10inPmPosition))
@@ -161,7 +168,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D6inObservedAbilityToMovePoint == D6inObservedAbilityToMovePointValue.UnableToMove))
@@ -173,7 +180,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
 
@@ -190,7 +197,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.False;
                 D22outMoveRight = D22outMoveRightValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.New();
+                return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
         }
         if (IsTimeoutExpired(D39inConTmaxPmOperation))
@@ -204,7 +211,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D10inPmPosition == MemLastCommandedPointPosition))
@@ -216,7 +223,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == MemLastCommandedPointPositionValue.Left && (D2inRequiredPointPosition != D10inPmPosition)))
@@ -228,7 +235,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.True;
                 D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
+                return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == MemLastCommandedPointPositionValue.Uncommanded))
@@ -240,7 +247,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == D10inPmPosition))
@@ -254,7 +261,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
         if (IsConditionChanged(D6inObservedAbilityToMovePoint == D6inObservedAbilityToMovePointValue.UnableToMove))
@@ -266,7 +273,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
 
@@ -283,7 +290,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.False;
                 D22outMoveRight = D22outMoveRightValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.New();
+                return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
         }
         if (IsConditionChanged(D10inPmPosition == MemLastCommandedPointPositionValue.NoEndPosition))
@@ -293,7 +300,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.True;
                 D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
+                return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
             }
         }
         if (IsConditionChanged(D10inPmPosition == MemLastCommandedPointPositionValue.NoEndPosition))
@@ -303,7 +310,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.True;
                 D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
+                return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
             }
         }
         if (IsConditionChanged(D2inRequiredPointPosition == MemLastCommandedPointPositionValue.Left))
@@ -316,7 +323,7 @@ public class FControlPointMachinePosition
                     D21outMoveLeft = D21outMoveLeftValue.True;
                     D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                    return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New();
+                    return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
                 }
                 else
                 {
@@ -326,7 +333,7 @@ public class FControlPointMachinePosition
                     D22outMoveRight = D22outMoveRightValue.False;
                     D35outDriveStop = D35outDriveStopValue.True;
 
-                    return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                    return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
                 }
             }
         }
@@ -340,7 +347,7 @@ public class FControlPointMachinePosition
                     D22outMoveRight = D22outMoveRightValue.True;
                     D40outMsgPmTimeout = D40outMsgPmTimeoutValue.False;
 
-                    return FControlPointMachinePositionBehaviour.Operating.MovingRight.New();
+                    return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
                 }
                 else
                 {
@@ -350,7 +357,7 @@ public class FControlPointMachinePosition
                     D22outMoveRight = D22outMoveRightValue.False;
                     D35outDriveStop = D35outDriveStopValue.True;
 
-                    return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                    return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
                 }
             }
         }
@@ -368,7 +375,7 @@ public class FControlPointMachinePosition
                 D21outMoveLeft = D21outMoveLeftValue.False;
                 D22outMoveRight = D22outMoveRightValue.False;
 
-                return FControlPointMachinePositionBehaviour.Operating.New();
+                return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
         }
         if (IsConditionChanged(D51inEstEfesState == D51inEstEfesStateValue.Initialising))
@@ -381,7 +388,7 @@ public class FControlPointMachinePosition
                 D22outMoveRight = D22outMoveRightValue.False;
                 D35outDriveStop = D35outDriveStopValue.True;
 
-                return FControlPointMachinePositionBehaviour.Operating.Stopped.New();
+                return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
         }
 
@@ -407,6 +414,9 @@ public class FControlPointMachinePosition
     public bool D39inConTmaxPmOperation { get; set; }
     public D40outMsgPmTimeoutValue D40outMsgPmTimeout { get; set; }
     public D41inObservedPointEndPositionValue D41inObservedPointEndPosition { get; set; }
+
+    // Operations
+
 
 
     public enum MemLastCommandedPointPositionValue
