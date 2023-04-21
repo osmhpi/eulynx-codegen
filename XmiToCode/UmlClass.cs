@@ -167,7 +167,7 @@ public class {className} {{
     private {behaviorName} _state;
     public {behaviorName} State {{ get {{ return _state; }} }}
 
-    public {className}() {{
+    public void Init() {{
         _state = {behaviorName}.New(this);
     }}
 

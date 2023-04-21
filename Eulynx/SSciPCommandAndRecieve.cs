@@ -34,7 +34,7 @@ public class SSciPCommandAndRecieve
     private SSciPCommandAndRecieveBehaviour _state;
     public SSciPCommandAndRecieveBehaviour State { get { return _state; } }
 
-    public SSciPCommandAndRecieve()
+    public void Init()
     {
         _state = SSciPCommandAndRecieveBehaviour.New(this);
     }

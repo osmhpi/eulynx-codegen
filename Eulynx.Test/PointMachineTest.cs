@@ -15,6 +15,10 @@ class PointMachine {
         // According to Eu.P.3286
         CommandAndReceive.D50inPdiConnectionState = Prim.D50outPdiConnectionState;
         // Prim.T25inSecStatusReportComplete
+
+        // Wiring is done, init
+        CommandAndReceive.Init();
+        Prim.Init();
     }
 
     public SSciPCommandAndRecieve CommandAndReceive { get; }

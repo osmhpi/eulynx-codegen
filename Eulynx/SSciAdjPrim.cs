@@ -90,7 +90,7 @@ public class SSciAdjPrim
     private SSciAdjsPrimBehaviour _state;
     public SSciAdjsPrimBehaviour State { get { return _state; } }
 
-    public SSciAdjPrim()
+    public void Init()
     {
         _state = SSciAdjsPrimBehaviour.New(this);
     }

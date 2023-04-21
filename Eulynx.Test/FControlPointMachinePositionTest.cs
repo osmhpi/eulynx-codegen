@@ -9,6 +9,8 @@ public class FControlPointMachinePositionTest
     public void InitialMemLastCommandedPointPositionShouldBeUndefined()
     {
         var controlPointMachinePosition = new FControlPointMachinePosition();
+        controlPointMachinePosition.Init();
+
         Assert.AreEqual(controlPointMachinePosition.MemLastCommandedPointPosition, MemLastCommandedPointPositionValue.Undefined);
     }
 
@@ -16,6 +18,7 @@ public class FControlPointMachinePositionTest
     public void ShouldDrivePointToCorrectDirection()
     {
         var controlPointMachinePosition = new FControlPointMachinePosition();
+        controlPointMachinePosition.Init();
 
         Assert.IsInstanceOfType(controlPointMachinePosition.State, typeof(FControlPointMachinePositionBehaviour.Operating.Waiting));
 
