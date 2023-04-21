@@ -74,7 +74,7 @@ public class SSciPCommandAndRecieve
     {
         if (IsConditionChanged(T30inMovePoint))
         {
-            if (D30inMovePoint == D30inMovePointValue.Right && D50inPdiConnectionState == D50inPdiConnectionStateValue.Established)
+            if (D30inMovePoint == D30inMovePointValue.Right && D50inPdiConnectionState == SSciAdjPrim.D50outPdiConnectionStateValue.Established)
             {
                 SendMessage("CdMovePoint (Right)", "P10inout");
 
@@ -83,7 +83,7 @@ public class SSciPCommandAndRecieve
         }
         if (IsConditionChanged(T30inMovePoint))
         {
-            if (D30inMovePoint == D30inMovePointValue.Left && D50inPdiConnectionState == D50inPdiConnectionStateValue.Established)
+            if (D30inMovePoint == D30inMovePointValue.Left && D50inPdiConnectionState == SSciAdjPrim.D50outPdiConnectionStateValue.Established)
             {
                 SendMessage("CdMovePoint (Left) ", "P10inout");
 
@@ -251,7 +251,7 @@ public class SSciPCommandAndRecieve
     public D30inMovePointValue D30inMovePoint { get; set; }
     public T31outTimeoutValue T31outTimeout { get; set; }
     public D32outPointPositionValue D32outPointPosition { get; set; }
-    public D50inPdiConnectionStateValue D50inPdiConnectionState { get; set; }
+    public SSciAdjPrim.D50outPdiConnectionStateValue D50inPdiConnectionState { get; set; }
     public D33outAbilityToMoveValue D33outAbilityToMove { get; set; }
     public bool P11in { get; set; }
     public bool T30inMovePoint { get; set; }
@@ -287,10 +287,6 @@ public class SSciPCommandAndRecieve
         TrailedAndNotApplicable
     }
 
-    public enum D50inPdiConnectionStateValue
-    {
-        Established
-    }
 
     public enum D33outAbilityToMoveValue
     {

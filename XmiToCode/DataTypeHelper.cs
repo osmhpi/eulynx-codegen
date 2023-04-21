@@ -10,16 +10,26 @@ class DataTypeHelper {
     public Dictionary<string, PackagedElement> TimeEvents { get; }
     public Dictionary<string, PackagedElement> PackageEvents { get; }
 
-    private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
-    private readonly Dictionary<string, string> _coalescedValues = new Dictionary<string, string>();
+    private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues;
+    private readonly Dictionary<string, string> _coalescedValues;
+    private readonly Dictionary<string, string> _typeAliases;
 
-    public DataTypeHelper(List<OwnedAttribute> properties, List<OwnedAttribute> ports, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, Dictionary<string, PackagedElement> packageEvents)
+    public DataTypeHelper(
+        List<OwnedAttribute> properties,
+        List<OwnedAttribute> ports,
+        Dictionary<string, PackagedElement> changeEvents,
+        Dictionary<string, PackagedElement> timeEvents,
+        Dictionary<string, PackagedElement> packageEvents,
+        Dictionary<string, string> typeAliases)
     {
         Properties = properties;
         Ports = ports;
         ChangeEvents = changeEvents;
         TimeEvents = timeEvents;
         PackageEvents = packageEvents;
+        _typeAliases = typeAliases;
+        _allowedPropertyValues = new Dictionary<string, HashSet<string>>();
+        _coalescedValues = new Dictionary<string, string>();
 
         foreach (var property in Properties) {
             _allowedPropertyValues.Add(InPascalCase(property.Name), new HashSet<string>());
@@ -45,7 +55,7 @@ class DataTypeHelper {
 
         foreach (var keyValue in _coalescedValues) {
             if (keyValue.Value == lhsPointsTo) {
-            _coalescedValues[keyValue.Key] = rhsPointsTo;
+                _coalescedValues[keyValue.Key] = rhsPointsTo;
             }
         }
     }
@@ -72,24 +82,33 @@ class DataTypeHelper {
     public string GeneratePropertyValueTypes()
     {
         return string.Join("\n", _allowedPropertyValues.Select(x => {
-        // Collect all of the field values that point to the same alias
-        var aliases = _coalescedValues.ContainsKey(x.Key)
-            ? _coalescedValues.Keys.Where(key => _coalescedValues[key] == _coalescedValues[x.Key])
-                .SelectMany(key => _allowedPropertyValues[key]).ToHashSet() : _allowedPropertyValues[x.Key];
+            if (_typeAliases.ContainsKey(x.Key)) {
+                return "";
+            }
 
-        if (aliases.Count == 0) {
-            return "";
-        }
+            // Collect all of the field values that point to the same alias
+            var aliases = _coalescedValues.ContainsKey(x.Key)
+                ? _coalescedValues.Keys.Where(key => _coalescedValues[key] == _coalescedValues[x.Key])
+                    .SelectMany(key => _allowedPropertyValues[key]).ToHashSet() : _allowedPropertyValues[x.Key];
 
-        return $@"
-            public enum {x.Key}Value {{
-                {string.Join(",\n", aliases.Select(GenerateEnumMemberName))}
-            }}";
-        }));
+            if (aliases.Count == 0) {
+                return "";
+            }
+
+            return $@"
+                public enum {x.Key}Value {{
+                    {string.Join(",\n", aliases.Select(GenerateEnumMemberName))}
+                }}";
+            })
+        );
     }
 
     public string LookupPropertyValueType(string v)
     {
+        if (_typeAliases.ContainsKey(v)) {
+            return _typeAliases[v];
+        }
+
         if (_coalescedValues.ContainsKey(v) == false) {
             _coalescedValues[v] = v;
         }

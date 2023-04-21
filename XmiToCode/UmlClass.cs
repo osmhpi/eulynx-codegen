@@ -10,7 +10,11 @@ internal class UmlClass : CodeGenerationItem
     private readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
-    public UmlClass(PackagedElement classPackage, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, Dictionary<string, PackagedElement> packageEvents)
+    public UmlClass(PackagedElement classPackage,
+        Dictionary<string, PackagedElement> changeEvents,
+        Dictionary<string, PackagedElement> timeEvents,
+        Dictionary<string, PackagedElement> packageEvents,
+        Dictionary<string, string> typeAliases)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
@@ -25,7 +29,8 @@ internal class UmlClass : CodeGenerationItem
         var ports = _class.OwnedAttribute
             .Where(x => x.XmiType == "uml:Port")
             .ToList();
-        _dataTypes = new DataTypeHelper(properties, ports, _changeEvents, _timeEvents, _packageEvents);
+
+        _dataTypes = new DataTypeHelper(properties, ports, _changeEvents, _timeEvents, _packageEvents, typeAliases);
     }
 
     public static Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
