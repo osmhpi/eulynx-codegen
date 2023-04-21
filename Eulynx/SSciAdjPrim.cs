@@ -219,6 +219,30 @@ public class SSciAdjPrim
                 return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitialisation.New();
             }
         }
+        if (IsMessageArrived("Msg_PDI_Version_Check"))
+        {
+            if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && !(ChecksumData == D4in_Con_Checksum_Data)]"))
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiChecksumMismatch;
+                SendMessage("CdClosePdi(Checksummismatch) ", "P1inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsMessageArrived("Msg_PDI_Version_Check"))
+        {
+            if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"not match\"]"))
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
+                SendMessage("CdClosePdi(Otherversionrequired) ", "P1inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
 
         // Do not transition
         return _state;
@@ -629,7 +653,92 @@ public class SSciAdjPrim
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__WaitingForInitCompletion()
     {
+        if (IsMessageArrived("Msg_Reset_PDI"))
+        {
+            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
 
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsMessageArrived("Msg_Reset_PDI"))
+        {
+            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsMessageArrived("Msg_Reset_PDI"))
+        {
+            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsConditionChanged(T10inScpConnectionTerminated))
+        {
+            {
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+
+                return SSciAdjsPrimBehaviour.RequestedNoScp.New();
+            }
+        }
+        if (IsConditionChanged(T20inProtocolError))
+        {
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                SendMessage("CdClosePdi(Protocolerror) ", "P1inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsConditionChanged(T21inFormalTelegramError))
+        {
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                SendMessage("CdClosePdi(Formaltelegramerror) ", "P1inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsConditionChanged(T22inContentTelegramError))
+        {
+            {
+                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                SendMessage("CdClosePdi(Contenttelegramerror) ", "P1inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+
+                return SSciAdjsPrimBehaviour.Impermissible.New();
+            }
+        }
+        if (IsMessageArrived("Msg_Initialisation_Completed"))
+        {
+            {
+                SendMessage("PdiConnectionClosed ", "P2inout");
+
+                D50outPdiConnectionState = D50outPdiConnectionStateValue.Established;
+                SendMessage("PdiConnectionEstablished ", "P2inout");
+
+                return SSciAdjsPrimBehaviour.Active.Established.New();
+            }
+        }
 
         // Do not transition
         return _state;
@@ -672,7 +781,8 @@ public class SSciAdjPrim
         ReceivingSecStatus,
         CheckingSecStatus,
         SendingPrimStatus,
-        WaitingForInitCompletion
+        WaitingForInitCompletion,
+        Established
     }
 
     public enum T6outEstablishScpConnectionValue
@@ -694,7 +804,9 @@ public class SSciAdjPrim
         PrimProtocolError,
         PrimFormalTelegramError,
         PrimContentTelegramError,
-        PdiTimeout
+        PdiTimeout,
+        PdiChecksumMismatch,
+        PdiOtherVersionRequired
     }
 
     public enum T27outCheckSecStatusValue

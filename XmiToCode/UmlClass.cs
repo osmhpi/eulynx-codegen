@@ -36,12 +36,21 @@ internal class UmlClass : CodeGenerationItem
                 subRegion != null ? new StateMachine(subRegion, x.Name) : null);
         }).OfType<IState>().ToList();
 
+        var allSubstateTransitions = states.Where(x => x.InternalStateMachine != null)
+            .SelectMany(x => x.InternalStateMachine!.GetTransitionsOriginatingFromAnyState()).ToList();
+        var substateTransitionsToStates = allSubstateTransitions.SelectMany(t =>
+            states.OfType<CompoundState>()
+                .Where(x => x.IsTargetOfTransition(t.Transition))
+                .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
+                .Select(to => new Transition(t.FromState, to, new List<UmlTransition> { t.Transition }))).ToList();
+
         var transitions = region.Transitions
             .Select(transition => new Transition(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
-                new List<UmlTransition> {transition}
+                new List<UmlTransition> { transition }
             ))
+            .Concat(substateTransitionsToStates)
             .ToList();
 
         return new Region(states, transitions);
@@ -78,10 +87,10 @@ internal class UmlClass : CodeGenerationItem
 
         var states = regions.Select(region =>
             region.Subvertices.Select(x => {
-                var subRegion = FlattenRegions(x.Regions);
+                var subregion = FlattenRegions(x.Regions);
                 return new CompoundState(
                     new List<PartialState>() { new PartialState(x, region) },
-                    subRegion != null ? new StateMachine(subRegion, x.Name) : null);
+                    subregion != null ? new StateMachine(subregion, x.Name) : null);
             }).ToList()).ToList();
 
         var flattenedStates = FlattenStates(states)
@@ -100,6 +109,17 @@ internal class UmlClass : CodeGenerationItem
             initialTransitions
         );
 
+        // TODO: Move this to TransformSubverticesIntoCompoundStates (?)
+        // There may be open-ended transitions in the subvertices (also deeply nested) that point towards a
+        // state in the current region.
+        var allSubstateTransitions = flattenedStates.Where(x => x.InternalStateMachine != null)
+            .SelectMany(x => x.InternalStateMachine!.GetTransitionsOriginatingFromAnyState()).ToList();
+        var substateTransitionsToFlattenedStates = allSubstateTransitions.SelectMany(t =>
+            flattenedStates
+                .Where(x => x.IsTargetOfTransition(t.Transition))
+                .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
+                .Select(to => new Transition(t.FromState, to, new List<UmlTransition> { t.Transition }))).ToList();
+
         var transitions = regions.SelectMany(region => region.Transitions
             .SelectMany(transition => flattenedStates
                 .Where(x => x.IsSourceOfTransition(transition) && !x.IsInitialState)
@@ -108,7 +128,7 @@ internal class UmlClass : CodeGenerationItem
                     .Where(x => x.IsNextStateAfterTransition(from, transition))
                     .Select(to => new Transition(from, to, new List<UmlTransition> { transition }))
                 )
-            ).ToList()).Append(initialTransition).ToList();
+            )).Concat(substateTransitionsToFlattenedStates).Append(initialTransition).ToList();
 
         return new Region(flattenedStates.OfType<IState>().ToList(), transitions);
     }

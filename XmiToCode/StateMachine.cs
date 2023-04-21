@@ -25,6 +25,9 @@ class StateMachine : CodeGenerationItem
     }
 
     public IEnumerable<(Transition transition, IState state, string stateName)> GetTransitionsFromState(string thisName, IState fromState, bool skipParentTransitions = false) {
+        var transitionsOnCurrentLevel = _region.Transitions.Where(x => x.From == fromState)
+            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
+
         // Does fromState match one of our child state machines?
         var childStateMachineTransitions = _states
             .Where(x => x.InternalStateMachine != null)
@@ -36,23 +39,18 @@ class StateMachine : CodeGenerationItem
             .Where(x => x.Transitions.Any())
             .ToList();
 
-        if (childStateMachineTransitions.Count > 0) {
-            return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
-                var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{thisName}.{x.stateName}"));
+        return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
+            var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{thisName}.{x.stateName}"));
 
-                if (skipParentTransitions) {
-                    return result;
-                }
+            if (skipParentTransitions) {
+                return result;
+            }
 
-                // Prepend the transitions from the enclosing state of the child state machine
-                return _region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
-                        .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
-                        .Concat(result);
-            });
-        }
-
-        return _region.Transitions.Where(x => x.From == fromState)
-            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
+            // Prepend the transitions from the enclosing state of the child state machine
+            return _region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
+                    .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
+                    .Concat(result);
+        }).Concat(transitionsOnCurrentLevel);
     }
 
     public string GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes)
@@ -215,6 +213,18 @@ class StateMachine : CodeGenerationItem
     public override string Write()
     {
         return MakeStateRecord(GetName(), "object");
+    }
+
+    public IEnumerable<(CompoundState FromState, UmlTransition Transition)> GetTransitionsOriginatingFromAnyState() {
+        return _states.OfType<CompoundState>()
+            .SelectMany(state =>
+                state.PartialStates.SelectMany(partial =>
+                    partial.EnclosingRegion.Transitions
+                        .Where(transition => state.IsSourceOfTransition(transition))
+                        .Select(transition => (state, transition))))
+            .Concat( // Recurse
+                _childStateMachines.SelectMany(child => child.StateMachine.GetTransitionsOriginatingFromAnyState())
+            );
     }
 
     internal string GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes)
