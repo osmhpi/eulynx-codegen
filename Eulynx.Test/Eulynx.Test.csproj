@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Eulynx\Eulynx.csproj" />
+    <ProjectReference Include="..\Eulynx.Runtime\Eulynx.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

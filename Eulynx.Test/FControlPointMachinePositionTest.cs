@@ -1,3 +1,4 @@
+using Eulynx.Runtime;
 using EulynxLive.Messages.Baseline4R1;
 using static Eulynx.FControlPointMachinePosition;
 
@@ -9,7 +10,7 @@ public class FControlPointMachinePositionTest
     [TestMethod]
     public void InitialMemLastCommandedPointPositionShouldBeUndefined()
     {
-        var messageConverter = new MessageConverter("", "", ProtocolType.Point);
+        var messageConverter = new MessageFactory("", "", ProtocolType.Point);
 
         var controlPointMachinePosition = new FControlPointMachinePosition(messageConverter);
         controlPointMachinePosition.Init();
@@ -20,23 +21,23 @@ public class FControlPointMachinePositionTest
     [TestMethod]
     public void ShouldDrivePointToCorrectDirection()
     {
-        var messageConverter = new MessageConverter("", "", ProtocolType.Point);
+        var messageConverter = new MessageFactory("", "", ProtocolType.Point);
 
         var controlPointMachinePosition = new FControlPointMachinePosition(messageConverter);
         controlPointMachinePosition.Init();
 
         Assert.IsInstanceOfType(controlPointMachinePosition.State, typeof(FControlPointMachinePositionBehaviour.Operating.Waiting));
 
-        controlPointMachinePosition.D51inEstEfesState = D51inEstEfesStateValue.Initialising;
-        controlPointMachinePosition.D34inConActive = true;
-        controlPointMachinePosition.D44inConDriveCapability = true;
+        controlPointMachinePosition.D51inEstEfesState.Value = D51inEstEfesStateValue.Initialising;
+        controlPointMachinePosition.D34inConActive.Value = true;
+        controlPointMachinePosition.D44inConDriveCapability.Value = true;
         controlPointMachinePosition.Transition();
 
         Assert.IsInstanceOfType(controlPointMachinePosition.State, typeof(FControlPointMachinePositionBehaviour.Operating.Stopped));
 
-        controlPointMachinePosition.D2inRequiredPointPosition = MemLastCommandedPointPositionValue.Left;
-        controlPointMachinePosition.D10inPmPosition = MemLastCommandedPointPositionValue.Undefined;
-        controlPointMachinePosition.D6inObservedAbilityToMovePoint = D6inObservedAbilityToMovePointValue.AbleToMove;
+        controlPointMachinePosition.D2inRequiredPointPosition.Value = MemLastCommandedPointPositionValue.Left;
+        controlPointMachinePosition.D10inPmPosition.Value = MemLastCommandedPointPositionValue.Undefined;
+        controlPointMachinePosition.D6inObservedAbilityToMovePoint.Value = D6inObservedAbilityToMovePointValue.AbleToMove;
         controlPointMachinePosition.Transition();
 
         Assert.IsInstanceOfType(controlPointMachinePosition.State, typeof(FControlPointMachinePositionBehaviour.Operating.MovingLeft));

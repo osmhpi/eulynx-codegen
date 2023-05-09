@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using static CodeGenerationItem;
 
 namespace XmiToCode;
 
@@ -15,7 +16,10 @@ public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
         insns = Regex.Replace(insns, "(\\w+) = \"([^\"]*)\"",
             m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
 
-        return @$"public void {CodeGenerationItem.InPascalCase(Op.Name)}() {{
+        var portOrDirectAccess = (string prop) => dataTypes.Ports.Any(x => InPascalCase(x.Name) == prop) ? $"{prop}.Value" : prop;
+        insns = Regex.Replace(insns, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
+
+        return @$"public void {InPascalCase(Op.Name)}() {{
             {insns}
         }}";
     }

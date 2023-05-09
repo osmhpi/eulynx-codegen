@@ -10,6 +10,7 @@ public class DataTypeHelper {
     public Dictionary<string, PackagedElement> ChangeEvents { get; }
     public Dictionary<string, PackagedElement> TimeEvents { get; }
     public Dictionary<string, PackagedElement> PackageEvents { get; }
+    public HashSet<PackagedElement> UsedChangeEvents { get; }
 
     private readonly Dictionary<string, HashSet<string>> _allowedPropertyValues;
     private readonly Dictionary<string, HashSet<string>> _allowedMessages;
@@ -40,6 +41,7 @@ public class DataTypeHelper {
         _coalescedValues = new Dictionary<string, string>();
         _allowedMessageValues = new Dictionary<string, HashSet<string>>();
         _coalescedMessageValues = new Dictionary<string, string>();
+        UsedChangeEvents = new HashSet<PackagedElement>();
 
         foreach (var property in Properties) {
             _allowedPropertyValues.Add(InPascalCase(property.Name), new HashSet<string>());
@@ -117,6 +119,10 @@ public class DataTypeHelper {
         );
     }
 
+    public bool IsMessagePort(string v) {
+        return _allowedMessages.ContainsKey(v);
+    }
+
     public string LookupPropertyValueType(string v)
     {
         if (_typeAliases.ContainsKey(v)) {
@@ -186,5 +192,10 @@ public class DataTypeHelper {
     internal void RecordCoalesceMessageValues(string parsedMessageName, string messageInitializerValue)
     {
         _coalescedMessageValues[parsedMessageName] = messageInitializerValue;
+    }
+
+    internal void RecordChangeEventUsed(PackagedElement packagedElement)
+    {
+        UsedChangeEvents.Add(packagedElement);
     }
 }

@@ -3,7 +3,7 @@ using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx;
 
-public class SSciAdjPrim
+public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 {
     public record SSciAdjsPrimBehaviour : object
     {
@@ -51,9 +51,9 @@ public class SSciAdjPrim
                 public static new Establishing New(SSciAdjPrim This)
                 {
                     This.SendMessage(new Message.EstablishingPdiConnection(), This.P2inout);
-                    This.SendMessage(new Message.CdPdiVersionCheck(This.D3inConPdiVersion), This.P1inout);
+                    This.SendMessage(new Message.CdPdiVersionCheck(This.D3inConPdiVersion.Value), This.P1inout);
 
-                    This.D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForVersionCheck;
+                    This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForVersionCheck;
 
                     return Establishing.WaitingForVersionCheck.New(This);
                 }
@@ -80,8 +80,8 @@ public class SSciAdjPrim
         {
             This.Cop1Init();
 
-            This.D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-            This.T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+            This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+            This.T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
             return SSciAdjsPrimBehaviour.RequestedNoScp.New(This);
         }
@@ -91,13 +91,43 @@ public class SSciAdjPrim
 
 
     private SSciAdjsPrimBehaviour _state;
-    public SSciAdjsPrimBehaviour State { get { return _state; } }
+    public SSciAdjsPrimBehaviour State => _state;
 
-    private readonly MessageConverter _messageConverter;
+    private readonly IMessageFactory _messageConverter;
 
-    public SSciAdjPrim(MessageConverter messageConverter)
+    public SSciAdjPrim(IMessageFactory messageConverter)
     {
         _messageConverter = messageConverter;
+
+        // Initialize ports
+        T5inScpConnectionEstablished = new Port<bool>();
+        T10inScpConnectionTerminated = new Port<bool>();
+        D4inConChecksumData = new Port<bool>();
+        D50outPdiConnectionState = new Port<D50outPdiConnectionStateValue>();
+        T6outEstablishScpConnection = new Port<T6outEstablishScpConnectionValue>();
+        T22inContentTelegramError = new Port<bool>();
+        T20inProtocolError = new Port<bool>();
+        T21inFormalTelegramError = new Port<bool>();
+        D2inConTmaxPdiConnection = new Port<bool>();
+        D3inConPdiVersion = new Port<bool>();
+        T45inResetSevereError = new Port<bool>();
+        D60outPdiCloseReason = new Port<D60outPdiCloseReasonValue>();
+        T27outCheckSecStatus = new Port<T27outCheckSecStatusValue>();
+        T25inSecStatusReportComplete = new Port<bool>();
+        /*P1inout = new Channel<EulynxMessages.Message>();
+P2inout = new Channel<EulynxMessages.Message>();*/
+
+        // Initialize change events
+        Change746 = new Event(() => T10inScpConnectionTerminated.Value);
+        Change979 = new Event(() => T20inProtocolError.Value);
+        Change985 = new Event(() => T21inFormalTelegramError.Value);
+        Change997 = new Event(() => T22inContentTelegramError.Value);
+        Change1020 = new Event(() => T25inSecStatusReportComplete.Value);
+        Change1228 = new Event(() => T5inScpConnectionEstablished.Value);
+        Change1169 = new Event(() => T45inResetSevereError.Value);
+        Change1226 = new Event(() => T5inScpConnectionEstablished.Value);
+        Change748 = new Event(() => T10inScpConnectionTerminated.Value);
+        Change1170 = new Event(() => T45inResetSevereError.Value);
     }
 
     public void Init()
@@ -105,16 +135,24 @@ public class SSciAdjPrim
         _state = SSciAdjsPrimBehaviour.New(this);
     }
 
+    public IEnumerable<AbstractPort> GetPorts()
+    {
+        return new AbstractPort[] {
+            T5inScpConnectionEstablished, T10inScpConnectionTerminated, D4inConChecksumData, D50outPdiConnectionState, T6outEstablishScpConnection, T22inContentTelegramError, T20inProtocolError, T21inFormalTelegramError, D2inConTmaxPdiConnection, D3inConPdiVersion, T45inResetSevereError, D60outPdiCloseReason, T27outCheckSecStatus, T25inSecStatusReportComplete
+        };
+    }
+
+    public IEnumerable<Event> GetChangeEvents()
+    {
+        return new Event[] {
+            Change746, Change979, Change985, Change997, Change1020, Change1228, Change1169, Change1226, Change748, Change1170
+        };
+    }
+
     private bool IsTimeoutExpired(object timeout)
     {
         // TODO
         return false;
-    }
-
-    private bool IsConditionChanged(bool condition)
-    {
-        // TODO: Keep in mind that this should only evaluate to true once
-        return condition;
     }
 
     private void SendMessage(Message message, Channel<EulynxMessages.Message> port)
@@ -160,9 +198,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -171,9 +209,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -182,51 +220,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -236,7 +274,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
@@ -247,7 +285,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.CdInitialisationRequest(), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitialisation;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitialisation;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitialisation.New(this);
             }
@@ -256,10 +294,10 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && !(ChecksumData == D4in_Con_Checksum_Data)]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiChecksumMismatch;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiChecksumMismatch;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ChecksumMismatch), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -268,10 +306,10 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"not match\"]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.OtherVersionRequired), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -287,9 +325,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -298,9 +336,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -309,51 +347,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -363,7 +401,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
@@ -371,7 +409,7 @@ public class SSciAdjPrim
         if (IsMessageArrived("Msg_Start_Initialisation"))
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.ReceivingSecStatus;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ReceivingSecStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.ReceivingSecStatus.New(this);
             }
@@ -387,9 +425,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -398,9 +436,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -409,51 +447,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -463,7 +501,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
@@ -471,8 +509,8 @@ public class SSciAdjPrim
         if (IsMessageArrived("Msg_Status_Report_Completed"))
         {
             {
-                T27outCheckSecStatus = T27outCheckSecStatusValue.True;
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.CheckingSecStatus;
+                T27outCheckSecStatus.Value = T27outCheckSecStatusValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.CheckingSecStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.CheckingSecStatus.New(this);
             }
@@ -488,9 +526,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -499,9 +537,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -510,51 +548,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -564,16 +602,16 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsConditionChanged(T25inSecStatusReportComplete))
+        if (Change1020.IsTriggered)
         {
             {
                 SendMessage(new Message.StartPrimStatusReport(), P2inout);
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.SendingPrimStatus;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.SendingPrimStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.SendingPrimStatus.New(this);
             }
@@ -589,9 +627,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -600,9 +638,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -611,51 +649,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -665,7 +703,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
@@ -674,7 +712,7 @@ public class SSciAdjPrim
         {
             {
                 SendMessage(new Message.MsgStatusReportCompleted(), P1inout);
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.WaitingForInitCompletion;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitCompletion;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitCompletion.New(this);
             }
@@ -690,9 +728,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -701,9 +739,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -712,51 +750,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -766,7 +804,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Established;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Established;
                 SendMessage(new Message.PdiConnectionEstablished(), P2inout);
 
                 return SSciAdjsPrimBehaviour.Active.Established.New(this);
@@ -783,9 +821,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -794,9 +832,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -805,51 +843,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -859,7 +897,7 @@ public class SSciAdjPrim
             {
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PdiTimeout;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
@@ -879,7 +917,7 @@ public class SSciAdjPrim
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__RequestedNoScp()
     {
-        if (IsConditionChanged(T5inScpConnectionEstablished))
+        if (Change1228.IsTriggered)
         {
             {
 
@@ -893,19 +931,19 @@ public class SSciAdjPrim
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__ImpermissibleNoScp()
     {
-        if (IsConditionChanged(T45inResetSevereError))
+        if (Change1169.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T5inScpConnectionEstablished))
+        if (Change1226.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -917,15 +955,15 @@ public class SSciAdjPrim
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Impermissible()
     {
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change748.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.ImpermissibleNoScp;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ImpermissibleNoScp;
 
                 return SSciAdjsPrimBehaviour.ImpermissibleNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T45inResetSevereError))
+        if (Change1170.IsTriggered)
         {
             {
 
@@ -943,9 +981,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -954,9 +992,9 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -965,51 +1003,51 @@ public class SSciAdjPrim
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.SecFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T10inScpConnectionTerminated))
+        if (Change746.IsTriggered)
         {
             {
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection = T6outEstablishScpConnectionValue.True;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
         }
-        if (IsConditionChanged(T20inProtocolError))
+        if (Change979.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimProtocolError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T21inFormalTelegramError))
+        if (Change985.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimFormalTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsConditionChanged(T22inContentTelegramError))
+        if (Change997.IsTriggered)
         {
             {
-                D60outPdiCloseReason = D60outPdiCloseReasonValue.PrimContentTelegramError;
+                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
-                D50outPdiConnectionState = D50outPdiConnectionStateValue.Impermissible;
+                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
@@ -1025,28 +1063,28 @@ public class SSciAdjPrim
     public bool MemPdiVersionChecksumdata { get; set; }
 
     // Ports
-    public bool T5inScpConnectionEstablished { get; set; }
-    public bool T10inScpConnectionTerminated { get; set; }
-    public bool D4inConChecksumData { get; set; }
-    public D50outPdiConnectionStateValue D50outPdiConnectionState { get; set; }
-    public T6outEstablishScpConnectionValue T6outEstablishScpConnection { get; set; }
-    public bool T22inContentTelegramError { get; set; }
-    public bool T20inProtocolError { get; set; }
-    public bool T21inFormalTelegramError { get; set; }
-    public bool D2inConTmaxPdiConnection { get; set; }
-    public bool D3inConPdiVersion { get; set; }
-    public bool T45inResetSevereError { get; set; }
-    public D60outPdiCloseReasonValue D60outPdiCloseReason { get; set; }
-    public T27outCheckSecStatusValue T27outCheckSecStatus { get; set; }
+    public Port<bool> T5inScpConnectionEstablished { get; }
+    public Port<bool> T10inScpConnectionTerminated { get; }
+    public Port<bool> D4inConChecksumData { get; }
+    public Port<D50outPdiConnectionStateValue> D50outPdiConnectionState { get; }
+    public Port<T6outEstablishScpConnectionValue> T6outEstablishScpConnection { get; }
+    public Port<bool> T22inContentTelegramError { get; }
+    public Port<bool> T20inProtocolError { get; }
+    public Port<bool> T21inFormalTelegramError { get; }
+    public Port<bool> D2inConTmaxPdiConnection { get; }
+    public Port<bool> D3inConPdiVersion { get; }
+    public Port<bool> T45inResetSevereError { get; }
+    public Port<D60outPdiCloseReasonValue> D60outPdiCloseReason { get; }
+    public Port<T27outCheckSecStatusValue> T27outCheckSecStatus { get; }
+    public Port<bool> T25inSecStatusReportComplete { get; }
     public Channel<EulynxMessages.Message> P1inout { get; set; }
     public Channel<EulynxMessages.Message> P2inout { get; set; }
-    public bool T25inSecStatusReportComplete { get; set; }
 
     // Operations
     public void Cop1Init()
     {
         MemPdiVersionCheckResult = MemPdiVersionCheckResultValue.Unknown;
-        MemPdiVersionChecksumdata = D4inConChecksumData;
+        MemPdiVersionChecksumdata = D4inConChecksumData.Value;
 
     }
 
@@ -1151,4 +1189,16 @@ public class SSciAdjPrim
 
         }
     }
+
+    // Events
+    public Event Change746 { get; }
+    public Event Change979 { get; }
+    public Event Change985 { get; }
+    public Event Change997 { get; }
+    public Event Change1020 { get; }
+    public Event Change1228 { get; }
+    public Event Change1169 { get; }
+    public Event Change1226 { get; }
+    public Event Change748 { get; }
+    public Event Change1170 { get; }
 }

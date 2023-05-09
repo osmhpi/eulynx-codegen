@@ -159,35 +159,52 @@ internal class UmlClass : CodeGenerationItem
         // TODO: I think side effects of initial transitions are still missing
     }
 
+    var events = _dataTypes.UsedChangeEvents.Select(x => new ChangeEvent(x)).ToList();
+    events.Select(x => x.WriteInitializer(_dataTypes)).ToList(); // also ignore
+
     return @$"using System.Threading.Channels;
 using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx;
 
-public class {className} {{
+public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {_stateMachine.Write(className, _dataTypes)}
 
     private {behaviorName} _state;
-    public {behaviorName} State {{ get {{ return _state; }} }}
+    public {behaviorName} State => _state;
 
-    private readonly MessageConverter _messageConverter;
+    private readonly IMessageFactory _messageConverter;
 
-    public {className}(MessageConverter messageConverter) {{
+    public {className}(IMessageFactory messageConverter) {{
         _messageConverter = messageConverter;
+
+        // Initialize ports
+        {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x) == false).Select(x => $"{x} = new Port<{_dataTypes.LookupPropertyValueType(x)}>();"))}
+        /*{string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x)).Select(x => $"{x} = new {_dataTypes.LookupPropertyValueType(x)}();"))}*/
+
+        // Initialize change events
+        {string.Join("\n", events.Select(x => x.WriteInitializer(_dataTypes)))}
     }}
 
     public void Init() {{
         _state = {behaviorName}.New(this);
     }}
 
+    public IEnumerable<AbstractPort> GetPorts() {{
+        return new AbstractPort[] {{
+            {string.Join(", ", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => !_dataTypes.IsMessagePort(x)))}
+        }};
+    }}
+
+    public IEnumerable<Event> GetChangeEvents() {{
+        return new Event[] {{
+            {string.Join(", ", events.Select(x => x.Event.Name))}
+        }};
+    }}
+
     private bool IsTimeoutExpired(object timeout) {{
         // TODO
         return false;
-    }}
-
-    private bool IsConditionChanged(bool condition) {{
-        // TODO: Keep in mind that this should only evaluate to true once
-        return condition;
     }}
 
     private void SendMessage(Message message, Channel<EulynxMessages.Message> port) {{
@@ -210,7 +227,8 @@ public class {className} {{
     {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
 
     // Ports
-    {string.Join("\n", _dataTypes.Ports.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
+    {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x) == false).Select(x => $"public Port<{_dataTypes.LookupPropertyValueType(x)}> {x} {{ get; }}"))}
+    {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x)).Select(x => $"public {_dataTypes.LookupPropertyValueType(x)} {x} {{ get; set; }}"))}
 
     // Operations
     {string.Join("\n", _dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
@@ -222,6 +240,9 @@ public class {className} {{
     public record Message {{
         {_dataTypes.GenerateMessages()}
     }}
+
+    // Events
+    {string.Join("\n", events.Select(x => x.WriteProperty()))}
 }}
 ";
   }

@@ -125,8 +125,10 @@ class StateMachine : CodeGenerationItem
             dataTypes.RecordPossibleValueForProperty(lhs, rhs);
         }
 
+        var portOrDirectAccess = (string prop) => dataTypes.Ports.Any(x => InPascalCase(x.Name) == prop) ? $"{prop}.Value" : prop;
+
         result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
-            m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
+            m => $"{portOrDirectAccess(m.Groups[1].Value)} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
 
         if (prefixAssignments != null) {
             result = Regex.Replace(result, "(\\w+)(.*)",
@@ -144,16 +146,8 @@ class StateMachine : CodeGenerationItem
             var evt = transition.SingleTransition.Trigger.Event;
             if (evt != null) {
                 if (dataTypes.ChangeEvents.ContainsKey(evt)) {
-                    var expression = dataTypes.ChangeEvents[evt].ChangeExpression.Body
-                        .ReplaceLineEndings(" ")
-                        .Replace("AND ", " && ")
-                        .Replace(" OR ", " || ")
-                        .Replace("NOT ", "!")
-                        .Replace(" = ", " == ")
-                        .Replace(" <> ", " != ");
-
-                    result = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-                    result = $"IsConditionChanged({result})";
+                    dataTypes.RecordChangeEventUsed(dataTypes.ChangeEvents[evt]);
+                    result = $"{InPascalCase(dataTypes.ChangeEvents[evt].Name)}.IsTriggered";
                 } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
                     result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
