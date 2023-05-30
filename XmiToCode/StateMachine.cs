@@ -64,36 +64,14 @@ class StateMachine : CodeGenerationItem
 ";
     }
 
-    private string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, bool skipParentTransitions=false)
+    public string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
-        var regularConditions = string.Join("\n", noTriggerConditions
-            ? regularTransitions.Select(x =>
-                $@"{x.transition.GetTransitionConstraints(dataTypes)} {{
-                    {GenerateActivities(fromState, x, dataTypes)}
-                    return {x.stateName}.New(this);
-                }}")
-            : regularTransitions.Select(x =>
-                $@"{GetTransitionChangeTriggerExpression(x.transition, dataTypes)} {{
-                    {x.transition.GetTransitionConstraints(dataTypes)} {{
-                        {GenerateActivities(fromState, x, dataTypes)}
-                        return {x.stateName}.New(this);
-                    }}
-                }}"));
 
-          var junctions = transitions.Where(x => x.state.IsJunction);
-          var junctionConditions = string.Join("\n", junctions.Select(x =>
-          $@"{GetTransitionChangeTriggerExpression(x.transition, dataTypes)} {{
-            {x.transition.GetTransitionConstraints(dataTypes)} {{
-              {GenerateActivities(fromState, x, dataTypes)}
-              {GenerateConditions(thisName, x.state, dataTypes, true)}
-            }}
-          }}"));
-
-        return regularConditions + junctionConditions;
+        return string.Join("\n", transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal)));
     }
 
     public string GetName() {
@@ -110,77 +88,6 @@ class StateMachine : CodeGenerationItem
         }
     }
 
-    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, string? prefixAssignments = null)
-    {
-        // TODO: These signatures look implausible.
-        var exit = x.state.GenerateExit(x.state, x.transition, prefixAssignments, dataTypes);
-        var transitionEffect = x.state.GenerateTransition(x.state, x.transition, prefixAssignments, dataTypes);
-        var entry = x.state.GenerateEntry(fromState, x.transition, prefixAssignments, dataTypes);
-
-        var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
-
-        foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[2].Value;
-            dataTypes.RecordPossibleValueForProperty(lhs, rhs);
-        }
-
-        var portOrDirectAccess = (string prop) => dataTypes.Ports.Any(x => InPascalCase(x.Name) == prop) ? $"{prop}.Value" : prop;
-
-        result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
-            m => $"{portOrDirectAccess(m.Groups[1].Value)} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
-
-        if (prefixAssignments != null) {
-            result = Regex.Replace(result, "(\\w+)(.*)",
-                m => $"{prefixAssignments}.{m.Groups[1].Value}{m.Groups[2].Value}");
-        }
-
-        return result;
-    }
-
-    private string GetTransitionChangeTriggerExpression(Transition transition, DataTypeHelper dataTypes) {
-        if (transition.SingleTransition.Trigger != null) {
-            // Regular transition
-            string? result = null;
-
-            var evt = transition.SingleTransition.Trigger.Event;
-            if (evt != null) {
-                if (dataTypes.ChangeEvents.ContainsKey(evt)) {
-                    dataTypes.RecordChangeEventUsed(dataTypes.ChangeEvents[evt]);
-                    result = $"{InPascalCase(dataTypes.ChangeEvents[evt].Name)}.IsTriggered";
-                } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
-                    result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
-                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    result = $"IsMessageArrived(\"{dataTypes.PackageEvents[evt].Name}\")";
-                } else {
-                    throw new NotImplementedException();
-                }
-            } else {
-                // Event is null, interesting, moving on...
-            }
-
-
-            if (result != null) {
-                foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
-                    var lhs = m.Groups[1].Value;
-                    var rhs = m.Groups[3].Value;
-                    dataTypes.RecordCoalesceValues(lhs, rhs);
-                }
-
-                foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) \"(\\w*)\"")) {
-                    var lhs = m.Groups[1].Value;
-                    var rhs = m.Groups[3].Value;
-                    dataTypes.RecordPossibleValueForProperty(lhs, rhs);
-                }
-                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)}");
-
-                return $"if ({result})";
-            }
-        }
-
-        return "";
-    }
-
     private string MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes) {
         if (x.InternalStateMachine != null) {
             return x.InternalStateMachine.MakeStateRecord(x.Name, recordName, className, dataTypes);
@@ -194,7 +101,7 @@ class StateMachine : CodeGenerationItem
     private string MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes) {
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes));
         var initialTransition = GetTransitionsFromState(name, _initialState).Single();
-        var activities = GenerateActivities(_initialState, initialTransition, dataTypes, "This");
+        var activities = initialTransition.transition.GenerateActivities(_initialState, initialTransition, dataTypes, "This");
 
         return @$"public record {name} : {parentBehaviorName} {{
         {string.Join("\n    ", subrecords)}

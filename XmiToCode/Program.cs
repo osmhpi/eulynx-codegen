@@ -15,10 +15,21 @@ var packages = xmi.Model.PackagedElements.Where(x => x.Type == "uml:Package").To
 //   Console.WriteLine(package.Name);
 // }
 
+var sysimProfile = xmi.Model.PackagedElements
+    .Single(x => x.Type == "uml:Profile" && x.Name == "SySim Profile");
+var eulynxProfile = xmi.Model.PackagedElements
+    .Single(x => x.Type == "uml:Package" && x.Name == "EULYNX_Profile");
+
 var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
 var genericFunctions = packages.Single(x => x.Name == "Generic Functions");
 
 var genericEvents = FindAllEvents(genericFunctions).ToList();
+
+var dataTypes = FindAllDataTypes(sysimProfile)
+    .Concat(FindAllDataTypes(eulynxProfile))
+    .Concat(FindAllClasses(eulynxSystem))
+    .Concat(FindAllEnumerations(eulynxSystem))
+    .ToDictionary(x => x.Id);
 
 var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI" };
 
@@ -27,12 +38,13 @@ var interestingPackages = eulynxSystem.PackagedElements
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
+var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
 
-var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve", "S_SCI_Adj_Prim" };
+var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve", "S_SCI_EfeS_Prim", "S_SCI_Adj_Prim" };
 // var classWhitelist = new List<string>();
 
 var typeAliases = new Dictionary<string, string>() {
-    { "D50inPdiConnectionState", "SSciAdjPrim.D50outPdiConnectionStateValue" }
+    { "D50inPdiConnectionStateValue", "SSciAdjPrim.D50outPdiConnectionStateValue" }
 };
 
 foreach (var interestingPackage in interestingPackages) {
@@ -43,23 +55,40 @@ foreach (var interestingPackage in interestingPackages) {
     // }
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
-    foreach (var umlClassPackage in FindAllClasses(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
-        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, typeAliases);
+    foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
+        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
         await umlClass.Generate();
     }
 }
 
 static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
-    var classes = package.PackagedElements
-        .Where(x => x.Type == "uml:Class")
+    return FindAllElements(package, "uml:Class");
+}
+
+static IEnumerable<PackagedElement> FindAllClassesWithStateMachines(PackagedElement package) {
+    return FindAllClasses(package)
         .Where(x => x.StateMachine != null);
-    var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
-    return classes.Concat(subpackages.SelectMany(FindAllClasses));
 }
 
 static IEnumerable<PackagedElement> FindAllEvents(PackagedElement package) {
-    var events = package.PackagedElements
-        .Where(x => x.Type == "uml:SignalEvent");
+    return FindAllElements(package, "uml:SignalEvent");
+}
+
+static IEnumerable<PackagedElement> FindAllSignals(PackagedElement package) {
+    return FindAllElements(package, "uml:Signal");
+}
+
+static IEnumerable<PackagedElement> FindAllDataTypes(PackagedElement package) {
+    return FindAllElements(package, "uml:DataType");
+}
+
+static IEnumerable<PackagedElement> FindAllEnumerations(PackagedElement package) {
+    return FindAllElements(package, "uml:Enumeration");
+}
+
+static IEnumerable<PackagedElement> FindAllElements(PackagedElement package, string umlType) {
+    var elements = package.PackagedElements
+        .Where(x => x.Type == umlType);
     var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
-    return events.Concat(subpackages.SelectMany(x => FindAllEvents(x)));
+    return elements.Concat(subpackages.SelectMany(x => FindAllElements(x, umlType)));
 }

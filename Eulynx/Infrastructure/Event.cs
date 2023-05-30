@@ -1,4 +1,5 @@
 using System;
+using Eulynx;
 
 public class Event {
     private TaskCompletionSource _tcs;
@@ -15,6 +16,13 @@ public class Event {
 
     public bool IsTriggered => _evaluator() != _current;
 
+    public Event(Func<PulsedIn> evaluator)
+    {
+        _evaluator = () => evaluator().IsSet;
+        _tcs = new TaskCompletionSource();
+
+        _current = _evaluator();
+    }
     public Event(Func<bool> evaluator)
     {
         _evaluator = evaluator;

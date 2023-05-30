@@ -17,5 +17,5 @@ abstract class CodeGenerationItem {
         return result;
     }
 
-  public abstract string Write();
+    public abstract string Write();
 }

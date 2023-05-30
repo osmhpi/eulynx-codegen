@@ -26,27 +26,6 @@ public class Container<T, TState>
         }
     }
 
-    public async Task Process() {
-        StateMachine.Init();
-
-        while (true) {
-            await Task.WhenAny(AllTasks());
-
-            StateMachine.Transition();
-
-            // var currentState = _stateMachine.State;
-            // while (true) {
-            //     _stateMachine.Transition();
-            //     if (_stateMachine.State == currentState) {
-            //         break;
-            //     }
-            //     currentState = _stateMachine.State;
-            // }
-
-            ResetAllEvents();
-        }
-    }
-
     public void ReevaluateChangeEvents()
     {
         foreach (var evt in _changeEvents) {

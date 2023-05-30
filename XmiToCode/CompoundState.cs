@@ -53,7 +53,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
                             if (prefixAssignments != null) {
                                 messageInitializerValue = $"{prefixAssignments}.{messageInitializerValue}";
                             }
-                            var portOrDirectAccess = (string prop) => dataTypes.Ports.Any(x => InPascalCase(x.Name) == prop) ? $"{prop}.Value" : prop;
+                            var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
                             messageInitializerValue = Regex.Replace(messageInitializerValue, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
                         }
                     }

@@ -38,10 +38,10 @@ public class MessageFactory : IMessageFactory
 
     private Message ConvertSSciAdjPrimCdPdiVersionCheck(SSciAdjPrim.Message.CdPdiVersionCheck specific)
     {
-        throw new NotImplementedException();
         return _protocolType switch
         {
-            // ProtocolType.Point => new PointPdiVersionCheckCommand(_senderId, _receiverId, specific.Value)
+            // TODO: specific.value should be of type byte
+            ProtocolType.Point => new PointPdiVersionCheckCommand(_senderId, _receiverId, (byte)(specific.Value ? 0 : 1))
         };
     }
 

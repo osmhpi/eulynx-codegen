@@ -81,7 +81,7 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
             This.Cop1Init();
 
             This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-            This.T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+            This.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
             return SSciAdjsPrimBehaviour.RequestedNoScp.New(This);
         }
@@ -100,22 +100,22 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         _messageConverter = messageConverter;
 
         // Initialize ports
-        T5inScpConnectionEstablished = new Port<bool>();
-        T10inScpConnectionTerminated = new Port<bool>();
-        D4inConChecksumData = new Port<bool>();
+        T5inScpConnectionEstablished = new Port<PulsedIn>();
+        T10inScpConnectionTerminated = new Port<PulsedIn>();
+        D4inConChecksumData = new Port<byte[]>();
         D50outPdiConnectionState = new Port<D50outPdiConnectionStateValue>();
-        T6outEstablishScpConnection = new Port<T6outEstablishScpConnectionValue>();
-        T22inContentTelegramError = new Port<bool>();
-        T20inProtocolError = new Port<bool>();
-        T21inFormalTelegramError = new Port<bool>();
-        D2inConTmaxPdiConnection = new Port<bool>();
-        D3inConPdiVersion = new Port<bool>();
-        T45inResetSevereError = new Port<bool>();
+        T6outEstablishScpConnection = new Port<PulsedOut>();
+        T22inContentTelegramError = new Port<PulsedIn>();
+        T20inProtocolError = new Port<PulsedIn>();
+        T21inFormalTelegramError = new Port<PulsedIn>();
+        D2inConTmaxPdiConnection = new Port<object>();
+        D3inConPdiVersion = new Port<byte[]>();
+        T45inResetSevereError = new Port<PulsedIn>();
         D60outPdiCloseReason = new Port<D60outPdiCloseReasonValue>();
-        T27outCheckSecStatus = new Port<T27outCheckSecStatusValue>();
-        T25inSecStatusReportComplete = new Port<bool>();
-        /*P1inout = new Channel<EulynxMessages.Message>();
-P2inout = new Channel<EulynxMessages.Message>();*/
+        T27outCheckSecStatus = new Port<PulsedOut>();
+        P1inout = new Port<object>();
+        P2inout = new Port<object>();
+        T25inSecStatusReportComplete = new Port<PulsedIn>();
 
         // Initialize change events
         Change746 = new Event(() => T10inScpConnectionTerminated.Value);
@@ -138,7 +138,8 @@ P2inout = new Channel<EulynxMessages.Message>();*/
     public IEnumerable<AbstractPort> GetPorts()
     {
         return new AbstractPort[] {
-            T5inScpConnectionEstablished, T10inScpConnectionTerminated, D4inConChecksumData, D50outPdiConnectionState, T6outEstablishScpConnection, T22inContentTelegramError, T20inProtocolError, T21inFormalTelegramError, D2inConTmaxPdiConnection, D3inConPdiVersion, T45inResetSevereError, D60outPdiCloseReason, T27outCheckSecStatus, T25inSecStatusReportComplete
+            // TODO: Skip message ports
+            T5inScpConnectionEstablished, T10inScpConnectionTerminated, D4inConChecksumData, D50outPdiConnectionState, T6outEstablishScpConnection, T22inContentTelegramError, T20inProtocolError, T21inFormalTelegramError, D2inConTmaxPdiConnection, D3inConPdiVersion, T45inResetSevereError, D60outPdiCloseReason, T27outCheckSecStatus, P1inout, P2inout, T25inSecStatusReportComplete
         };
     }
 
@@ -155,9 +156,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         return false;
     }
 
-    private void SendMessage(Message message, Channel<EulynxMessages.Message> port)
+    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port)
     {
-        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
     private bool IsMessageArrived(string message)
@@ -198,6 +199,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -209,6 +211,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -220,6 +223,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -230,8 +234,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -239,6 +244,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -250,6 +256,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -261,6 +268,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -272,6 +280,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -283,6 +292,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && ChecksumData == D4in_Con_Checksum_Data]"))
             {
+                var (Result, ChecksumData, PDIVersion) = message;
                 SendMessage(new Message.CdInitialisationRequest(), P1inout);
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitialisation;
@@ -294,6 +304,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && !(ChecksumData == D4in_Con_Checksum_Data)]"))
             {
+                var (Result, ChecksumData, PDIVersion) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiChecksumMismatch;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ChecksumMismatch), P1inout);
 
@@ -306,6 +317,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"not match\"]"))
             {
+                var (Result, ChecksumData, PDIVersion) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.OtherVersionRequired), P1inout);
 
@@ -325,6 +337,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -336,6 +349,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -347,6 +361,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -357,8 +372,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -366,6 +382,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -377,6 +394,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -388,6 +406,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -399,6 +418,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -409,6 +429,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsMessageArrived("Msg_Start_Initialisation"))
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ReceivingSecStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.ReceivingSecStatus.New(this);
@@ -425,6 +446,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -436,6 +458,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -447,6 +470,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -457,8 +481,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -466,6 +491,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -477,6 +503,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -488,6 +515,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -499,6 +527,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -509,7 +538,8 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsMessageArrived("Msg_Status_Report_Completed"))
         {
             {
-                T27outCheckSecStatus.Value = T27outCheckSecStatusValue.True;
+
+                T27outCheckSecStatus.Value = new PulsedOut(true);
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.CheckingSecStatus;
 
                 return SSciAdjsPrimBehaviour.Active.Establishing.CheckingSecStatus.New(this);
@@ -526,6 +556,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -537,6 +568,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -548,6 +580,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -558,8 +591,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -567,6 +601,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -578,6 +613,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -589,6 +625,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -600,6 +637,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -610,6 +648,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change1020.IsTriggered)
         {
             {
+
                 SendMessage(new Message.StartPrimStatusReport(), P2inout);
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.SendingPrimStatus;
 
@@ -627,6 +666,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -638,6 +678,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -649,6 +690,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -659,8 +701,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -668,6 +711,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -679,6 +723,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -690,6 +735,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -701,6 +747,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -711,6 +758,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsMessageArrived("Prim_Status_Report_Completed"))
         {
             {
+
                 SendMessage(new Message.MsgStatusReportCompleted(), P1inout);
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitCompletion;
 
@@ -728,6 +776,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -739,6 +788,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -750,6 +800,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -760,8 +811,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -769,6 +821,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -780,6 +833,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -791,6 +845,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -802,6 +857,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsMessageArrived("Msg_Initialisation_Completed"))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Established;
@@ -821,6 +877,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -832,6 +889,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -843,6 +901,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -853,8 +912,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -862,6 +922,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -873,6 +934,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -884,6 +946,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -895,6 +958,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (IsTimeoutExpired(D2inConTmaxPdiConnection))
         {
             {
+
                 SendMessage(new Message.PdiConnectionClosed(), P2inout);
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
@@ -921,6 +985,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             {
 
+
                 return SSciAdjsPrimBehaviour.Active.New(this);
             }
         }
@@ -934,8 +999,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change1169.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -943,6 +1009,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change1226.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
@@ -958,6 +1025,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change748.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ImpermissibleNoScp;
 
                 return SSciAdjsPrimBehaviour.ImpermissibleNoScp.New(this);
@@ -966,6 +1034,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change1170.IsTriggered)
         {
             {
+
 
                 return SSciAdjsPrimBehaviour.Active.New(this);
             }
@@ -981,6 +1050,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -992,6 +1062,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -1003,6 +1074,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
             if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
             {
+                var (ReportedResetReason) = message;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -1013,8 +1085,9 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change746.IsTriggered)
         {
             {
+
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = T6outEstablishScpConnectionValue.True;
+                T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciAdjsPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -1022,6 +1095,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change979.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimProtocolError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
 
@@ -1033,6 +1107,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change985.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimFormalTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
 
@@ -1044,6 +1119,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         if (Change997.IsTriggered)
         {
             {
+
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PrimContentTelegramError;
                 SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
 
@@ -1060,25 +1136,25 @@ P2inout = new Channel<EulynxMessages.Message>();*/
 
     // Properties
     public MemPdiVersionCheckResultValue MemPdiVersionCheckResult { get; set; }
-    public bool MemPdiVersionChecksumdata { get; set; }
+    public byte[] MemPdiVersionChecksumdata { get; set; }
 
     // Ports
-    public Port<bool> T5inScpConnectionEstablished { get; }
-    public Port<bool> T10inScpConnectionTerminated { get; }
-    public Port<bool> D4inConChecksumData { get; }
-    public Port<D50outPdiConnectionStateValue> D50outPdiConnectionState { get; }
-    public Port<T6outEstablishScpConnectionValue> T6outEstablishScpConnection { get; }
-    public Port<bool> T22inContentTelegramError { get; }
-    public Port<bool> T20inProtocolError { get; }
-    public Port<bool> T21inFormalTelegramError { get; }
-    public Port<bool> D2inConTmaxPdiConnection { get; }
-    public Port<bool> D3inConPdiVersion { get; }
-    public Port<bool> T45inResetSevereError { get; }
-    public Port<D60outPdiCloseReasonValue> D60outPdiCloseReason { get; }
-    public Port<T27outCheckSecStatusValue> T27outCheckSecStatus { get; }
-    public Port<bool> T25inSecStatusReportComplete { get; }
-    public Channel<EulynxMessages.Message> P1inout { get; set; }
-    public Channel<EulynxMessages.Message> P2inout { get; set; }
+    public Port<PulsedIn> T5inScpConnectionEstablished { get; set; }
+    public Port<PulsedIn> T10inScpConnectionTerminated { get; set; }
+    public Port<byte[]> D4inConChecksumData { get; set; }
+    public Port<D50outPdiConnectionStateValue> D50outPdiConnectionState { get; set; }
+    public Port<PulsedOut> T6outEstablishScpConnection { get; set; }
+    public Port<PulsedIn> T22inContentTelegramError { get; set; }
+    public Port<PulsedIn> T20inProtocolError { get; set; }
+    public Port<PulsedIn> T21inFormalTelegramError { get; set; }
+    public Port<object> D2inConTmaxPdiConnection { get; set; }
+    public Port<byte[]> D3inConPdiVersion { get; set; }
+    public Port<PulsedIn> T45inResetSevereError { get; set; }
+    public Port<D60outPdiCloseReasonValue> D60outPdiCloseReason { get; set; }
+    public Port<PulsedOut> T27outCheckSecStatus { get; set; }
+    public Port<object> P1inout { get; set; }
+    public Port<object> P2inout { get; set; }
+    public Port<PulsedIn> T25inSecStatusReportComplete { get; set; }
 
     // Operations
     public void Cop1Init()
@@ -1113,10 +1189,6 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         WaitingForVersionCheck
     }
 
-    public enum T6outEstablishScpConnectionValue
-    {
-        True
-    }
 
 
 
@@ -1137,10 +1209,6 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         PdiOtherVersionRequired
     }
 
-    public enum T27outCheckSecStatusValue
-    {
-        True
-    }
 
 
 
@@ -1168,7 +1236,7 @@ P2inout = new Channel<EulynxMessages.Message>();*/
         {
 
         }
-        public record CdPdiVersionCheck(bool Value) : Message
+        public record CdPdiVersionCheck(byte[] Value) : Message
         {
 
         }

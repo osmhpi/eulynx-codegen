@@ -7,6 +7,7 @@ internal class UmlClass : CodeGenerationItem
     private readonly Dictionary<string, PackagedElement> _changeEvents;
     private readonly Dictionary<string, PackagedElement> _timeEvents;
     private readonly Dictionary<string, PackagedElement> _packageEvents;
+    private readonly Dictionary<string, PackagedElement> _signals;
     private readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
@@ -14,13 +15,15 @@ internal class UmlClass : CodeGenerationItem
         Dictionary<string, PackagedElement> changeEvents,
         Dictionary<string, PackagedElement> timeEvents,
         Dictionary<string, PackagedElement> packageEvents,
+        Dictionary<string, PackagedElement> signals,
+        Dictionary<string, PackagedElement> dataTypes,
         Dictionary<string, string> typeAliases)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
         _timeEvents = timeEvents;
         _packageEvents = packageEvents;
-
+        _signals = signals;
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
 
         var properties = _class.OwnedAttribute
@@ -33,8 +36,11 @@ internal class UmlClass : CodeGenerationItem
             .Where(x => x.XmiType == "uml:Operation")
             .Select(x => new Operation(x, _class.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
             .ToList();
+        var receptions = _class.OwnedReception
+            .Where(x => x.XmiType == "uml:Reception")
+            .ToList();
 
-        _dataTypes = new DataTypeHelper(properties, ports, operations, _changeEvents, _timeEvents, _packageEvents, typeAliases);
+        _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases);
     }
 
     public static Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
@@ -156,7 +162,9 @@ internal class UmlClass : CodeGenerationItem
         // where property types are coalesced)
         var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes);
         _dataTypes.Operations.Select(x => x.Write(_dataTypes)).ToList();
-        // TODO: I think side effects of initial transitions are still missing
+        // TODO: I think side effects of initial transitions are still missing here
+
+
     }
 
     var events = _dataTypes.UsedChangeEvents.Select(x => new ChangeEvent(x)).ToList();
@@ -179,8 +187,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         _messageConverter = messageConverter;
 
         // Initialize ports
-        {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x) == false).Select(x => $"{x} = new Port<{_dataTypes.LookupPropertyValueType(x)}>();"))}
-        /*{string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x)).Select(x => $"{x} = new {_dataTypes.LookupPropertyValueType(x)}();"))}*/
+        {_dataTypes.GeneratePortInitializers()}
 
         // Initialize change events
         {string.Join("\n", events.Select(x => x.WriteInitializer(_dataTypes)))}
@@ -192,7 +199,8 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
 
     public IEnumerable<AbstractPort> GetPorts() {{
         return new AbstractPort[] {{
-            {string.Join(", ", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => !_dataTypes.IsMessagePort(x)))}
+            // TODO: Skip message ports
+            {string.Join(", ", _dataTypes.Ports.Select(x => x.Value.Name))}
         }};
     }}
 
@@ -207,8 +215,8 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         return false;
     }}
 
-    private void SendMessage(Message message, Channel<EulynxMessages.Message> port) {{
-        port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port) {{
+        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
     private bool IsMessageArrived(string message) {{
@@ -224,11 +232,10 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes)}
 
     // Properties
-    {string.Join("\n", _dataTypes.Properties.Select(x => $"public {_dataTypes.LookupPropertyValueType(InPascalCase(x.Name))} {CodeGenerationItem.InPascalCase(x.Name)} {{ get; set; }}"))}
+    {_dataTypes.GeneratePropertyDeclarations()}
 
     // Ports
-    {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x) == false).Select(x => $"public Port<{_dataTypes.LookupPropertyValueType(x)}> {x} {{ get; }}"))}
-    {string.Join("\n", _dataTypes.Ports.Select(x => InPascalCase(x.Name)).Where(x => _dataTypes.IsMessagePort(x)).Select(x => $"public {_dataTypes.LookupPropertyValueType(x)} {x} {{ get; set; }}"))}
+    {_dataTypes.GeneratePortDeclarations()}
 
     // Operations
     {string.Join("\n", _dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
@@ -250,7 +257,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
     {
         var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-        return _stateMachine.GenerateActivities(behavior.InitialState, transitionTuple, dataTypes);
+        return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, dataTypes);
     }
 
   internal async Task Generate()

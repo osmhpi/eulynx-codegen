@@ -14,9 +14,9 @@ public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
         }
 
         insns = Regex.Replace(insns, "(\\w+) = \"([^\"]*)\"",
-            m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
+            m => $"{m.Groups[1].Value} = {dataTypes.LookupPropertyValueType(m.Groups[1].Value).DataType}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
 
-        var portOrDirectAccess = (string prop) => dataTypes.Ports.Any(x => InPascalCase(x.Name) == prop) ? $"{prop}.Value" : prop;
+        var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
         insns = Regex.Replace(insns, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
 
         return @$"public void {InPascalCase(Op.Name)}() {{

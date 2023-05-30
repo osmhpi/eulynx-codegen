@@ -35,6 +35,21 @@ namespace XmiToCode
         public string IsConjugated { get; set; }
     }
 
+    [XmlRoot(ElementName="ownedReception")]
+    public class OwnedReception {
+
+        [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string XmiType { get; set; }
+        [XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string Id { get; set; }
+        [XmlAttribute(AttributeName="name")]
+        public string Name { get; set; }
+        [XmlAttribute(AttributeName="visibility")]
+        public string Visibility { get; set; }
+        [XmlAttribute(AttributeName="signal")]
+        public string Signal { get; set; }
+    }
+
     [XmlRoot(ElementName="ownedOperation")]
     public class OwnedOperation {
 
@@ -105,8 +120,13 @@ namespace XmiToCode
         public string Operation { get; set; }
         [XmlElement(ElementName="changeExpression")]
         public ChangeExpression ChangeExpression { get; set; }
-    [XmlElement(ElementName="when")]
+        [XmlElement(ElementName="when")]
         public When When { get; set; }
+        [XmlAttribute(AttributeName="signal")]
+        public string Signal { get; set; }
+        [XmlElement(ElementName="ownedReception")]
+        public List<OwnedReception> OwnedReception { get; set; }
+
     }
 
     [XmlRoot(ElementName="expr")]
