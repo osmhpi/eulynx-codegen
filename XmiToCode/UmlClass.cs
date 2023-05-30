@@ -164,7 +164,6 @@ internal class UmlClass : CodeGenerationItem
         _dataTypes.Operations.Select(x => x.Write(_dataTypes)).ToList();
         // TODO: I think side effects of initial transitions are still missing here
 
-
     }
 
     var events = _dataTypes.UsedChangeEvents.Select(x => new ChangeEvent(x)).ToList();
@@ -248,6 +247,9 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         {_dataTypes.GenerateMessages()}
     }}
 
+    // Signals
+    {_dataTypes.GenerateSignals()}
+
     // Events
     {string.Join("\n", events.Select(x => x.WriteProperty()))}
 }}
@@ -257,7 +259,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
     {
         var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-        return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, dataTypes);
+        return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, null, dataTypes);
     }
 
   internal async Task Generate()

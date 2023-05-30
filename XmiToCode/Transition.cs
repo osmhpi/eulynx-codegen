@@ -20,6 +20,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
     public string GenerateTransition(string thisName, IState fromState, IState state, string stateName, DataTypeHelper dataTypes, bool noTriggerConditions, StateMachine stateMachine, Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal) {
         Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
+        string? currentSignalName = null;
 
         if (SingleTransition.Trigger != null &&
             SingleTransition.Trigger.Event != null &&
@@ -31,20 +32,22 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
             attributesOfCurrentSignal = attributesOfCurrentSignal.Select(x => x.Value)
                 .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false)))
                 .ToDictionary(x => x.Name);
+            currentSignalName = InPascalCase(theSignal.Name);
+            dataTypes.RecordSignalUsed(theSignal, attributesOfCurrentSignal);
         }
 
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
-                    {DeconstructMessageAttributes(attributesOfCurrentSignal)}
-                    {GenerateActivities(fromState, (this, state, stateName), dataTypes)}
+                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
+                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
                     return {stateName}.New(this);
                 }}";
             } else {
                 return $@"{GetTransitionChangeTriggerExpression(this, dataTypes, attributesOfCurrentSignal)} {{
                     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
-                        {DeconstructMessageAttributes(attributesOfCurrentSignal)}
-                        {GenerateActivities(fromState, (this, state, stateName), dataTypes)}
+                        {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
+                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
                         return {stateName}.New(this);
                     }}
                 }}";
@@ -54,7 +57,8 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         if (state.IsJunction) {
             return $@"{GetTransitionChangeTriggerExpression(this, dataTypes, attributesOfCurrentSignal)} {{
                 {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
-                    {GenerateActivities(fromState, (this, state, stateName), dataTypes)}
+                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
+                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
                     {stateMachine.GenerateConditions(thisName, state, dataTypes, true, attributesOfCurrentSignal)}
                 }}
             }}";
@@ -63,10 +67,10 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         throw new NotImplementedException();
     }
 
-    private string DeconstructMessageAttributes(Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
+    private string DeconstructMessageAttributes(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
     {
-        if (attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
-            return $"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = message;";
+        if (currentSignalName != null && attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
+            return $"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}, _, _) = {currentSignalName};";
         }
 
         return "";
@@ -114,7 +118,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         return "";
     }
 
-    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, string? prefixAssignments = null)
+    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, string? prefixAssignments = null)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
@@ -124,10 +128,16 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
         var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
 
+        foreach (Match m in Regex.Matches(result, "(\\w+) = (?<!\")(\\w*)(?!\")")) {
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[2].Value;
+            dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        }
+
         foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
             var lhs = m.Groups[1].Value;
             var rhs = m.Groups[2].Value;
-            dataTypes.RecordPossibleValueForProperty(lhs, rhs);
+            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
         }
 
         var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
@@ -181,7 +191,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                 dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
             }
 
-            foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"(\\w*)\"")) {
+            foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
                 var lhs = m.Groups[1].Value;
                 var rhs = m.Groups[3].Value;
                 dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
@@ -189,7 +199,9 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
             var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
 
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{portOrDirectAccess(m.Groups[1].Value)} {m.Groups[2].Value} {dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).DataType}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+            expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"", m => $"{portOrDirectAccess(m.Groups[1].Value)} {m.Groups[2].Value} {dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).DataType}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+            expression = Regex.Replace(expression, "(\\w+) (==|!=) True", m => $"{m.Groups[1].Value} {m.Groups[2].Value} true");
+            expression = Regex.Replace(expression, "(\\w+) (==|!=) False", m => $"{m.Groups[1].Value} {m.Groups[2].Value} false");
 
             // Accessors for singular boolean expressions
             // expression = Regex.Replace(expression, "(?<!((==|!=)))\\s+(\\w+(\\.\\w+)*)\\s+(?!((==|!=)))", m => $" {m.Groups[3].Value}.Value ");

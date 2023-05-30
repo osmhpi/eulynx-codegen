@@ -386,6 +386,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         if (Change183.IsTriggered)
         {
             {
+
                 MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
 
                 if (D2inRequiredPointPosition.Value != D10inPmPosition.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove)
@@ -412,6 +413,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         if (Change185.IsTriggered)
         {
             {
+
                 MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
 
                 if (D2inRequiredPointPosition.Value != D10inPmPosition.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove)
@@ -523,6 +525,14 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         NoEndPosition
     }
 
+    public enum D2inRequiredPointPositionValue
+    {
+        Undefined,
+        Right,
+        Left,
+        Uncommanded,
+        NoEndPosition
+    }
 
 
 
@@ -537,6 +547,14 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         Initialising
     }
 
+    public enum D10inPmPositionValue
+    {
+        Undefined,
+        Right,
+        Left,
+        Uncommanded,
+        NoEndPosition
+    }
 
 
 
@@ -559,6 +577,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
     {
 
     }
+
+    // Signals
+
 
     // Events
     public Event Change387 { get; }

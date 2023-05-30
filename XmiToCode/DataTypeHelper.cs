@@ -15,6 +15,7 @@ public class DataTypeHelper {
     public Dictionary<string, PackagedElement> Signals { get; }
     public Dictionary<string, PackagedElement> DataTypes { get; }
     public HashSet<PackagedElement> UsedChangeEvents { get; }
+    public Dictionary<PackagedElement, Dictionary<string, PropertyOrPort>> UsedSignals { get; }
 
     private readonly Dictionary<string, HashSet<string>> _allowedMessages;
     private readonly Dictionary<string, PropertyOrPort> _coalescedValues;
@@ -53,6 +54,7 @@ public class DataTypeHelper {
         _allowedMessageValues = new Dictionary<string, HashSet<string>>();
         _coalescedMessageValues = new Dictionary<string, string>();
         UsedChangeEvents = new HashSet<PackagedElement>();
+        UsedSignals = new Dictionary<PackagedElement, Dictionary<string, PropertyOrPort>>();
 
         // foreach (var reception in Receptions) {
         //     var signal = Signals[reception.Signal];
@@ -128,7 +130,11 @@ public class DataTypeHelper {
 
     public string GeneratePropertyValueTypes()
     {
-        return string.Join("\n", Properties.Concat(Ports).Select(x => GeneratePropertyValueType(x)));
+        return string.Join("\n", Properties
+            .Concat(Ports)
+            .Concat(UsedSignals.SelectMany(x => x.Value))
+            .Select(x => GeneratePropertyValueType(x))
+        );
     }
 
     private string GeneratePropertyValueType(KeyValuePair<string, PropertyOrPort> x)
@@ -139,14 +145,16 @@ public class DataTypeHelper {
         }
 
         // Collect all of the field values that point to the same alias
-        // var aliases = _coalescedValues.ContainsKey(x.Key)
-        //     ? _coalescedValues.Keys.Where(key => _coalescedValues[key] == _coalescedValues[x.Key])
-        //         .SelectMany(key => _allowedPropertyValues[key]).ToHashSet() : _allowedPropertyValues[x.Key];
-
-        // if (aliases.Count == 0) {
-        //     // TODO: Why does this happen?
-        //     return "";
-        // }
+        if (x.Value is PropertyOrPort.StringPropertyOrPort stringPropertyOrPort) {
+            if (_coalescedValues.ContainsKey(x.Key)) {
+                foreach (var allowedValue in _coalescedValues.Keys.Where(key => _coalescedValues[key] == _coalescedValues[x.Key])
+                    .Select(key => _coalescedValues[key])
+                    .Cast<PropertyOrPort.StringPropertyOrPort>()
+                    .SelectMany(pp => pp.AllowedValues).ToHashSet()) {
+                        stringPropertyOrPort.RecordPossibleValue(allowedValue);
+                }
+            }
+        }
 
         return x.Value.GeneratePropertyValueType();
     }
@@ -155,10 +163,10 @@ public class DataTypeHelper {
         return _allowedMessages.ContainsKey(v);
     }
 
-    // TODO: Remove
     public PropertyOrPort LookupPropertyValueType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var pp = GetPropertyOrPort(v, attributesOfCurrentSignal);
+        // TODO:
         // if (_typeAliases.ContainsKey(v)) {
         //     return _typeAliases[v];
         // }
@@ -170,14 +178,8 @@ public class DataTypeHelper {
         if (_coalescedValues.ContainsKey(v) == false) {
             _coalescedValues[v] = pp;
         }
-        var result = _coalescedValues[v];
 
-        // if (_allowedPropertyValues[result].Count == 0) {
-        //     return "bool";
-        // }
-
-        // return $"{result}Value";
-        return result;
+        return _coalescedValues[v];
     }
 
     public void RecordPossibleMessageForPort(string port, string value)
@@ -191,9 +193,27 @@ public class DataTypeHelper {
 
     public string GenerateMessages()
     {
-        return string.Join("\n", _allowedMessages.SelectMany(x => {
+        var signals = string.Join("\n", UsedSignals.Select(x => {
+
+            var propsDecl = string.Join(", ", x.Value.Select(x => $"{x.Value.DataType} {x.Value.Name}"));
+            var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}").Append("out bool discard1").Append("out bool discard2"));
+            var propsOutAssignments = string.Join("\n", x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
+            return @$"public record {InPascalCase(x.Key.Name)}({propsDecl}) : Message {{
+                public void Deconstruct({propsOut}) {{
+                    {propsOutAssignments}
+                    discard1 = false;
+                    discard2 = false;
+                }}
+            }}";
+        }));
+
+        return signals + string.Join("\n", _allowedMessages.SelectMany(x => {
             var (port, messages) = x;
             return messages.Select(message => {
+                // Temporary workaround, need to unify the two types of message generators
+                if (UsedSignals.Any(x => InPascalCase(x.Key.Name) == message))
+                    return "";
+
                 var values = "";
 
                 if (_allowedMessageValues.ContainsKey(message)) {
@@ -234,6 +254,11 @@ public class DataTypeHelper {
         UsedChangeEvents.Add(packagedElement);
     }
 
+    public void RecordSignalUsed(PackagedElement packagedElement, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
+    {
+        UsedSignals[packagedElement] = attributesOfCurrentSignal;
+    }
+
     public string GenerateReceptions()
     {
         return string.Join("\n", Receptions.Select(x => {
@@ -241,8 +266,7 @@ public class DataTypeHelper {
 
             return @$"// {x.Name}
                 // {string.Join(",\n", signal.OwnedAttribute.Select(a => a.Name))}";
-        }
-        ));
+        }));
     }
 
     public string GenerateAssignment(string propertyOrPort, string value)
@@ -264,165 +288,9 @@ public class DataTypeHelper {
     {
         return string.Join("\n", Ports.Select(x => x.Value.GenerateInitializer(LookupPropertyValueType(x.Key))));
     }
-}
 
-public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort)
+    public string GenerateSignals()
     {
-        var umlType = types[property.Type];
-        return umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, IsPort),
-            // "DateTime",
-            // "Decimal",
-            // "Double",
-            // "Integer",
-            // "Long",
-            // "Single",
-            "String" => new StringPropertyOrPort(property, IsPort),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort),
-            // "Timespan",
-            _ => new ComplexPropertyOrPort(property, IsPort, umlType)
-        };
-    }
-
-    public string GenerateDeclaration(PropertyOrPort coalescedProperty) {
-        if (IsPort) {
-            return $"public Port<{coalescedProperty.DataType}> {Name} {{ get; set; }}";
-        }
-        return $"public {coalescedProperty.DataType} {Name} {{ get; set; }}";
-    }
-
-    public string GenerateInitializer(PropertyOrPort coalescedProperty) {
-        if (IsPort) {
-            return $"{Name} = new Port<{coalescedProperty.DataType}>();";
-        }
-        return $"{Name} = new {coalescedProperty.DataType}();";
-    }
-
-    public abstract void RecordPossibleValue(string value);
-
-    public virtual string GeneratePropertyValueType()
-    {
-         return "";
-    }
-
-    public abstract string GenerateAssignment(string value);
-
-    public abstract string DataType { get; }
-
-    public string Name => CodeGenerationItem.InPascalCase(Property.Name);
-
-    record StringPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
-    {
-        private HashSet<string> AllowedValues = new HashSet<string>();
-        public override string DataType => AllowedValues.Count > 0 ? $"{Name}Value" : "byte[]";
-
-        public override void RecordPossibleValue(string value)
-        {
-            AllowedValues.Add(value);
-        }
-
-        public override string GeneratePropertyValueType()
-        {
-            if (AllowedValues.Count == 0) {
-                return "";
-            }
-
-            return $@"
-            public enum {Name}Value {{
-                {string.Join(",\n", AllowedValues.Select(GenerateEnumMemberName))}
-            }}";
-        }
-
-        public static string GenerateEnumMemberName(string value) {
-            var sanitizedValue = InPascalCase(value.Replace(",", " And "));
-
-            if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
-                sanitizedValue = "_" + sanitizedValue;
-            }
-
-            return sanitizedValue;
-        }
-
-        public override string GenerateAssignment(string value)
-        {
-            return $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
-        }
-    }
-
-    record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : PropertyOrPort(Property, IsPort)
-    {
-        public override string DataType => $"object";
-
-        public override string GenerateAssignment(string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RecordPossibleValue(string value)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
-    {
-        public override string DataType => "bool";
-
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "true";
-            if (value == "FALSE")
-                return "false";
-            throw new ArgumentException(value);
-        }
-
-        public override void RecordPossibleValue(string value)
-        {
-            if (value != "TRUE" && value != "FALSE")
-                throw new ArgumentException($"Invalid bool value: {value}");
-        }
-    }
-
-    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
-    {
-        public override string DataType => "PulsedIn";
-
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "new PulsedIn(true)";
-            if (value == "FALSE")
-                return "new PulsedIn(false)";
-            throw new ArgumentException(value);
-        }
-
-        public override void RecordPossibleValue(string value)
-        {
-            if (value != "TRUE" && value != "FALSE")
-                throw new ArgumentException($"Invalid pulsed in value: {value}");
-        }
-    }
-
-    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
-    {
-        public override string DataType => "PulsedOut";
-
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "new PulsedOut(true)";
-            if (value == "FALSE")
-                return "new PulsedOut(false)";
-            throw new ArgumentException(value);
-        }
-
-        public override void RecordPossibleValue(string value)
-        {
-            if (value != "TRUE" && value != "FALSE")
-                throw new ArgumentException($"Invalid pulsed out value: {value}");
-        }
+        return string.Join("\n", UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}"));
     }
 }

@@ -101,7 +101,7 @@ class StateMachine : CodeGenerationItem
     private string MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes) {
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes));
         var initialTransition = GetTransitionsFromState(name, _initialState).Single();
-        var activities = initialTransition.transition.GenerateActivities(_initialState, initialTransition, dataTypes, "This");
+        var activities = initialTransition.transition.GenerateActivities(_initialState, initialTransition, null, dataTypes, "This");
 
         return @$"public record {name} : {parentBehaviorName} {{
         {string.Join("\n    ", subrecords)}
