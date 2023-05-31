@@ -70,7 +70,11 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     private string DeconstructMessageAttributes(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
     {
         if (currentSignalName != null && attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
-            return $"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}, _, _) = {currentSignalName};";
+            if (attributesOfCurrentSignal.Count >= 2) {
+                return $"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {currentSignalName};";
+            } else if (attributesOfCurrentSignal.Count == 1) {
+                return $"var {attributesOfCurrentSignal.Single().Value.Name} = {currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};";
+            }
         }
 
         return "";

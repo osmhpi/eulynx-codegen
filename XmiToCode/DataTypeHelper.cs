@@ -194,16 +194,20 @@ public class DataTypeHelper {
     public string GenerateMessages()
     {
         var signals = string.Join("\n", UsedSignals.Select(x => {
+            var deconstruct = "";
+
+            if (x.Value.Count >= 2) {
+                // C# only allows deconstruct syntax for two or more properties
+                var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}"));
+                var propsOutAssignments = string.Join("\n", x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
+                deconstruct = @$"public void Deconstruct({propsOut}) {{
+                    {propsOutAssignments}
+                }}";
+            }
 
             var propsDecl = string.Join(", ", x.Value.Select(x => $"{x.Value.DataType} {x.Value.Name}"));
-            var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}").Append("out bool discard1").Append("out bool discard2"));
-            var propsOutAssignments = string.Join("\n", x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
             return @$"public record {InPascalCase(x.Key.Name)}({propsDecl}) : Message {{
-                public void Deconstruct({propsOut}) {{
-                    {propsOutAssignments}
-                    discard1 = false;
-                    discard2 = false;
-                }}
+                {deconstruct}
             }}";
         }));
 
