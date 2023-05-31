@@ -19,33 +19,29 @@ public class MessageFactory : IMessageFactory
     {
         return message switch
         {
-            SSciAdjPrim.Message.CdClosePdi specific => ConvertSSciAdjPrimCdClosePdi(specific),
-            SSciAdjPrim.Message.CdInitialisationRequest specific => ConvertSSciAdjPrimCdInitializationRequest(specific),
-            SSciAdjPrim.Message.CdPdiVersionCheck specific => ConvertSSciAdjPrimCdPdiVersionCheck(specific),
-            SSciAdjPrim.Message.MsgStatusReportCompleted specific => ConvertSSciAdjPrimMsgStatusReportCompleted(specific),
-
-            // TODO: What is this interface
-            SSciAdjPrim.Message.EstablishingPdiConnection => new PointInitialisationRequestCommand(_senderId, _receiverId),
+            SSciEfesPrim.Message.CdClosePdi specific => ConvertSSciEfesPrimCdClosePdi(specific),
+            SSciEfesPrim.Message.CdInitialisationRequest specific => ConvertSSciEfesPrimCdInitializationRequest(specific),
+            SSciEfesPrim.Message.CdPdiVersionCheck specific => ConvertSSciEfesPrimCdPdiVersionCheck(specific),
+            SSciEfesPrim.Message.MsgInitialisationCompleted specific => ConvertSSciEfesPrimMsgInitialisationCompleted(specific),
 
             _ => throw new NotImplementedException()
         };
     }
 
-    private Message ConvertSSciAdjPrimMsgStatusReportCompleted(SSciAdjPrim.Message.MsgStatusReportCompleted specific)
+    private Message ConvertSSciEfesPrimMsgInitialisationCompleted(SSciEfesPrim.Message.MsgInitialisationCompleted specific)
     {
         throw new NotImplementedException();
     }
 
-    private Message ConvertSSciAdjPrimCdPdiVersionCheck(SSciAdjPrim.Message.CdPdiVersionCheck specific)
+    private Message ConvertSSciEfesPrimCdPdiVersionCheck(SSciEfesPrim.Message.CdPdiVersionCheck specific)
     {
         return _protocolType switch
         {
-            // TODO: specific.value should be of type byte
-            ProtocolType.Point => new PointPdiVersionCheckCommand(_senderId, _receiverId, (byte)(specific.Value ? 0 : 1))
+            ProtocolType.Point => new PointPdiVersionCheckCommand(_senderId, _receiverId, specific.Value.Single())
         };
     }
 
-    private Message ConvertSSciAdjPrimCdInitializationRequest(SSciAdjPrim.Message.CdInitialisationRequest specific)
+    private Message ConvertSSciEfesPrimCdInitializationRequest(SSciEfesPrim.Message.CdInitialisationRequest specific)
     {
         return _protocolType switch
         {
@@ -53,18 +49,18 @@ public class MessageFactory : IMessageFactory
         };
     }
 
-    private Message ConvertSSciAdjPrimCdClosePdi(SSciAdjPrim.Message.CdClosePdi specific)
+    private Message ConvertSSciEfesPrimCdClosePdi(SSciEfesPrim.Message.CdClosePdi specific)
     {
         return _protocolType switch
         {
             ProtocolType.Point => new PointClosePdiCommand(_senderId, _receiverId, specific.Value switch
             {
-                SSciAdjPrim.Message.CdClosePdi.Values.ChecksumMismatch => PointClosePdiCommandCloseReason.ChecksumMismatch,
-                SSciAdjPrim.Message.CdClosePdi.Values.ContentTelegramError => PointClosePdiCommandCloseReason.ContentTelegramError,
-                SSciAdjPrim.Message.CdClosePdi.Values.FormalTelegramError => PointClosePdiCommandCloseReason.FormalTelegramError,
-                SSciAdjPrim.Message.CdClosePdi.Values.OtherVersionRequired => PointClosePdiCommandCloseReason.OtherVersionRequired,
-                SSciAdjPrim.Message.CdClosePdi.Values.ProtocolError => PointClosePdiCommandCloseReason.ProtocolError,
-                SSciAdjPrim.Message.CdClosePdi.Values.Timeout => PointClosePdiCommandCloseReason.Timeout,
+                // SSciEfesPrim.Message.CdClosePdi.Values.ChecksumMismatch => PointClosePdiCommandCloseReason.ChecksumMismatch,
+                SSciEfesPrim.Message.CdClosePdi.Values.ContentTelegramError => PointClosePdiCommandCloseReason.ContentTelegramError,
+                SSciEfesPrim.Message.CdClosePdi.Values.FormalTelegramError => PointClosePdiCommandCloseReason.FormalTelegramError,
+                SSciEfesPrim.Message.CdClosePdi.Values.OtherVersionRequired => PointClosePdiCommandCloseReason.OtherVersionRequired,
+                SSciEfesPrim.Message.CdClosePdi.Values.ProtocolError => PointClosePdiCommandCloseReason.ProtocolError,
+                SSciEfesPrim.Message.CdClosePdi.Values.Timeout => PointClosePdiCommandCloseReason.Timeout,
             })
         };
     }

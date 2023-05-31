@@ -6,7 +6,7 @@ namespace Eulynx.Test;
 
 class PointMachine {
 
-    public Container<SSciAdjPrim, SSciAdjPrim.SSciAdjsPrimBehaviour> Prim { get; }
+    public Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour> Prim { get; }
     public Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour> CommandAndReceive { get; }
     public Channel<Message> OutgoingMessages { get; }
     public Channel<Message> IncomingMessages { get; }
@@ -20,7 +20,7 @@ class PointMachine {
 
         var messageConverter = new MessageFactory("", "", ProtocolType.Point);
 
-        Prim = new Container<SSciAdjPrim, SSciAdjPrim.SSciAdjsPrimBehaviour>(new SSciAdjPrim(messageConverter));
+        Prim = new Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour>(new SSciEfesPrim(messageConverter));
         CommandAndReceive = new Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour>(new SSciPCommandAndRecieve(messageConverter));
 
         Prim.StateMachine.P1inout = OutgoingMessages;

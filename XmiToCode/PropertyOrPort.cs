@@ -22,18 +22,18 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
         };
     }
 
-    public string GenerateDeclaration(PropertyOrPort coalescedProperty) {
+    public string GenerateDeclaration(string finalType) {
         if (IsPort) {
-            return $"public Port<{coalescedProperty.DataType}> {Name} {{ get; set; }}";
+            return $"public Port<{finalType}> {Name} {{ get; set; }}";
         }
-        return $"public {coalescedProperty.DataType} {Name} {{ get; set; }}";
+        return $"public {finalType} {Name} {{ get; set; }}";
     }
 
-    public string GenerateInitializer(PropertyOrPort coalescedProperty) {
+    public string GenerateInitializer(string finalType) {
         if (IsPort) {
-            return $"{Name} = new Port<{coalescedProperty.DataType}>();";
+            return $"{Name} = new Port<{finalType}>();";
         }
-        return $"{Name} = new {coalescedProperty.DataType}();";
+        return $"{Name} = new {finalType}();";
     }
 
     public abstract void RecordPossibleValue(string value);

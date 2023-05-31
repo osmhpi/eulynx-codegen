@@ -44,7 +44,7 @@ var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Comma
 // var classWhitelist = new List<string>();
 
 var typeAliases = new Dictionary<string, string>() {
-    { "D50inPdiConnectionStateValue", "SSciAdjPrim.D50outPdiConnectionStateValue" }
+    { "D50inPdiConnectionStateValue", "SSciEfesPrim.D50outPdiConnectionStateValue" }
 };
 
 foreach (var interestingPackage in interestingPackages) {

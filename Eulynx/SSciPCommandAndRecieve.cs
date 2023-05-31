@@ -47,7 +47,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         D30inMovePoint = new Port<D30inMovePointValue>();
         T31outTimeout = new Port<PulsedOut>();
         D32outPointPosition = new Port<D32outPointPositionValue>();
-        D50inPdiConnectionState = new Port<D50inPdiConnectionStateValue>();
+        D50inPdiConnectionState = new Port<SSciEfesPrim.D50outPdiConnectionStateValue>();
         D33outAbilityToMove = new Port<D33outAbilityToMoveValue>();
         P11in = new Port<object>();
         T30inMovePoint = new Port<PulsedIn>();
@@ -117,7 +117,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
     {
         if (Change1079.IsTriggered)
         {
-            if (D30inMovePoint.Value == D30inMovePointValue.Right && D50inPdiConnectionState.Value == D50inPdiConnectionStateValue.Established)
+            if (D30inMovePoint.Value == D30inMovePointValue.Right && D50inPdiConnectionState.Value == SSciEfesPrim.D50outPdiConnectionStateValue.Established)
             {
 
                 SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Right), P10inout);
@@ -127,7 +127,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         }
         if (Change1080.IsTriggered)
         {
-            if (D30inMovePoint.Value == D30inMovePointValue.Left && D50inPdiConnectionState.Value == D50inPdiConnectionStateValue.Established)
+            if (D30inMovePoint.Value == D30inMovePointValue.Left && D50inPdiConnectionState.Value == SSciEfesPrim.D50outPdiConnectionStateValue.Established)
             {
 
                 SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Left), P10inout);
@@ -319,7 +319,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
     public Port<D30inMovePointValue> D30inMovePoint { get; set; }
     public Port<PulsedOut> T31outTimeout { get; set; }
     public Port<D32outPointPositionValue> D32outPointPosition { get; set; }
-    public Port<D50inPdiConnectionStateValue> D50inPdiConnectionState { get; set; }
+    public Port<SSciEfesPrim.D50outPdiConnectionStateValue> D50inPdiConnectionState { get; set; }
     public Port<D33outAbilityToMoveValue> D33outAbilityToMove { get; set; }
     public Port<object> P11in { get; set; }
     public Port<PulsedIn> T30inMovePoint { get; set; }

@@ -113,7 +113,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                     var rhs = m.Groups[3].Value;
                     dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
                 }
-                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.LookupPropertyValueType(m.Groups[1].Value).DataType}.{InPascalCase(m.Groups[3].Value)}");
+                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)}");
 
                 return $"if ({result})";
             }
@@ -203,13 +203,14 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
             var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
 
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"", m => $"{portOrDirectAccess(m.Groups[1].Value)} {m.Groups[2].Value} {dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).DataType}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+            expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
+                m => $"{portOrDirectAccess(m.Groups[1].Value)} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+
+            // Handle symbols true, false
             expression = Regex.Replace(expression, "(\\w+) (==|!=) True", m => $"{m.Groups[1].Value} {m.Groups[2].Value} true");
             expression = Regex.Replace(expression, "(\\w+) (==|!=) False", m => $"{m.Groups[1].Value} {m.Groups[2].Value} false");
 
             // Accessors for singular boolean expressions
-            // expression = Regex.Replace(expression, "(?<!((==|!=)))\\s+(\\w+(\\.\\w+)*)\\s+(?!((==|!=)))", m => $" {m.Groups[3].Value}.Value ");
-            // expression = Regex.Replace(expression, "^(.*)(([\\(\\)]|&&|\\|\\|))?\\s*(\\w+(\\.\\w+)*)\\s*([\\(\\)]|&&|\\|\\|)(.*)$", m => $" {m.Groups[3].Value}.Value ");
             expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");
 
             return $"if ({expression})";

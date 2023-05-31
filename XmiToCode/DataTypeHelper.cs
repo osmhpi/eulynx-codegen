@@ -163,13 +163,21 @@ public class DataTypeHelper {
         return _allowedMessages.ContainsKey(v);
     }
 
+    public string GetFinalDataType(PropertyOrPort pp) {
+        var dataType = pp.DataType;
+        if (_typeAliases.ContainsKey(dataType)) {
+            return _typeAliases[dataType];
+        }
+        return dataType;
+    }
+
+    public string GetFinalDataType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
+        return GetFinalDataType(LookupPropertyValueType(v, attributesOfCurrentSignal));
+    }
+
     public PropertyOrPort LookupPropertyValueType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var pp = GetPropertyOrPort(v, attributesOfCurrentSignal);
-        // TODO:
-        // if (_typeAliases.ContainsKey(v)) {
-        //     return _typeAliases[v];
-        // }
 
         // if (_allowedMessages.ContainsKey(v)) {
         //     return "Channel<EulynxMessages.Message>";
@@ -228,7 +236,7 @@ public class DataTypeHelper {
 
                 var props = string.IsNullOrEmpty(values) ? "" : $"{message}.Values Value";
                 if (_coalescedMessageValues.ContainsKey(message)) {
-                    var valueType = LookupPropertyValueType(_coalescedMessageValues[message]).DataType;
+                    var valueType = GetFinalDataType(_coalescedMessageValues[message]);
                     props = $"{valueType} Value";
                 }
 
@@ -280,17 +288,17 @@ public class DataTypeHelper {
 
     public string GeneratePropertyDeclarations()
     {
-        return string.Join("\n", Properties.Select(x => x.Value.GenerateDeclaration(LookupPropertyValueType(x.Key))));
+        return string.Join("\n", Properties.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
     }
 
     public string GeneratePortDeclarations()
     {
-        return string.Join("\n", Ports.Select(x => x.Value.GenerateDeclaration(LookupPropertyValueType(x.Key))));
+        return string.Join("\n", Ports.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
     }
 
     public string GeneratePortInitializers()
     {
-        return string.Join("\n", Ports.Select(x => x.Value.GenerateInitializer(LookupPropertyValueType(x.Key))));
+        return string.Join("\n", Ports.Select(x => x.Value.GenerateInitializer(GetFinalDataType(x.Key))));
     }
 
     public string GenerateSignals()
