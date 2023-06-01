@@ -189,7 +189,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         {_dataTypes.GeneratePortInitializers()}
 
         // Initialize change events
-        {string.Join("\n", events.Select(x => x.WriteInitializer(_dataTypes)))}
+        {JoinLines(events.Select(x => x.WriteInitializer(_dataTypes)))}
     }}
 
     public void Init() {{
@@ -214,16 +214,15 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         return false;
     }}
 
-    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port) {{
-        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+    private void SendMessage(Message message, Port<Channel<EulynxMessages.Message>> port) {{
+        port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
-    private bool IsMessageArrived(string message) {{
-        // TODO: Implement
+    private bool IsMessageArrived<T>() {{
         return false;
     }}
 
-    private bool ReceivedMessage(string message) {{
+    private bool ReceivedMessage<T>(Func<T, bool> expr) {{
         // TODO: Implement
         return false;
     }}
@@ -237,7 +236,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {_dataTypes.GeneratePortDeclarations()}
 
     // Operations
-    {string.Join("\n", _dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
+    {JoinLines(_dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
 
     // Value Types
     {_dataTypes.GeneratePropertyValueTypes()}
@@ -251,7 +250,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {_dataTypes.GenerateSignals()}
 
     // Events
-    {string.Join("\n", events.Select(x => x.WriteProperty()))}
+    {JoinLines(events.Select(x => x.WriteProperty()))}
 }}
 ";
   }
@@ -262,10 +261,10 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, null, dataTypes);
     }
 
-  internal async Task Generate()
-  {
-    using var file = File.Create($"../Eulynx/{GetName()}.cs");
-    using var writer = new StreamWriter(file);
-    await writer.WriteAsync(Write());
-  }
+    internal async Task Generate()
+    {
+        using var file = File.Create($"../Eulynx/{GetName()}.cs");
+        using var writer = new StreamWriter(file);
+        await writer.WriteAsync(Write());
+    }
 }

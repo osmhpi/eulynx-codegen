@@ -16,9 +16,9 @@ public class Container<T, TState>
         _changeEvents = stateMachine.GetChangeEvents();
     }
 
-    private IEnumerable<Task> AllTasks() {
-        return _changeEvents.Select(x => x.Task);
-    }
+    // private IEnumerable<Task> AllTasks() {
+    //     return _changeEvents.Select(x => x.Task);
+    // }
 
     private void ResetAllEvents() {
         foreach (var port in _changeEvents) {

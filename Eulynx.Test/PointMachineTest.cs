@@ -22,7 +22,21 @@ public class PointMachineTest
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
 
-        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciAdjPrim.SSciAdjsPrimBehaviour.Active));
+        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Disconnected));
+    }
+
+    [TestMethod]
+    public void ShouldPerformTransitionOnEnablePdiConnect()
+    {
+        var point = new PointMachine();
+
+        // Got an incoming RaSTA connection.
+        point.SetScpConnectionEstablished(true);
+
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
+
+        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Active.Establishing.WaitingForVersionCheck));
     }
 
     [TestMethod]
@@ -30,8 +44,13 @@ public class PointMachineTest
     {
         var point = new PointMachine();
 
+        point.SetConPdiVersion(new byte[] {0});
+
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
+
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
 
         Assert.IsTrue(point.OutgoingMessages.Reader.TryRead(out var item));
         Assert.IsInstanceOfType(item, typeof(PointPdiVersionCheckCommand));
@@ -42,13 +61,19 @@ public class PointMachineTest
     {
         var point = new PointMachine();
 
+        point.SetConPdiVersion(new byte[] {0});
+
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
+
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
 
         Assert.IsTrue(point.OutgoingMessages.Reader.TryRead(out var item));
         Assert.IsInstanceOfType(item, typeof(PointPdiVersionCheckCommand));
 
-        point.IncomingMessages.Writer.TryWrite(new PointPdiVersionCheckMessage("", "", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
+        point.IncomingMessages.Writer.TryWrite(new PointPdiVersionCheckMessage(
+            "", "", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
 
         Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciAdjPrim.SSciAdjsPrimBehaviour.Active));
     }

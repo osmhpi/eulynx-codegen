@@ -23,9 +23,9 @@ class PointMachine {
         Prim = new Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour>(new SSciEfesPrim(messageConverter));
         CommandAndReceive = new Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour>(new SSciPCommandAndRecieve(messageConverter));
 
-        Prim.StateMachine.P1inout = OutgoingMessages;
-        Prim.StateMachine.P2inout = otherChannel;
-        CommandAndReceive.StateMachine.P10inout = OutgoingMessages;
+        Prim.StateMachine.P1inout = new Port<Channel<Message>>(OutgoingMessages);
+        // Prim.StateMachine.P2inout = otherChannel;
+        // CommandAndReceive.StateMachine.P10inout = OutgoingMessages;
 
         // Prim.P1inout = outgoingMessages;
         // CommandAndReceive.P10inout = outgoingMessages;
@@ -39,7 +39,7 @@ class PointMachine {
     }
 
     public void SetScpConnectionEstablished(bool established) {
-        Prim.StateMachine.T5inScpConnectionEstablished.Value = established;
+        Prim.StateMachine.T5inScpConnectionEstablished.Value = new PulsedIn(established);
         PerformUpdate();
     }
 
@@ -49,5 +49,17 @@ class PointMachine {
 
         Prim.StateMachine.Transition();
         CommandAndReceive.StateMachine.Transition();
+    }
+
+    internal void SetEnableOrConnectPdiEfes(bool enable)
+    {
+        Prim.StateMachine.T49inEnableOrConnectPdiEfes.Value = new PulsedIn(enable);
+        PerformUpdate();
+    }
+
+    internal void SetConPdiVersion(byte[] bytes)
+    {
+        Prim.StateMachine.D3inConPdiVersion.Value = bytes;
+        PerformUpdate();
     }
 }

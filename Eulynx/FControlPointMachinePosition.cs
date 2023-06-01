@@ -118,18 +118,17 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         return false;
     }
 
-    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port)
+    private void SendMessage(Message message, Port<Channel<EulynxMessages.Message>> port)
     {
-        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+        port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
-    private bool IsMessageArrived(string message)
+    private bool IsMessageArrived<T>()
     {
-        // TODO: Implement
         return false;
     }
 
-    private bool ReceivedMessage(string message)
+    private bool ReceivedMessage<T>(Func<T, bool> expr)
     {
         // TODO: Implement
         return false;
@@ -534,10 +533,6 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         NoEndPosition
     }
 
-
-
-
-
     public enum D51inEstEfesStateValue
     {
         Operational,
@@ -556,15 +551,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         NoEndPosition
     }
 
-
-
     public enum D6inObservedAbilityToMovePointValue
     {
         AbleToMove,
         UnableToMove
     }
-
-
 
     public enum D41inObservedPointEndPositionValue
     {

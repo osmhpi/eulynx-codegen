@@ -100,22 +100,22 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         _messageConverter = messageConverter;
 
         // Initialize ports
-        T5inScpConnectionEstablished = new Port<PulsedIn>();
-        T10inScpConnectionTerminated = new Port<PulsedIn>();
+        T5inScpConnectionEstablished = new Port<PulsedIn>(new PulsedIn(false));
+        T10inScpConnectionTerminated = new Port<PulsedIn>(new PulsedIn(false));
         D4inConChecksumData = new Port<byte[]>();
         D50outPdiConnectionState = new Port<D50outPdiConnectionStateValue>();
-        T6outEstablishScpConnection = new Port<PulsedOut>();
-        T22inContentTelegramError = new Port<PulsedIn>();
-        T20inProtocolError = new Port<PulsedIn>();
-        T21inFormalTelegramError = new Port<PulsedIn>();
+        T6outEstablishScpConnection = new Port<PulsedOut>(new PulsedOut(false));
+        T22inContentTelegramError = new Port<PulsedIn>(new PulsedIn(false));
+        T20inProtocolError = new Port<PulsedIn>(new PulsedIn(false));
+        T21inFormalTelegramError = new Port<PulsedIn>(new PulsedIn(false));
         D2inConTmaxPdiConnection = new Port<object>();
         D3inConPdiVersion = new Port<byte[]>();
-        T45inResetSevereError = new Port<PulsedIn>();
+        T45inResetSevereError = new Port<PulsedIn>(new PulsedIn(false));
         D60outPdiCloseReason = new Port<D60outPdiCloseReasonValue>();
-        T27outCheckSecStatus = new Port<PulsedOut>();
-        P1inout = new Port<object>();
-        P2inout = new Port<object>();
-        T25inSecStatusReportComplete = new Port<PulsedIn>();
+        T27outCheckSecStatus = new Port<PulsedOut>(new PulsedOut(false));
+        P1inout = new Port<Channel<EulynxMessages.Message>>();
+        P2inout = new Port<Channel<EulynxMessages.Message>>();
+        T25inSecStatusReportComplete = new Port<PulsedIn>(new PulsedIn(false));
 
         // Initialize change events
         Change746 = new Event(() => T10inScpConnectionTerminated.Value);
@@ -156,18 +156,17 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         return false;
     }
 
-    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port)
+    private void SendMessage(Message message, Port<Channel<EulynxMessages.Message>> port)
     {
-        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+        port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
-    private bool IsMessageArrived(string message)
+    private bool IsMessageArrived<T>()
     {
-        // TODO: Implement
         return false;
     }
 
-    private bool ReceivedMessage(string message)
+    private bool ReceivedMessage<T>(Func<T, bool> expr)
     {
         // TODO: Implement
         return false;
@@ -195,9 +194,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__WaitingForVersionCheck()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -207,9 +206,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -219,9 +218,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -288,9 +287,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived("Msg_PDI_Version_Check"))
+        if (IsMessageArrived<Message.MsgPdiVersionCheck>())
         {
-            if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && ChecksumData == D4in_Con_Checksum_Data]"))
+            if (ReceivedMessage<Message.MsgPdiVersionCheck>(x => x.Result == ResultValue.Match && x.ChecksumData == D4inConChecksumData.Value))
             {
                 var (Result, ChecksumData, PDIVersion) = MsgPdiVersionCheck;
                 SendMessage(new Message.CdInitialisationRequest(), P1inout);
@@ -300,9 +299,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Active.Establishing.WaitingForInitialisation.New(this);
             }
         }
-        if (IsMessageArrived("Msg_PDI_Version_Check"))
+        if (IsMessageArrived<Message.MsgPdiVersionCheck>())
         {
-            if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"match\"  && !(ChecksumData == D4in_Con_Checksum_Data)]"))
+            if (ReceivedMessage<Message.MsgPdiVersionCheck>(x => x.Result == ResultValue.Match && !(x.ChecksumData == D4inConChecksumData.Value)))
             {
                 var (Result, ChecksumData, PDIVersion) = MsgPdiVersionCheck;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiChecksumMismatch;
@@ -313,9 +312,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_PDI_Version_Check"))
+        if (IsMessageArrived<Message.MsgPdiVersionCheck>())
         {
-            if (ReceivedMessage("Msg_PDI_Version_Check[Result == \"not match\"]"))
+            if (ReceivedMessage<Message.MsgPdiVersionCheck>(x => x.Result == ResultValue.NotMatch))
             {
                 var (Result, ChecksumData, PDIVersion) = MsgPdiVersionCheck;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
@@ -333,9 +332,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__WaitingForInitialisation()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -345,9 +344,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -357,9 +356,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -426,7 +425,7 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Start_Initialisation"))
+        if (IsMessageArrived<Message.MsgStartInitialisation>())
         {
             {
 
@@ -442,9 +441,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__ReceivingSecStatus()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -454,9 +453,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -466,9 +465,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -535,7 +534,7 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Status_Report_Completed"))
+        if (IsMessageArrived<Message.MsgStatusReportCompleted>())
         {
             {
 
@@ -552,9 +551,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__CheckingSecStatus()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -564,9 +563,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -576,9 +575,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -662,9 +661,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__SendingPrimStatus()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -674,9 +673,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -686,9 +685,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -755,7 +754,7 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived("Prim_Status_Report_Completed"))
+        if (IsMessageArrived<Message.PrimStatusReportCompleted>())
         {
             {
 
@@ -772,9 +771,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing__WaitingForInitCompletion()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -784,9 +783,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -796,9 +795,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -854,7 +853,7 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Initialisation_Completed"))
+        if (IsMessageArrived<Message.MsgInitialisationCompleted>())
         {
             {
 
@@ -873,9 +872,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active__Establishing()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -885,9 +884,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -897,9 +896,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -1046,9 +1045,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
 
     private SSciAdjsPrimBehaviour TransitionFromSSciAdjsPrimBehaviour__Active()
     {
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ProtocolError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecProtocolError;
@@ -1058,9 +1057,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == ContentTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecContentTelegramError;
@@ -1070,9 +1069,9 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
                 return SSciAdjsPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Reset_PDI"))
+        if (IsMessageArrived<Message.MsgResetPdi>())
         {
-            if (ReceivedMessage("Msg_Reset_PDI[ReportedResetReason == FormalTelegramError]"))
+            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.SecFormalTelegramError;
@@ -1152,8 +1151,8 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
     public Port<PulsedIn> T45inResetSevereError { get; set; }
     public Port<D60outPdiCloseReasonValue> D60outPdiCloseReason { get; set; }
     public Port<PulsedOut> T27outCheckSecStatus { get; set; }
-    public Port<object> P1inout { get; set; }
-    public Port<object> P2inout { get; set; }
+    public Port<Channel<EulynxMessages.Message>> P1inout { get; set; }
+    public Port<Channel<EulynxMessages.Message>> P2inout { get; set; }
     public Port<PulsedIn> T25inSecStatusReportComplete { get; set; }
 
     // Operations
@@ -1171,10 +1170,6 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         Unknown
     }
 
-
-
-
-
     public enum D50outPdiConnectionStateValue
     {
         Impermissible,
@@ -1189,13 +1184,6 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         WaitingForVersionCheck
     }
 
-
-
-
-
-
-
-
     public enum D60outPdiCloseReasonValue
     {
         SecProtocolError,
@@ -1209,24 +1197,22 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         PdiOtherVersionRequired
     }
 
-
-
-
-
-
-
-
+    public enum ResultValue
+    {
+        Match,
+        NotMatch
+    }
 
     // Messages
     public record Message
     {
-        public record MsgResetPdi(object ReportedResetReason) : Message
+        public record MsgResetPdi(ResetReason ReportedResetReason) : Message
         {
 
         }
-        public record MsgPdiVersionCheck(byte[] Result, byte[] ChecksumData, byte[] PDIVersion) : Message
+        public record MsgPdiVersionCheck(ResultValue Result, byte[] ChecksumData, byte[] PDIVersion) : Message
         {
-            public void Deconstruct(out byte[] Result, out byte[] ChecksumData, out byte[] PDIVersion)
+            public void Deconstruct(out ResultValue Result, out byte[] ChecksumData, out byte[] PDIVersion)
             {
                 Result = this.Result;
                 ChecksumData = this.ChecksumData;
@@ -1265,7 +1251,6 @@ public class SSciAdjPrim : IStateMachine<SSciAdjPrim.SSciAdjsPrimBehaviour>
         {
 
         }
-
         public record CdPdiVersionCheck(byte[] Value) : Message
         {
 

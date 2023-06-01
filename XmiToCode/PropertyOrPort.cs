@@ -31,9 +31,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
 
     public string GenerateInitializer(string finalType) {
         if (IsPort) {
-            return $"{Name} = new Port<{finalType}>();";
+            return $"{Name} = new Port<{finalType}>({GenerateInitialValue()});";
         }
         return $"{Name} = new {finalType}();";
+    }
+
+    protected virtual string GenerateInitialValue() {
+        return "";
     }
 
     public abstract void RecordPossibleValue(string value);
@@ -48,6 +52,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
     public abstract string DataType { get; }
 
     public string Name => CodeGenerationItem.InPascalCase(Property.Name);
+    public string Accessor => IsPort ? $"{Name}.Value" : Name;
 
     public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
     {
@@ -89,7 +94,25 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
 
     record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : PropertyOrPort(Property, IsPort)
     {
-        public override string DataType => $"object";
+        // public ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : base(Property, IsPort)
+        // {
+            // Console.WriteLine(InPascalCase(UmlType.Name));
+            // if (UmlType.Type == "uml:Class") {
+            //     foreach (var reception in UmlType.OwnedReception) {
+            //         Console.WriteLine("  ->" + reception.Name);
+            //     }
+            // } else if (UmlType.Type == "uml:Enumeration") {
+            //     foreach (var literal in UmlType.OwnedLiteral) {
+            //         Console.WriteLine("  --" + literal.Name);
+            //     }
+            // }
+        // }
+
+        public override string DataType => UmlType.Type switch {
+            "uml:Class" => "Channel<EulynxMessages.Message>",
+            "uml:Enumeration" => InPascalCase(UmlType.Name),
+            _ => "object"
+        };
 
         public override string GenerateAssignment(string value)
         {
@@ -135,6 +158,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
             throw new ArgumentException(value);
         }
 
+        protected override string GenerateInitialValue()
+        {
+            return "new PulsedIn(false)";
+        }
+
         public override void RecordPossibleValue(string value)
         {
             if (value != "TRUE" && value != "FALSE")
@@ -153,6 +181,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
             if (value == "FALSE")
                 return "new PulsedOut(false)";
             throw new ArgumentException(value);
+        }
+
+        protected override string GenerateInitialValue()
+        {
+            return "new PulsedOut(false)";
         }
 
         public override void RecordPossibleValue(string value)

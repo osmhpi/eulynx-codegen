@@ -6,16 +6,46 @@ using static CodeGenerationItem;
 record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
-    private string GetMessageTriggeredTransitionConstraint(DataTypeHelper dataTypes, PackagedElement evt) {
+    private string GetMessageTriggeredTransitionConstraint(DataTypeHelper dataTypes, PackagedElement evt, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
         var expression = SingleTransition.OwnedRule.Specification.Body
             .ReplaceLineEndings(" ")
             .Replace("AND ", " && ")
             .Replace(" OR ", " || ")
             .Replace("NOT ", "!")
             .Replace(" = ", " == ")
-            .Replace(" <> ", " != ")
-            .Replace("\"", "\\\"");
-        return $"if (ReceivedMessage(\"{evt.Name}[{expression}]\"))";
+            .Replace(" <> ", " != ");
+
+        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
+        }
+
+        var theSignal = dataTypes.Signals[evt.Signal];
+        var lookupSignalAttributeType = (string attributeName, string value) => {
+            var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);
+            if (attribute != null && dataTypes.DataTypes.ContainsKey(attribute.Type)) {
+                var attributeDataType = dataTypes.DataTypes[attribute.Type];
+
+                if (attributeDataType.Type == "uml:Enumeration")
+                {
+                    var enumerationLiteral = attributeDataType.OwnedLiteral.SingleOrDefault(x => x.Name == value);
+                    if (enumerationLiteral != null) {
+                        return $"{attributeDataType.Name}.{enumerationLiteral.Name}";
+                    }
+                }
+            }
+            return dataTypes.LookupPropertyValueType(InPascalCase(value)).Accessor;
+        };
+
+        // Instead of statically prefixing the lhs with 'x.', we could match the
+        // identifier against theSignal's list of attributes
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) (\\w+)",
+                m => $"x.{m.Groups[1].Value} {m.Groups[2].Value} {lookupSignalAttributeType(m.Groups[1].Value, m.Groups[3].Value)}");
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
+            m => $"x.{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+
+        return $"if (ReceivedMessage<Message.{InPascalCase(evt.Name)}>(x => {expression}))";
     }
 
     public string GenerateTransition(string thisName, IState fromState, IState state, string stateName, DataTypeHelper dataTypes, bool noTriggerConditions, StateMachine stateMachine, Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal) {
@@ -93,7 +123,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                 } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
                     result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    result = $"IsMessageArrived(\"{dataTypes.PackageEvents[evt].Name}\")";
+                    result = $"IsMessageArrived<Message.{InPascalCase(dataTypes.PackageEvents[evt].Name)}>()";
                 } else {
                     throw new NotImplementedException();
                 }
@@ -169,7 +199,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                     var theEvent = dataTypes.ChangeEvents[evt];
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
-                    return GetMessageTriggeredTransitionConstraint(dataTypes, theEvent);
+                    return GetMessageTriggeredTransitionConstraint(dataTypes, theEvent, attributesOfCurrentSignal);
                 } else {
                     throw new Exception("Could not resolve trigger event");
                 }

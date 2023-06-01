@@ -29,6 +29,7 @@ var dataTypes = FindAllDataTypes(sysimProfile)
     .Concat(FindAllDataTypes(eulynxProfile))
     .Concat(FindAllClasses(eulynxSystem))
     .Concat(FindAllEnumerations(eulynxSystem))
+    // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
     .ToDictionary(x => x.Id);
 
 var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI" };
@@ -60,6 +61,8 @@ foreach (var interestingPackage in interestingPackages) {
         await umlClass.Generate();
     }
 }
+
+await DataTypeHelper.GenerateDataTypes(dataTypes);
 
 static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
     return FindAllElements(package, "uml:Class");

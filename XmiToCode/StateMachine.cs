@@ -150,6 +150,6 @@ class StateMachine : CodeGenerationItem
       }};
     }}
 
-    {string.Join("\n", states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes)))}";
+    {JoinLines(states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes)))}";
     }
 }

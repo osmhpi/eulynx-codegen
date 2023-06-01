@@ -50,6 +50,17 @@ namespace XmiToCode
         public string Signal { get; set; }
     }
 
+    [XmlRoot(ElementName="ownedLiteral")]
+    public class OwnedLiteral {
+
+        [XmlAttribute(AttributeName="type", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string XmiType { get; set; }
+        [XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
+        public string Id { get; set; }
+        [XmlAttribute(AttributeName="name")]
+        public string Name { get; set; }
+    }
+
     [XmlRoot(ElementName="ownedOperation")]
     public class OwnedOperation {
 
@@ -126,6 +137,8 @@ namespace XmiToCode
         public string Signal { get; set; }
         [XmlElement(ElementName="ownedReception")]
         public List<OwnedReception> OwnedReception { get; set; }
+        [XmlElement(ElementName="ownedLiteral")]
+        public List<OwnedLiteral> OwnedLiteral { get; set; }
 
     }
 

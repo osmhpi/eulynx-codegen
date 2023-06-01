@@ -45,15 +45,15 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
 
         // Initialize ports
         D30inMovePoint = new Port<D30inMovePointValue>();
-        T31outTimeout = new Port<PulsedOut>();
+        T31outTimeout = new Port<PulsedOut>(new PulsedOut(false));
         D32outPointPosition = new Port<D32outPointPositionValue>();
         D50inPdiConnectionState = new Port<SSciEfesPrim.D50outPdiConnectionStateValue>();
         D33outAbilityToMove = new Port<D33outAbilityToMoveValue>();
-        P11in = new Port<object>();
-        T30inMovePoint = new Port<PulsedIn>();
-        P10inout = new Port<object>();
-        T32outPointPosition = new Port<PulsedOut>();
-        T33outAbilityToMove = new Port<PulsedOut>();
+        P11in = new Port<Channel<EulynxMessages.Message>>();
+        T30inMovePoint = new Port<PulsedIn>(new PulsedIn(false));
+        P10inout = new Port<Channel<EulynxMessages.Message>>();
+        T32outPointPosition = new Port<PulsedOut>(new PulsedOut(false));
+        T33outAbilityToMove = new Port<PulsedOut>(new PulsedOut(false));
 
         // Initialize change events
         Change1079 = new Event(() => T30inMovePoint.Value);
@@ -86,18 +86,17 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         return false;
     }
 
-    private void SendMessage(Message message, /*Channel<EulynxMessages.Message>*/ Port<object> port)
+    private void SendMessage(Message message, Port<Channel<EulynxMessages.Message>> port)
     {
-        // port.Writer.TryWrite(_messageConverter.Convert<Message>(message));
+        port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
-    private bool IsMessageArrived(string message)
+    private bool IsMessageArrived<T>()
     {
-        // TODO: Implement
         return false;
     }
 
-    private bool ReceivedMessage(string message)
+    private bool ReceivedMessage<T>(Func<T, bool> expr)
     {
         // TODO: Implement
         return false;
@@ -135,9 +134,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Left  && ReportedDegradedPointPosition == NotApplicable]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Left && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotApplicable))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotApplicable;
@@ -146,9 +145,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Left  && ReportedDegradedPointPosition == NotDegraded]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Left && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotDegraded))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotDegraded;
@@ -157,9 +156,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Right  && ReportedDegradedPointPosition == NotApplicable]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Right && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotApplicable))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.RightAndNotApplicable;
@@ -168,9 +167,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Right  && ReportedDegradedPointPosition == NotDegraded]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Right && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotDegraded))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.RightAndNotDegraded;
@@ -179,9 +178,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == DegradedLeft]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.NoEndPosition && x.ReportedDegradedPointPosition == PointPositionDegradedState.DegradedLeft))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedLeft;
@@ -190,9 +189,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == DegradedRight]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.NoEndPosition && x.ReportedDegradedPointPosition == PointPositionDegradedState.DegradedRight))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedRight;
@@ -201,9 +200,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == NotDegraded]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.NoEndPosition && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotDegraded))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotDegraded;
@@ -212,9 +211,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == NoEndPosition  && ReportedDegradedPointPosition == NotApplicable]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.NoEndPosition && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotApplicable))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotApplicable;
@@ -223,9 +222,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == DegradedLeft]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Trailed && x.ReportedDegradedPointPosition == PointPositionDegradedState.DegradedLeft))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedLeft;
@@ -234,9 +233,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == DegradedRight]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Trailed && x.ReportedDegradedPointPosition == PointPositionDegradedState.DegradedRight))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedRight;
@@ -245,9 +244,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == NotDegraded]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Trailed && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotDegraded))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotDegraded;
@@ -256,9 +255,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Point_Position"))
+        if (IsMessageArrived<Message.MsgPointPosition>())
         {
-            if (ReceivedMessage("Msg_Point_Position[ReportedPointPositionState == Trailed  && ReportedDegradedPointPosition == NotApplicable]"))
+            if (ReceivedMessage<Message.MsgPointPosition>(x => x.ReportedPointPositionState == PointPositionState.Trailed && x.ReportedDegradedPointPosition == PointPositionDegradedState.NotApplicable))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotApplicable;
@@ -267,9 +266,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Ability_To_Move_Point"))
+        if (IsMessageArrived<Message.MsgAbilityToMovePoint>())
         {
-            if (ReceivedMessage("Msg_Ability_To_Move_Point[ReportedAbilityToMoveState == UnableToMove]"))
+            if (ReceivedMessage<Message.MsgAbilityToMovePoint>(x => x.ReportedAbilityToMoveState == AbilityToMoveState.UnableToMove))
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
                 D33outAbilityToMove.Value = D33outAbilityToMoveValue.UnableToMove;
@@ -278,9 +277,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Ability_To_Move_Point"))
+        if (IsMessageArrived<Message.MsgAbilityToMovePoint>())
         {
-            if (ReceivedMessage("Msg_Ability_To_Move_Point[ReportedAbilityToMoveState == AbleToMove]"))
+            if (ReceivedMessage<Message.MsgAbilityToMovePoint>(x => x.ReportedAbilityToMoveState == AbilityToMoveState.AbleToMove))
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
                 D33outAbilityToMove.Value = D33outAbilityToMoveValue.AbleToMove;
@@ -289,7 +288,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
         }
-        if (IsMessageArrived("Msg_Timeout"))
+        if (IsMessageArrived<Message.MsgTimeout>())
         {
             {
 
@@ -321,9 +320,9 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
     public Port<D32outPointPositionValue> D32outPointPosition { get; set; }
     public Port<SSciEfesPrim.D50outPdiConnectionStateValue> D50inPdiConnectionState { get; set; }
     public Port<D33outAbilityToMoveValue> D33outAbilityToMove { get; set; }
-    public Port<object> P11in { get; set; }
+    public Port<Channel<EulynxMessages.Message>> P11in { get; set; }
     public Port<PulsedIn> T30inMovePoint { get; set; }
-    public Port<object> P10inout { get; set; }
+    public Port<Channel<EulynxMessages.Message>> P10inout { get; set; }
     public Port<PulsedOut> T32outPointPosition { get; set; }
     public Port<PulsedOut> T33outAbilityToMove { get; set; }
 
@@ -337,7 +336,6 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         Right,
         Left
     }
-
 
     public enum D32outPointPositionValue
     {
@@ -366,26 +364,18 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         AbleToMove
     }
 
-
-
-
-
-
-
-
-
     // Messages
     public record Message
     {
-        public record MsgPointPosition(object ReportedPointPositionState, object ReportedDegradedPointPosition) : Message
+        public record MsgPointPosition(PointPositionState ReportedPointPositionState, PointPositionDegradedState ReportedDegradedPointPosition) : Message
         {
-            public void Deconstruct(out object ReportedPointPositionState, out object ReportedDegradedPointPosition)
+            public void Deconstruct(out PointPositionState ReportedPointPositionState, out PointPositionDegradedState ReportedDegradedPointPosition)
             {
                 ReportedPointPositionState = this.ReportedPointPositionState;
                 ReportedDegradedPointPosition = this.ReportedDegradedPointPosition;
             }
         }
-        public record MsgAbilityToMovePoint(object ReportedAbilityToMoveState) : Message
+        public record MsgAbilityToMovePoint(AbilityToMoveState ReportedAbilityToMoveState) : Message
         {
 
         }

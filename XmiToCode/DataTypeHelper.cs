@@ -119,7 +119,7 @@ public class DataTypeHelper {
     }
 
     public static string GenerateEnumMemberName(string value) {
-        var sanitizedValue = InPascalCase(value.Replace(",", " And "));
+        var sanitizedValue = InPascalCase(value.Replace("-", " ").Replace(",", " And ").Replace("/", " Or "));
 
         if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
             sanitizedValue = "_" + sanitizedValue;
@@ -130,7 +130,7 @@ public class DataTypeHelper {
 
     public string GeneratePropertyValueTypes()
     {
-        return string.Join("\n", Properties
+        return JoinLines(Properties
             .Concat(Ports)
             .Concat(UsedSignals.SelectMany(x => x.Value))
             .Select(x => GeneratePropertyValueType(x))
@@ -175,13 +175,9 @@ public class DataTypeHelper {
         return GetFinalDataType(LookupPropertyValueType(v, attributesOfCurrentSignal));
     }
 
-    public PropertyOrPort LookupPropertyValueType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    public PropertyOrPort LookupPropertyValueType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null, PackagedElement? enumeration = null)
     {
         var pp = GetPropertyOrPort(v, attributesOfCurrentSignal);
-
-        // if (_allowedMessages.ContainsKey(v)) {
-        //     return "Channel<EulynxMessages.Message>";
-        // }
 
         if (_coalescedValues.ContainsKey(v) == false) {
             _coalescedValues[v] = pp;
@@ -201,13 +197,13 @@ public class DataTypeHelper {
 
     public string GenerateMessages()
     {
-        var signals = string.Join("\n", UsedSignals.Select(x => {
+        var signals = JoinLines(UsedSignals.Select(x => {
             var deconstruct = "";
 
             if (x.Value.Count >= 2) {
                 // C# only allows deconstruct syntax for two or more properties
                 var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}"));
-                var propsOutAssignments = string.Join("\n", x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
+                var propsOutAssignments = JoinLines(x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
                 deconstruct = @$"public void Deconstruct({propsOut}) {{
                     {propsOutAssignments}
                 }}";
@@ -219,7 +215,7 @@ public class DataTypeHelper {
             }}";
         }));
 
-        return signals + string.Join("\n", _allowedMessages.SelectMany(x => {
+        return signals + JoinLines(_allowedMessages.SelectMany(x => {
             var (port, messages) = x;
             return messages.Select(message => {
                 // Temporary workaround, need to unify the two types of message generators
@@ -273,7 +269,7 @@ public class DataTypeHelper {
 
     public string GenerateReceptions()
     {
-        return string.Join("\n", Receptions.Select(x => {
+        return JoinLines(Receptions.Select(x => {
             var signal = Signals[x.Signal];
 
             return @$"// {x.Name}
@@ -288,21 +284,44 @@ public class DataTypeHelper {
 
     public string GeneratePropertyDeclarations()
     {
-        return string.Join("\n", Properties.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
+        return JoinLines(Properties.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
     }
 
     public string GeneratePortDeclarations()
     {
-        return string.Join("\n", Ports.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
+        return JoinLines(Ports.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
     }
 
     public string GeneratePortInitializers()
     {
-        return string.Join("\n", Ports.Select(x => x.Value.GenerateInitializer(GetFinalDataType(x.Key))));
+        return JoinLines(Ports.Select(x => x.Value.GenerateInitializer(GetFinalDataType(x.Key))));
     }
 
     public string GenerateSignals()
     {
-        return string.Join("\n", UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}"));
+        return JoinLines(UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}"));
+    }
+
+    public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {
+        var whitelist = new [] {"ResetReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
+        var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
+            // There are two enumerations which map to the same name (but are not used currently)
+            // - Line Direction Control Information
+            // - Line_Direction_Control_Information
+            // This behavior is possibly dangerous...
+            // Temporary workaround:
+            .Where(x => whitelist.Contains(x.Value.Name));
+
+        var result = $@"namespace Eulynx;
+
+        {JoinLines(enumerations.Select(x => $@"
+            public enum {InPascalCase(x.Value.Name)} {{
+                {string.Join(",\n", x.Value.OwnedLiteral.Select(lit => GenerateEnumMemberName(lit.Name)))}
+            }}"))}
+        ";
+
+        using var file = File.Create($"../Eulynx/DataTypes.cs");
+        using var writer = new StreamWriter(file);
+        await writer.WriteAsync(result);
     }
 }
