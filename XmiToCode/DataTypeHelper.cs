@@ -299,7 +299,25 @@ public class DataTypeHelper {
 
     public string GenerateSignals()
     {
-        return JoinLines(UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}"));
+        var m = $@"public bool ReceiveMessage(Message message) {{
+            switch (message) {{
+                {JoinLines(UsedSignals.Select(x => $@"case Message.{InPascalCase(x.Key.Name)} specific: {{
+                    {InPascalCase(x.Key.Name)} = specific;
+                    return true;
+                }}"))}
+                default: return false;
+            }};
+        }}";
+
+        var m1 = $@"private bool IsMessageArrived(Message message) {{
+            return message != null;
+        }}";
+
+        var m2 = $@"private bool ReceivedMessage<T>(T message, Func<T, bool> expr) {{
+            return message != null && expr(message);
+        }}";
+
+        return JoinLines(UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}").Append(m).Append(m1).Append(m2));
     }
 
     public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {

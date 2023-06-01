@@ -28,6 +28,21 @@ public class MessageFactory : IMessageFactory
         };
     }
 
+    public SSciEfesPrim.Message ConvertToEfesPrimMessage(Message message)
+    {
+        return message switch
+        {
+            PointPdiVersionCheckMessage specific => new SSciEfesPrim.Message.MsgPdiVersionCheck(
+                specific.ResultPdiVersionCheck switch {
+                    PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch => SSciEfesPrim.ResultValue.Match,
+                    PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch => SSciEfesPrim.ResultValue.NotMatch
+                },
+                specific.Checksum,
+                new byte[] { specific.SenderPdiVersion }
+            )
+        };
+    }
+
     private Message ConvertSSciEfesPrimMsgInitialisationCompleted(SSciEfesPrim.Message.MsgInitialisationCompleted specific)
     {
         throw new NotImplementedException();

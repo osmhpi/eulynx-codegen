@@ -74,22 +74,22 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         D41inObservedPointEndPosition = new Port<D41inObservedPointEndPositionValue>();
 
         // Initialize change events
-        Change387 = new Event(() => D51inEstEfesState.Value == D51inEstEfesStateValue.NoOperatingVoltage || D51inEstEfesState.Value == D51inEstEfesStateValue.Booting || D51inEstEfesState.Value == D51inEstEfesStateValue.FallbackMode);
+        Change387 = new Event(() => D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.NoOperatingVoltage) || D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Booting) || D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.FallbackMode));
         Change34 = new Event(() => D10inPmPosition.Value == MemLastCommandedPointPosition);
-        Change188 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Right && (D2inRequiredPointPosition.Value != D10inPmPosition.Value));
-        Change189 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Uncommanded);
+        Change188 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Right) && (D2inRequiredPointPosition.Value != D10inPmPosition.Value));
+        Change189 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Uncommanded));
         Change192 = new Event(() => D2inRequiredPointPosition.Value == D10inPmPosition.Value);
-        Change460 = new Event(() => D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.UnableToMove);
+        Change460 = new Event(() => D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.UnableToMove));
         Change33 = new Event(() => D10inPmPosition.Value == MemLastCommandedPointPosition);
-        Change184 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Left && (D2inRequiredPointPosition.Value != D10inPmPosition.Value));
-        Change190 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Uncommanded);
+        Change184 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Left) && (D2inRequiredPointPosition.Value != D10inPmPosition.Value));
+        Change190 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Uncommanded));
         Change191 = new Event(() => D2inRequiredPointPosition.Value == D10inPmPosition.Value);
-        Change461 = new Event(() => D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.UnableToMove);
-        Change31 = new Event(() => D10inPmPosition.Value == MemLastCommandedPointPositionValue.NoEndPosition);
-        Change32 = new Event(() => D10inPmPosition.Value == MemLastCommandedPointPositionValue.NoEndPosition);
-        Change183 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Left);
-        Change185 = new Event(() => D2inRequiredPointPosition.Value == MemLastCommandedPointPositionValue.Right);
-        Change373 = new Event(() => D51inEstEfesState.Value == D51inEstEfesStateValue.Initialising);
+        Change461 = new Event(() => D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.UnableToMove));
+        Change31 = new Event(() => D10inPmPosition.Value.Equals(MemLastCommandedPointPositionValue.NoEndPosition));
+        Change32 = new Event(() => D10inPmPosition.Value.Equals(MemLastCommandedPointPositionValue.NoEndPosition));
+        Change183 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Left));
+        Change185 = new Event(() => D2inRequiredPointPosition.Value.Equals(MemLastCommandedPointPositionValue.Right));
+        Change373 = new Event(() => D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Initialising));
     }
 
     public void Init()
@@ -121,17 +121,6 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
     private void SendMessage(Message message, Port<Channel<EulynxMessages.Message>> port)
     {
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
-    }
-
-    private bool IsMessageArrived<T>()
-    {
-        return false;
-    }
-
-    private bool ReceivedMessage<T>(Func<T, bool> expr)
-    {
-        // TODO: Implement
-        return false;
     }
 
 
@@ -362,7 +351,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         }
         if (Change31.IsTriggered)
         {
-            if (D41inObservedPointEndPosition.Value == D41inObservedPointEndPositionValue.Right && MemLastCommandedPointPosition == MemLastCommandedPointPositionValue.Right && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove && D51inEstEfesState.Value == D51inEstEfesStateValue.Operational)
+            if (D41inObservedPointEndPosition.Value.Equals(D41inObservedPointEndPositionValue.Right) && MemLastCommandedPointPosition.Equals(MemLastCommandedPointPositionValue.Right) && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove) && D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Operational))
             {
 
                 D22outMoveRight.Value = true;
@@ -373,7 +362,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         }
         if (Change32.IsTriggered)
         {
-            if (D41inObservedPointEndPosition.Value == D41inObservedPointEndPositionValue.Left && MemLastCommandedPointPosition == MemLastCommandedPointPositionValue.Left && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove && D51inEstEfesState.Value == D51inEstEfesStateValue.Operational)
+            if (D41inObservedPointEndPosition.Value.Equals(D41inObservedPointEndPositionValue.Left) && MemLastCommandedPointPosition.Equals(MemLastCommandedPointPositionValue.Left) && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove) && D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Operational))
             {
 
                 D21outMoveLeft.Value = true;
@@ -388,7 +377,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
 
                 MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
 
-                if (D2inRequiredPointPosition.Value != D10inPmPosition.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove)
+                if (!D2inRequiredPointPosition.Value.Equals(D10inPmPosition.Value) && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove))
                 {
 
                     D21outMoveLeft.Value = true;
@@ -415,7 +404,7 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
 
                 MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
 
-                if (D2inRequiredPointPosition.Value != D10inPmPosition.Value && D6inObservedAbilityToMovePoint.Value == D6inObservedAbilityToMovePointValue.AbleToMove)
+                if (!D2inRequiredPointPosition.Value.Equals(D10inPmPosition.Value) && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove))
                 {
 
                     D22outMoveRight.Value = true;
@@ -570,7 +559,22 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
     }
 
     // Signals
+    public bool ReceiveMessage(Message message)
+    {
+        switch (message)
+        {
 
+            default: return false;
+        };
+    }
+    private bool IsMessageArrived(Message message)
+    {
+        return message != null;
+    }
+    private bool ReceivedMessage<T>(T message, Func<T, bool> expr)
+    {
+        return message != null && expr(message);
+    }
 
     // Events
     public Event Change387 { get; }

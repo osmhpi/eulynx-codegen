@@ -218,15 +218,6 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
-    private bool IsMessageArrived<T>() {{
-        return false;
-    }}
-
-    private bool ReceivedMessage<T>(Func<T, bool> expr) {{
-        // TODO: Implement
-        return false;
-    }}
-
     {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes)}
 
     // Properties

@@ -38,14 +38,16 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
             return dataTypes.LookupPropertyValueType(InPascalCase(value)).Accessor;
         };
 
+        var negateOrNot = (string s) => s == "==" ? "" : "!";
+
         // Instead of statically prefixing the lhs with 'x.', we could match the
         // identifier against theSignal's list of attributes
         expression = Regex.Replace(expression, "(\\w+) (==|!=) (\\w+)",
-                m => $"x.{m.Groups[1].Value} {m.Groups[2].Value} {lookupSignalAttributeType(m.Groups[1].Value, m.Groups[3].Value)}");
+                m => $"{negateOrNot(m.Groups[2].Value)}x.{m.Groups[1].Value}.Equals({lookupSignalAttributeType(m.Groups[1].Value, m.Groups[3].Value)})");
         expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
-            m => $"x.{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+            m => $"{negateOrNot(m.Groups[2].Value)}x.{m.Groups[1].Value}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
 
-        return $"if (ReceivedMessage<Message.{InPascalCase(evt.Name)}>(x => {expression}))";
+        return $"if (ReceivedMessage({InPascalCase(evt.Name)}, x => {expression}))";
     }
 
     public string GenerateTransition(string thisName, IState fromState, IState state, string stateName, DataTypeHelper dataTypes, bool noTriggerConditions, StateMachine stateMachine, Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal) {
@@ -123,7 +125,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                 } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
                     result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    result = $"IsMessageArrived<Message.{InPascalCase(dataTypes.PackageEvents[evt].Name)}>()";
+                    result = $"IsMessageArrived({InPascalCase(dataTypes.PackageEvents[evt].Name)})";
                 } else {
                     throw new NotImplementedException();
                 }
@@ -143,7 +145,11 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
                     var rhs = m.Groups[3].Value;
                     dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
                 }
-                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"", m => $"{m.Groups[1].Value} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)}");
+
+                var negateOrNot = (string s) => s == "==" ? "" : "!";
+
+                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"",
+                    m => $"{negateOrNot(m.Groups[2].Value)}{m.Groups[1].Value}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)})");
 
                 return $"if ({result})";
             }
@@ -233,12 +239,16 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
             var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
 
+            var negateOrNot = (string s) => s == "==" ? "" : "!";
+
             expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
-                m => $"{portOrDirectAccess(m.Groups[1].Value)} {m.Groups[2].Value} {dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)}");
+                m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
+            expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
+                m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
 
             // Handle symbols true, false
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) True", m => $"{m.Groups[1].Value} {m.Groups[2].Value} true");
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) False", m => $"{m.Groups[1].Value} {m.Groups[2].Value} false");
+            expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(True\\)", m => $"{m.Groups[1].Value}.Equals(true)");
+            expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(False\\)", m => $"{m.Groups[1].Value}.Equals(false)");
 
             // Accessors for singular boolean expressions
             expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");

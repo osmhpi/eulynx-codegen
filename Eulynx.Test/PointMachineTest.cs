@@ -62,6 +62,7 @@ public class PointMachineTest
         var point = new PointMachine();
 
         point.SetConPdiVersion(new byte[] {0});
+        point.SetChecksumData(new byte[] {});
 
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
@@ -69,13 +70,10 @@ public class PointMachineTest
         // Be willing to connect
         point.SetEnableOrConnectPdiEfes(true);
 
-        Assert.IsTrue(point.OutgoingMessages.Reader.TryRead(out var item));
-        Assert.IsInstanceOfType(item, typeof(PointPdiVersionCheckCommand));
-
-        point.IncomingMessages.Writer.TryWrite(new PointPdiVersionCheckMessage(
+        point.ReceiveMessage(new PointPdiVersionCheckMessage(
             "", "", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
 
-        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciAdjPrim.SSciAdjsPrimBehaviour.Active));
+        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Active.Establishing.WaitingForInitialisation));
     }
 
     [TestMethod]

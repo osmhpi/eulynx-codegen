@@ -176,17 +176,6 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }
 
-    private bool IsMessageArrived<T>()
-    {
-        return false;
-    }
-
-    private bool ReceivedMessage<T>(Func<T, bool> expr)
-    {
-        // TODO: Implement
-        return false;
-    }
-
 
     public void Transition()
     {
@@ -210,7 +199,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active__Establishing__WaitingForVersionCheck()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -219,9 +208,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -231,9 +220,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -243,9 +232,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -334,7 +323,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgPdiVersionCheck>())
+        if (IsMessageArrived(MsgPdiVersionCheck))
         {
             {
                 var (Result, ChecksumData, PDIVersion) = MsgPdiVersionCheck;
@@ -342,11 +331,11 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 MemChecksumData = ChecksumData;
 
                 {
-                    if (Result == ResultValue.Match)
+                    if (Result.Equals(ResultValue.Match))
                     {
 
 
-                        if (ChecksumData == D4inConChecksumData.Value)
+                        if (ChecksumData.SequenceEqual(D4inConChecksumData.Value))
                         {
 
                             SendMessage(new Message.CdInitialisationRequest(), P1inout);
@@ -358,11 +347,11 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                     }
                 }
                 {
-                    if (Result == ResultValue.NotMatch)
+                    if (Result.Equals(ResultValue.NotMatch))
                     {
 
 
-                        if (D39inConLastPdiVersion.Value == false)
+                        if (D39inConLastPdiVersion.Value.Equals(false))
                         {
 
                             T46outConOtherPdiVersionRequest.Value = new PulsedOut(true);
@@ -384,7 +373,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active__Establishing__WaitingForInitialisation()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -393,9 +382,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -405,9 +394,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -417,9 +406,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -508,7 +497,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Active.Establishing.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgStartInitialisation>())
+        if (IsMessageArrived(MsgStartInitialisation))
         {
             {
 
@@ -524,7 +513,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active__Establishing__ReceivingStatus()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -533,9 +522,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -545,9 +534,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -557,9 +546,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -638,7 +627,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgInitialisationCompleted>())
+        if (IsMessageArrived(MsgInitialisationCompleted))
         {
             {
 
@@ -654,7 +643,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active__Establishing__OtherVersionRequired()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -663,9 +652,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -675,9 +664,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -687,9 +676,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -783,7 +772,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active__Establishing()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -792,9 +781,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -804,9 +793,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -816,9 +805,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -1046,7 +1035,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Active()
     {
-        if (IsMessageArrived<Message.MsgPdiNotAvailable>())
+        if (IsMessageArrived(MsgPdiNotAvailable))
         {
             {
 
@@ -1055,9 +1044,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ProtocolError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
@@ -1067,9 +1056,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.ContentTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
@@ -1079,9 +1068,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
         }
-        if (IsMessageArrived<Message.MsgResetPdi>())
+        if (IsMessageArrived(MsgResetPdi))
         {
-            if (ReceivedMessage<Message.MsgResetPdi>(x => x.ReportedResetReason == ResetReason.FormalTelegramError))
+            if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
@@ -1167,7 +1156,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
     private SSciEfesPrimBehaviour TransitionFromSSciEfesPrimBehaviour__Suspended()
     {
-        if (IsMessageArrived<Message.MsgPdiAvailable>())
+        if (IsMessageArrived(MsgPdiAvailable))
         {
             {
 
@@ -1345,6 +1334,51 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
     public Message.MsgStartInitialisation MsgStartInitialisation { get; set; }
     public Message.MsgInitialisationCompleted MsgInitialisationCompleted { get; set; }
     public Message.MsgPdiAvailable MsgPdiAvailable { get; set; }
+    public bool ReceiveMessage(Message message)
+    {
+        switch (message)
+        {
+            case Message.MsgPdiNotAvailable specific:
+                {
+                    MsgPdiNotAvailable = specific;
+                    return true;
+                }
+            case Message.MsgResetPdi specific:
+                {
+                    MsgResetPdi = specific;
+                    return true;
+                }
+            case Message.MsgPdiVersionCheck specific:
+                {
+                    MsgPdiVersionCheck = specific;
+                    return true;
+                }
+            case Message.MsgStartInitialisation specific:
+                {
+                    MsgStartInitialisation = specific;
+                    return true;
+                }
+            case Message.MsgInitialisationCompleted specific:
+                {
+                    MsgInitialisationCompleted = specific;
+                    return true;
+                }
+            case Message.MsgPdiAvailable specific:
+                {
+                    MsgPdiAvailable = specific;
+                    return true;
+                }
+            default: return false;
+        };
+    }
+    private bool IsMessageArrived(Message message)
+    {
+        return message != null;
+    }
+    private bool ReceivedMessage<T>(T message, Func<T, bool> expr)
+    {
+        return message != null && expr(message);
+    }
 
     // Events
     public Event Change749 { get; }

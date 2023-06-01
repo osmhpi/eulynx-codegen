@@ -53,11 +53,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) {
 
     public string Name => CodeGenerationItem.InPascalCase(Property.Name);
     public string Accessor => IsPort ? $"{Name}.Value" : Name;
+    public virtual string EqualityComparer => "Equals";
 
     public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
     {
         public HashSet<string> AllowedValues = new HashSet<string>();
         public override string DataType => AllowedValues.Count > 0 ? $"{Name}Value" : "byte[]";
+        public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
 
         public override void RecordPossibleValue(string value)
         {
