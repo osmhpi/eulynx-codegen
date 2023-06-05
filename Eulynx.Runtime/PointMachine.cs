@@ -2,22 +2,22 @@ using System.Threading.Channels;
 using Eulynx.Runtime;
 using EulynxLive.Messages.Baseline4R1;
 
-namespace Eulynx.Test;
+namespace Eulynx.Runtime;
 
-class PointMachine {
+public class PointMachine {
     private readonly MessageFactory _messageConverter;
 
     public Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour> Prim { get; }
     public Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour> CommandAndReceive { get; }
     public Channel<Message> OutgoingMessages { get; }
 
-    public PointMachine()
+    public PointMachine(string senderId, string receiverId)
     {
         OutgoingMessages = Channel.CreateUnbounded<Message>();
 
         var otherChannel = Channel.CreateUnbounded<Message>();
 
-        _messageConverter = new MessageFactory("", "", ProtocolType.Point);
+        _messageConverter = new MessageFactory(senderId, receiverId, ProtocolType.Point);
 
         Prim = new Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour>(new SSciEfesPrim(_messageConverter));
         CommandAndReceive = new Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour>(new SSciPCommandAndRecieve(_messageConverter));
@@ -46,30 +46,35 @@ class PointMachine {
         CommandAndReceive.StateMachine.Transition();
     }
 
-    internal void SetScpConnectionEstablished(bool established) {
+    public void SetScpConnectionEstablished(bool established) {
         Prim.StateMachine.T5inScpConnectionEstablished.Value = new PulsedIn(established);
         PerformUpdate();
     }
 
-    internal void SetEnableOrConnectPdiEfes(bool enable)
+    public void SetScpConnectionTerminated(bool terminated) {
+        Prim.StateMachine.T10inScpConnectionTerminated.Value = new PulsedIn(terminated);
+        PerformUpdate();
+    }
+
+    public void SetEnableOrConnectPdiEfes(bool enable)
     {
         Prim.StateMachine.T49inEnableOrConnectPdiEfes.Value = new PulsedIn(enable);
         PerformUpdate();
     }
 
-    internal void SetConPdiVersion(byte[] bytes)
+    public void SetConPdiVersion(byte[] bytes)
     {
         Prim.StateMachine.D3inConPdiVersion.Value = bytes;
         PerformUpdate();
     }
 
-    internal void SetChecksumData(byte[] bytes)
+    public void SetChecksumData(byte[] bytes)
     {
         Prim.StateMachine.D4inConChecksumData.Value = bytes;
         PerformUpdate();
     }
 
-    internal void SetMovePoint(SSciPCommandAndRecieve.D30inMovePointValue v)
+    public void SetMovePoint(SSciPCommandAndRecieve.D30inMovePointValue v)
     {
         CommandAndReceive.StateMachine.D30inMovePoint.Value = v;
         CommandAndReceive.StateMachine.T30inMovePoint.Value.Set();
@@ -77,11 +82,11 @@ class PointMachine {
         CommandAndReceive.StateMachine.T30inMovePoint.Value.Unset();
     }
 
-    internal SSciPCommandAndRecieve.D32outPointPositionValue GetPointPosition() {
+    public SSciPCommandAndRecieve.D32outPointPositionValue GetPointPosition() {
         return CommandAndReceive.StateMachine.D32outPointPosition.Value;
     }
 
-    internal void ReceiveMessage(Message message) {
+    public void ReceiveMessage(Message message) {
         if (_messageConverter.ConvertToEfesPrimMessage(message, out var efesPrimMessage)) {
             if (Prim.StateMachine.ReceiveMessage(efesPrimMessage)) {
                 PerformUpdate();

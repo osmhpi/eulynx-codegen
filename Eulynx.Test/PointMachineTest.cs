@@ -1,3 +1,4 @@
+using Eulynx.Runtime;
 using EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx.Test;
@@ -11,7 +12,7 @@ public class PointMachineTest
     [TestMethod]
     public void InitialStateShouldBeSet()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         Assert.IsNotNull(point.Prim.StateMachine.State);
         Assert.IsNotNull(point.CommandAndReceive.StateMachine.State);
@@ -20,7 +21,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldPerformTransitionOnConnectionEstablished()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
@@ -31,7 +32,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldPerformTransitionOnEnablePdiConnect()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         // Got an incoming RaSTA connection.
         point.SetScpConnectionEstablished(true);
@@ -45,7 +46,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldSendInitializationRequestOnConnectionEstablished()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         point.SetConPdiVersion(new byte[] {0});
 
@@ -62,7 +63,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldReactOnIncomingConnectionResponse()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         point.SetConPdiVersion(new byte[] {0});
         point.SetChecksumData(new byte[] {});
@@ -82,7 +83,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldReceiveStatusFromPoint()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         point.SetConPdiVersion(new byte[] {0});
         point.SetChecksumData(new byte[] {});
@@ -104,7 +105,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldCompleteReceivingStatusFromPoint()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         point.SetConPdiVersion(new byte[] {0});
         point.SetChecksumData(new byte[] {});
@@ -131,7 +132,7 @@ public class PointMachineTest
     [TestMethod]
     public void ShouldSendCommandPointPositionMessage()
     {
-        var point = new PointMachine();
+        var point = new PointMachine(SENDER_ID, RECEIVER_ID);
 
         point.SetConPdiVersion(new byte[] {0});
         point.SetChecksumData(new byte[] {});
