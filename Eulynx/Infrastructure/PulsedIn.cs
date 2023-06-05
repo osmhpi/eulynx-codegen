@@ -6,4 +6,14 @@ public class PulsedIn {
     {
         IsSet = value;
     }
+
+    public void Set()
+    {
+        IsSet = true;
+    }
+
+    public void Unset()
+    {
+        IsSet = false;
+    }
 }

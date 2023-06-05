@@ -321,7 +321,7 @@ public class DataTypeHelper {
     }
 
     public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {
-        var whitelist = new [] {"ResetReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
+        var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
         var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
             // There are two enumerations which map to the same name (but are not used currently)
             // - Line Direction Control Information

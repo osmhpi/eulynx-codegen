@@ -10,12 +10,10 @@ class PointMachine {
     public Container<SSciEfesPrim, SSciEfesPrim.SSciEfesPrimBehaviour> Prim { get; }
     public Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour> CommandAndReceive { get; }
     public Channel<Message> OutgoingMessages { get; }
-    public Channel<Message> IncomingMessages { get; }
 
     public PointMachine()
     {
         OutgoingMessages = Channel.CreateUnbounded<Message>();
-        IncomingMessages = Channel.CreateUnbounded<Message>();
 
         var otherChannel = Channel.CreateUnbounded<Message>();
 
@@ -25,6 +23,7 @@ class PointMachine {
         CommandAndReceive = new Container<SSciPCommandAndRecieve, SSciPCommandAndRecieve.SSciPCommandAndRecieveBehaviour>(new SSciPCommandAndRecieve(_messageConverter));
 
         Prim.StateMachine.P1inout = new Port<Channel<Message>>(OutgoingMessages);
+        CommandAndReceive.StateMachine.P10inout = new Port<Channel<Message>>(OutgoingMessages);
         // Prim.StateMachine.P2inout = otherChannel;
         // CommandAndReceive.StateMachine.P10inout = OutgoingMessages;
 
@@ -70,9 +69,29 @@ class PointMachine {
         PerformUpdate();
     }
 
+    internal void SetMovePoint(SSciPCommandAndRecieve.D30inMovePointValue v)
+    {
+        CommandAndReceive.StateMachine.D30inMovePoint.Value = v;
+        CommandAndReceive.StateMachine.T30inMovePoint.Value.Set();
+        PerformUpdate();
+        CommandAndReceive.StateMachine.T30inMovePoint.Value.Unset();
+    }
+
+    internal SSciPCommandAndRecieve.D32outPointPositionValue GetPointPosition() {
+        return CommandAndReceive.StateMachine.D32outPointPosition.Value;
+    }
+
     internal void ReceiveMessage(Message message) {
-        if (Prim.StateMachine.ReceiveMessage(_messageConverter.ConvertToEfesPrimMessage(message))) {
-            PerformUpdate();
+        if (_messageConverter.ConvertToEfesPrimMessage(message, out var efesPrimMessage)) {
+            if (Prim.StateMachine.ReceiveMessage(efesPrimMessage)) {
+                PerformUpdate();
+            }
+        } else if (_messageConverter.ConvertToSciPCommandAndReceiveMessage(message, out var commandAndReceiveMessage)) {
+            if (CommandAndReceive.StateMachine.ReceiveMessage(commandAndReceiveMessage)) {
+                PerformUpdate();
+            }
+        } else {
+            throw new ArgumentException("Unexpected message");
         }
     }
 }

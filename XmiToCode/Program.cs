@@ -58,7 +58,11 @@ foreach (var interestingPackage in interestingPackages) {
 
     foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
-        await umlClass.Generate();
+        try {
+            await umlClass.Generate();
+        } catch {
+            Console.WriteLine($"Could not generate class: {umlClass.GetName()}");
+        }
     }
 }
 

@@ -1,6 +1,17 @@
 namespace Eulynx;
 
 
+public enum CloseReason
+{
+    NormalClose,
+    OtherVersionRequired,
+    Timeout,
+    ProtocolError,
+    FormalTelegramError,
+    ContentTelegramError,
+    ChecksumMismatch
+}
+
 public enum ResetReason
 {
     ProtocolError,

@@ -213,6 +213,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -225,6 +226,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -237,6 +239,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -327,6 +330,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
                 var (Result, ChecksumData, PDIVersion) = MsgPdiVersionCheck;
+                MsgPdiVersionCheck = null;
                 MemPdiVersionResult = Result;
                 MemChecksumData = ChecksumData;
 
@@ -387,6 +391,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -399,6 +404,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -411,6 +417,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -527,6 +534,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -539,6 +547,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -551,6 +560,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -657,6 +667,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -669,6 +680,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -681,6 +693,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -786,6 +799,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -798,6 +812,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -810,6 +825,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -1049,6 +1065,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ProtocolError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -1061,6 +1078,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.ContentTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
@@ -1073,6 +1091,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             if (ReceivedMessage(MsgResetPdi, x => x.ReportedResetReason.Equals(ResetReason.FormalTelegramError)))
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
+                MsgResetPdi = null;
                 D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
                 D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;

@@ -5,6 +5,9 @@ namespace Eulynx.Test;
 [TestClass]
 public class PointMachineTest
 {
+    public const string SENDER_ID = "INTERLOCKING";
+    public const string RECEIVER_ID = "POINT";
+
     [TestMethod]
     public void InitialStateShouldBeSet()
     {
@@ -71,27 +74,88 @@ public class PointMachineTest
         point.SetEnableOrConnectPdiEfes(true);
 
         point.ReceiveMessage(new PointPdiVersionCheckMessage(
-            "", "", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
+            SENDER_ID, RECEIVER_ID, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
 
         Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Active.Establishing.WaitingForInitialisation));
     }
 
     [TestMethod]
-    public async Task InitialMemLastCommandedPointPositionShouldBeUndefined()
+    public void ShouldReceiveStatusFromPoint()
     {
         var point = new PointMachine();
 
-        // point.PerformUpdate((p) => {
-        //     // Got an incoming RaSTA connection.
-        //     p.Prim.StateMachine.T5inScpConnectionEstablished.Value = true;
-        // });
+        point.SetConPdiVersion(new byte[] {0});
+        point.SetChecksumData(new byte[] {});
 
-        var msg = await point.OutgoingMessages.Reader.ReadAsync();
+        // Got an incoming RaSTA connection.
+        point.SetScpConnectionEstablished(true);
 
-        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciAdjPrim.SSciAdjsPrimBehaviour.Active));
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
 
-        // Todo:
-        // 4. Implement sending and receiving EULYNX messages, including handling conditions
-        // 5. Implement timeout triggers
+        point.ReceiveMessage(new PointPdiVersionCheckMessage(
+            SENDER_ID, RECEIVER_ID, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
+
+        point.ReceiveMessage(new PointStartInitialisationMessage(SENDER_ID, RECEIVER_ID));
+
+        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Active.Establishing.ReceivingStatus));
+    }
+
+    [TestMethod]
+    public void ShouldCompleteReceivingStatusFromPoint()
+    {
+        var point = new PointMachine();
+
+        point.SetConPdiVersion(new byte[] {0});
+        point.SetChecksumData(new byte[] {});
+
+        // Got an incoming RaSTA connection.
+        point.SetScpConnectionEstablished(true);
+
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
+
+        point.ReceiveMessage(new PointPdiVersionCheckMessage(
+            SENDER_ID, RECEIVER_ID, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
+
+        point.ReceiveMessage(new PointStartInitialisationMessage(SENDER_ID, RECEIVER_ID));
+        point.ReceiveMessage(new PointPointPositionMessage(SENDER_ID, RECEIVER_ID,
+            PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
+            PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition));
+        point.ReceiveMessage(new PointInitialisationCompletedMessage(SENDER_ID, RECEIVER_ID));
+
+        Assert.IsInstanceOfType(point.Prim.StateMachine.State, typeof(SSciEfesPrim.SSciEfesPrimBehaviour.Active.Establishing.Established));
+        Assert.AreEqual(point.GetPointPosition(), SSciPCommandAndRecieve.D32outPointPositionValue.LeftAndNotDegraded);
+    }
+
+    [TestMethod]
+    public void ShouldSendCommandPointPositionMessage()
+    {
+        var point = new PointMachine();
+
+        point.SetConPdiVersion(new byte[] {0});
+        point.SetChecksumData(new byte[] {});
+
+        // Got an incoming RaSTA connection.
+        point.SetScpConnectionEstablished(true);
+
+        // Be willing to connect
+        point.SetEnableOrConnectPdiEfes(true);
+
+        point.ReceiveMessage(new PointPdiVersionCheckMessage(
+            SENDER_ID, RECEIVER_ID, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 0, 0, new byte[]{}));
+
+        point.ReceiveMessage(new PointStartInitialisationMessage(SENDER_ID, RECEIVER_ID));
+        point.ReceiveMessage(new PointPointPositionMessage(SENDER_ID, RECEIVER_ID,
+            PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
+            PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition));
+        point.ReceiveMessage(new PointInitialisationCompletedMessage(SENDER_ID, RECEIVER_ID));
+
+        point.SetMovePoint(SSciPCommandAndRecieve.D30inMovePointValue.Right);
+
+        Message lastMessage = null;
+        while (point.OutgoingMessages.Reader.TryRead(out var item))
+            lastMessage = item;
+        Assert.IsInstanceOfType(lastMessage, typeof(PointMovePointCommand));
     }
 }

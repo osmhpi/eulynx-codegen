@@ -103,9 +103,13 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     {
         if (currentSignalName != null && attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
             if (attributesOfCurrentSignal.Count >= 2) {
-                return $"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {currentSignalName};";
+                return
+                    @$"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {currentSignalName};
+                    {currentSignalName} = null;";
             } else if (attributesOfCurrentSignal.Count == 1) {
-                return $"var {attributesOfCurrentSignal.Single().Value.Name} = {currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};";
+                return
+                    @$"var {attributesOfCurrentSignal.Single().Value.Name} = {currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};
+                    {currentSignalName} = null;";
             }
         }
 

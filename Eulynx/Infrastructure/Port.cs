@@ -25,8 +25,10 @@ public class Port<T> : AbstractPort
         _value = value;
      }
 
-    public void Connect(Port<T> other)
+    public void Connect(Port<T> other, bool back = true)
     {
         _connectedPorts.Add(other);
+        if (back)
+            other.Connect(this, false);
     }
 }

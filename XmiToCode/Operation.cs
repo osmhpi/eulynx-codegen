@@ -19,6 +19,14 @@ public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
         var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
         insns = Regex.Replace(insns, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
 
+        insns = insns
+            .Replace("Then", ") {")
+            .Replace("Elseif", "} else if (")
+            .Replace("Else", "} else {")
+            .Replace("End If", "}")
+            .Replace("If", "if (")
+            .Replace("Return", "return");
+
         return @$"public void {InPascalCase(Op.Name)}() {{
             {insns}
         }}";

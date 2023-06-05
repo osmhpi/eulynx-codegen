@@ -128,6 +128,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Left) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotApplicable)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotApplicable;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -139,6 +140,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Left) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotDegraded)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotDegraded;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -150,6 +152,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Right) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotApplicable)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.RightAndNotApplicable;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -161,6 +164,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Right) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotDegraded)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.RightAndNotDegraded;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -172,6 +176,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.NoEndPosition) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.DegradedLeft)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedLeft;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -183,6 +188,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.NoEndPosition) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.DegradedRight)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedRight;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -194,6 +200,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.NoEndPosition) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotDegraded)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotDegraded;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -205,6 +212,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.NoEndPosition) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotApplicable)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotApplicable;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -216,6 +224,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Trailed) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.DegradedLeft)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedLeft;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -227,6 +236,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Trailed) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.DegradedRight)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedRight;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -238,6 +248,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Trailed) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotDegraded)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotDegraded;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -249,6 +260,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgPointPosition, x => x.ReportedPointPositionState.Equals(PointPositionState.Trailed) && x.ReportedDegradedPointPosition.Equals(PointPositionDegradedState.NotApplicable)))
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
+                MsgPointPosition = null;
                 D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotApplicable;
                 T32outPointPosition.Value = new PulsedOut(true);
 
@@ -260,6 +272,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgAbilityToMovePoint, x => x.ReportedAbilityToMoveState.Equals(AbilityToMoveState.UnableToMove)))
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
+                MsgAbilityToMovePoint = null;
                 D33outAbilityToMove.Value = D33outAbilityToMoveValue.UnableToMove;
                 T33outAbilityToMove.Value = new PulsedOut(true);
 
@@ -271,6 +284,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (ReceivedMessage(MsgAbilityToMovePoint, x => x.ReportedAbilityToMoveState.Equals(AbilityToMoveState.AbleToMove)))
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
+                MsgAbilityToMovePoint = null;
                 D33outAbilityToMove.Value = D33outAbilityToMoveValue.AbleToMove;
                 T33outAbilityToMove.Value = new PulsedOut(true);
 

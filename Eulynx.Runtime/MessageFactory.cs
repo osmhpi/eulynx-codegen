@@ -24,23 +24,70 @@ public class MessageFactory : IMessageFactory
             SSciEfesPrim.Message.CdPdiVersionCheck specific => ConvertSSciEfesPrimCdPdiVersionCheck(specific),
             SSciEfesPrim.Message.MsgInitialisationCompleted specific => ConvertSSciEfesPrimMsgInitialisationCompleted(specific),
 
+            SSciPCommandAndRecieve.Message.CdMovePoint specific => ConvertSSciPCommandAndRecieveCdMovePoint(specific),
+
             _ => throw new NotImplementedException()
         };
     }
 
-    public SSciEfesPrim.Message ConvertToEfesPrimMessage(Message message)
+    public bool ConvertToEfesPrimMessage(Message message, out SSciEfesPrim.Message? result)
     {
-        return message switch
-        {
-            PointPdiVersionCheckMessage specific => new SSciEfesPrim.Message.MsgPdiVersionCheck(
-                specific.ResultPdiVersionCheck switch {
-                    PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch => SSciEfesPrim.ResultValue.Match,
-                    PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch => SSciEfesPrim.ResultValue.NotMatch
-                },
-                specific.Checksum,
-                new byte[] { specific.SenderPdiVersion }
-            )
-        };
+        result = null;
+
+        switch (message) {
+            case PointPdiVersionCheckMessage specific:
+                result = new SSciEfesPrim.Message.MsgPdiVersionCheck(
+                    specific.ResultPdiVersionCheck switch {
+                        PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch => SSciEfesPrim.ResultValue.Match,
+                        PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch => SSciEfesPrim.ResultValue.NotMatch
+                    },
+                    specific.Checksum,
+                    new byte[] { specific.SenderPdiVersion }
+                );
+                return true;
+            case PointStartInitialisationMessage:
+                result = new SSciEfesPrim.Message.MsgStartInitialisation();
+                return true;
+            case PointInitialisationCompletedMessage:
+                result = new SSciEfesPrim.Message.MsgInitialisationCompleted();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public bool ConvertToSciPCommandAndReceiveMessage(Message message, out SSciPCommandAndRecieve.Message? result)
+    {
+        result = null;
+
+        switch (message) {
+            case PointPointPositionMessage specific:
+                result = new SSciPCommandAndRecieve.Message.MsgPointPosition(
+                    specific.ReportedPointPosition switch {
+                        PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition => PointPositionState.Left,
+                        PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition => PointPositionState.Right,
+                        PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition => PointPositionState.NoEndPosition,
+                        PointPointPositionMessageReportedPointPosition.PointIsTrailed => PointPositionState.Trailed
+                    },
+                    specific.ReportedDegradedPointPosition switch {
+                        PointPointPositionMessageReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable => PointPositionDegradedState.NotApplicable,
+                        PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedLeftHandPosition => PointPositionDegradedState.DegradedLeft,
+                        PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition => PointPositionDegradedState.DegradedRight,
+                        PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition => PointPositionDegradedState.NotDegraded
+                    }
+                );
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private Message ConvertSSciPCommandAndRecieveCdMovePoint(SSciPCommandAndRecieve.Message.CdMovePoint specific)
+    {
+        return new PointMovePointCommand(_senderId, _receiverId, specific.Value switch {
+            SSciPCommandAndRecieve.Message.CdMovePoint.Values.Left => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving,
+            SSciPCommandAndRecieve.Message.CdMovePoint.Values.Right => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving
+        });
     }
 
     private Message ConvertSSciEfesPrimMsgInitialisationCompleted(SSciEfesPrim.Message.MsgInitialisationCompleted specific)
