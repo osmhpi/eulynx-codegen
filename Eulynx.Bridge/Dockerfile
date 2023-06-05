@@ -1,0 +1,7 @@
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+
+COPY bin/Release/net7.0/publish/ app/
+
+WORKDIR /app
+
+ENTRYPOINT ["dotnet", "Eulynx.Bridge.dll"]
