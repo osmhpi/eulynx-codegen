@@ -2,7 +2,6 @@ using Eulynx.Runtime;
 using EulynxLive.Messages.Baseline4R1;
 using Google.Protobuf;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Sci;
 using static Sci.Rasta;
 
@@ -16,6 +15,8 @@ public class RastaService : RastaBase
 
     public string LocalId = "INTERLOCKING";
     public string RemoteId = "99W1";
+
+    public event EventHandler? PointStateChanged;
 
     public RastaService(ILogger<RastaService> logger)
     {
@@ -63,6 +64,8 @@ public class RastaService : RastaBase
                 _logger.LogTrace("Received {} message", eulynxMessage.GetType());
 
                 Point.ReceiveMessage(eulynxMessage);
+
+                PointStateChanged?.Invoke(this, EventArgs.Empty);
             }
         };
 

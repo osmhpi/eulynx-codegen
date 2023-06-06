@@ -29,11 +29,25 @@ public class SubsystemPointService : SubsystemPoint.SubsystemPointBase
         }
     }
 
+    public override async Task ConnectWeb(Nothing request, IServerStreamWriter<State> responseStream, ServerCallContext context)
+    {
+        var sendUpdate = async () => {
+            await responseStream.WriteAsync(new State {
+                AbilityToMove = "",// _rasta.Point.
+                PointPosition = Enum.GetName(_rasta.Point.GetPointPosition())
+            });
+        };
+
+        _rasta.PointStateChanged += (sender, e) => sendUpdate();
+
+        await sendUpdate();
+    }
+
     public override Task<Nothing> MovePoint(Input request, ServerCallContext context)
     {
         _rasta.Point.SetMovePoint(request.MovePoint switch {
-                    MovePointPosition.Right => D30inMovePointValue.Right,
-                    MovePointPosition.Left => D30inMovePointValue.Left,
+            MovePointPosition.Right => D30inMovePointValue.Right,
+            MovePointPosition.Left => D30inMovePointValue.Left,
         });
         return Task.FromResult(new Nothing());
     }
