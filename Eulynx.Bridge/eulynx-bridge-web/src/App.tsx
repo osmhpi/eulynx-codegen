@@ -55,8 +55,8 @@ class App extends React.Component<{}, AppState> {
       <div className="container">
         <p>Point Position and Degraded State: {this.state.pointPosition}</p>
         <div>
-          <button onClick={this.commandLeft}>Command Left</button>
-          <button onClick={this.commandRight}>Command Right</button>
+          <button onClick={() => this.commandLeft()}>Command Left</button>
+          <button onClick={() => this.commandRight()}>Command Right</button>
         </div>
       </div>
     );
