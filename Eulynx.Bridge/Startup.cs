@@ -41,7 +41,7 @@ namespace Eulynx.Bridge
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<SubsystemPointService>().EnableGrpcWeb();
-                endpoints.MapGrpcService<RastaService>().EnableGrpcWeb();
+                endpoints.MapGrpcService<RastaService>();
                 if (env.IsDevelopment())
                 {
                     endpoints.MapGrpcReflectionService();
