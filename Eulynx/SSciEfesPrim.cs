@@ -50,11 +50,16 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
                 public static new Establishing New(SSciEfesPrim This)
                 {
-                    This.SendMessage(new Message.CdPdiVersionCheck(This.D3inConPdiVersion.Value), This.P1inout);
+                    {
+                        {
 
-                    This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForVersionCheck;
+                            This.SendMessage(new Message.CdPdiVersionCheck(This.D3inConPdiVersion.Value), This.P1inout);
 
-                    return Establishing.WaitingForVersionCheck.New(This);
+                            This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForVersionCheck;
+
+                            return Establishing.WaitingForVersionCheck.New(This);
+                        }
+                    }
                 }
 
                 private Establishing() { }
@@ -67,8 +72,13 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
             public static new Active New(SSciEfesPrim This)
             {
+                {
+                    {
 
-                return Active.Establishing.New(This);
+
+                        return Active.Establishing.New(This);
+                    }
+                }
             }
 
             private Active() { }
@@ -81,11 +91,16 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
 
         public static new SSciEfesPrimBehaviour New(SSciEfesPrim This)
         {
-            This.Cop1Init();
+            {
+                {
 
-            This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
+                    This.Cop1Init();
 
-            return SSciEfesPrimBehaviour.DisconnectedNoScp.New(This);
+                    This.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
+
+                    return SSciEfesPrimBehaviour.DisconnectedNoScp.New(This);
+                }
+            }
         }
 
         private SSciEfesPrimBehaviour() { }
@@ -203,7 +218,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -214,9 +229,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -227,9 +242,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -240,9 +255,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -251,8 +266,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -261,10 +276,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -273,10 +288,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -285,10 +300,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -297,9 +312,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -308,10 +323,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -320,8 +335,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciEfesPrimBehaviour.Active.Establishing.New(this);
             }
@@ -342,9 +357,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                         if (ChecksumData.SequenceEqual(D4inConChecksumData.Value))
                         {
 
-                            SendMessage(new Message.CdInitialisationRequest(), P1inout);
+                            this.SendMessage(new Message.CdInitialisationRequest(), this.P1inout);
 
-                            D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitialisation;
+                            this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.WaitingForInitialisation;
 
                             return SSciEfesPrimBehaviour.Active.Establishing.WaitingForInitialisation.New(this);
                         }
@@ -358,11 +373,11 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
                         if (D39inConLastPdiVersion.Value.Equals(false))
                         {
 
-                            T46outConOtherPdiVersionRequest.Value = new PulsedOut(true);
-                            SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.OtherVersionRequired), P1inout);
-                            D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
+                            this.T46outConOtherPdiVersionRequest.Value = new PulsedOut(true);
+                            this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.OtherVersionRequired), this.P1inout);
+                            this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiOtherVersionRequired;
 
-                            D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.OtherVersionRequired;
+                            this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.OtherVersionRequired;
 
                             return SSciEfesPrimBehaviour.Active.Establishing.OtherVersionRequired.New(this);
                         }
@@ -381,7 +396,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -392,9 +407,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -405,9 +420,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -418,9 +433,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -429,8 +444,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -439,10 +454,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -451,10 +466,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -463,10 +478,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -475,9 +490,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -486,10 +501,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -498,8 +513,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciEfesPrimBehaviour.Active.Establishing.New(this);
             }
@@ -508,7 +523,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ReceivingStatus;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ReceivingStatus;
 
                 return SSciEfesPrimBehaviour.Active.Establishing.ReceivingStatus.New(this);
             }
@@ -524,7 +539,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -535,9 +550,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -548,9 +563,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -561,9 +576,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -572,8 +587,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -582,10 +597,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -594,10 +609,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -606,10 +621,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -618,9 +633,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -629,10 +644,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -641,7 +656,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Established;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Established;
 
                 return SSciEfesPrimBehaviour.Active.Established.New(this);
             }
@@ -657,7 +672,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -668,9 +683,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -681,9 +696,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -694,9 +709,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -705,8 +720,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -715,10 +730,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -727,10 +742,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -739,10 +754,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -751,9 +766,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -762,10 +777,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -789,7 +804,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -800,9 +815,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -813,9 +828,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -826,9 +841,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -837,8 +852,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -847,10 +862,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -859,10 +874,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -871,10 +886,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -883,9 +898,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -894,10 +909,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -906,8 +921,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.Timeout), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiTimeout;
 
                 return SSciEfesPrimBehaviour.Active.Establishing.New(this);
             }
@@ -931,7 +946,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
 
                 return SSciEfesPrimBehaviour.DisconnectedNoScp.New(this);
             }
@@ -955,8 +970,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -965,7 +980,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -981,7 +996,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ImpermissibleNoScp;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.ImpermissibleNoScp;
 
                 return SSciEfesPrimBehaviour.ImpermissibleNoScp.New(this);
             }
@@ -1005,7 +1020,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.DisconnectedNoScp;
 
                 return SSciEfesPrimBehaviour.DisconnectedNoScp.New(this);
             }
@@ -1029,8 +1044,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -1039,7 +1054,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -1055,7 +1070,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -1066,9 +1081,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesProtocolError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1079,9 +1094,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesContentTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1092,9 +1107,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
             {
                 var ReportedResetReason = MsgResetPdi.ReportedResetReason;
                 MsgResetPdi = null;
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EfesFormalTelegramError;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1103,8 +1118,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -1113,10 +1128,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilProtocolError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ProtocolError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1125,10 +1140,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilFormalTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.FormalTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1137,10 +1152,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.EilContentTelegramError;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.ContentTelegramError), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Impermissible;
 
                 return SSciEfesPrimBehaviour.Impermissible.New(this);
             }
@@ -1149,9 +1164,9 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdReleasePdiForMaintenance(), P1inout);
+                this.SendMessage(new Message.CdReleasePdiForMaintenance(), this.P1inout);
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Suspended;
 
                 return SSciEfesPrimBehaviour.Suspended.New(this);
             }
@@ -1160,10 +1175,10 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), P1inout);
-                D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
+                this.SendMessage(new Message.CdClosePdi(Message.CdClosePdi.Values.NormalClose), this.P1inout);
+                this.D60outPdiCloseReason.Value = D60outPdiCloseReasonValue.PdiNormalClose;
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }
@@ -1187,8 +1202,8 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
-                T6outEstablishScpConnection.Value = new PulsedOut(true);
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.RequestedNoScp;
+                this.T6outEstablishScpConnection.Value = new PulsedOut(true);
 
                 return SSciEfesPrimBehaviour.RequestedNoScp.New(this);
             }
@@ -1197,7 +1212,7 @@ public class SSciEfesPrim : IStateMachine<SSciEfesPrim.SSciEfesPrimBehaviour>
         {
             {
 
-                D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
+                this.D50outPdiConnectionState.Value = D50outPdiConnectionStateValue.Disconnected;
 
                 return SSciEfesPrimBehaviour.Disconnected.New(this);
             }

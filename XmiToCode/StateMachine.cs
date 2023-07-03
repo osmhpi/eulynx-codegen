@@ -56,7 +56,7 @@ class StateMachine : CodeGenerationItem
     public string GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes)
     {
         return $@"private {theRootBehaviorName} TransitionFrom{name.Replace(".", "__")}() {{
-        {GenerateConditions(thisName, fromState, dataTypes)}
+        {GenerateConditions(thisName, fromState, dataTypes, "this")}
 
         // Do not transition
         return _state;
@@ -64,14 +64,14 @@ class StateMachine : CodeGenerationItem
 ";
     }
 
-    public string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    public string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, string instanceReference, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return string.Join("\n", transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal)));
+        return string.Join("\n", transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, instanceReference)));
     }
 
     public string GetName() {
@@ -101,14 +101,15 @@ class StateMachine : CodeGenerationItem
     private string MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes) {
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes));
         var initialTransition = GetTransitionsFromState(name, _initialState).Single();
-        var activities = initialTransition.transition.GenerateActivities(_initialState, initialTransition, null, dataTypes, "This");
+        var initializer = initialTransition.transition.GenerateTransition(name,
+            _initialState, initialTransition.state, initialTransition.stateName,
+            dataTypes, false, this, null, "This");
 
         return @$"public record {name} : {parentBehaviorName} {{
         {string.Join("\n    ", subrecords)}
 
     public static new {name} New({className} This) {{
-        {activities}
-        return {initialTransition.stateName}.New(This);
+        {initializer}
     }}
 
     private {name}() {{}}

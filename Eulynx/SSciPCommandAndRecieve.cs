@@ -16,8 +16,11 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
 
             public static new Operating New(SSciPCommandAndRecieve This)
             {
+                {
 
-                return Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(This);
+
+                    return Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(This);
+                }
             }
 
             private Operating() { }
@@ -26,8 +29,13 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
 
         public static new SSciPCommandAndRecieveBehaviour New(SSciPCommandAndRecieve This)
         {
+            {
+                {
 
-            return SSciPCommandAndRecieveBehaviour.Operating.New(This);
+
+                    return SSciPCommandAndRecieveBehaviour.Operating.New(This);
+                }
+            }
         }
 
         private SSciPCommandAndRecieveBehaviour() { }
@@ -108,7 +116,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (D30inMovePoint.Value.Equals(D30inMovePointValue.Right) && D50inPdiConnectionState.Value.Equals(SSciEfesPrim.D50outPdiConnectionStateValue.Established))
             {
 
-                SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Right), P10inout);
+                this.SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Right), this.P10inout);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -118,7 +126,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             if (D30inMovePoint.Value.Equals(D30inMovePointValue.Left) && D50inPdiConnectionState.Value.Equals(SSciEfesPrim.D50outPdiConnectionStateValue.Established))
             {
 
-                SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Left), P10inout);
+                this.SendMessage(new Message.CdMovePoint(Message.CdMovePoint.Values.Left), this.P10inout);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -129,8 +137,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotApplicable;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotApplicable;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -141,8 +149,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotDegraded;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.LeftAndNotDegraded;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -153,8 +161,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.RightAndNotApplicable;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.RightAndNotApplicable;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -165,8 +173,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.RightAndNotDegraded;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.RightAndNotDegraded;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -177,8 +185,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedLeft;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedLeft;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -189,8 +197,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedRight;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndDegradedRight;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -201,8 +209,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotDegraded;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotDegraded;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -213,8 +221,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotApplicable;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.NoEndPositionAndNotApplicable;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -225,8 +233,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedLeft;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedLeft;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -237,8 +245,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedRight;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.TrailedAndDegradedRight;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -249,8 +257,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotDegraded;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotDegraded;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -261,8 +269,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var (ReportedPointPositionState, ReportedDegradedPointPosition) = MsgPointPosition;
                 MsgPointPosition = null;
-                D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotApplicable;
-                T32outPointPosition.Value = new PulsedOut(true);
+                this.D32outPointPosition.Value = D32outPointPositionValue.TrailedAndNotApplicable;
+                this.T32outPointPosition.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -273,8 +281,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
                 MsgAbilityToMovePoint = null;
-                D33outAbilityToMove.Value = D33outAbilityToMoveValue.UnableToMove;
-                T33outAbilityToMove.Value = new PulsedOut(true);
+                this.D33outAbilityToMove.Value = D33outAbilityToMoveValue.UnableToMove;
+                this.T33outAbilityToMove.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -285,8 +293,8 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
             {
                 var ReportedAbilityToMoveState = MsgAbilityToMovePoint.ReportedAbilityToMoveState;
                 MsgAbilityToMovePoint = null;
-                D33outAbilityToMove.Value = D33outAbilityToMoveValue.AbleToMove;
-                T33outAbilityToMove.Value = new PulsedOut(true);
+                this.D33outAbilityToMove.Value = D33outAbilityToMoveValue.AbleToMove;
+                this.T33outAbilityToMove.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }
@@ -295,7 +303,7 @@ public class SSciPCommandAndRecieve : IStateMachine<SSciPCommandAndRecieve.SSciP
         {
             {
 
-                T31outTimeout.Value = new PulsedOut(true);
+                this.T31outTimeout.Value = new PulsedOut(true);
 
                 return SSciPCommandAndRecieveBehaviour.Operating.SendingCommands_RecieveOverallPointPositionAndDegradedPointPositionReport_RecieveAbilityToMoveReport_RecieveTimeOutReport.New(this);
             }

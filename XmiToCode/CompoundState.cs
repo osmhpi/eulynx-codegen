@@ -43,19 +43,27 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
                     var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
                     if (messageInitializer.Success) {
                         messageInitializerValue = messageInitializer.Groups[2].Value;
-                        // Guesswork: Is the initializer referring to a property/port or is it a constant?
-                        // TODO: If this is ambiguous, throw
-                        if (!dataTypes.IsPropertyOrPort(messageInitializerValue)) {
-                            dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, messageInitializerValue);
-                            messageInitializerValue = $"Message.{parsedMessageName}.Values.{messageInitializerValue}";
-                        } else {
-                            dataTypes.RecordCoalesceMessageValues(parsedMessageName, messageInitializerValue);
-                            if (prefixAssignments != null) {
-                                messageInitializerValue = $"{prefixAssignments}.{messageInitializerValue}";
+                        messageInitializerValue = string.Join(",", messageInitializerValue.Split(",").Select(initializer => {
+                            // Guesswork: Is the initializer referring to a property/port or is it a constant?
+                            // TODO: If this is ambiguous, throw
+                            var literal = Regex.Match(initializer, "^\"(.*)\"$");
+                            if (literal.Success) {
+                                var identifier = InPascalCase(literal.Groups[1].Value);
+                                dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, identifier);
+                                return $"Message.{parsedMessageName}.Values.{identifier}";
+                            } else if (!dataTypes.IsPropertyOrPort(initializer)) {
+                                dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, initializer);
+                                return $"Message.{parsedMessageName}.Values.{initializer}";
+                            } else {
+                                dataTypes.RecordCoalesceMessageValues(parsedMessageName, initializer);
+                                var i = initializer;
+                                if (prefixAssignments != null) {
+                                    i = $"{prefixAssignments}.{initializer}";
+                                }
+                                var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
+                                return Regex.Replace(i, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
                             }
-                            var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-                            messageInitializerValue = Regex.Replace(messageInitializerValue, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
-                        }
+                        }));
                     }
 
                     dataTypes.RecordPossibleMessageForPort(m.Groups[2].Value, parsedMessageName);

@@ -3,7 +3,7 @@ using XmiToCode;
 
 using static CodeGenerationItem;
 
-record Transition(IState From, IState To, List<UmlTransition> Transitions) {
+abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
     private string GetMessageTriggeredTransitionConstraint(DataTypeHelper dataTypes, PackagedElement evt, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
@@ -50,9 +50,29 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         return $"if (ReceivedMessage({InPascalCase(evt.Name)}, x => {expression}))";
     }
 
-    public string GenerateTransition(string thisName, IState fromState, IState state, string stateName, DataTypeHelper dataTypes, bool noTriggerConditions, StateMachine stateMachine, Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal) {
-        Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
+    public string GenerateTransition(
+        string thisName,
+        IState fromState,
+        IState state,
+        string stateName,
+        DataTypeHelper dataTypes,
+        bool noTriggerConditions,
+        StateMachine stateMachine,
+        Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal,
+        string instanceReference) {
+
+        var attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
         string? currentSignalName = null;
+
+        if (Transitions.Count > 1 && fromState.IsInitialState) {
+            // Temporary workaround: If there are transition constraints and more
+            // than 1 transition, all constraints have to be fulfilled. Do that later.
+            return $@"{{
+                {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
+                {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
+                return {stateName}.New({instanceReference});
+            }}";
+        }
 
         if (SingleTransition.Trigger != null &&
             SingleTransition.Trigger.Event != null &&
@@ -70,28 +90,28 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
 
         if (state.IsRegularState) {
             if (noTriggerConditions) {
-                return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
+                return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
                     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
-                    return {stateName}.New(this);
+                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
+                    return {stateName}.New({instanceReference});
                 }}";
             } else {
-                return $@"{GetTransitionChangeTriggerExpression(this, dataTypes, attributesOfCurrentSignal)} {{
-                    {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
+                return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
+                    {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
                         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
-                        return {stateName}.New(this);
+                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
+                        return {stateName}.New({instanceReference});
                     }}
                 }}";
             }
         }
 
         if (state.IsJunction) {
-            return $@"{GetTransitionChangeTriggerExpression(this, dataTypes, attributesOfCurrentSignal)} {{
-                {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal)} {{
+            return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
+                {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
                     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
                     {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
-                    {stateMachine.GenerateConditions(thisName, state, dataTypes, true, attributesOfCurrentSignal)}
+                    {stateMachine.GenerateConditions(thisName, state, dataTypes, instanceReference, true, attributesOfCurrentSignal)}
                 }}
             }}";
         }
@@ -116,12 +136,12 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         return "";
     }
 
-    private string GetTransitionChangeTriggerExpression(Transition transition, DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
-        if (transition.SingleTransition.Trigger != null) {
+    private string GetTransitionChangeTriggerExpression(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
+        if (SingleTransition.Trigger != null) {
             // Regular transition
             string? result = null;
 
-            var evt = transition.SingleTransition.Trigger.Event;
+            var evt = SingleTransition.Trigger.Event;
             if (evt != null) {
                 if (dataTypes.ChangeEvents.ContainsKey(evt)) {
                     dataTypes.RecordChangeEventUsed(dataTypes.ChangeEvents[evt]);
@@ -197,7 +217,7 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         return result;
     }
 
-    public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
+    public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, string instanceReference) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
 
@@ -246,8 +266,10 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
             var negateOrNot = (string s) => s == "==" ? "" : "!";
 
             expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
+                // {instanceReference}.
                 m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
             expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
+                // {instanceReference}.
                 m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
 
             // Handle symbols true, false
@@ -261,4 +283,47 @@ record Transition(IState From, IState To, List<UmlTransition> Transitions) {
         }
         return "";
     }
+
+    public static Transition Create(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes) {
+        var transition = transitions.SingleOrDefault();
+
+        if (transition != null) {
+            if (transition.Trigger != null && transition.Trigger.Event != null) {
+                var evt = transition.Trigger.Event;
+                if (dataTypes.TimeEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.TimeEvents[evt];
+                    return new TimeEventTransition(from, to, transitions);
+                } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.ChangeEvents[evt];
+                    return new ChangeEventTransition(from, to, transitions);
+                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
+                    var theEvent = dataTypes.PackageEvents[evt];
+                    return new MessageEventTransition(from, to, transitions);
+                }
+            } else {
+                return new InitialTransition(from, to, transitions);
+            }
+        }
+
+        throw new ArgumentException(nameof(transitions));
+    }
+}
+
+record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+{
+
+}
+
+record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+{
+
+}
+
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+{
+
+}
+record InitialTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+{
+
 }

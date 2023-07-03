@@ -28,8 +28,13 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
 
             public static new Operating New(FControlPointMachinePosition This)
             {
+                {
+                    {
 
-                return Operating.Waiting.New(This);
+
+                        return Operating.Waiting.New(This);
+                    }
+                }
             }
 
             private Operating() { }
@@ -38,11 +43,16 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
 
         public static new FControlPointMachinePositionBehaviour New(FControlPointMachinePosition This)
         {
-            This.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-            This.D21outMoveLeft.Value = false;
-            This.D22outMoveRight.Value = false;
+            {
+                {
 
-            return FControlPointMachinePositionBehaviour.Operating.New(This);
+                    This.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                    This.D21outMoveLeft.Value = false;
+                    This.D22outMoveRight.Value = false;
+
+                    return FControlPointMachinePositionBehaviour.Operating.New(This);
+                }
+            }
         }
 
         private FControlPointMachinePositionBehaviour() { }
@@ -142,9 +152,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
@@ -153,13 +163,13 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D40outMsgPmTimeout.Value = true;
+                this.D40outMsgPmTimeout.Value = true;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -168,11 +178,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -181,11 +191,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D21outMoveLeft.Value = false;
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
+                this.D21outMoveLeft.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
 
-                D22outMoveRight.Value = true;
-                D40outMsgPmTimeout.Value = false;
+                this.D22outMoveRight.Value = true;
+                this.D40outMsgPmTimeout.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
             }
@@ -194,11 +204,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -207,13 +217,13 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Right;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -222,11 +232,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -242,9 +252,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
@@ -253,13 +263,13 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D40outMsgPmTimeout.Value = true;
+                this.D40outMsgPmTimeout.Value = true;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -268,11 +278,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -281,11 +291,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D22outMoveRight.Value = false;
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
+                this.D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
 
-                D21outMoveLeft.Value = true;
-                D40outMsgPmTimeout.Value = false;
+                this.D21outMoveLeft.Value = true;
+                this.D40outMsgPmTimeout.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
             }
@@ -294,11 +304,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -307,13 +317,13 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Left;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -322,11 +332,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -342,9 +352,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
@@ -354,8 +364,8 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
             if (D41inObservedPointEndPosition.Value.Equals(D41inObservedPointEndPositionValue.Right) && MemLastCommandedPointPosition.Equals(MemLastCommandedPointPositionValue.Right) && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove) && D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Operational))
             {
 
-                D22outMoveRight.Value = true;
-                D40outMsgPmTimeout.Value = false;
+                this.D22outMoveRight.Value = true;
+                this.D40outMsgPmTimeout.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
             }
@@ -365,8 +375,8 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
             if (D41inObservedPointEndPosition.Value.Equals(D41inObservedPointEndPositionValue.Left) && MemLastCommandedPointPosition.Equals(MemLastCommandedPointPositionValue.Left) && D29inConUseRedrive.Value && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove) && D51inEstEfesState.Value.Equals(D51inEstEfesStateValue.Operational))
             {
 
-                D21outMoveLeft.Value = true;
-                D40outMsgPmTimeout.Value = false;
+                this.D21outMoveLeft.Value = true;
+                this.D40outMsgPmTimeout.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
             }
@@ -380,19 +390,19 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
                 if (!D2inRequiredPointPosition.Value.Equals(D10inPmPosition.Value) && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove))
                 {
 
-                    D21outMoveLeft.Value = true;
-                    D40outMsgPmTimeout.Value = false;
+                    this.D21outMoveLeft.Value = true;
+                    this.D40outMsgPmTimeout.Value = false;
 
                     return FControlPointMachinePositionBehaviour.Operating.MovingLeft.New(this);
                 }
                 else
                 {
 
-                    D35outDriveStop.Value = false;
+                    this.D35outDriveStop.Value = false;
 
-                    D21outMoveLeft.Value = false;
-                    D22outMoveRight.Value = false;
-                    D35outDriveStop.Value = true;
+                    this.D21outMoveLeft.Value = false;
+                    this.D22outMoveRight.Value = false;
+                    this.D35outDriveStop.Value = true;
 
                     return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
                 }
@@ -407,19 +417,19 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
                 if (!D2inRequiredPointPosition.Value.Equals(D10inPmPosition.Value) && D6inObservedAbilityToMovePoint.Value.Equals(D6inObservedAbilityToMovePointValue.AbleToMove))
                 {
 
-                    D22outMoveRight.Value = true;
-                    D40outMsgPmTimeout.Value = false;
+                    this.D22outMoveRight.Value = true;
+                    this.D40outMsgPmTimeout.Value = false;
 
                     return FControlPointMachinePositionBehaviour.Operating.MovingRight.New(this);
                 }
                 else
                 {
 
-                    D35outDriveStop.Value = false;
+                    this.D35outDriveStop.Value = false;
 
-                    D21outMoveLeft.Value = false;
-                    D22outMoveRight.Value = false;
-                    D35outDriveStop.Value = true;
+                    this.D21outMoveLeft.Value = false;
+                    this.D22outMoveRight.Value = false;
+                    this.D35outDriveStop.Value = true;
 
                     return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
                 }
@@ -436,9 +446,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.New(this);
             }
@@ -448,11 +458,11 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
             if (D34inConActive.Value && D44inConDriveCapability.Value)
             {
 
-                D35outDriveStop.Value = false;
+                this.D35outDriveStop.Value = false;
 
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
-                D35outDriveStop.Value = true;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
+                this.D35outDriveStop.Value = true;
 
                 return FControlPointMachinePositionBehaviour.Operating.Stopped.New(this);
             }
@@ -468,9 +478,9 @@ public class FControlPointMachinePosition : IStateMachine<FControlPointMachinePo
         {
             {
 
-                MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
-                D21outMoveLeft.Value = false;
-                D22outMoveRight.Value = false;
+                this.MemLastCommandedPointPosition = MemLastCommandedPointPositionValue.Undefined;
+                this.D21outMoveLeft.Value = false;
+                this.D22outMoveRight.Value = false;
 
                 return FControlPointMachinePositionBehaviour.Operating.New(this);
             }

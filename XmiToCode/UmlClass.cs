@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using XmiToCode;
 
 internal class UmlClass : CodeGenerationItem
@@ -24,7 +23,6 @@ internal class UmlClass : CodeGenerationItem
         _timeEvents = timeEvents;
         _packageEvents = packageEvents;
         _signals = signals;
-        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
 
         var properties = _class.OwnedAttribute
             .Where(x => x.XmiType == "uml:Property")
@@ -41,9 +39,11 @@ internal class UmlClass : CodeGenerationItem
             .ToList();
 
         _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases);
+
+        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
     }
 
-    public static Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
+    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
         var states = region.Subvertices.Select(x => {
             var subRegion = FlattenRegions(x.Regions);
             return new CompoundState(
@@ -57,13 +57,14 @@ internal class UmlClass : CodeGenerationItem
             states.OfType<CompoundState>()
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => new Transition(t.FromState, to, new List<UmlTransition> { t.Transition }))).ToList();
+                .Select(to => Transition.Create(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes))).ToList();
 
         var transitions = region.Transitions
-            .Select(transition => new Transition(
+            .Select(transition => Transition.Create(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
-                new List<UmlTransition> { transition }
+                new List<UmlTransition> { transition },
+                _dataTypes
             ))
             .Concat(substateTransitionsToStates)
             .ToList();
@@ -95,7 +96,7 @@ internal class UmlClass : CodeGenerationItem
         }
     }
 
-    private static Region? FlattenRegions(List<UmlRegion> regions) {
+    private Region? FlattenRegions(List<UmlRegion> regions) {
         if (regions.Count == 0) {
             return null;
         }
@@ -109,7 +110,7 @@ internal class UmlClass : CodeGenerationItem
             }).ToList()).ToList();
 
         var flattenedStates = FlattenStates(states)
-            // States with more than one junction component are invalid
+            // States with more than one junction component are invalid (we can ignore them)
             .Where(x => x.PartialStates.Count(partialState => partialState.IsJunction) <= 1)
             .ToList();
 
@@ -118,7 +119,7 @@ internal class UmlClass : CodeGenerationItem
             .Where(transition => flattenedStates.Any(x => x.IsSourceOfTransition(transition) && x.IsInitialState)))
             .ToList();
 
-        var initialTransition = new Transition(
+        var initialTransition = new InitialTransition(
             flattenedStates.Single(x => initialTransitions.All(transition => x.IsSourceOfTransition(transition))),
             flattenedStates.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition))),
             initialTransitions
@@ -133,7 +134,7 @@ internal class UmlClass : CodeGenerationItem
             flattenedStates
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => new Transition(t.FromState, to, new List<UmlTransition> { t.Transition }))).ToList();
+                .Select(to => Transition.Create(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes))).ToList();
 
         var transitions = regions.SelectMany(region => region.Transitions
             .SelectMany(transition => flattenedStates
@@ -141,7 +142,7 @@ internal class UmlClass : CodeGenerationItem
                 .SelectMany(from => flattenedStates
                     .Where(x => x.IsTargetOfTransition(transition))
                     .Where(x => x.IsNextStateAfterTransition(from, transition))
-                    .Select(to => new Transition(from, to, new List<UmlTransition> { transition }))
+                    .Select(to => Transition.Create(from, to, new List<UmlTransition> { transition }, _dataTypes))
                 )
             )).Concat(substateTransitionsToFlattenedStates).Append(initialTransition).ToList();
 
