@@ -157,12 +157,15 @@ internal class UmlClass : CodeGenerationItem
     var className = InPascalCase(_class.Name);
     var behaviorName = _stateMachine.GetName();
 
+    var global = new GlobalContext(_dataTypes);
+    var classContext = new ClassContext(global, _dataTypes);
+
     // Initialize property types
     {
         // Perform a dry run of generating transitions (which includes comparisons and assignments,
         // where property types are coalesced)
-        var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes);
-        _dataTypes.Operations.Select(x => x.Write(_dataTypes)).ToList();
+        var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext);
+        _dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)).ToList();
         // TODO: I think side effects of initial transitions are still missing here
 
     }
@@ -176,7 +179,7 @@ using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 namespace Eulynx;
 
 public class {className} : IStateMachine<{className}.{behaviorName}> {{
-    {_stateMachine.Write(className, _dataTypes)}
+    {_stateMachine.Write(className, _dataTypes, classContext)}
 
     private {behaviorName} _state;
     public {behaviorName} State => _state;
@@ -219,7 +222,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
-    {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes)}
+    {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext)}
 
     // Properties
     {_dataTypes.GeneratePropertyDeclarations()}
@@ -228,7 +231,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {_dataTypes.GeneratePortDeclarations()}
 
     // Operations
-    {JoinLines(_dataTypes.Operations.Select(x => x.Write(_dataTypes)))}
+    {JoinLines(_dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)))}
 
     // Value Types
     {_dataTypes.GeneratePropertyValueTypes()}
@@ -247,11 +250,11 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
 ";
   }
 
-    private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
-    {
-        var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-        return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, null, dataTypes);
-    }
+    // private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
+    // {
+    //     var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
+    //     return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, null, dataTypes);
+    // }
 
     internal async Task Generate()
     {

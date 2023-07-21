@@ -12,84 +12,192 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    public static string ConvertInstructions(string instructions, string? prefixAssignments, DataTypeHelper dataTypes) {
-        return string.Join(";\n", instructions.Split(";").Select(instruction => {
-            var fixedSyntax = instruction
-                .Replace("TRUE", "\"TRUE\"")
-                .Replace("FALSE", "\"FALSE\"")
-                .Replace(" := ", " = ")
-                .Trim();
+    public static bool ParseLiteral(string input, out LiteralIdentifier? identifier) {
+        var match = Regex.Match(input, "^\"(.*)\"$");
+        if (match.Success) {
+            identifier = new LiteralIdentifier(match.Groups[1].Value);
+            return true;
+        }
+        identifier = null;
+        return false;
+    }
 
-            var fixedIdentifiers = Regex.Replace(fixedSyntax, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+    public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, ProgramContext context) {
+        // Guesswork: Is the initializer referring to a property/port or is it a constant?
+        // TODO: If this is ambiguous, throw
+        // var literal = Regex.Match(initializer, "^\"(.*)\"$");
+        if (ParseLiteral(initializer, out var literal)) {
+            // Resolve message
+            var result = member.LookupValidLiteral(literal!);
+            return result;
 
-            var fixedMessages = Regex.Replace(fixedIdentifiers,
-                "^Send (.+)\\s?To (.+)$",
-                m => {
-                    var prefix = prefixAssignments != null ? $"{prefixAssignments}." : "";
-                    var messageConstructor = m.Groups[1].Value.Replace(" ", "");
+            // var identifier = InPascalCase(literal.Groups[1].Value);
+            // dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, identifier);
+            // return $"Message.{parsedMessageName}.Values.{identifier}";
+        }
 
-                    if (!messageConstructor.EndsWith(")")) {
-                        messageConstructor += "()";
-                    }
+        var initializerInPascalCase = InPascalCase(initializer);
 
-                    var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
-                    if (!messageName.Success) {
-                        throw new Exception($"Invalid message expression: {messageConstructor}");
-                    }
-                    var parsedMessageName = messageName.Groups[1].Value;
+        // Does the initializer refer to a known variable or constant?
+        var id = new Identifier(initializer);
+        var accessible = context.ResolveIdentifier(id);
+        if (accessible != null) {
+            var result = accessible;
+            return result;
+        } else {
+            // It is a literal, but without quotes
+            var result = member.LookupValidLiteral(new LiteralIdentifier(initializer));
+            return result;
+        }
 
-                    var messageInitializerValue = "";
+        // if (!dataTypes.IsPropertyOrPort(initializerInPascalCase)) {
+        //     dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, initializerInPascalCase);
+        //     return $"Message.{parsedMessageName}.Values.{initializerInPascalCase}";
+        // } else {
+        //     dataTypes.RecordCoalesceMessageValues(parsedMessageName, initializerInPascalCase);
+        //     var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
+        //     return Regex.Replace(initializerInPascalCase, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
+        // }
+    }
 
-                    var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
-                    if (messageInitializer.Success) {
-                        messageInitializerValue = messageInitializer.Groups[2].Value;
-                        messageInitializerValue = string.Join(",", messageInitializerValue.Split(",").Select(initializer => {
-                            // Guesswork: Is the initializer referring to a property/port or is it a constant?
-                            // TODO: If this is ambiguous, throw
-                            var literal = Regex.Match(initializer, "^\"(.*)\"$");
-                            if (literal.Success) {
-                                var identifier = InPascalCase(literal.Groups[1].Value);
-                                dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, identifier);
-                                return $"Message.{parsedMessageName}.Values.{identifier}";
-                            } else if (!dataTypes.IsPropertyOrPort(initializer)) {
-                                dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, initializer);
-                                return $"Message.{parsedMessageName}.Values.{initializer}";
-                            } else {
-                                dataTypes.RecordCoalesceMessageValues(parsedMessageName, initializer);
-                                var i = initializer;
-                                if (prefixAssignments != null) {
-                                    i = $"{prefixAssignments}.{initializer}";
-                                }
-                                var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-                                return Regex.Replace(i, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
-                            }
-                        }));
-                    }
+    public static string ConvertSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
+        var m = messageRegexMatch;
 
-                    dataTypes.RecordPossibleMessageForPort(m.Groups[2].Value, parsedMessageName);
-                    return $"SendMessage(new Message.{parsedMessageName}({messageInitializerValue}), {prefix}{m.Groups[2].Value})";
-                });
-            return fixedMessages;
-        }));
+        var messageConstructor = m.Groups[1].Value.Replace(" ", "");
+
+        if (!messageConstructor.EndsWith(")")) {
+            messageConstructor += "()";
+        }
+
+        var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
+        if (!messageName.Success) {
+            throw new Exception($"Invalid message expression: {messageConstructor}");
+        }
+
+        // Lookup message type
+        var messageTypeIdentifier = new TypeIdentifier(messageName.Groups[1].Value);
+        var portIdentifier = new Identifier(m.Groups[2].Value);
+
+        var messageSchema = context.ResolveMessageSchema(portIdentifier, messageTypeIdentifier);
+
+        var parsedMessageName = InPascalCase(messageName.Groups[1].Value);
+
+        var messageInitializerValue = "";
+
+        var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
+        if (messageInitializer.Success) {
+            messageInitializerValue = messageInitializer.Groups[2].Value;
+            // messageInitializerValue = string.Join(",", messageInitializerValue.Split(",")
+            //     .Select((initializer, i) => ParseMessageInitializer(initializer, parsedMessageName, dataTypes, i, messageTypeIdentifier, context)));
+            var fields = messageInitializerValue.Split(",").Select((x, i) => ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
+            var ins = new MessageInitializer(messageSchema, fields);
+            var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+            return r.ToCSharp(context);
+        } else {
+            var ins = new MessageInitializer(messageSchema, new());
+            var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+            return r.ToCSharp(context);
+        }
+
+        // dataTypes.RecordPossibleMessageForPort(m.Groups[2].Value, parsedMessageName);
+        // return $"SendMessage(new Message.{parsedMessageName}({messageInitializerValue}), {m.Groups[2].Value});";
+    }
+
+    public static string ConvertInstruction(string instruction, DataTypeHelper dataTypes, ProgramContext context) {
+        // var context = new BlockContext(classContext);
+
+        var result = instruction.Trim();
+
+        // ASAL is specified in section 8.6.8 in Eu.Doc.30
+
+        var messageRegexMatch = new Regex("^send (.+)\\s?to (.+)$").Match(result);
+        if (messageRegexMatch.Success)
+        {
+            return ConvertSendMessageInstruction(messageRegexMatch, context);
+        }
+
+        var assignmentRegexMatch = new Regex("^(.+) := (.+)$").Match(result);
+        if (assignmentRegexMatch.Success)
+        {
+            return ConvertAssignmentInstruction(assignmentRegexMatch, result, context);
+        }
+
+        var methodInvocationMatch = new Regex("^(\\w+)\\((.*)\\)$").Match(result);
+        if (methodInvocationMatch.Success)
+        {
+            return ConvertMethodInvocationInstruction(methodInvocationMatch, context);
+        }
+
+        throw new Exception("Unprocessable instruction");
+    }
+
+    private static string ConvertMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
+    {
+        var identifier = new Identifier(methodInvocationMatch.Groups[1].Value);
+        var callable = context.ResolveCallableIdentifier(identifier);
+        return new MethodCallInstruction(callable).ToCSharp(context);
+    }
+
+    private static string ConvertAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
+    {
+        var lhs = assignmentRegexMatch.Groups[1].Value;
+        var rhs = assignmentRegexMatch.Groups[2].Value;
+
+        var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
+
+        if (ParseLiteral(rhs, out var literal)) {
+            var l = identifier.LookupValidLiteral(literal!);
+            return new AssignmentInstruction(identifier, l).ToCSharp(context);
+        } else {
+            var rhsIdentifier = context.ResolveAssignableIdentifier(new Identifier(rhs));
+            if (rhsIdentifier != null) {
+                return new AssignmentInstruction(identifier, rhsIdentifier).ToCSharp(context);
+            } else {
+                // It is a literal, but without quotes
+                var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
+                return new AssignmentInstruction(identifier, l).ToCSharp(context);
+            }
+        }
+
+        // // Convert assignment operators from ASAL to C#
+        // result = result
+        //     .Replace(" := ", " = ");
+
+        // // Treat boolean literals as strings and replace assignment operators
+        // result = result
+        //     .Replace("TRUE", "\"TRUE\"")
+        //     .Replace("FALSE", "\"FALSE\"");
+
+        // // Perform lookup of identifiers
+        // return Regex.Replace(result, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value)) + ";";
+    }
+
+    public static string ConvertInstructions(string instructions, DataTypeHelper dataTypes, ProgramContext context) {
+        return string.Join("\n",
+            instructions
+                .Split(";")
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => ConvertInstruction(x, dataTypes, context))
+        );
     }
 
     private string? NullWhitespace(string value) {
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    public string? GenerateExit(IState next, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
+    public string? GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", prefixAssignments, dataTypes))));
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", dataTypes, context))));
     }
 
-    public string? GenerateTransition(IState next, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
+    public string? GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "", prefixAssignments, dataTypes))));
+        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "", dataTypes, context))));
     }
 
-    public string? GenerateEntry(IState previous, Transition transition, string? prefixAssignments, DataTypeHelper dataTypes)
+    public string? GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", prefixAssignments, dataTypes))));
+        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", dataTypes, context))));
     }
 
     public bool IsSourceOfTransition(UmlTransition transition)

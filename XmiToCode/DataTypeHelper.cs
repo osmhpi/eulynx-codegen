@@ -115,7 +115,7 @@ public class DataTypeHelper {
     public void RecordPossibleValueForProperty(string lhs, string rhs, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var pp = LookupPropertyValueType(lhs, attributesOfCurrentSignal);
-        pp.RecordPossibleValue(rhs);
+        pp.RecordPossibleValue(new LiteralIdentifier(rhs));
     }
 
     public static string GenerateEnumMemberName(string value) {

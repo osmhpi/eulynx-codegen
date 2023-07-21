@@ -41,7 +41,12 @@ var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEv
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
 
-var classWhitelist = new [] { "F_Control_Point_Machine_Position", "S_SCI_P_Command_And_Recieve", "S_SCI_EfeS_Prim", "S_SCI_Adj_Prim" };
+var classWhitelist = new [] {
+    // "F_Control_Point_Machine_Position",
+    // "S_SCI_P_Command_And_Recieve",
+    "S_SCI_EfeS_Prim",
+    // "S_SCI_Adj_Prim"
+};
 // var classWhitelist = new List<string>();
 
 var typeAliases = new Dictionary<string, string>() {
@@ -60,8 +65,8 @@ foreach (var interestingPackage in interestingPackages) {
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
         try {
             await umlClass.Generate();
-        } catch {
-            Console.WriteLine($"Could not generate class: {umlClass.GetName()}");
+        } catch (Exception ex) {
+            Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }
     }
 }

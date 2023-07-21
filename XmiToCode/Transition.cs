@@ -6,50 +6,6 @@ using static CodeGenerationItem;
 abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
-    private string GetMessageTriggeredTransitionConstraint(DataTypeHelper dataTypes, PackagedElement evt, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
-        var expression = SingleTransition.OwnedRule.Specification.Body
-            .ReplaceLineEndings(" ")
-            .Replace("AND ", " && ")
-            .Replace(" OR ", " || ")
-            .Replace("NOT ", "!")
-            .Replace(" = ", " == ")
-            .Replace(" <> ", " != ");
-
-        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[3].Value;
-            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
-        }
-
-        var theSignal = dataTypes.Signals[evt.Signal];
-        var lookupSignalAttributeType = (string attributeName, string value) => {
-            var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);
-            if (attribute != null && dataTypes.DataTypes.ContainsKey(attribute.Type)) {
-                var attributeDataType = dataTypes.DataTypes[attribute.Type];
-
-                if (attributeDataType.Type == "uml:Enumeration")
-                {
-                    var enumerationLiteral = attributeDataType.OwnedLiteral.SingleOrDefault(x => x.Name == value);
-                    if (enumerationLiteral != null) {
-                        return $"{attributeDataType.Name}.{enumerationLiteral.Name}";
-                    }
-                }
-            }
-            return dataTypes.LookupPropertyValueType(InPascalCase(value)).Accessor;
-        };
-
-        var negateOrNot = (string s) => s == "==" ? "" : "!";
-
-        // Instead of statically prefixing the lhs with 'x.', we could match the
-        // identifier against theSignal's list of attributes
-        expression = Regex.Replace(expression, "(\\w+) (==|!=) (\\w+)",
-                m => $"{negateOrNot(m.Groups[2].Value)}x.{m.Groups[1].Value}.Equals({lookupSignalAttributeType(m.Groups[1].Value, m.Groups[3].Value)})");
-        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
-            m => $"{negateOrNot(m.Groups[2].Value)}x.{m.Groups[1].Value}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
-
-        return $"if (ReceivedMessage({InPascalCase(evt.Name)}, x => {expression}))";
-    }
-
     public string GenerateTransition(
         string thisName,
         IState fromState,
@@ -59,20 +15,22 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         bool noTriggerConditions,
         StateMachine stateMachine,
         Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal,
-        string instanceReference) {
+        ProgramContext context) {
 
         var attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
         string? currentSignalName = null;
 
         if (Transitions.Count > 1 && fromState.IsInitialState) {
-            // Temporary workaround: If there are transition constraints and more
+            // TODO: Temporary workaround: If there are transition constraints and more
             // than 1 transition, all constraints have to be fulfilled. Do that later.
             return $@"{{
-                {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
-                return {stateName}.New({instanceReference});
+                {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, context)}
+                {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context)}
+                return {stateName}.New({context.InstanceReference});
             }}";
         }
+
+        var newAttributes = new Dictionary<string, PropertyOrPort>();
 
         if (SingleTransition.Trigger != null &&
             SingleTransition.Trigger.Event != null &&
@@ -84,23 +42,26 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
             attributesOfCurrentSignal = attributesOfCurrentSignal.Select(x => x.Value)
                 .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false)))
                 .ToDictionary(x => x.Name);
+            newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false)).ToDictionary(x => x.Name);
             currentSignalName = InPascalCase(theSignal.Name);
             dataTypes.RecordSignalUsed(theSignal, attributesOfCurrentSignal);
         }
 
+        var blockContext = new BlockContext(context, newAttributes);
+
         if (state.IsRegularState) {
             if (noTriggerConditions) {
-                return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
-                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
-                    return {stateName}.New({instanceReference});
+                return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+                    return {stateName}.New({blockContext.InstanceReference});
                 }}";
             } else {
                 return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
-                    {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
-                        {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, instanceReference)}
-                        return {stateName}.New({instanceReference});
+                    {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+                        {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+                        return {stateName}.New({blockContext.InstanceReference});
                     }}
                 }}";
             }
@@ -108,10 +69,10 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
 
         if (state.IsJunction) {
             return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
-                {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, instanceReference)} {{
-                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal)}
-                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes)}
-                    {stateMachine.GenerateConditions(thisName, state, dataTypes, instanceReference, true, attributesOfCurrentSignal)}
+                {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+                    {stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal)}
                 }}
             }}";
         }
@@ -119,17 +80,18 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         throw new NotImplementedException();
     }
 
-    private string DeconstructMessageAttributes(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
+    public string DeconstructMessageAttributes(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal, ProgramContext context, bool peek = false)
     {
+        var emptySignal = peek ? "" : $"{context.InstanceReference}.{currentSignalName} = null;";
         if (currentSignalName != null && attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
             if (attributesOfCurrentSignal.Count >= 2) {
                 return
-                    @$"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {currentSignalName};
-                    {currentSignalName} = null;";
+                    @$"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {context.InstanceReference}.{currentSignalName};
+                    {emptySignal}";
             } else if (attributesOfCurrentSignal.Count == 1) {
                 return
-                    @$"var {attributesOfCurrentSignal.Single().Value.Name} = {currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};
-                    {currentSignalName} = null;";
+                    @$"var {attributesOfCurrentSignal.Single().Value.Name} = {context.InstanceReference}.{currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};
+                    {emptySignal}";
             }
         }
 
@@ -182,106 +144,101 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         return "";
     }
 
-    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, string? prefixAssignments = null)
+    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
-        var exit = x.state.GenerateExit(x.state, x.transition, prefixAssignments, dataTypes);
-        var transitionEffect = x.state.GenerateTransition(x.state, x.transition, prefixAssignments, dataTypes);
-        var entry = x.state.GenerateEntry(fromState, x.transition, prefixAssignments, dataTypes);
+        var exit = x.state.GenerateExit(x.state, x.transition, context, dataTypes);
+        var transitionEffect = x.state.GenerateTransition(x.state, x.transition, context, dataTypes);
+        var entry = x.state.GenerateEntry(fromState, x.transition, context, dataTypes);
 
         var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
 
-        foreach (Match m in Regex.Matches(result, "(\\w+) = (?<!\")(\\w*)(?!\")")) {
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[2].Value;
-            dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
-        }
+        // foreach (Match m in Regex.Matches(result, "(\\w+) = (?<!\")(\\w*)(?!\")")) {
+        //     // Right hand side is an identifier
+        //     var lhs = m.Groups[1].Value;
+        //     var rhs = m.Groups[2].Value;
+        //     dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        // }
 
-        foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[2].Value;
-            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
-        }
+        // foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
+        //     // Right hand side is a string literal
+        //     var lhs = m.Groups[1].Value;
+        //     var rhs = m.Groups[2].Value;
+        //     dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
+        // }
 
-        var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
+        // var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
 
-        result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
-            m => $"{portOrDirectAccess(m.Groups[1].Value)} = {dataTypes.GenerateAssignment(m.Groups[1].Value, m.Groups[2].Value)}");
+        // result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
+        //     m => $"{portOrDirectAccess(m.Groups[1].Value)} = {dataTypes.GenerateAssignment(m.Groups[1].Value, m.Groups[2].Value)}");
 
-        if (prefixAssignments != null) {
-            result = Regex.Replace(result, "(\\w+)(.*)",
-                m => $"{prefixAssignments}.{m.Groups[1].Value}{m.Groups[2].Value}");
-        }
+        // if (prefixAssignments != null) {
+        //     result = Regex.Replace(result, "(\\w+)(.*)",
+        //         m => $"{prefixAssignments}.{m.Groups[1].Value}{m.Groups[2].Value}");
+        // }
 
         return result;
     }
 
-    public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, string instanceReference) {
+    public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
-
-            if (SingleTransition.Trigger != null && SingleTransition.Trigger.Event != null) {
-                var evt = SingleTransition.Trigger.Event;
-                if (dataTypes.TimeEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.TimeEvents[evt];
-                } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.ChangeEvents[evt];
-                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.PackageEvents[evt];
-                    return GetMessageTriggeredTransitionConstraint(dataTypes, theEvent, attributesOfCurrentSignal);
-                } else {
-                    throw new Exception("Could not resolve trigger event");
-                }
-            }
 
             if (specification == "else") {
                 return "else";
             }
 
-            var expression = SingleTransition.OwnedRule.Specification.Body
-                .ReplaceLineEndings(" ")
-                .Replace("AND ", " && ")
-                .Replace(" OR ", " || ")
-                .Replace("NOT ", "!")
-                .Replace(" = ", " == ")
-                .Replace(" <> ", " != ");
-
-            expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
-
-            foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
-                var lhs = m.Groups[1].Value;
-                var rhs = m.Groups[3].Value;
-                dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
-            }
-
-            foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
-                var lhs = m.Groups[1].Value;
-                var rhs = m.Groups[3].Value;
-                dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
-            }
-
-            var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-
-            var negateOrNot = (string s) => s == "==" ? "" : "!";
-
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
-                // {instanceReference}.
-                m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
-            expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
-                // {instanceReference}.
-                m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
-
-            // Handle symbols true, false
-            expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(True\\)", m => $"{m.Groups[1].Value}.Equals(true)");
-            expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(False\\)", m => $"{m.Groups[1].Value}.Equals(false)");
-
-            // Accessors for singular boolean expressions
-            expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");
-
-            return $"if ({expression})";
+            return DoGetTransitionConstraints(dataTypes, attributesOfCurrentSignal, context);
         }
+
         return "";
+    }
+
+    protected virtual string DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
+        var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
+
+        // Convert identifiers to pascal case
+        expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
+            // RHS is an identifier
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        }
+
+        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
+            // RHS is a string literal
+            var lhs = m.Groups[1].Value;
+            var rhs = m.Groups[3].Value;
+            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
+        }
+
+        var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
+
+        var negateOrNot = (string s) => s == "==" ? "" : "!";
+
+        // RHS is a string literal
+
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
+            // {instanceReference}.
+            m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
+
+        // RHS is an identifier
+
+        expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
+            // {instanceReference}.
+            m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
+
+        // Handle symbols true, false
+        expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(True\\)", m => $"{m.Groups[1].Value}.Equals(true)");
+        expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(False\\)", m => $"{m.Groups[1].Value}.Equals(false)");
+
+        // Accessors for singular boolean expressions
+        expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");
+
+        return $"if ({expression})";
     }
 
     public static Transition Create(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes) {
@@ -292,13 +249,13 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
                 var evt = transition.Trigger.Event;
                 if (dataTypes.TimeEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.TimeEvents[evt];
-                    return new TimeEventTransition(from, to, transitions);
+                    return new TimeEventTransition(from, to, transitions, theEvent);
                 } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.ChangeEvents[evt];
-                    return new ChangeEventTransition(from, to, transitions);
+                    return new ChangeEventTransition(from, to, transitions, theEvent);
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
-                    return new MessageEventTransition(from, to, transitions);
+                    return new MessageEventTransition(from, to, transitions, theEvent);
                 }
             } else {
                 return new InitialTransition(from, to, transitions);
@@ -307,22 +264,133 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
 
         throw new ArgumentException(nameof(transitions));
     }
+
+    protected string AsalExpressionToCSharp(string expression) {
+        // ASAL is specified in section 8.6.8 in Eu.Doc.30
+        return expression.ReplaceLineEndings(" ")
+            .Replace("AND ", " && ")
+            .Replace(" OR ", " || ")
+            .Replace("NOT ", "!")
+            .Replace(" = ", " == ")
+            .Replace(" <> ", " != ");
+    }
 }
 
-record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions)
 {
 
 }
 
-record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions)
 {
 
 }
 
-record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt) : Transition(From, To, Transitions)
 {
+    private IAccessible LookupSignalAttributeType(PackagedElement theSignal, DataTypeHelper dataTypes, string attributeName, string value) {
+        var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);
+        if (attribute != null && dataTypes.DataTypes.ContainsKey(attribute.Type)) {
+            var attributeDataType = dataTypes.DataTypes[attribute.Type];
 
+            if (attributeDataType.Type == "uml:Enumeration")
+            {
+                var enumerationMembers = attributeDataType.OwnedLiteral.Select(x => new EnumerationMember(attributeDataType, x)).ToDictionary(x => x.Member.Name);
+                return enumerationMembers.GetValueOrDefault(value, null);
+            }
+        }
+
+        return dataTypes.LookupPropertyValueType(InPascalCase(value));
+    }
+
+    protected override string DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context)
+    {
+        var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
+
+        var assignmentMatch = Regex.Match(expression, "(\\w+) (==|!=) ");
+
+        var theSignal = dataTypes.Signals[evt.Signal];
+
+        var lhs = new Identifier(assignmentMatch.Groups[1].Value);
+        var lhsAssignable = context.ResolveAssignableIdentifier(lhs);
+        var lhsAccessible = context.ResolveIdentifier(lhs);
+        if (lhsAssignable == null && lhsAccessible == null) {
+            throw new Exception($"Could not resolve lhs reference {lhs}");
+        }
+
+        var op = assignmentMatch.Groups[2].Value;
+
+        var stringLiteralAssignment = Regex.Match(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"");
+        var identifierAssignment = Regex.Match(expression, "(\\w+) (==|!=) (\\w+)");
+
+        if (stringLiteralAssignment.Success) {
+            if (lhsAssignable == null) {
+                throw new Exception("LHS must be assignable.");
+            }
+
+            var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(stringLiteralAssignment.Groups[3].Value));
+            var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+            return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+                {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+                return {result};
+            }}))";
+        }
+
+        if (identifierAssignment.Success) {
+            var rhsIdentifier = context.ResolveIdentifier(new Identifier(identifierAssignment.Groups[3].Value));
+            if (rhsIdentifier != null) {
+                var result = new BinaryExpression(lhsAccessible, rhsIdentifier, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+                return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+                    {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+                    return {result};
+                }}))";
+            } else {
+                if (lhsAssignable == null) {
+                    throw new Exception("LHS must be assignable.");
+                }
+
+                var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(identifierAssignment.Groups[3].Value));
+                var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+                return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+                    {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+                    return {result};
+                }}))";
+            }
+        }
+
+        throw new Exception("Unprocessable assignment");
+
+
+        // foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
+        //     // left hand side is a string literal possibly containing spaces
+        //     var _lhs = m.Groups[1].Value;
+        //     var _rhs = m.Groups[3].Value;
+        //     dataTypes.RecordPossibleValueForProperty(_lhs, _rhs, attributesOfCurrentSignal);
+        // }
+
+
+        // var negateOrNot = op == "==";
+
+        // // Perform lookup of lhs ...
+        // var lhsIdentifier = dataTypes.LookupPropertyValueType(lhs, attributesOfCurrentSignal);
+
+        // if (stringLiteralAssignment.Success) {
+        //     var finalDataType = dataTypes.GetFinalDataType(lhs, attributesOfCurrentSignal);
+        //     // var enumMember = DataTypeHelper.GenerateEnumMemberName(stringLiteralAssignment.Groups[3].Value);
+        //     var implicitEnumMember = new ImplicitEnumMember(finalDataType, new LiteralIdentifier(stringLiteralAssignment.Groups[3].Value));
+        //     expression = lhsIdentifier.GenerateCondition(context, "", implicitEnumMember, negateOrNot);
+        // } else if (identifierAssignment.Success) {
+        //     var other = LookupSignalAttributeType(theSignal, dataTypes, identifierAssignment.Groups[1].Value, identifierAssignment.Groups[3].Value);
+        //     // whether to use 'x' depends on the identifier referring to a field in the received signal
+        //     expression = lhsIdentifier.GenerateCondition(context, "x", other, negateOrNot);
+        // } else {
+        //     throw new Exception("Unprocessable assignment");
+        // }
+
+        // return $"if (ReceivedMessage({InPascalCase(evt.Name)}, x => {expression}))";
+    }
 }
+
 record InitialTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
 {
 
