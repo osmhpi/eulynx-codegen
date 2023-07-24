@@ -55,14 +55,6 @@ public class DataTypeHelper {
         _coalescedMessageValues = new Dictionary<string, string>();
         UsedChangeEvents = new HashSet<PackagedElement>();
         UsedSignals = new Dictionary<PackagedElement, Dictionary<string, PropertyOrPort>>();
-
-        // foreach (var reception in Receptions) {
-        //     var signal = Signals[reception.Signal];
-        //     foreach (var signalAttribute in signal.OwnedAttribute) {
-        //         Console.WriteLine(InPascalCase(signalAttribute.Name));
-        //         _allowedPropertyValues.Add(InPascalCase(signalAttribute.Name), new HashSet<string>());
-        //     }
-        // }
     }
 
     public bool IsPropertyOrPort(string identifier) {
@@ -197,50 +189,75 @@ public class DataTypeHelper {
 
     public string GenerateMessages()
     {
-        var signals = JoinLines(UsedSignals.Select(x => {
+        var receptions = Ports.Select(x => DataTypes[x.Value.Property.Type])
+            .SelectMany(x => x.OwnedReception)
+            .Select(x => new MessageSchema(new TypeIdentifier(x.Name), Signals[x.Signal], this))
+            .ToList();
+
+        return JoinLines(receptions.Select(x => {
             var deconstruct = "";
 
-            if (x.Value.Count >= 2) {
+            var attributes = x.Members;
+
+            if (attributes.Count >= 2) {
                 // C# only allows deconstruct syntax for two or more properties
-                var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}"));
-                var propsOutAssignments = JoinLines(x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
+                var propsOut = string.Join(", ", attributes.Select(x => $"out {x.TypeIdentifier.Name} {x.MemberName.Name}"));
+                var propsOutAssignments = JoinLines(attributes.Select(x => $"{x.MemberName.Name} = this.{x.MemberName.Name};"));
                 deconstruct = @$"public void Deconstruct({propsOut}) {{
                     {propsOutAssignments}
                 }}";
             }
 
-            var propsDecl = string.Join(", ", x.Value.Select(x => $"{x.Value.DataType} {x.Value.Name}"));
-            return @$"public record {InPascalCase(x.Key.Name)}({propsDecl}) : Message {{
+            var propsDecl = string.Join(", ", attributes.Select(x => $"{x.TypeIdentifier.Name} {x.MemberName.Name}"));
+            return @$"public record {x.Identifier.Name}({propsDecl}) : Message {{
                 {deconstruct}
             }}";
         }));
 
-        return signals + JoinLines(_allowedMessages.SelectMany(x => {
-            var (port, messages) = x;
-            return messages.Select(message => {
-                // Temporary workaround, need to unify the two types of message generators
-                if (UsedSignals.Any(x => InPascalCase(x.Key.Name) == message))
-                    return "";
+        // return JoinLines(UsedSignals.Select(x => {
+        //     var deconstruct = "";
 
-                var values = "";
+        //     if (x.Value.Count >= 2) {
+        //         // C# only allows deconstruct syntax for two or more properties
+        //         var propsOut = string.Join(", ", x.Value.Select(x => $"out {x.Value.DataType} {x.Value.Name}"));
+        //         var propsOutAssignments = JoinLines(x.Value.Select(x => $"{x.Value.Name} = this.{x.Value.Name};"));
+        //         deconstruct = @$"public void Deconstruct({propsOut}) {{
+        //             {propsOutAssignments}
+        //         }}";
+        //     }
 
-                if (_allowedMessageValues.ContainsKey(message)) {
-                    values = @$"public enum Values {{
-                        {string.Join(",\n", _allowedMessageValues[message])}
-                    }}";
-                }
+        //     var propsDecl = string.Join(", ", x.Value.Select(x => $"{x.Value.DataType} {x.Value.Name}"));
+        //     return @$"public record {InPascalCase(x.Key.Name)}({propsDecl}) : Message {{
+        //         {deconstruct}
+        //     }}";
+        // }));
 
-                var props = string.IsNullOrEmpty(values) ? "" : $"{message}.Values Value";
-                if (_coalescedMessageValues.ContainsKey(message)) {
-                    var valueType = GetFinalDataType(_coalescedMessageValues[message]);
-                    props = $"{valueType} Value";
-                }
+        // return signals + JoinLines(_allowedMessages.SelectMany(x => {
+        //     var (port, messages) = x;
+        //     return messages.Select(message => {
+        //         // Temporary workaround, need to unify the two types of message generators
+        //         if (UsedSignals.Any(x => InPascalCase(x.Key.Name) == message))
+        //             return "";
 
-                return @$"public record {message}({props}) : Message {{
-                    {values}
-                }}";
-            });
-        }));
+        //         var values = "";
+
+        //         if (_allowedMessageValues.ContainsKey(message)) {
+        //             values = @$"public enum Values {{
+        //                 {string.Join(",\n", _allowedMessageValues[message])}
+        //             }}";
+        //         }
+
+        //         var props = string.IsNullOrEmpty(values) ? "" : $"{message}.Values Value";
+        //         if (_coalescedMessageValues.ContainsKey(message)) {
+        //             var valueType = GetFinalDataType(_coalescedMessageValues[message]);
+        //             props = $"{valueType} Value";
+        //         }
+
+        //         return @$"public record {message}({props}) : Message {{
+        //             {values}
+        //         }}";
+        //     });
+        // }));
     }
 
     public void RecordPossibleInitializerForMessage(string messageName, string messageInitializerValue)

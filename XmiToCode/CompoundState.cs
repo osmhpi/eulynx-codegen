@@ -23,17 +23,11 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
     }
 
     public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, ProgramContext context) {
-        // Guesswork: Is the initializer referring to a property/port or is it a constant?
-        // TODO: If this is ambiguous, throw
         // var literal = Regex.Match(initializer, "^\"(.*)\"$");
         if (ParseLiteral(initializer, out var literal)) {
             // Resolve message
             var result = member.LookupValidLiteral(literal!);
             return result;
-
-            // var identifier = InPascalCase(literal.Groups[1].Value);
-            // dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, identifier);
-            // return $"Message.{parsedMessageName}.Values.{identifier}";
         }
 
         var initializerInPascalCase = InPascalCase(initializer);
@@ -49,15 +43,6 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
             var result = member.LookupValidLiteral(new LiteralIdentifier(initializer));
             return result;
         }
-
-        // if (!dataTypes.IsPropertyOrPort(initializerInPascalCase)) {
-        //     dataTypes.RecordPossibleInitializerForMessage(parsedMessageName, initializerInPascalCase);
-        //     return $"Message.{parsedMessageName}.Values.{initializerInPascalCase}";
-        // } else {
-        //     dataTypes.RecordCoalesceMessageValues(parsedMessageName, initializerInPascalCase);
-        //     var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-        //     return Regex.Replace(initializerInPascalCase, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
-        // }
     }
 
     public static string ConvertSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
@@ -87,8 +72,6 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
         if (messageInitializer.Success) {
             messageInitializerValue = messageInitializer.Groups[2].Value;
-            // messageInitializerValue = string.Join(",", messageInitializerValue.Split(",")
-            //     .Select((initializer, i) => ParseMessageInitializer(initializer, parsedMessageName, dataTypes, i, messageTypeIdentifier, context)));
             var fields = messageInitializerValue.Split(",").Select((x, i) => ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
             var ins = new MessageInitializer(messageSchema, fields);
             var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
@@ -98,14 +81,9 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
             var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
             return r.ToCSharp(context);
         }
-
-        // dataTypes.RecordPossibleMessageForPort(m.Groups[2].Value, parsedMessageName);
-        // return $"SendMessage(new Message.{parsedMessageName}({messageInitializerValue}), {m.Groups[2].Value});";
     }
 
     public static string ConvertInstruction(string instruction, DataTypeHelper dataTypes, ProgramContext context) {
-        // var context = new BlockContext(classContext);
-
         var result = instruction.Trim();
 
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
@@ -158,18 +136,6 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
                 return new AssignmentInstruction(identifier, l).ToCSharp(context);
             }
         }
-
-        // // Convert assignment operators from ASAL to C#
-        // result = result
-        //     .Replace(" := ", " = ");
-
-        // // Treat boolean literals as strings and replace assignment operators
-        // result = result
-        //     .Replace("TRUE", "\"TRUE\"")
-        //     .Replace("FALSE", "\"FALSE\"");
-
-        // // Perform lookup of identifiers
-        // return Regex.Replace(result, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value)) + ";";
     }
 
     public static string ConvertInstructions(string instructions, DataTypeHelper dataTypes, ProgramContext context) {

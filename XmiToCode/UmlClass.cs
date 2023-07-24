@@ -41,6 +41,13 @@ internal class UmlClass : CodeGenerationItem
         _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases);
 
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
+
+        // var messageSchema = Ports.Select(x => DataTypes[x.Value.Property.Type])
+        //     .SelectMany(x => x.OwnedReception)
+        //     .Select(x => new MessageSchema(new TypeIdentifier(x.Name), Signals[x.Signal], this))
+        //     .ToList();
+
+        // var transitionFunctions = _stateMachine.GenerateTransitionFunctionsQuery();
     }
 
     public Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
@@ -153,27 +160,27 @@ internal class UmlClass : CodeGenerationItem
         return InPascalCase(_class.Name);
     }
 
-  public override string Write() {
-    var className = InPascalCase(_class.Name);
-    var behaviorName = _stateMachine.GetName();
+    public override string Write() {
+        var className = InPascalCase(_class.Name);
+        var behaviorName = _stateMachine.GetName();
 
-    var global = new GlobalContext(_dataTypes);
-    var classContext = new ClassContext(global, _dataTypes);
+        var global = new GlobalContext(_dataTypes);
+        var classContext = new ClassContext(global, _dataTypes);
 
-    // Initialize property types
-    {
-        // Perform a dry run of generating transitions (which includes comparisons and assignments,
-        // where property types are coalesced)
-        var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext);
-        _dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)).ToList();
-        // TODO: I think side effects of initial transitions are still missing here
+        // Initialize property types
+        {
+            // Perform a dry run of generating transitions (which includes comparisons and assignments,
+            // where property types are coalesced)
+            var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext);
+            _dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)).ToList();
+            // TODO: I think side effects of initial transitions are still missing here
 
-    }
+        }
 
-    var events = _dataTypes.UsedChangeEvents.Select(x => new ChangeEvent(x)).ToList();
-    events.Select(x => x.WriteInitializer(_dataTypes)).ToList(); // also ignore
+        var events = _dataTypes.UsedChangeEvents.Select(x => new ChangeEvent(x)).ToList();
+        events.Select(x => x.WriteInitializer(_dataTypes)).ToList(); // also ignore
 
-    return @$"using System.Threading.Channels;
+        return @$"using System.Threading.Channels;
 using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx;
@@ -248,13 +255,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
     {JoinLines(events.Select(x => x.WriteProperty()))}
 }}
 ";
-  }
-
-    // private string GenerateInitialEntry(StateMachine behavior, DataTypeHelper dataTypes)
-    // {
-    //     var transitionTuple = behavior.GetTransitionsFromState(behavior.GetName(), behavior.InitialState).Single();
-    //     return transitionTuple.transition.GenerateActivities(behavior.InitialState, transitionTuple, null, dataTypes);
-    // }
+    }
 
     internal async Task Generate()
     {

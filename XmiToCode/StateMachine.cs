@@ -1,6 +1,8 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
 
+record StateName(IState Subvertex, string Name);
+
 class StateMachine : CodeGenerationItem
 {
     public Region Region { get { return _region; } }
@@ -64,6 +66,11 @@ class StateMachine : CodeGenerationItem
 ";
     }
 
+    public IEnumerable<string> GenerateTransitionFunctionQuery(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    {
+        return GenerateConditionsQuery(thisName, fromState, dataTypes, context);
+    }
+
     public string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
@@ -74,17 +81,27 @@ class StateMachine : CodeGenerationItem
         return string.Join("\n", transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context)));
     }
 
-    public string GetName() {
-        return InPascalCase(_name);
+    public IEnumerable<string> GenerateConditionsQuery(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    {
+        var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
+
+        var regularTransitions = transitions.Where(x => x.state.IsRegularState);
+        var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
+
+        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context));
     }
 
-    public IEnumerable<(IState subvertex, string name)> GetStates(string thisName) {
+    public string GetName() {
+        return new TypeIdentifier(_name).Name;
+    }
+
+    public IEnumerable<StateName> GetStates(string thisName) {
         foreach (var (subvertex, name) in _childStateMachines.SelectMany(x => x.StateMachine.GetStates(x.State.Name))) {
-            yield return (subvertex, $"{thisName}.{name}");
+            yield return new StateName(subvertex, $"{thisName}.{name}");
         }
 
         foreach (var state in _states) {
-            yield return (state, $"{thisName}.{state.Name}");
+            yield return new StateName(state, $"{thisName}.{state.Name}");
         }
     }
 
@@ -149,10 +166,17 @@ class StateMachine : CodeGenerationItem
     public void Transition() {{
         _state = _state switch {{
             {string.Join(",\n", states.Select(t =>
-              string.Join(",\n", $"{t.name} => TransitionFrom{t.name.Replace(".", "__")}()")))}
+              string.Join(",\n", $"{t.Name} => TransitionFrom{t.Name.Replace(".", "__")}()")))}
       }};
     }}
 
-    {JoinLines(states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.subvertex, theRootBehaviorName, fromState.name, behaviorName, dataTypes, context)))}";
+    {JoinLines(states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, behaviorName, dataTypes, context)))}";
+    }
+
+    internal IEnumerable<string> GenerateTransitionFunctionsQuery(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    {
+        var behaviorName = GetName();
+        var states = GetStates(behaviorName);
+        return states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, behaviorName, dataTypes, context));
     }
 }

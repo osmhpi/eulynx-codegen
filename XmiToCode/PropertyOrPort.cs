@@ -1,9 +1,80 @@
+using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
 public interface IAccessible {
     public string Accessor(ProgramContext context);
 }
+
+public interface IAssignable : IAccessible {
+    IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier);
+}
+
+public interface ICallable {
+    public string Call(ProgramContext context);
+}
+
+record MessageMember(Identifier MemberName, PackagedElement Type)
+{
+    public TypeIdentifier TypeIdentifier { get; } =
+        // Type.Name == "String" ? new TypeIdentifier(MemberName.Name + "Value") :
+        new TypeIdentifier(Type.Name);
+    internal IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier)
+    {
+        var literals = Type.OwnedLiteral
+            .Select(x => (Key: new LiteralIdentifier(x.Name), Value: x))
+            .ToDictionary(x => x.Key, x => x.Value);
+        var theIdentifier = literals[literalIdentifier];
+        return new EnumerationMember(Type, theIdentifier);
+    }
+}
+
+record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
+{
+    public List<MessageMember> Members { get; } = Signal.OwnedAttribute
+        .Select(x => new MessageMember(new Identifier(x.Name), DataTypes.DataTypes[x.Type]))
+        .ToList();
+
+    internal MessageMember GetMemberByIndex(int i)
+    {
+        // var properties = Signal.OwnedAttribute
+        //     .Select(x => (Key: new Identifier(x.Name), Value: x))
+        //     .ToList();
+        // var property = properties[i];
+        // var identifier = property.Key;
+        // var type = DataTypes.DataTypes[property.Value.Type];
+        return Members[i];
+    }
+}
+
+// Could be an enum member
+public record LiteralIdentifier (string RawName)
+{
+    public string Name = InPascalCase(Sanitize(RawName));
+
+    private static string Sanitize(string value) {
+        var sanitizedValue = InPascalCase(value.Replace(",", " And "));
+
+        if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
+            sanitizedValue = "_" + sanitizedValue;
+        }
+
+        return sanitizedValue;
+    }
+}
+
+// Could be a reference to a port or variable
+public record Identifier (string RawName)
+{
+    public string Name = InPascalCase(RawName);
+}
+
+// Could be an enumeration or message class
+public record TypeIdentifier (string RawName)
+{
+    public string Name { get; } = InPascalCase(RawName);
+}
+
 
 public record ClassMember(Identifier Identifier) : IAccessible {
     public string Accessor(ProgramContext context) => context.IsLocalVariable(this)
