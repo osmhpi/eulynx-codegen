@@ -55,40 +55,19 @@ class StateMachine : CodeGenerationItem
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public string GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
-        return $@"private {theRootBehaviorName} TransitionFrom{name.Replace(".", "__")}() {{
-        {GenerateConditions(thisName, fromState, dataTypes, context)}
-
-        // Do not transition
-        return _state;
-        }}
-";
+        return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context));
     }
 
-    public IEnumerable<string> GenerateTransitionFunctionQuery(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
-    {
-        return GenerateConditionsQuery(thisName, fromState, dataTypes, context);
-    }
-
-    public string GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return string.Join("\n", transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context)));
-    }
-
-    public IEnumerable<string> GenerateConditionsQuery(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
-    {
-        var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
-
-        var regularTransitions = transitions.Where(x => x.state.IsRegularState);
-        var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
-
-        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context));
+        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context)).ToList();
     }
 
     public string GetName() {
@@ -105,35 +84,24 @@ class StateMachine : CodeGenerationItem
         }
     }
 
-    private string MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
         if (x.InternalStateMachine != null) {
             return x.InternalStateMachine.MakeStateRecord(x.Name, recordName, className, dataTypes, context);
         } else {
-            return $@"public record {x.Name}() : {recordName}() {{
-                public static new {x.Name} New({className} This) => new {x.Name}();
-            }}";
+            return new SimpleBehaviorRecord(x.Name, recordName, className);
         }
     }
 
-    private string MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes, ProgramContext context) {
         var newContext = new BlockContext(context, overrideInstanceReference: "This");
 
-        var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context));
+        var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
         var initialTransition = GetTransitionsFromState(name, _initialState).Single();
         var initializer = initialTransition.transition.GenerateTransition(name,
             _initialState, initialTransition.state, initialTransition.stateName,
             dataTypes, false, this, null, newContext);
 
-        return @$"public record {name} : {parentBehaviorName} {{
-        {string.Join("\n    ", subrecords)}
-
-    public static new {name} New({className} This) {{
-        {initializer}
-    }}
-
-    private {name}() {{}}
-}}
-";
+        return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
     public override string Write()
@@ -141,7 +109,7 @@ class StateMachine : CodeGenerationItem
         throw new NotImplementedException();
     }
 
-    public string Write(string className, DataTypeHelper dataTypes, ClassContext context) {
+    public IBehaviorRecord WriteRecord(string className, DataTypeHelper dataTypes, ClassContext context) {
         return MakeStateRecord(GetName(), "object", className, dataTypes, context);
     }
 
@@ -157,23 +125,7 @@ class StateMachine : CodeGenerationItem
             );
     }
 
-    internal string GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
-    {
-        var behaviorName = GetName();
-        var states = GetStates(behaviorName);
-
-        return $@"
-    public void Transition() {{
-        _state = _state switch {{
-            {string.Join(",\n", states.Select(t =>
-              string.Join(",\n", $"{t.Name} => TransitionFrom{t.Name.Replace(".", "__")}()")))}
-      }};
-    }}
-
-    {JoinLines(states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, behaviorName, dataTypes, context)))}";
-    }
-
-    internal IEnumerable<string> GenerateTransitionFunctionsQuery(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    internal IEnumerable<TransitionFunction> GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);

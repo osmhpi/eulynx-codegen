@@ -46,8 +46,6 @@ internal class UmlClass : CodeGenerationItem
         //     .SelectMany(x => x.OwnedReception)
         //     .Select(x => new MessageSchema(new TypeIdentifier(x.Name), Signals[x.Signal], this))
         //     .ToList();
-
-        // var transitionFunctions = _stateMachine.GenerateTransitionFunctionsQuery();
     }
 
     public Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
@@ -167,6 +165,14 @@ internal class UmlClass : CodeGenerationItem
         var global = new GlobalContext(_dataTypes);
         var classContext = new ClassContext(global, _dataTypes);
 
+        return new Class(
+            className,
+            behaviorName,
+            _stateMachine.WriteRecord(className, _dataTypes, classContext),
+            _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.GetStates(behaviorName)
+            ).Write();
+
         // Initialize property types
         {
             // Perform a dry run of generating transitions (which includes comparisons and assignments,
@@ -186,12 +192,6 @@ using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 namespace Eulynx;
 
 public class {className} : IStateMachine<{className}.{behaviorName}> {{
-    {_stateMachine.Write(className, _dataTypes, classContext)}
-
-    private {behaviorName} _state;
-    public {behaviorName} State => _state;
-
-    private readonly IMessageFactory _messageConverter;
 
     public {className}(IMessageFactory messageConverter) {{
         _messageConverter = messageConverter;

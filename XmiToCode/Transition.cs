@@ -6,7 +6,7 @@ using static CodeGenerationItem;
 abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
-    public string GenerateTransition(
+    public ICodeTransition GenerateTransition(
         string thisName,
         IState fromState,
         IState state,
@@ -23,11 +23,9 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         if (Transitions.Count > 1 && fromState.IsInitialState) {
             // TODO: Temporary workaround: If there are transition constraints and more
             // than 1 transition, all constraints have to be fulfilled. Do that later.
-            return $@"{{
-                {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, context)}
-                {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context)}
-                return {stateName}.New({context.InstanceReference});
-            }}";
+            return new CodeTransition(stateName, context,
+                new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, context),
+                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context));
         }
 
         var newAttributes = new Dictionary<string, PropertyOrPort>();
@@ -51,30 +49,38 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
 
         if (state.IsRegularState) {
             if (noTriggerConditions) {
-                return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
-                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
-                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
-                    return {stateName}.New({blockContext.InstanceReference});
-                }}";
+                return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
+                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext));
+                // return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+                //     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+                //     {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+                //     return {stateName}.New({blockContext.InstanceReference});
+                // }}";
             } else {
-                return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
-                    {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
-                        {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
-                        {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
-                        return {stateName}.New({blockContext.InstanceReference});
-                    }}
-                }}";
+                return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
+                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext));
+                // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
+                //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+                //         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+                //         {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+                //         return {stateName}.New({blockContext.InstanceReference});
+                //     }}
+                // }}";
             }
         }
 
         if (state.IsJunction) {
-            return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
-                {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
-                    {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
-                    {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
-                    {stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal)}
-                }}
-            }}";
+            return new JunctionTransition(blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
+                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext),
+                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal)
+            );
+            // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
+            //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
+            //         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
+            //         {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
+            //         {stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal)}
+            //     }}
+            // }}";
         }
 
         throw new NotImplementedException();
@@ -144,7 +150,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         return "";
     }
 
-    public string GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
+    public List<Instruction> GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
@@ -152,33 +158,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         var transitionEffect = x.state.GenerateTransition(x.state, x.transition, context, dataTypes);
         var entry = x.state.GenerateEntry(fromState, x.transition, context, dataTypes);
 
-        var result = string.Join("\n", new [] {exit, transitionEffect, entry}.Where(x => x != null));
-
-        // foreach (Match m in Regex.Matches(result, "(\\w+) = (?<!\")(\\w*)(?!\")")) {
-        //     // Right hand side is an identifier
-        //     var lhs = m.Groups[1].Value;
-        //     var rhs = m.Groups[2].Value;
-        //     dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
-        // }
-
-        // foreach (Match m in Regex.Matches(result, "(\\w+) = \"([^\"]*)\"")) {
-        //     // Right hand side is a string literal
-        //     var lhs = m.Groups[1].Value;
-        //     var rhs = m.Groups[2].Value;
-        //     dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
-        // }
-
-        // var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-
-        // result = Regex.Replace(result, "(\\w+) = \"([^\"]*)\"",
-        //     m => $"{portOrDirectAccess(m.Groups[1].Value)} = {dataTypes.GenerateAssignment(m.Groups[1].Value, m.Groups[2].Value)}");
-
-        // if (prefixAssignments != null) {
-        //     result = Regex.Replace(result, "(\\w+)(.*)",
-        //         m => $"{prefixAssignments}.{m.Groups[1].Value}{m.Groups[2].Value}");
-        // }
-
-        return result;
+        return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
     public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {

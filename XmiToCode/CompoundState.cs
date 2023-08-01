@@ -45,7 +45,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }
     }
 
-    public static string ConvertSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
+    public static Instruction ConvertSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
         var m = messageRegexMatch;
 
         var messageConstructor = m.Groups[1].Value.Replace(" ", "");
@@ -75,15 +75,15 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
             var fields = messageInitializerValue.Split(",").Select((x, i) => ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
             var ins = new MessageInitializer(messageSchema, fields);
             var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-            return r.ToCSharp(context);
+            return r;
         } else {
             var ins = new MessageInitializer(messageSchema, new());
             var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-            return r.ToCSharp(context);
+            return r;
         }
     }
 
-    public static string ConvertInstruction(string instruction, DataTypeHelper dataTypes, ProgramContext context) {
+    public static Instruction ConvertInstruction(string instruction, DataTypeHelper dataTypes, ProgramContext context) {
         var result = instruction.Trim();
 
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
@@ -109,14 +109,14 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         throw new Exception("Unprocessable instruction");
     }
 
-    private static string ConvertMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
+    private static Instruction ConvertMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
     {
         var identifier = new Identifier(methodInvocationMatch.Groups[1].Value);
         var callable = context.ResolveCallableIdentifier(identifier);
-        return new MethodCallInstruction(callable).ToCSharp(context);
+        return new MethodCallInstruction(callable);
     }
 
-    private static string ConvertAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
+    private static Instruction ConvertAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
     {
         var lhs = assignmentRegexMatch.Groups[1].Value;
         var rhs = assignmentRegexMatch.Groups[2].Value;
@@ -125,45 +125,44 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
 
         if (ParseLiteral(rhs, out var literal)) {
             var l = identifier.LookupValidLiteral(literal!);
-            return new AssignmentInstruction(identifier, l).ToCSharp(context);
+            return new AssignmentInstruction(identifier, l);
         } else {
             var rhsIdentifier = context.ResolveAssignableIdentifier(new Identifier(rhs));
             if (rhsIdentifier != null) {
-                return new AssignmentInstruction(identifier, rhsIdentifier).ToCSharp(context);
+                return new AssignmentInstruction(identifier, rhsIdentifier);
             } else {
                 // It is a literal, but without quotes
                 var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
-                return new AssignmentInstruction(identifier, l).ToCSharp(context);
+                return new AssignmentInstruction(identifier, l);
             }
         }
     }
 
-    public static string ConvertInstructions(string instructions, DataTypeHelper dataTypes, ProgramContext context) {
-        return string.Join("\n",
-            instructions
-                .Split(";")
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => ConvertInstruction(x, dataTypes, context))
-        );
+    public static List<Instruction> ConvertInstructions(string instructions, DataTypeHelper dataTypes, ProgramContext context) {
+        return instructions
+            .Split(";")
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => ConvertInstruction(x, dataTypes, context))
+            .ToList();
     }
 
     private string? NullWhitespace(string value) {
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    public string? GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", dataTypes, context))));
+        return PartialStates.SelectMany(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", dataTypes, context)).ToList();
     }
 
-    public string? GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", transition.Transitions.Select(transition => ConvertInstructions(transition.Effect?.Body ?? "", dataTypes, context))));
+        return transition.Transitions.SelectMany(transition => ConvertInstructions(transition.Effect?.Body ?? "", dataTypes, context)).ToList();
     }
 
-    public string? GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return NullWhitespace(string.Join("\n", PartialStates.Select(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", dataTypes, context))));
+        return PartialStates.SelectMany(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", dataTypes, context)).ToList();
     }
 
     public bool IsSourceOfTransition(UmlTransition transition)

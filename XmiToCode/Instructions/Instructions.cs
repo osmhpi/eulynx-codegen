@@ -1,5 +1,7 @@
 
-record Instruction;
+abstract record Instruction {
+    internal abstract string ToCSharp(ProgramContext context);
+}
 
 record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
 {
@@ -11,7 +13,7 @@ record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
 
 record SendMessageInstruction(MessageInitializer initialize, IAccessible port) : Instruction
 {
-    internal string ToCSharp(ProgramContext context)
+    internal override string ToCSharp(ProgramContext context)
     {
         return $"{context.InstanceReference}.SendMessage({initialize.ToCSharp(context)}, {port.Accessor(context)});";
     }
@@ -19,7 +21,7 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
 
 record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
 {
-    internal string ToCSharp(ProgramContext context)
+    internal override string ToCSharp(ProgramContext context)
     {
         return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
     }
@@ -27,7 +29,7 @@ record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
 
 record MethodCallInstruction(ICallable Callable) : Instruction
 {
-    internal string ToCSharp(ProgramContext context)
+    internal override string ToCSharp(ProgramContext context)
     {
         return $"{Callable.Call(context)};";
     }
