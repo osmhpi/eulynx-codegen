@@ -53,6 +53,9 @@ var typeAliases = new Dictionary<string, string>() {
     { "D50inPdiConnectionStateValue", "SSciEfesPrim.D50outPdiConnectionStateValue" }
 };
 
+var csharp = new CSharpWriter();
+var rust = new RustWriter();
+
 foreach (var interestingPackage in interestingPackages) {
     // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
     // Dictionary<string, PackagedElement> packageEvents = new Dictionary<string, PackagedElement>();
@@ -64,7 +67,7 @@ foreach (var interestingPackage in interestingPackages) {
     foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
         try {
-            await umlClass.Generate();
+            await umlClass.Generate(rust);
         } catch (Exception ex) {
             Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }

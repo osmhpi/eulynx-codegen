@@ -20,6 +20,4 @@ abstract class CodeGenerationItem {
     public static string JoinLines(IEnumerable<string> lines) {
         return string.Join("\n", lines.Where(x => !string.IsNullOrWhiteSpace(x)));
     }
-
-    public abstract string Write();
 }

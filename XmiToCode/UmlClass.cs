@@ -158,20 +158,22 @@ internal class UmlClass : CodeGenerationItem
         return InPascalCase(_class.Name);
     }
 
-    public override string Write() {
+    public string Write(CSharpWriter w) {
         var className = InPascalCase(_class.Name);
         var behaviorName = _stateMachine.GetName();
 
         var global = new GlobalContext(_dataTypes);
         var classContext = new ClassContext(global, _dataTypes);
 
-        return new Class(
+        var klass = new Class(
             className,
             behaviorName,
             _stateMachine.WriteRecord(className, _dataTypes, classContext),
             _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext),
             _stateMachine.GetStates(behaviorName)
-            ).Write();
+        );
+
+        return w.Write(klass);
 
         // Initialize property types
         {
@@ -257,10 +259,25 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
 ";
     }
 
-    internal async Task Generate()
+    internal async Task Generate(ICodeWriter w)
     {
-        using var file = File.Create($"../Eulynx/{GetName()}.cs");
+        using var file = File.Create(w.GenerateFileName(this));
         using var writer = new StreamWriter(file);
-        await writer.WriteAsync(Write());
+
+        var className = InPascalCase(_class.Name);
+        var behaviorName = _stateMachine.GetName();
+
+        var global = new GlobalContext(_dataTypes);
+        var classContext = new ClassContext(global, _dataTypes);
+
+        var klass = new Class(
+            className,
+            behaviorName,
+            _stateMachine.WriteRecord(className, _dataTypes, classContext),
+            _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.GetStates(behaviorName)
+        );
+
+        await writer.WriteAsync(w.Write(klass));
     }
 }

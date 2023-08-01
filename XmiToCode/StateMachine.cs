@@ -104,11 +104,6 @@ class StateMachine : CodeGenerationItem
         return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
-    public override string Write()
-    {
-        throw new NotImplementedException();
-    }
-
     public IBehaviorRecord WriteRecord(string className, DataTypeHelper dataTypes, ClassContext context) {
         return MakeStateRecord(GetName(), "object", className, dataTypes, context);
     }
