@@ -45,7 +45,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }
     }
 
-    public static Instruction ConvertSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
+    public static Instruction ParseSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
         var m = messageRegexMatch;
 
         var messageConstructor = m.Groups[1].Value.Replace(" ", "");
@@ -83,7 +83,7 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }
     }
 
-    public static Instruction ConvertInstruction(string instruction, DataTypeHelper dataTypes, ProgramContext context) {
+    public static Instruction ParseInstruction(string instruction, ProgramContext context) {
         var result = instruction.Trim();
 
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
@@ -91,32 +91,32 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         var messageRegexMatch = new Regex("^send (.+)\\s?to (.+)$").Match(result);
         if (messageRegexMatch.Success)
         {
-            return ConvertSendMessageInstruction(messageRegexMatch, context);
+            return ParseSendMessageInstruction(messageRegexMatch, context);
         }
 
         var assignmentRegexMatch = new Regex("^(.+) := (.+)$").Match(result);
         if (assignmentRegexMatch.Success)
         {
-            return ConvertAssignmentInstruction(assignmentRegexMatch, result, context);
+            return ParseAssignmentInstruction(assignmentRegexMatch, result, context);
         }
 
         var methodInvocationMatch = new Regex("^(\\w+)\\((.*)\\)$").Match(result);
         if (methodInvocationMatch.Success)
         {
-            return ConvertMethodInvocationInstruction(methodInvocationMatch, context);
+            return ParseMethodInvocationInstruction(methodInvocationMatch, context);
         }
 
         throw new Exception("Unprocessable instruction");
     }
 
-    private static Instruction ConvertMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
+    private static Instruction ParseMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
     {
         var identifier = new Identifier(methodInvocationMatch.Groups[1].Value);
         var callable = context.ResolveCallableIdentifier(identifier);
         return new MethodCallInstruction(callable);
     }
 
-    private static Instruction ConvertAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
+    private static Instruction ParseAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
     {
         var lhs = assignmentRegexMatch.Groups[1].Value;
         var rhs = assignmentRegexMatch.Groups[2].Value;
@@ -138,31 +138,27 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
         }
     }
 
-    public static List<Instruction> ConvertInstructions(string instructions, DataTypeHelper dataTypes, ProgramContext context) {
+    public static List<Instruction> ParseInstructions(string instructions, ProgramContext context) {
         return instructions
             .Split(";")
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(x => ConvertInstruction(x, dataTypes, context))
+            .Select(x => ParseInstruction(x, context))
             .ToList();
-    }
-
-    private string? NullWhitespace(string value) {
-        return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
     public List<Instruction> GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return PartialStates.SelectMany(x => ConvertInstructions(x.Vertex.Exit?.Name ?? "", dataTypes, context)).ToList();
+        return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Exit?.Name ?? "", context)).ToList();
     }
 
     public List<Instruction> GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return transition.Transitions.SelectMany(transition => ConvertInstructions(transition.Effect?.Body ?? "", dataTypes, context)).ToList();
+        return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
     }
 
     public List<Instruction> GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
-        return PartialStates.SelectMany(x => ConvertInstructions(x.Vertex.Entry?.Name ?? "", dataTypes, context)).ToList();
+        return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Entry?.Name ?? "", context)).ToList();
     }
 
     public bool IsSourceOfTransition(UmlTransition transition)

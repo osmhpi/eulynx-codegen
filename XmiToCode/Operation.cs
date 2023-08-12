@@ -5,7 +5,7 @@ namespace XmiToCode;
 
 public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
     public string Write(DataTypeHelper dataTypes, ProgramContext context) {
-        var instructions = CompoundState.ConvertInstructions(Behavior.Body, dataTypes, context);
+        var instructions = CompoundState.ParseInstructions(Behavior.Body, context);
 
         // foreach (Match m in Regex.Matches(instructions, "(\\w+) = \"([^\"]*)\"")) {
         //     var lhs = m.Groups[1].Value;

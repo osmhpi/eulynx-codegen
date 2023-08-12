@@ -2,7 +2,7 @@ using XmiToCode;
 
 internal class UmlClass : CodeGenerationItem
 {
-    private PackagedElement _class;
+    private readonly PackagedElement _class;
     private readonly Dictionary<string, PackagedElement> _changeEvents;
     private readonly Dictionary<string, PackagedElement> _timeEvents;
     private readonly Dictionary<string, PackagedElement> _packageEvents;
@@ -168,9 +168,11 @@ internal class UmlClass : CodeGenerationItem
         var klass = new Class(
             className,
             behaviorName,
-            _stateMachine.WriteRecord(className, _dataTypes, classContext),
-            _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext),
-            _stateMachine.GetStates(behaviorName)
+            classContext,
+            _stateMachine.Parse(className, _dataTypes, classContext),
+            _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.GetStates(behaviorName),
+            new()
         );
 
         return w.Write(klass);
@@ -179,7 +181,7 @@ internal class UmlClass : CodeGenerationItem
         {
             // Perform a dry run of generating transitions (which includes comparisons and assignments,
             // where property types are coalesced)
-            var ignored = _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext);
+            var ignored = _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext);
             _dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)).ToList();
             // TODO: I think side effects of initial transitions are still missing here
 
@@ -231,7 +233,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
-    {_stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext)}
+    {_stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext)}
 
     // Properties
     {_dataTypes.GeneratePropertyDeclarations()}
@@ -270,12 +272,24 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         var global = new GlobalContext(_dataTypes);
         var classContext = new ClassContext(global, _dataTypes);
 
+        var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
+        var enumerations = _dataTypes.DataTypes.Where(x => x.Value.Type == "uml:Enumeration")
+            // There are two enumerations which map to the same name (but are not used currently)
+            // - Line Direction Control Information
+            // - Line_Direction_Control_Information
+            // This behavior is possibly dangerous...
+            // Temporary workaround:
+            .Where(x => whitelist.Contains(x.Value.Name))
+            .Select(x => new GlobalEnumeration(x.Value)).ToList();
+
         var klass = new Class(
             className,
             behaviorName,
-            _stateMachine.WriteRecord(className, _dataTypes, classContext),
-            _stateMachine.GenerateTransitionFunctions(behaviorName, _dataTypes, classContext),
-            _stateMachine.GetStates(behaviorName)
+            classContext,
+            _stateMachine.Parse(className, _dataTypes, classContext),
+            _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.GetStates(behaviorName),
+            enumerations
         );
 
         await writer.WriteAsync(w.Write(klass));

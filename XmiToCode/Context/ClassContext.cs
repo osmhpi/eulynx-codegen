@@ -15,8 +15,15 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
 
     public override string InstanceReference { get; } = "this";
 
+    public Dictionary<TypeIdentifier, MessageSchema> UsedMessageTypes { get; } = new();
+
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
         = DataTypes.Ports.Values
+            .Select(x => (Key: new Identifier(x.Property.Name), Value: x))
+            .ToDictionary(x => x.Key, x => x.Value);
+
+    public Dictionary<Identifier, PropertyOrPort> Properties { get; }
+        = DataTypes.Properties.Values
             .Select(x => (Key: new Identifier(x.Property.Name), Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
@@ -59,9 +66,15 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
 
     internal override MessageSchema ResolveMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
+        if (UsedMessageTypes.ContainsKey(messageTypeIdentifier)) {
+            return UsedMessageTypes[messageTypeIdentifier];
+        }
+
         var port = Ports[portIdentifier];
         if (port is ComplexPropertyOrPort complexPort) {
-            return Parent.ResolveMessageSchema(complexPort, messageTypeIdentifier);
+            var result = Parent.ResolveMessageSchema(complexPort, messageTypeIdentifier);
+            UsedMessageTypes[messageTypeIdentifier] = result;
+            return result;
         }
 
         throw new NotImplementedException();

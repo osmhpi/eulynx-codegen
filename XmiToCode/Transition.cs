@@ -25,7 +25,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
             // than 1 transition, all constraints have to be fulfilled. Do that later.
             return new CodeTransition(stateName, context,
                 new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, context),
-                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context));
+                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context), this);
         }
 
         var newAttributes = new Dictionary<string, PropertyOrPort>();
@@ -34,6 +34,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
             SingleTransition.Trigger.Event != null &&
             dataTypes.PackageEvents.ContainsKey(SingleTransition.Trigger.Event)
         ) {
+            // The transition is triggered by an incoming message that has additional attributes
             var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
             var signal = theEvent.Signal;
             var theSignal = dataTypes.Signals[signal];
@@ -50,7 +51,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext));
+                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
                 // return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
                 //     {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
@@ -58,7 +59,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
                 // }}";
             } else {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext));
+                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
                 // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
                 //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
@@ -72,7 +73,8 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         if (state.IsJunction) {
             return new JunctionTransition(blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
                 GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext),
-                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal)
+                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal),
+                this
             );
             // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
             //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{

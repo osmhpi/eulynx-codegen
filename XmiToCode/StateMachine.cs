@@ -86,13 +86,13 @@ class StateMachine : CodeGenerationItem
 
     private IBehaviorRecord MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
         if (x.InternalStateMachine != null) {
-            return x.InternalStateMachine.MakeStateRecord(x.Name, recordName, className, dataTypes, context);
+            return x.InternalStateMachine.ParseStateRecord(x.Name, recordName, className, dataTypes, context);
         } else {
             return new SimpleBehaviorRecord(x.Name, recordName, className);
         }
     }
 
-    private IBehaviorRecord MakeStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord ParseStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes, ProgramContext context) {
         var newContext = new BlockContext(context, overrideInstanceReference: "This");
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
@@ -104,8 +104,8 @@ class StateMachine : CodeGenerationItem
         return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
-    public IBehaviorRecord WriteRecord(string className, DataTypeHelper dataTypes, ClassContext context) {
-        return MakeStateRecord(GetName(), "object", className, dataTypes, context);
+    public IBehaviorRecord Parse(string className, DataTypeHelper dataTypes, ClassContext context) {
+        return ParseStateRecord(GetName(), "object", className, dataTypes, context);
     }
 
     public IEnumerable<(CompoundState FromState, UmlTransition Transition)> GetTransitionsOriginatingFromAnyState() {
@@ -120,7 +120,7 @@ class StateMachine : CodeGenerationItem
             );
     }
 
-    internal IEnumerable<TransitionFunction> GenerateTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);

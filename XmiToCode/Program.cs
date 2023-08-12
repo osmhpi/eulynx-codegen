@@ -55,6 +55,7 @@ var typeAliases = new Dictionary<string, string>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
+var c = new CWriter();
 
 foreach (var interestingPackage in interestingPackages) {
     // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
@@ -67,7 +68,7 @@ foreach (var interestingPackage in interestingPackages) {
     foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
         try {
-            await umlClass.Generate(rust);
+            await umlClass.Generate(c);
         } catch (Exception ex) {
             Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }

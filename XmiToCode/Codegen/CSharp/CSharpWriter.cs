@@ -57,15 +57,15 @@ public class {klass.ClassName} : IStateMachine<{klass.ClassName}.{klass.Behavior
 
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
     {
-        return @$"public record {behaviorRecord.name} : {behaviorRecord.parentBehaviorName} {{
+        return @$"public record {behaviorRecord.Name} : {behaviorRecord.parentBehaviorName} {{
         {string.Join("\n", behaviorRecord.subrecords.Select(x => Write(x)))}
 
 
-    public static new {behaviorRecord.name} New({behaviorRecord.className} This) {{
+    public static new {behaviorRecord.Name} New({behaviorRecord.className} This) {{
         {Write(behaviorRecord.initializer)}
     }}
 
-    private {behaviorRecord.name}() {{}}
+    private {behaviorRecord.Name}() {{}}
 }}
 ";
     }

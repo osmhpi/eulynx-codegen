@@ -14,7 +14,7 @@ public interface ICallable {
     public string Call(ProgramContext context);
 }
 
-record MessageMember(Identifier MemberName, PackagedElement Type)
+public record MessageMember(Identifier MemberName, PackagedElement Type)
 {
     public TypeIdentifier TypeIdentifier { get; } =
         // Type.Name == "String" ? new TypeIdentifier(MemberName.Name + "Value") :
@@ -29,7 +29,7 @@ record MessageMember(Identifier MemberName, PackagedElement Type)
     }
 }
 
-record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
+public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
 {
     public List<MessageMember> Members { get; } = Signal.OwnedAttribute
         .Select(x => new MessageMember(new Identifier(x.Name), DataTypes.DataTypes[x.Type]))
@@ -50,7 +50,7 @@ record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataType
 // Could be an enum member
 public record LiteralIdentifier (string RawName)
 {
-    public string Name = InPascalCase(Sanitize(RawName));
+    public string Name => InPascalCase(Sanitize(RawName));
 
     private static string Sanitize(string value) {
         var sanitizedValue = InPascalCase(value.Replace(",", " And "));
@@ -66,7 +66,7 @@ public record LiteralIdentifier (string RawName)
 // Could be a reference to a port or variable
 public record Identifier (string RawName)
 {
-    public string Name = InPascalCase(RawName);
+    public string Name { get; } = InPascalCase(RawName);
 }
 
 // Could be an enumeration or message class
@@ -164,7 +164,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
 
     public abstract string DataType { get; }
 
-    public string Name => CodeGenerationItem.InPascalCase(Property.Name);
+    public string Name => InPascalCase(Property.Name);
     public string Accessor(ProgramContext context) =>
         context.IsLocalVariable(this)
             ? IsPort
@@ -183,7 +183,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
 
     public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
     {
-        public HashSet<LiteralIdentifier> AllowedValues = new HashSet<LiteralIdentifier>();
+        public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
         public override string DataType => AllowedValues.Count > 0 ? $"{Name}Value" : "byte[]";
         public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
 
