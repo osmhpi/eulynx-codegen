@@ -16,7 +16,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         bool noTriggerConditions,
         StateMachine stateMachine,
         Dictionary<string, PropertyOrPort>? preJunctionAttributesOfCurrentSignal,
-        ProgramContext context) {
+        ProgramContext context,
+        ClassInfo classInfo) {
 
         var attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
         string? currentSignalName = null;
@@ -41,9 +42,9 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             var signal = theEvent.Signal;
             var theSignal = dataTypes.Signals[signal];
             attributesOfCurrentSignal = attributesOfCurrentSignal.Select(x => x.Value)
-                .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false)))
+                .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo)))
                 .ToDictionary(x => x.Name);
-            newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false)).ToDictionary(x => x.Name);
+            newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo)).ToDictionary(x => x.Name);
             currentSignalName = InPascalCase(theSignal.Name);
             dataTypes.RecordSignalUsed(theSignal, attributesOfCurrentSignal);
         }
@@ -75,7 +76,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (state.IsJunction) {
             return new JunctionTransition(blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
                 ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext),
-                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal),
+                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, classInfo, true, attributesOfCurrentSignal),
+                GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext),
                 this
             );
             // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
@@ -181,7 +183,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
 
     protected virtual TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
 
-        var expression = SingleTransition.OwnedRule.Specification.Body;
+        var expression = SingleTransition.OwnedRule.Specification.Body.Trim();
 
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
@@ -281,7 +283,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     return new ChangeEventTransition(from, to, transitions, theEvent);
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
-                    return new MessageEventTransition(from, to, transitions, theEvent);
+                    var signal = dataTypes.Signals[theEvent.Signal];
+                    return new MessageEventTransition(from, to, transitions, theEvent, new MessageSchema(new TypeIdentifier(signal.Name), signal, dataTypes));
                 }
             } else {
                 return new InitialTransition(from, to, transitions);
@@ -320,7 +323,7 @@ public record TransitionConstraint() {
     public record Compound() : TransitionConstraint();
 }
 
-record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt) : Transition(From, To, Transitions)
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, MessageSchema MessageSchema) : Transition(From, To, Transitions)
 {
     private IAccessible LookupSignalAttributeType(PackagedElement theSignal, DataTypeHelper dataTypes, string attributeName, string value) {
         var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);

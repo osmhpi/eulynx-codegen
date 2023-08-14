@@ -22,7 +22,7 @@ public class DataTypeHelper {
     private readonly Dictionary<string, HashSet<string>> _allowedMessageValues;
     private readonly Dictionary<string, string> _coalescedMessageValues;
     // Externally provided aliases for types
-    private readonly Dictionary<string, string> _typeAliases;
+    private readonly Dictionary<(string, string), (string, string)> _typeAliases;
 
     public DataTypeHelper(
         List<OwnedAttribute> properties,
@@ -34,10 +34,11 @@ public class DataTypeHelper {
         Dictionary<string, PackagedElement> packageEvents,
         Dictionary<string, PackagedElement> signals,
         Dictionary<string, PackagedElement> dataTypes,
-        Dictionary<string, string> typeAliases)
+        Dictionary<(string, string), (string, string)> typeAliases,
+        ClassInfo classInfo)
     {
-        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false)).ToDictionary(x => x.Name);
-        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true)).ToDictionary(x => x.Name);
+        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false, classInfo)).ToDictionary(x => x.Name);
+        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true, classInfo)).ToDictionary(x => x.Name);
         // SignalProperties = receptions.SelectMany(x => signals[x.Signal].OwnedAttribute.Select(attribute => PropertyOrPort.Create(attribute, dataTypes))).ToDictionary(x => x.Name);
 
         Operations = operations;
@@ -131,7 +132,7 @@ public class DataTypeHelper {
 
     private string GeneratePropertyValueType(KeyValuePair<string, PropertyOrPort> x)
     {
-        if (_typeAliases.ContainsKey(x.Key)) {
+        if (_typeAliases.ContainsKey((x.Key, ""))) {
             // An alias for this type was provided externally, don't generate anything
             return "";
         }
@@ -155,7 +156,7 @@ public class DataTypeHelper {
         return _allowedMessages.ContainsKey(v);
     }
 
-    public string GetFinalDataType(PropertyOrPort pp) {
+    public (string, string) GetFinalDataType(PropertyOrPort pp) {
         var dataType = pp.DataType;
         if (_typeAliases.ContainsKey(dataType)) {
             return _typeAliases[dataType];
@@ -163,7 +164,7 @@ public class DataTypeHelper {
         return dataType;
     }
 
-    public string GetFinalDataType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
+    public (string, string) GetFinalDataType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
         return GetFinalDataType(LookupPropertyValueType(v, attributesOfCurrentSignal));
     }
 

@@ -49,8 +49,8 @@ var classWhitelist = new [] {
 };
 // var classWhitelist = new List<string>();
 
-var typeAliases = new Dictionary<string, string>() {
-    { "D50inPdiConnectionStateValue", "SSciEfesPrim.D50outPdiConnectionStateValue" }
+var typeAliases = new Dictionary<(string, string), (string, string)>() {
+    { ("D50inPdiConnectionStateValue", ""), ("SSciEfesPrim.D50outPdiConnectionStateValue", "") }
 };
 
 var csharp = new CSharpWriter();

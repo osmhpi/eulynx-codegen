@@ -87,9 +87,9 @@ public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Mem
     public string Accessor(ProgramContext context) => $"{UmlEnumeration.Name}__{Member.Name}";
 }
 
-public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal) : IAccessible {
+public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
     // TODO: This is language-specific
-    public string Accessor(ProgramContext context) => $"{EnumType}__{Literal.Name}";
+    public string Accessor(ProgramContext context) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
 }
 
 public record BoolLiteral(bool Value) : IAccessible
@@ -99,12 +99,14 @@ public record BoolLiteral(bool Value) : IAccessible
 
 public record PulsedInLiteral(bool Value) : IAccessible
 {
-    public string Accessor(ProgramContext context) => Value ? "new PulsedIn(true)" : "new PulsedIn(false)";
+    // TODO: Language-specific
+    public string Accessor(ProgramContext context) => Value ? "1" : "0";
 }
 
 public record PulsedOutLiteral(bool Value) : IAccessible
 {
-    public string Accessor(ProgramContext context) => Value ? "new PulsedOut(true)" : "new PulsedOut(false)";
+    // TODO: Language-specific
+    public string Accessor(ProgramContext context) => Value ? "1" : "0";
 }
 
 public record Method(Identifier Identifier, Operation Operation) : ICallable
@@ -112,38 +114,38 @@ public record Method(Identifier Identifier, Operation Operation) : ICallable
     public string Call(ProgramContext context) => $"{context.InstanceReference}.{Identifier.Name}()";
 }
 
-public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IAccessible, IAssignable {
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort)
+public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : IAccessible, IAssignable {
+    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class)
     {
         var umlType = types[property.Type];
         return umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, IsPort),
+            "Boolean" => new BoolPropertyOrPort(property, IsPort, Class),
             // "DateTime",
             // "Decimal",
             // "Double",
             // "Integer",
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, IsPort),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort),
+            "String" => new StringPropertyOrPort(property, IsPort, Class),
+            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort, Class),
+            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort, Class),
             // "Timespan",
-            _ => new ComplexPropertyOrPort(property, IsPort, umlType)
+            _ => new ComplexPropertyOrPort(property, IsPort, umlType, Class)
         };
     }
 
-    public string GenerateDeclaration(string finalType) {
+    public string GenerateDeclaration((string, string) finalType) {
         if (IsPort) {
-            return $"public Port<{finalType}> {Name} {{ get; set; }}";
+            return $"public Port<{finalType.Item1}> {Name} {{ get; set; }}";
         }
-        return $"public {finalType} {Name} {{ get; set; }}";
+        return $"public {finalType.Item1} {Name} {{ get; set; }}";
     }
 
-    public string GenerateInitializer(string finalType) {
+    public string GenerateInitializer((string, string) finalType) {
         if (IsPort) {
-            return $"{Name} = new Port<{finalType}>({GenerateInitialValue()});";
+            return $"{Name} = new Port<{finalType.Item1}>({GenerateInitialValue()});";
         }
-        return $"{Name} = new {finalType}();";
+        return $"{Name} = new {finalType.Item1}();";
     }
 
     public string GenerateCondition(ProgramContext context, string otherInstance, IAccessible other, bool negate) {
@@ -164,19 +166,19 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
 
     public abstract string GenerateAssignment(string value);
 
-    public abstract string DataType { get; }
+    public abstract (string, string) DataType { get; }
 
     public string Name => InPascalCase(Property.Name);
 
     // TODO: This is language-specific
     public string Accessor(ProgramContext context) =>
-        context.IsLocalVariable(this)
-            ? IsPort
-                ? $"{Name}.Value"
-                : $"{Name}"
-            : IsPort
-                ? $"{context.InstanceReference}->{Name}.Value"
-                : $"{context.InstanceReference}->{Name}";
+        context.IsLocalVariable(this) ?
+            // IsPort ?
+            //     $"{Name}.Value" :
+                $"{Name}" :
+            // IsPort ?
+            //     $"{context.InstanceReference}->{Name}.Value" :
+                $"{context.InstanceReference}->{Name}";
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
     {
@@ -185,16 +187,17 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
 
     public virtual string EqualityComparer => "Equals";
 
-    public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
+    public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
         public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
-        public override string DataType => AllowedValues.Count > 0 ? $"{Name}Value" : "byte[]";
+        // TODO: Language-specific
+        public override (string, string) DataType => AllowedValues.Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
         public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
             AllowedValues.Add(literal);
-            return new ImplicitEnumMember(DataType, literal);
+            return new ImplicitEnumMember($"{Name}Value", literal, Class);
         }
 
         public override string GeneratePropertyValueType()
@@ -224,7 +227,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
             $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
     }
 
-    public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : PropertyOrPort(Property, IsPort)
+    public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
         // public ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : base(Property, IsPort)
         // {
@@ -240,10 +243,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
             // }
         // }
 
-        public override string DataType => UmlType.Type switch {
-            "uml:Class" => "Channel<EulynxMessages.Message>",
-            "uml:Enumeration" => InPascalCase(UmlType.Name),
-            _ => "object"
+        public override (string, string) DataType => UmlType.Type switch {
+            "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
+            "uml:Enumeration" => (InPascalCase(UmlType.Name), ""),
+            // TODO: Language-specific
+            _ => ("int", "")
         };
 
         public override string GenerateAssignment(string value)
@@ -265,9 +269,10 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
         }
     }
 
-    record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
+    record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        public override string DataType => "bool";
+        // TODO: Language-specific
+        public override (string, string) DataType => ("bool", "");
 
         public override string GenerateAssignment(string value)
         {
@@ -292,22 +297,25 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
         }
     }
 
-    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
+    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        public override string DataType => "PulsedIn";
+        // TODO: Language-specific
+        public override (string, string) DataType => ("int /*PulsedIn*/", "");
 
+        // TODO: Language-specific
         public override string GenerateAssignment(string value)
         {
             if (value == "TRUE")
-                return "new PulsedIn(true)";
+                return "1";
             if (value == "FALSE")
-                return "new PulsedIn(false)";
+                return "0";
             throw new ArgumentException(value);
         }
 
+        // TODO: Language-specific
         protected override string GenerateInitialValue()
         {
-            return "new PulsedIn(false)";
+            return "0";
         }
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
@@ -322,22 +330,25 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
         }
     }
 
-    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort) : PropertyOrPort(Property, IsPort)
+    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        public override string DataType => "PulsedOut";
+        // TODO: Language-specific
+        public override (string, string) DataType => ("int /*PulsedOut*/", "");
 
+        // TODO: Language-specific
         public override string GenerateAssignment(string value)
         {
             if (value == "TRUE")
-                return "new PulsedOut(true)";
+                return "1";
             if (value == "FALSE")
-                return "new PulsedOut(false)";
+                return "0";
             throw new ArgumentException(value);
         }
 
+        // TODO: Language-specific
         protected override string GenerateInitialValue()
         {
-            return "new PulsedOut(false)";
+            return "0";
         }
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)

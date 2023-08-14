@@ -57,17 +57,17 @@ public class StateMachine : CodeGenerationItem
 
     public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
-        return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context));
+        return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context, theRootBehaviorName));
     }
 
-    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context)).ToList();
+        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context, classInfo)).ToList();
     }
 
     public string GetName() {
@@ -93,13 +93,13 @@ public class StateMachine : CodeGenerationItem
     }
 
     private IBehaviorRecord ParseStateRecord(string name, string parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
-        var newContext = new BlockContext(context, overrideInstanceReference: "This");
+        var newContext = new BlockContext(context); // , overrideInstanceReference: "This"
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
         var initialTransition = GetTransitionsFromState(parentBehaviorName + "." + name, _initialState).Single();
         var initializer = initialTransition.transition.GenerateTransition(name,
             _initialState, initialTransition.state, initialTransition.stateName,
-            dataTypes, false, this, null, newContext);
+            dataTypes, false, this, null, newContext, className);
 
         return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }

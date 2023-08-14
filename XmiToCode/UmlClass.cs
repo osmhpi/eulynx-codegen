@@ -16,7 +16,7 @@ public class UmlClass : CodeGenerationItem
         Dictionary<string, PackagedElement> packageEvents,
         Dictionary<string, PackagedElement> signals,
         Dictionary<string, PackagedElement> dataTypes,
-        Dictionary<string, string> typeAliases)
+        Dictionary<(string, string), (string, string)> typeAliases)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
@@ -38,7 +38,10 @@ public class UmlClass : CodeGenerationItem
             .Where(x => x.XmiType == "uml:Reception")
             .ToList();
 
-        _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases);
+        var className = InPascalCase(_class.Name);
+        // HACK
+        var classInfo = new ClassInfo(className, "");
+        _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases, classInfo);
 
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
     }

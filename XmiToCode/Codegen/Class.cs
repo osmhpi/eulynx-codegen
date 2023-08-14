@@ -40,9 +40,28 @@ public record Class(
             .SelectMany(x => x.Transitions)
             .Select(x => x.Transition)
             .OfType<MessageEventTransition>()
-            .Select(x => ClassContext.DataTypes.Signals[x.evt.Signal])
+            .Select(x => x.MessageSchema)
             .Distinct()
-            .Select(x => new MessageSchema(new TypeIdentifier(x.Name), x, ClassContext.DataTypes))
+            .ToList();
+    }
+
+    internal IEnumerable<PackagedElement> GetChangeEvents() {
+        return TransitionFunctions
+            .SelectMany(x => x.Transitions)
+            .Select(x => x.Transition)
+            .OfType<ChangeEventTransition>()
+            .Select(x => x.theEvent)
+            .Distinct()
+            .ToList();
+    }
+
+    internal IEnumerable<string> GetTimeoutEvents() {
+        return TransitionFunctions
+            .SelectMany(x => x.Transitions)
+            .Select(x => x.Transition)
+            .OfType<TimeEventTransition>()
+            .Select(x => x.theEvent.Name)
+            .Distinct()
             .ToList();
     }
 }
