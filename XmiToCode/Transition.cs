@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 
 using static CodeGenerationItem;
+using static CompoundState;
 
 public abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
@@ -25,7 +26,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             // than 1 transition, all constraints have to be fulfilled. Do that later.
             return new CodeTransition(stateName, context,
                 new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, context),
-                ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context), this);
+                ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context),
+                null, this);
         }
 
         var newAttributes = new Dictionary<string, PropertyOrPort>();
@@ -51,7 +53,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext), this);
                 // return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
                 //     {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
@@ -59,7 +61,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                 // }}";
             } else {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext), this);
                 // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
                 //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
@@ -163,64 +165,106 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public string GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
+    public TransitionConstraint? GetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
 
             if (specification == "else") {
-                return "else";
+                return new TransitionConstraint.Else();
             }
 
             return DoGetTransitionConstraints(dataTypes, attributesOfCurrentSignal, context);
         }
 
-        return "";
+        return null;
     }
 
-    protected virtual string DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
-        var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
+    protected virtual TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context) {
 
-        // Convert identifiers to pascal case
-        expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+        var expression = SingleTransition.OwnedRule.Specification.Body;
 
-        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
-            // RHS is an identifier
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[3].Value;
-            dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        // ASAL is specified in section 8.6.8 in Eu.Doc.30
+
+        var equalsRegexMatch = new Regex("^(.+) = (.+)$").Match(expression);
+        if (equalsRegexMatch.Success)
+        {
+            return ParseEqualityConstraint(equalsRegexMatch, expression, context);
         }
 
-        foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {
-            // RHS is a string literal
-            var lhs = m.Groups[1].Value;
-            var rhs = m.Groups[3].Value;
-            dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
+        return new TransitionConstraint.Compound();
+
+        // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
+
+        // // Convert identifiers to pascal case
+        // expression = Regex.Replace(expression, "(?<!\\w)(?<!\")([A-Za-z][A-Za-z0-9_]*)(?!\")(?!\\w)", m => InPascalCase(m.Value));
+
+        // foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")").Cast<Match>()) {
+        //     // RHS is an identifier
+        //     var lhs = m.Groups[1].Value;
+        //     var rhs = m.Groups[3].Value;
+        //     dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        // }
+
+        // foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")").Cast<Match>()) {
+        //     // RHS is an identifier
+        //     var lhs = m.Groups[1].Value;
+        //     var rhs = m.Groups[3].Value;
+        //     dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
+        // }
+
+        // foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"").Cast<Match>()) {
+        //     // RHS is a string literal
+        //     var lhs = m.Groups[1].Value;
+        //     var rhs = m.Groups[3].Value;
+        //     dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
+        // }
+
+        // var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
+
+        // var negateOrNot = (string s) => s == "==" ? "" : "!";
+
+        // // RHS is a string literal
+
+        // expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
+        //     // {instanceReference}.
+        //     m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
+
+        // // RHS is an identifier
+
+        // expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
+        //     // {instanceReference}.
+        //     m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
+
+        // // Handle symbols true, false
+        // expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(True\\)", m => $"{m.Groups[1].Value}.Equals(true)");
+        // expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(False\\)", m => $"{m.Groups[1].Value}.Equals(false)");
+
+        // // Accessors for singular boolean expressions
+        // expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");
+
+        // return $"if ({expression})";
+    }
+
+    protected TransitionConstraint ParseEqualityConstraint(Match equalsRegexMatch, string expression, ProgramContext context)
+    {
+        var lhs = equalsRegexMatch.Groups[1].Value;
+        var rhs = equalsRegexMatch.Groups[2].Value;
+
+        var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
+
+        if (ParseLiteral(rhs, out var literal)) {
+            var l = identifier.LookupValidLiteral(literal!);
+            return new TransitionConstraint.Equality(identifier, l);
+        } else {
+            var rhsIdentifier = context.ResolveAssignableIdentifier(new Identifier(rhs));
+            if (rhsIdentifier != null) {
+                return new TransitionConstraint.Equality(identifier, rhsIdentifier);
+            } else {
+                // It is a literal, but without quotes
+                var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
+                return new TransitionConstraint.Equality(identifier, l);
+            }
         }
-
-        var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-
-        var negateOrNot = (string s) => s == "==" ? "" : "!";
-
-        // RHS is a string literal
-
-        expression = Regex.Replace(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"",
-            // {instanceReference}.
-            m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value, attributesOfCurrentSignal)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[3].Value)})");
-
-        // RHS is an identifier
-
-        expression = Regex.Replace(expression, "(\\w+) (==|!=) ([\\w\\.]+)",
-            // {instanceReference}.
-            m => $"{negateOrNot(m.Groups[2].Value)}{portOrDirectAccess(m.Groups[1].Value)}.{dataTypes.LookupPropertyValueType(m.Groups[1].Value, attributesOfCurrentSignal).EqualityComparer}({m.Groups[3].Value})");
-
-        // Handle symbols true, false
-        expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(True\\)", m => $"{m.Groups[1].Value}.Equals(true)");
-        expression = Regex.Replace(expression, "(\\w+)\\.Equals\\(False\\)", m => $"{m.Groups[1].Value}.Equals(false)");
-
-        // Accessors for singular boolean expressions
-        expression = Regex.Replace(expression, "(?<!((==|!=)))\\s*(\\w+(\\.\\w+)*)\\s*(?!((==|\\!=)))", m => $"{portOrDirectAccess(m.Groups[3].Value)}");
-
-        return $"if ({expression})";
     }
 
     public static Transition Create(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes) {
@@ -247,6 +291,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new ArgumentException(nameof(transitions));
     }
 
+    record Expression();
+
     protected string AsalExpressionToCSharp(string expression) {
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
         return expression.ReplaceLineEndings(" ")
@@ -268,6 +314,12 @@ record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitio
 
 }
 
+public record TransitionConstraint() {
+    public record Else() : TransitionConstraint();
+    public record Equality(IAssignable Lhs, IAccessible Rhs) : TransitionConstraint();
+    public record Compound() : TransitionConstraint();
+}
+
 record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt) : Transition(From, To, Transitions)
 {
     private IAccessible LookupSignalAttributeType(PackagedElement theSignal, DataTypeHelper dataTypes, string attributeName, string value) {
@@ -285,62 +337,74 @@ record MessageEventTransition(IState From, IState To, List<UmlTransition> Transi
         return dataTypes.LookupPropertyValueType(InPascalCase(value));
     }
 
-    protected override string DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context)
+    protected override TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, ProgramContext context)
     {
-        var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
+        var expression = SingleTransition.OwnedRule.Specification.Body;
 
-        var assignmentMatch = Regex.Match(expression, "(\\w+) (==|!=) ");
+        // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
-        var theSignal = dataTypes.Signals[evt.Signal];
-
-        var lhs = new Identifier(assignmentMatch.Groups[1].Value);
-        var lhsAssignable = context.ResolveAssignableIdentifier(lhs);
-        var lhsAccessible = context.ResolveIdentifier(lhs);
-        if (lhsAssignable == null && lhsAccessible == null) {
-            throw new Exception($"Could not resolve lhs reference {lhs}");
+        var equalsRegexMatch = new Regex("^(.+) = (.+)$").Match(expression);
+        if (equalsRegexMatch.Success)
+        {
+            return ParseEqualityConstraint(equalsRegexMatch, expression, context);
         }
 
-        var op = assignmentMatch.Groups[2].Value;
+        return new TransitionConstraint.Compound();
 
-        var stringLiteralAssignment = Regex.Match(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"");
-        var identifierAssignment = Regex.Match(expression, "(\\w+) (==|!=) (\\w+)");
+        // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 
-        if (stringLiteralAssignment.Success) {
-            if (lhsAssignable == null) {
-                throw new Exception("LHS must be assignable.");
-            }
+        // var assignmentMatch = Regex.Match(expression, "(\\w+) (==|!=) ");
 
-            var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(stringLiteralAssignment.Groups[3].Value));
-            var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
-            return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
-                {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
-                return {result};
-            }}))";
-        }
+        // var theSignal = dataTypes.Signals[evt.Signal];
 
-        if (identifierAssignment.Success) {
-            var rhsIdentifier = context.ResolveIdentifier(new Identifier(identifierAssignment.Groups[3].Value));
-            if (rhsIdentifier != null) {
-                var result = new BinaryExpression(lhsAccessible, rhsIdentifier, BinaryExpression.ParseOperator(op)).ToCSharp(context);
-                return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
-                    {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
-                    return {result};
-                }}))";
-            } else {
-                if (lhsAssignable == null) {
-                    throw new Exception("LHS must be assignable.");
-                }
+        // var lhs = new Identifier(assignmentMatch.Groups[1].Value);
+        // var lhsAssignable = context.ResolveAssignableIdentifier(lhs);
+        // var lhsAccessible = context.ResolveIdentifier(lhs);
+        // if (lhsAssignable == null && lhsAccessible == null) {
+        //     throw new Exception($"Could not resolve lhs reference {lhs}");
+        // }
 
-                var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(identifierAssignment.Groups[3].Value));
-                var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
-                return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
-                    {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
-                    return {result};
-                }}))";
-            }
-        }
+        // var op = assignmentMatch.Groups[2].Value;
 
-        throw new Exception("Unprocessable assignment");
+        // var stringLiteralAssignment = Regex.Match(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"");
+        // var identifierAssignment = Regex.Match(expression, "(\\w+) (==|!=) (\\w+)");
+
+        // if (stringLiteralAssignment.Success) {
+        //     if (lhsAssignable == null) {
+        //         throw new Exception("LHS must be assignable.");
+        //     }
+
+        //     var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(stringLiteralAssignment.Groups[3].Value));
+        //     var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+        //     return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+        //         {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+        //         return {result};
+        //     }}))";
+        // }
+
+        // if (identifierAssignment.Success) {
+        //     var rhsIdentifier = context.ResolveIdentifier(new Identifier(identifierAssignment.Groups[3].Value));
+        //     if (rhsIdentifier != null) {
+        //         var result = new BinaryExpression(lhsAccessible, rhsIdentifier, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+        //         return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+        //             {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+        //             return {result};
+        //         }}))";
+        //     } else {
+        //         if (lhsAssignable == null) {
+        //             throw new Exception("LHS must be assignable.");
+        //         }
+
+        //         var literal = lhsAssignable.LookupValidLiteral(new LiteralIdentifier(identifierAssignment.Groups[3].Value));
+        //         var result = new BinaryExpression(lhsAssignable, literal, BinaryExpression.ParseOperator(op)).ToCSharp(context);
+        //         return $@"if (ReceivedMessage({new Identifier(evt.Name).Name}, x => {{
+        //             {DeconstructMessageAttributes(new Identifier(evt.Name).Name, attributesOfCurrentSignal, context, true)}
+        //             return {result};
+        //         }}))";
+        //     }
+        // }
+
+        // throw new Exception("Unprocessable assignment");
 
 
         // foreach (Match m in Regex.Matches(expression, "(\\w+) (==|!=) \"([\\w\\s]*)\"")) {

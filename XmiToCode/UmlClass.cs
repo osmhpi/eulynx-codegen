@@ -41,11 +41,6 @@ public class UmlClass : CodeGenerationItem
         _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases);
 
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
-
-        // var messageSchema = Ports.Select(x => DataTypes[x.Value.Property.Type])
-        //     .SelectMany(x => x.OwnedReception)
-        //     .Select(x => new MessageSchema(new TypeIdentifier(x.Name), Signals[x.Signal], this))
-        //     .ToList();
     }
 
     public Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {

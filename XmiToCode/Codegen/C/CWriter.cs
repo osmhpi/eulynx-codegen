@@ -51,12 +51,7 @@ internal class CWriter : ICodeWriter
     private string WriteClass(Class klass)
     {
         return @$"
-#define Option(X) \\
-  struct          \\
-  {{               \\
-    int Some;     \\
-    X Value;      \\
-  }}
+#define Option(X) struct {{ int Some; X Value; }}
 
 typedef struct ChangeEvent
 {{
@@ -72,17 +67,18 @@ typedef struct ChangeEvent
 {string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
 
 // Message Types
-
-{string.Join("\n", klass.GetMessageTypes().Select(x => Write(x)))}
+{string.Join("\n", klass.GetIncomingMessageTypes().Select(x => Write(x)))}
+{string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => Write(x)))}
 
 typedef struct {klass.Info.ClassName} {{
     {klass.Info.BehaviorName} state;
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => $"{x.Value.DataType} {x.Key.Name};"))}
 
-/*
-    {string.Join("\n", klass.GetMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
-*/
+    // Messages -- Incoming
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
+    // Messages -- Outgoing
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
 }} {klass.Info.ClassName};
 
 void new({klass.Info.ClassName} *x) {{
@@ -172,11 +168,14 @@ void transition({klass.Info.ClassName} *self) {{
             _ => null
         };
 
-        return $@"{condition} {{
-            {Write(junctionTransition.DeconstructMessageInstruction)}
+        var wrapWithIfElseExpression = (string? expr, string block) =>
+            expr == null ? block : @$"{expr} {{
+                {block}
+            }}";
+
+        return wrapWithIfElseExpression(condition, $@"{Write(junctionTransition.DeconstructMessageInstruction)}
             {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
-            {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}
-        }}";
+            {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}");
     }
 
     private string WriteCodeTransition(CodeTransition codeTransition)
@@ -186,17 +185,22 @@ void transition({klass.Info.ClassName} *self) {{
             _ => null
         };
 
-        if (condition == null) {
-            return
+        var constraint = codeTransition.Constraint switch {
+            TransitionConstraint.Else => "else",
+            TransitionConstraint.Compound => "if",
+            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context)} == {equality.Rhs.Accessor(codeTransition.context)})",
+            _ => null
+        };
+
+        var wrapWithIfElseExpression = (string? expr, string block) =>
+            expr == null ? block : @$"{expr} {{
+                {block}
+            }}";
+
+            return wrapWithIfElseExpression(condition,
+                wrapWithIfElseExpression(constraint,
          $@"{Write(codeTransition.DeconstructMessageInstruction)}
             {string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
-            return make_state__{codeTransition.stateName.Replace(".", "__")}(self);";
-        }
-
-        return $@"{condition} {{
-            {Write(codeTransition.DeconstructMessageInstruction)}
-            {string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
-            return make_state_{codeTransition.stateName.Replace(".", "__")}(self);
-        }}";
+            return make_state__{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
 }

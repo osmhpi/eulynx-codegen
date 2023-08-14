@@ -29,9 +29,21 @@ public record Class(
             .ToDictionary(x => x.Key, x => x.Value);
     }
 
-    internal IEnumerable<MessageSchema> GetMessageTypes()
+    internal IEnumerable<MessageSchema> GetOutgoingMessageTypes()
     {
-        return ClassContext.UsedMessageTypes.Values;
+        return ClassContext.UsedOutgoingMessageTypes.Values;
+    }
+
+    internal IEnumerable<MessageSchema> GetIncomingMessageTypes()
+    {
+        return TransitionFunctions
+            .SelectMany(x => x.Transitions)
+            .Select(x => x.Transition)
+            .OfType<MessageEventTransition>()
+            .Select(x => ClassContext.DataTypes.Signals[x.evt.Signal])
+            .Distinct()
+            .Select(x => new MessageSchema(new TypeIdentifier(x.Name), x, ClassContext.DataTypes))
+            .ToList();
     }
 }
 

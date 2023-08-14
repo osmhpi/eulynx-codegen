@@ -15,7 +15,7 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICode
 
     public override string InstanceReference { get; } = Writer.DefaultInstanceReference;
 
-    public Dictionary<TypeIdentifier, MessageSchema> UsedMessageTypes { get; } = new();
+    public Dictionary<TypeIdentifier, MessageSchema> UsedOutgoingMessageTypes { get; } = new();
 
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
         = DataTypes.Ports.Values
@@ -66,14 +66,14 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICode
 
     internal override MessageSchema ResolveMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
-        if (UsedMessageTypes.ContainsKey(messageTypeIdentifier)) {
-            return UsedMessageTypes[messageTypeIdentifier];
+        if (UsedOutgoingMessageTypes.ContainsKey(messageTypeIdentifier)) {
+            return UsedOutgoingMessageTypes[messageTypeIdentifier];
         }
 
         var port = Ports[portIdentifier];
         if (port is ComplexPropertyOrPort complexPort) {
             var result = Parent.ResolveMessageSchema(complexPort, messageTypeIdentifier);
-            UsedMessageTypes[messageTypeIdentifier] = result;
+            UsedOutgoingMessageTypes[messageTypeIdentifier] = result;
             return result;
         }
 

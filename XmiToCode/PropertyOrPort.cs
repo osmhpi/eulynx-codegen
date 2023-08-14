@@ -75,19 +75,21 @@ public record TypeIdentifier (string RawName)
     public string Name { get; } = InPascalCase(RawName);
 }
 
-
 public record ClassMember(Identifier Identifier) : IAccessible {
+    // TODO: This is language-specific
     public string Accessor(ProgramContext context) => context.IsLocalVariable(this)
         ? Identifier.Name
-        : $"{context.InstanceReference}.{Identifier.Name}";
+        : $"{context.InstanceReference}->{Identifier.Name}";
 }
 
 public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
-    public string Accessor(ProgramContext context) => $"{UmlEnumeration.Name}.{Member.Name}";
+    // TODO: This is language-specific
+    public string Accessor(ProgramContext context) => $"{UmlEnumeration.Name}__{Member.Name}";
 }
 
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal) : IAccessible {
-    public string Accessor(ProgramContext context) => $"{EnumType}.{Literal.Name}";
+    // TODO: This is language-specific
+    public string Accessor(ProgramContext context) => $"{EnumType}__{Literal.Name}";
 }
 
 public record BoolLiteral(bool Value) : IAccessible
@@ -165,14 +167,16 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
     public abstract string DataType { get; }
 
     public string Name => InPascalCase(Property.Name);
+
+    // TODO: This is language-specific
     public string Accessor(ProgramContext context) =>
         context.IsLocalVariable(this)
             ? IsPort
                 ? $"{Name}.Value"
                 : $"{Name}"
             : IsPort
-                ? $"{context.InstanceReference}.{Name}.Value"
-                : $"{context.InstanceReference}.{Name}";
+                ? $"{context.InstanceReference}->{Name}.Value"
+                : $"{context.InstanceReference}->{Name}";
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
     {
@@ -215,10 +219,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort) : IA
             return literal.Name;
         }
 
-        public override string GenerateAssignment(string value)
-        {
-            return $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
-        }
+        // TODO: This is language-specific
+        public override string GenerateAssignment(string value) =>
+            $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
     }
 
     public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : PropertyOrPort(Property, IsPort)
