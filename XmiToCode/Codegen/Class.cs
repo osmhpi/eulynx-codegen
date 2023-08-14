@@ -2,9 +2,10 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
+record ClassInfo(string ClassName, string BehaviorName);
+
 record Class(
-    string ClassName,
-    string BehaviorName,
+    ClassInfo Info,
     ClassContext ClassContext,
     IBehaviorRecord Behavior,
     IEnumerable<TransitionFunction> TransitionFunctions,
@@ -16,7 +17,7 @@ record Class(
             .Concat(ClassContext.Properties)
             .Where(x => x.Value is PropertyOrPort.StringPropertyOrPort)
             .Select(x => new ValueType(
-                ClassName,
+                Info,
                 x.Key,
                 ((PropertyOrPort.StringPropertyOrPort)x.Value).AllowedValues))
             .Where(x => x.AllowedValues.Count > 0);
@@ -34,7 +35,7 @@ record Class(
     }
 }
 
-record ValueType(string ClassName, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
+record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
 
 record GlobalEnumeration(PackagedElement Enumeration) {
 
@@ -58,10 +59,10 @@ interface IBehaviorRecord
     List<IBehaviorRecord> subrecords { get; }
 }
 
-record SimpleBehaviorRecord(string Name, string recordName, string className) : IBehaviorRecord
+record SimpleBehaviorRecord(string Name, string recordName, ClassInfo className) : IBehaviorRecord
 {
     public List<IBehaviorRecord> subrecords { get; } = new();
 }
 
 
-record BehaviorRecord(StateMachine StateMachine, string Name, string parentBehaviorName, string className, ICodeTransition initializer, List<IBehaviorRecord> subrecords) : IBehaviorRecord;
+record BehaviorRecord(StateMachine StateMachine, string Name, string parentBehaviorName, ClassInfo className, ICodeTransition initializer, List<IBehaviorRecord> subrecords) : IBehaviorRecord;

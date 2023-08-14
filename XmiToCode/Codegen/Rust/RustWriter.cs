@@ -27,13 +27,13 @@ internal class RustWriter : ICodeWriter
     private string WriteClass(Class klass)
     {
         return @$"
-struct {klass.ClassName} {{
-    state: {klass.BehaviorName}
+struct {klass.Info.ClassName} {{
+    state: {klass.Info.BehaviorName}
 }}
 
-impl {klass.ClassName} {{
-    fn new() -> {klass.ClassName} {{
-        let mut x: {klass.ClassName} = {klass.ClassName} {{
+impl {klass.Info.ClassName} {{
+    fn new() -> {klass.Info.ClassName} {{
+        let mut x: {klass.Info.ClassName} = {klass.Info.ClassName} {{
         }}
 
         x.make_state()
@@ -41,7 +41,7 @@ impl {klass.ClassName} {{
         x
     }}
 
-    fn make_state(&mut self) -> {klass.ClassName} {{
+    fn make_state(&mut self) -> {klass.Info.ClassName} {{
 
     }}
 

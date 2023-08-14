@@ -1,4 +1,4 @@
-record TransitionFunction(string TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
+record TransitionFunction(ClassInfo TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
 
 record Condition();
 
@@ -9,6 +9,7 @@ record Condition();
 // record ChangeTrigger() : ITransitionTrigger;
 
 interface ICodeTransition {
+    // public ClassInfo ClassInfo { get; }
     public Transition Transition { get; }
 }
 

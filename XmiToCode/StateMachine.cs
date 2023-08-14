@@ -55,7 +55,7 @@ class StateMachine : CodeGenerationItem
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, string theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
         return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context));
     }
@@ -84,7 +84,7 @@ class StateMachine : CodeGenerationItem
         }
     }
 
-    private IBehaviorRecord MakeSubrecord(string recordName, string className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
         if (x.InternalStateMachine != null) {
             return x.InternalStateMachine.ParseStateRecord(x.Name, recordName, className, dataTypes, context);
         } else {
@@ -92,7 +92,7 @@ class StateMachine : CodeGenerationItem
         }
     }
 
-    private IBehaviorRecord ParseStateRecord(string name, string parentBehaviorName, string className, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord ParseStateRecord(string name, string parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
         var newContext = new BlockContext(context, overrideInstanceReference: "This");
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
@@ -104,7 +104,7 @@ class StateMachine : CodeGenerationItem
         return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
-    public IBehaviorRecord Parse(string className, DataTypeHelper dataTypes, ClassContext context) {
+    public IBehaviorRecord Parse(ClassInfo className, DataTypeHelper dataTypes, ClassContext context) {
         return ParseStateRecord(GetName(), "object", className, dataTypes, context);
     }
 
@@ -120,7 +120,7 @@ class StateMachine : CodeGenerationItem
             );
     }
 
-    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(string theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(ClassInfo theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);

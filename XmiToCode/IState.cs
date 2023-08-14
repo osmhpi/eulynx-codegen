@@ -9,8 +9,8 @@ interface IState
 
     StateMachine? InternalStateMachine { get; }
 
-    List<Instruction> GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes);
-    List<Instruction> GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes);
+    List<Instruction> ParseExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes);
+    List<Instruction> ParseTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes);
     List<Instruction> GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes);
 
     bool IsSourceOfTransition(UmlTransition transition);

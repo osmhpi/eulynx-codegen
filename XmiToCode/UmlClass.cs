@@ -165,12 +165,13 @@ internal class UmlClass : CodeGenerationItem
         var global = new GlobalContext(_dataTypes);
         var classContext = new ClassContext(global, _dataTypes);
 
+        var info = new ClassInfo(className, behaviorName);
+
         var klass = new Class(
-            className,
-            behaviorName,
+            info,
             classContext,
-            _stateMachine.Parse(className, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.Parse(info, _dataTypes, classContext),
+            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext),
             _stateMachine.GetStates(behaviorName),
             new()
         );
@@ -181,7 +182,7 @@ internal class UmlClass : CodeGenerationItem
         {
             // Perform a dry run of generating transitions (which includes comparisons and assignments,
             // where property types are coalesced)
-            var ignored = _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext);
+            var ignored = _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext);
             _dataTypes.Operations.Select(x => x.Write(_dataTypes, classContext)).ToList();
             // TODO: I think side effects of initial transitions are still missing here
 
@@ -233,7 +234,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         port.Value.Writer.TryWrite(_messageConverter.Convert<Message>(message));
     }}
 
-    {_stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext)}
+    {_stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext)}
 
     // Properties
     {_dataTypes.GeneratePropertyDeclarations()}
@@ -282,12 +283,13 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
             .Where(x => whitelist.Contains(x.Value.Name))
             .Select(x => new GlobalEnumeration(x.Value)).ToList();
 
+        var info = new ClassInfo(className, behaviorName);
+
         var klass = new Class(
-            className,
-            behaviorName,
+            info,
             classContext,
-            _stateMachine.Parse(className, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(behaviorName, _dataTypes, classContext),
+            _stateMachine.Parse(info, _dataTypes, classContext),
+            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext),
             _stateMachine.GetStates(behaviorName),
             enumerations
         );

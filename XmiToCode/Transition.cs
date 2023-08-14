@@ -25,7 +25,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
             // than 1 transition, all constraints have to be fulfilled. Do that later.
             return new CodeTransition(stateName, context,
                 new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, context),
-                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context), this);
+                ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context), this);
         }
 
         var newAttributes = new Dictionary<string, PropertyOrPort>();
@@ -51,7 +51,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
                 // return $@"{GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //     {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
                 //     {GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext)}
@@ -59,7 +59,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
                 // }}";
             } else {
                 return new CodeTransition(stateName, blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                    GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext), this);
                 // return $@"{GetTransitionChangeTriggerExpression(dataTypes, attributesOfCurrentSignal)} {{
                 //     {GetTransitionConstraints(dataTypes, attributesOfCurrentSignal, blockContext)} {{
                 //         {DeconstructMessageAttributes(currentSignalName, attributesOfCurrentSignal, blockContext)}
@@ -72,7 +72,7 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
 
         if (state.IsJunction) {
             return new JunctionTransition(blockContext, new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, blockContext),
-                GenerateActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext),
+                ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, blockContext),
                 stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, true, attributesOfCurrentSignal),
                 this
             );
@@ -152,12 +152,12 @@ abstract record Transition(IState From, IState To, List<UmlTransition> Transitio
         return "";
     }
 
-    public List<Instruction> GenerateActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
+    public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
-        var exit = x.state.GenerateExit(x.state, x.transition, context, dataTypes);
-        var transitionEffect = x.state.GenerateTransition(x.state, x.transition, context, dataTypes);
+        var exit = x.state.ParseExit(x.state, x.transition, context, dataTypes);
+        var transitionEffect = x.state.ParseTransition(x.state, x.transition, context, dataTypes);
         var entry = x.state.GenerateEntry(fromState, x.transition, context, dataTypes);
 
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();

@@ -28,18 +28,18 @@ using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx;
 
-public class {klass.ClassName} : IStateMachine<{klass.ClassName}.{klass.BehaviorName}> {{
+public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klass.Info.BehaviorName}> {{
     {Write(klass.Behavior)}
 
     private readonly IMessageFactory _messageConverter;
-    private {klass.BehaviorName} _state;
-    public {klass.BehaviorName} State => _state;
+    private {klass.Info.BehaviorName} _state;
+    public {klass.Info.BehaviorName} State => _state;
 
     public void Init() {{
-        _state = {klass.BehaviorName}.New(this);
+        _state = {klass.Info.BehaviorName}.New(this);
     }}
 
-    public {klass.ClassName}(IMessageFactory messageConverter) {{
+    public {klass.Info.ClassName}(IMessageFactory messageConverter) {{
         _messageConverter = messageConverter;
     }}
 

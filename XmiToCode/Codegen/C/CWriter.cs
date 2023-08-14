@@ -9,7 +9,6 @@ internal class CWriter : ICodeWriter
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
             JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
             DeconstructMessageInstruction deconstructMessageInstruction => WriteDeconstructMessageInstruction(deconstructMessageInstruction),
-            SimpleBehaviorRecord simpleBehaviorRecord => WriteSimpleBehaviorRecord(simpleBehaviorRecord),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
@@ -34,9 +33,9 @@ internal class CWriter : ICodeWriter
 
     private string WriteValueType(ValueType valueType)
     {
-        return @$"typedef enum {valueType.ClassName}__{valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName}__{valueType.Identifier.Name}Value__{x.Name}"))}
-        }} {valueType.ClassName}__{valueType.Identifier.Name}Value;";
+        return @$"typedef enum {valueType.Class.ClassName}__{valueType.Identifier.Name}Value {{
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Class.ClassName}__{valueType.Identifier.Name}Value__{x.Name}"))}
+        }} {valueType.Class.ClassName}__{valueType.Identifier.Name}Value;";
     }
 
     private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
@@ -45,13 +44,6 @@ internal class CWriter : ICodeWriter
             {string.Join(",\n", globalEnumeration.Members.Select(x => $"{globalEnumeration.Name}__{x}"))}
         }} {globalEnumeration.Name};
         ";
-    }
-
-    private string WriteSimpleBehaviorRecord(SimpleBehaviorRecord simpleBehaviorRecord)
-    {
-        return $@"public record {simpleBehaviorRecord.Name}() : {simpleBehaviorRecord.recordName}() {{
-            public static new {simpleBehaviorRecord.Name} New({simpleBehaviorRecord.className} This) => new {simpleBehaviorRecord.Name}();
-        }}";
     }
 
     private string WriteClass(Class klass)
@@ -81,27 +73,27 @@ typedef struct ChangeEvent
 
 {string.Join("\n", klass.GetMessageTypes().Select(x => Write(x)))}
 
-typedef struct {klass.ClassName} {{
-    {klass.BehaviorName} state;
+typedef struct {klass.Info.ClassName} {{
+    {klass.Info.BehaviorName} state;
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => $"{x.Value.DataType} {x.Key.Name};"))}
 
 /*
     {string.Join("\n", klass.GetMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
 */
-}} {klass.ClassName};
+}} {klass.Info.ClassName};
 
-void new({klass.ClassName} *x) {{
+void new({klass.Info.ClassName} *x) {{
     x->state = make_state(x);
 }}
 
-{klass.BehaviorName} make_state({klass.ClassName} *self) {{
+{klass.Info.BehaviorName} make_state({klass.Info.ClassName} *self) {{
 
 }}
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => Write(x)))}
 
-void transition({klass.ClassName} *self) {{
+void transition({klass.Info.ClassName} *self) {{
   switch (self->state)
   {{
         {string.Join("\n", klass.States.Select(t =>
@@ -112,21 +104,32 @@ void transition({klass.ClassName} *self) {{
 
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
     {
-
         return @$"typedef enum {behaviorRecord.Name} {{
-        {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x}"))}
+        {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
 }} {behaviorRecord.Name};
+
+{string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => x.record switch {
+    SimpleBehaviorRecord simple => $@"
+        {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({simple.className.ClassName} *self) {{
+            return {behaviorRecord.Name}__{x.Name};
+        }}",
+    BehaviorRecord record => $@"
+        {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name}({record.className.ClassName} *self) {{
+            {Write(record.initializer)}
+        }}",
+    _ => throw new NotImplementedException()
+}))}
 ";
     }
 
-    private static IEnumerable<string> EnumerateSubrecords(IBehaviorRecord record)
+    private static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
     {
         foreach (var s in record.subrecords)
         {
-            yield return s.Name;
+            yield return (s.Name, s);
             foreach (var subsubrecord in EnumerateSubrecords(s))
             {
-                yield return $"{s.Name}__{subsubrecord}";
+                yield return ($"{s.Name}__{subsubrecord.Name}", subsubrecord.record);
             }
         }
     }
@@ -162,7 +165,12 @@ void transition({klass.ClassName} *self) {{
 
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
-        return $@"{{
+        var condition = junctionTransition.Transition switch {
+            ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
+            _ => null
+        };
+
+        return $@"{condition} {{
             {Write(junctionTransition.DeconstructMessageInstruction)}
             {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
             {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}
@@ -176,10 +184,17 @@ void transition({klass.ClassName} *self) {{
             _ => null
         };
 
+        if (condition == null) {
+            return
+         $@"{Write(codeTransition.DeconstructMessageInstruction)}
+            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
+            return make_state__{codeTransition.stateName.Replace(".", "__")}(self);";
+        }
+
         return $@"{condition} {{
             {Write(codeTransition.DeconstructMessageInstruction)}
             {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
-            return make_state{codeTransition.stateName}(self);
+            return make_state_{codeTransition.stateName.Replace(".", "__")}(self);
         }}";
     }
 }

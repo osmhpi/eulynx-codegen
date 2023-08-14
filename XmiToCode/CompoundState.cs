@@ -146,12 +146,12 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
             .ToList();
     }
 
-    public List<Instruction> GenerateExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> ParseExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
         return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Exit?.Name ?? "", context)).ToList();
     }
 
-    public List<Instruction> GenerateTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> ParseTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
     {
         return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
     }
