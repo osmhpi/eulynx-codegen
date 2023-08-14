@@ -137,7 +137,7 @@ void transition({klass.Info.ClassName} *self) {{
     private string WriteTransitionFunction(TransitionFunction transitionFunction)
     {
         // {GenerateConditions(thisName, fromState, dataTypes, context)}
-        return $@"void transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName} *self) {{
+        return $@"void transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
         }}
