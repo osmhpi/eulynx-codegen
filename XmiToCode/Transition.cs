@@ -3,7 +3,7 @@ using XmiToCode;
 
 using static CodeGenerationItem;
 
-abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
+public abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
     public ICodeTransition GenerateTransition(

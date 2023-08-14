@@ -1,6 +1,6 @@
 using XmiToCode;
 
-internal class UmlClass : CodeGenerationItem
+public class UmlClass : CodeGenerationItem
 {
     private readonly PackagedElement _class;
     private readonly Dictionary<string, PackagedElement> _changeEvents;
@@ -163,7 +163,7 @@ internal class UmlClass : CodeGenerationItem
         var behaviorName = _stateMachine.GetName();
 
         var global = new GlobalContext(_dataTypes);
-        var classContext = new ClassContext(global, _dataTypes);
+        var classContext = new ClassContext(global, _dataTypes, w);
 
         var info = new ClassInfo(className, behaviorName);
 
@@ -171,8 +171,8 @@ internal class UmlClass : CodeGenerationItem
             info,
             classContext,
             _stateMachine.Parse(info, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext),
-            _stateMachine.GetStates(behaviorName),
+            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext).ToList(),
+            _stateMachine.GetStates(behaviorName).ToList(),
             new()
         );
 
@@ -271,7 +271,7 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
         var behaviorName = _stateMachine.GetName();
 
         var global = new GlobalContext(_dataTypes);
-        var classContext = new ClassContext(global, _dataTypes);
+        var classContext = new ClassContext(global, _dataTypes, w);
 
         var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
         var enumerations = _dataTypes.DataTypes.Where(x => x.Value.Type == "uml:Enumeration")
@@ -289,8 +289,8 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
             info,
             classContext,
             _stateMachine.Parse(info, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext),
-            _stateMachine.GetStates(behaviorName),
+            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext).ToList(),
+            _stateMachine.GetStates(behaviorName).ToList(),
             enumerations
         );
 

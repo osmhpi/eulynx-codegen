@@ -1,6 +1,6 @@
 using XmiToCode;
 
-interface IState
+public interface IState
 {
     bool IsInitialState { get; }
     bool IsJunction { get; }

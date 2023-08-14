@@ -1,5 +1,7 @@
 internal class CWriter : ICodeWriter
 {
+    public string DefaultInstanceReference => "self";
+
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.c";
 
     public string Write<T>(T element)
@@ -187,13 +189,13 @@ void transition({klass.Info.ClassName} *self) {{
         if (condition == null) {
             return
          $@"{Write(codeTransition.DeconstructMessageInstruction)}
-            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
+            {string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
             return make_state__{codeTransition.stateName.Replace(".", "__")}(self);";
         }
 
         return $@"{condition} {{
             {Write(codeTransition.DeconstructMessageInstruction)}
-            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
+            {string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);
         }}";
     }

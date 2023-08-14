@@ -1,4 +1,6 @@
-internal class CSharpWriter : ICodeWriter {
+public class CSharpWriter : ICodeWriter {
+    public string DefaultInstanceReference => "this";
+
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.cs";
 
     public string Write<T>(T element) {

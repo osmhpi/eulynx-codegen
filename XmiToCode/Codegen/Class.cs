@@ -2,14 +2,14 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
-record ClassInfo(string ClassName, string BehaviorName);
+public record ClassInfo(string ClassName, string BehaviorName);
 
-record Class(
+public record Class(
     ClassInfo Info,
     ClassContext ClassContext,
     IBehaviorRecord Behavior,
-    IEnumerable<TransitionFunction> TransitionFunctions,
-    IEnumerable<StateName> States,
+    List<TransitionFunction> TransitionFunctions,
+    List<StateName> States,
     List<GlobalEnumeration> GlobalEnumerations)
 {
     public IEnumerable<ValueType> GetValueTypes() {
@@ -35,9 +35,9 @@ record Class(
     }
 }
 
-record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
+public record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
 
-record GlobalEnumeration(PackagedElement Enumeration) {
+public record GlobalEnumeration(PackagedElement Enumeration) {
 
     public string Name => InPascalCase(Enumeration.Name);
     public IEnumerable<string> Members => Enumeration.OwnedLiteral.Select(lit => GenerateEnumMemberName(lit.Name));
@@ -53,16 +53,16 @@ record GlobalEnumeration(PackagedElement Enumeration) {
     }
 }
 
-interface IBehaviorRecord
+public interface IBehaviorRecord
 {
     string Name { get; }
     List<IBehaviorRecord> subrecords { get; }
 }
 
-record SimpleBehaviorRecord(string Name, string recordName, ClassInfo className) : IBehaviorRecord
+public record SimpleBehaviorRecord(string Name, string recordName, ClassInfo className) : IBehaviorRecord
 {
     public List<IBehaviorRecord> subrecords { get; } = new();
 }
 
 
-record BehaviorRecord(StateMachine StateMachine, string Name, string parentBehaviorName, ClassInfo className, ICodeTransition initializer, List<IBehaviorRecord> subrecords) : IBehaviorRecord;
+public record BehaviorRecord(StateMachine StateMachine, string Name, string parentBehaviorName, ClassInfo className, ICodeTransition initializer, List<IBehaviorRecord> subrecords) : IBehaviorRecord;

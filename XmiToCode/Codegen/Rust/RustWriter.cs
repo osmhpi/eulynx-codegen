@@ -1,5 +1,7 @@
 internal class RustWriter : ICodeWriter
 {
+    public string DefaultInstanceReference => "self";
+
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.rs";
 
     public string Write<T>(T element)

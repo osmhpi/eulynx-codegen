@@ -1,6 +1,6 @@
 using static PropertyOrPort;
 
-public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : ProgramContext
+public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICodeWriter Writer) : ProgramContext
 {
     // Signals
     // Ports
@@ -13,7 +13,7 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
     //         .Select(x => (x.Key, Value: new MessageSchema(x.Key)))
     //         .ToDictionary(x => x.Key, x => x.Value);
 
-    public override string InstanceReference { get; } = "this";
+    public override string InstanceReference { get; } = Writer.DefaultInstanceReference;
 
     public Dictionary<TypeIdentifier, MessageSchema> UsedMessageTypes { get; } = new();
 

@@ -1,6 +1,7 @@
 
-abstract record Instruction {
+public abstract record Instruction {
     internal abstract string ToCSharp(ProgramContext context);
+    internal abstract string ToC(ProgramContext context);
 }
 
 record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
@@ -8,6 +9,12 @@ record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
     internal string ToCSharp(ProgramContext context)
     {
         return $"new Message.{Schema.Identifier.Name}({string.Join(", ", Values.Select(x => x.Accessor(context)))})";
+    }
+
+    internal string ToC(ProgramContext context)
+    {
+        var valuesAndProperties = Schema.Members.Zip(Values);
+        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context)}"))} }};";
     }
 }
 
@@ -17,6 +24,14 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
     {
         return $"{context.InstanceReference}.SendMessage({initialize.ToCSharp(context)}, {port.Accessor(context)});";
     }
+
+    internal override string ToC(ProgramContext context)
+    {
+        return $@"
+  {initialize.ToC(context)}
+  {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Value = msg;
+  {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Some = 1;";
+    }
 }
 
 record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
@@ -25,11 +40,19 @@ record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
     {
         return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
     }
+    internal override string ToC(ProgramContext context)
+    {
+        return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
+    }
 }
 
 record MethodCallInstruction(ICallable Callable) : Instruction
 {
     internal override string ToCSharp(ProgramContext context)
+    {
+        return $"{Callable.Call(context)};";
+    }
+    internal override string ToC(ProgramContext context)
     {
         return $"{Callable.Call(context)};";
     }

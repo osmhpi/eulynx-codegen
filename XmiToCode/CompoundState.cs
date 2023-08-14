@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
-record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
+public record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
 {
     public bool IsInitialState => PartialStates.All(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
 
@@ -207,6 +207,6 @@ record CompoundState(List<PartialState> PartialStates, StateMachine? InternalSta
     }
 }
 
-record PartialState(UmlSubvertex Vertex, UmlRegion EnclosingRegion) {
+public record PartialState(UmlSubvertex Vertex, UmlRegion EnclosingRegion) {
     public bool IsJunction => Vertex.Name.Contains("Junction") && Vertex.Type == "uml:Pseudostate";
 }

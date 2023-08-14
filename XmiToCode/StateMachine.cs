@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-record StateName(IState Subvertex, string Name);
+public record StateName(IState Subvertex, string Name);
 
-class StateMachine : CodeGenerationItem
+public class StateMachine : CodeGenerationItem
 {
     public Region Region { get { return _region; } }
     public IState InitialState { get { return _initialState; } }
@@ -96,7 +96,7 @@ class StateMachine : CodeGenerationItem
         var newContext = new BlockContext(context, overrideInstanceReference: "This");
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
-        var initialTransition = GetTransitionsFromState(name, _initialState).Single();
+        var initialTransition = GetTransitionsFromState(parentBehaviorName + "." + name, _initialState).Single();
         var initializer = initialTransition.transition.GenerateTransition(name,
             _initialState, initialTransition.state, initialTransition.stateName,
             dataTypes, false, this, null, newContext);

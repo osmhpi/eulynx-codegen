@@ -1,6 +1,6 @@
-record TransitionFunction(ClassInfo TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
+public record TransitionFunction(ClassInfo TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
 
-record Condition();
+public record Condition();
 
 // interface ITransitionTrigger{
 
@@ -8,13 +8,13 @@ record Condition();
 
 // record ChangeTrigger() : ITransitionTrigger;
 
-interface ICodeTransition {
+public interface ICodeTransition {
     // public ClassInfo ClassInfo { get; }
     public Transition Transition { get; }
 }
 
-record CodeTransition(string stateName, ProgramContext context, DeconstructMessageInstruction DeconstructMessageInstruction, List<Instruction> Activities, Transition Transition) : ICodeTransition;
+public record CodeTransition(string stateName, ProgramContext context, DeconstructMessageInstruction DeconstructMessageInstruction, List<Instruction> Activities, Transition Transition) : ICodeTransition;
 
-record JunctionTransition(ProgramContext context, DeconstructMessageInstruction DeconstructMessageInstruction, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, Transition Transition) : ICodeTransition;
+public record JunctionTransition(ProgramContext context, DeconstructMessageInstruction DeconstructMessageInstruction, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, Transition Transition) : ICodeTransition;
 
-record DeconstructMessageInstruction(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal, ProgramContext context);
+public record DeconstructMessageInstruction(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal, ProgramContext context);
