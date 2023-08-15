@@ -74,10 +74,10 @@ struct {klass.Info.ClassName} {{
 impl {klass.Info.ClassName} {{
     fn new() -> {klass.Info.ClassName} {{
         let new{klass.Info.ClassName} = {klass.Info.ClassName}{{
-            state: {klass.Info.BehaviorName}::
+            state: {klass.Info.BehaviorName}::{klass.Info.BehaviorName}__{klass.Behavior.subrecords[0].Name}
         }}
-
-        {string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
+        make_state_{klass.Info.BehaviorName}__(&mut new{klass.Info.ClassName});
+        new{klass.Info.ClassName}
     }}
 
     {WriteStateTransitions((BehaviorRecord)klass.Behavior)}
@@ -105,7 +105,7 @@ impl {klass.Info.ClassName} {{
                 }}",
             BehaviorRecord record => $@"
                 fn make_state_{behaviorRecord.Name}__{x.Name}(&mut self){{
-                   // Not Implemented
+                   {Write(record.initializer)}
                 }}",
             _ => throw new NotImplementedException()
         }))}
