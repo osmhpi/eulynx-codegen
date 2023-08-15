@@ -28,7 +28,7 @@ internal class RustWriter : ICodeWriter
     {
         // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
         var instructions = "";
-        return @$"void {CodeGenerationItem.InPascalCase(operation.Op.Name)}(void *) {{
+        return @$"fn {CodeGenerationItem.InPascalCase(operation.Op.Name)}(mut &self) {{
             {instructions}
         }}";
     }
@@ -185,7 +185,11 @@ impl {klass.Info.ClassName} {{
         var constraint = codeTransition.Constraint switch {
             TransitionConstraint.Else => "else",
             TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context)} == {equality.Rhs.Accessor(codeTransition.context)})",
-            TransitionConstraint.Compound compound => $"if NOTIMPLEMENTED",
+            TransitionConstraint.SingleVariable single =>
+                single.Positive ?
+                    $"if ({single.Variable.Accessor(codeTransition.context)})" :
+                    $"if (!{single.Variable.Accessor(codeTransition.context)})",
+            TransitionConstraint.NotImplemented compound => $"if NOTIMPLEMENTED",
             null => null,
             // Output which transition constraint is not implemented
             _ => throw new NotImplementedException($"Writing not implemented for {codeTransition.Constraint.GetType()}")
