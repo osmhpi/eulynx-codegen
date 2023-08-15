@@ -244,4 +244,12 @@ void transition({klass.Info.ClassName} *self) {{
          $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
+
+    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    {
+        using var file = File.Create(GenerateFileName(umlClass));
+        using var writer = new StreamWriter(file);
+
+        await writer.WriteAsync(Write(klass));
+    }
 }

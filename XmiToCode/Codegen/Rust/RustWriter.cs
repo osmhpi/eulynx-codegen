@@ -6,6 +6,35 @@ internal class RustWriter : ICodeWriter
 
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/rust/src/{uml.GetName()}.rs";
 
+    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    {
+        using var file = File.Create(GenerateFileName(umlClass));
+        using var writer = new StreamWriter(file);
+        await writer.WriteAsync(Write(klass));
+
+        using var portsFile = File.Create($"../Eulynx/rust/src/{umlClass.GetName()}_Ports.rs");
+        using var portsFileWriter = new StreamWriter(portsFile);
+        await portsFileWriter.WriteAsync(WriteClassPorts(klass));
+    }
+
+    private string WriteClassPorts(Class klass)
+    {
+        return @$"
+#![allow(non_camel_case_types, non_snake_case)]
+
+struct {klass.Info.ClassName}_Ports {{
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        PropertyOrPort.ComplexPropertyOrPort complex => null,
+        PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
+             $"{klass.Info.ClassName}__{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};" :
+             $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};",
+        _ => $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};"
+        }))}
+}}
+        ";
+    }
+
     public string Write<T>(T element)
     {
         return element switch

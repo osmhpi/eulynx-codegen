@@ -117,4 +117,12 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
             return {codeTransition.stateName}.New({codeTransition.context.InstanceReference});
         }}";
     }
+
+    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    {
+        using var file = File.Create(GenerateFileName(umlClass));
+        using var writer = new StreamWriter(file);
+
+        await writer.WriteAsync(Write(klass));
+    }
 }

@@ -262,9 +262,6 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
 
     internal async Task Generate(ICodeWriter w)
     {
-        using var file = File.Create(w.GenerateFileName(this));
-        using var writer = new StreamWriter(file);
-
         var className = InPascalCase(_class.Name);
         var behaviorName = _stateMachine.GetName();
 
@@ -292,6 +289,6 @@ public class {className} : IStateMachine<{className}.{behaviorName}> {{
             enumerations
         );
 
-        await writer.WriteAsync(w.Write(klass));
+        await w.WriteAllFilesAsync(this, klass);
     }
 }
