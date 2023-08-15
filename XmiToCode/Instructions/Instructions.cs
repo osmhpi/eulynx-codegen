@@ -43,9 +43,8 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
     internal override string ToRust(ProgramContext context)
     {
         return $@"
-  {initialize.ToRust(context)}
-  {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Value = msg;
-  {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Some = 1;";
+        ports.{port.Accessor(context, TargetLanguage.Rust)} = {initialize.Schema.Identifier.Name}
+        ";
     }
 }
 

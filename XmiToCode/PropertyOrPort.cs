@@ -82,9 +82,13 @@ public record TypeIdentifier (string RawName)
 }
 
 public record ClassMember(Identifier Identifier) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => context.IsLocalVariable(this)
-        ? Identifier.Name
-        : $"{context.InstanceReference}->{Identifier.Name}";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+        targetLanguage switch {
+            TargetLanguage.Rust => Identifier.Name,
+            _ => context.IsLocalVariable(this)
+                ? Identifier.Name
+                : $"{context.InstanceReference}->{Identifier.Name}"
+        };
 }
 
 public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
@@ -173,13 +177,18 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public string Name => InPascalCase(Property.Name);
 
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
-        context.IsLocalVariable(this) ?
+        targetLanguage switch
+        {
+            TargetLanguage.Rust => $"{Name}",
+            _ => context.IsLocalVariable(this) ?
             // IsPort ?
             //     $"{Name}.Value" :
                 $"{Name}" :
             // IsPort ?
             //     $"{context.InstanceReference}->{Name}.Value" :
-                $"{context.InstanceReference}->{Name}";
+                $"{context.InstanceReference}->{Name}"
+        };
+
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
     {
@@ -268,7 +277,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
+    public record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
