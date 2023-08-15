@@ -156,16 +156,16 @@ public class DataTypeHelper {
         return _allowedMessages.ContainsKey(v);
     }
 
-    public (string, string) GetFinalDataType(PropertyOrPort pp) {
-        var dataType = pp.DataType;
+    public (string, string) GetFinalDataType(PropertyOrPort pp, TargetLanguage language) {
+        var dataType = pp.DataType(language);
         if (_typeAliases.ContainsKey(dataType)) {
             return _typeAliases[dataType];
         }
         return dataType;
     }
 
-    public (string, string) GetFinalDataType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
-        return GetFinalDataType(LookupPropertyValueType(v, attributesOfCurrentSignal));
+    public (string, string) GetFinalDataType(string v, TargetLanguage language, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
+        return GetFinalDataType(LookupPropertyValueType(v, attributesOfCurrentSignal), language);
     }
 
     public PropertyOrPort LookupPropertyValueType(string v, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null, PackagedElement? enumeration = null)
@@ -298,44 +298,6 @@ public class DataTypeHelper {
     public string GenerateAssignment(string propertyOrPort, string value)
     {
         return LookupPropertyValueType(propertyOrPort).GenerateAssignment(value);
-    }
-
-    public string GeneratePropertyDeclarations()
-    {
-        return JoinLines(Properties.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
-    }
-
-    public string GeneratePortDeclarations()
-    {
-        return JoinLines(Ports.Select(x => x.Value.GenerateDeclaration(GetFinalDataType(x.Key))));
-    }
-
-    public string GeneratePortInitializers()
-    {
-        return JoinLines(Ports.Select(x => x.Value.GenerateInitializer(GetFinalDataType(x.Key))));
-    }
-
-    public string GenerateSignals()
-    {
-        var m = $@"public bool ReceiveMessage(Message message) {{
-            switch (message) {{
-                {JoinLines(UsedSignals.Select(x => $@"case Message.{InPascalCase(x.Key.Name)} specific: {{
-                    {InPascalCase(x.Key.Name)} = specific;
-                    return true;
-                }}"))}
-                default: return false;
-            }};
-        }}";
-
-        var m1 = $@"private bool IsMessageArrived(Message message) {{
-            return message != null;
-        }}";
-
-        var m2 = $@"private bool ReceivedMessage<T>(T message, Func<T, bool> expr) {{
-            return message != null && expr(message);
-        }}";
-
-        return JoinLines(UsedSignals.Select(x => $"public Message.{InPascalCase(x.Key.Name)} {InPascalCase(x.Key.Name)} {{ get; set; }}").Append(m).Append(m1).Append(m2));
     }
 
     public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {

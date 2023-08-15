@@ -110,52 +110,6 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return "";
     }
 
-    private string GetTransitionChangeTriggerExpression(DataTypeHelper dataTypes, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal) {
-        if (SingleTransition.Trigger != null) {
-            // Regular transition
-            string? result = null;
-
-            var evt = SingleTransition.Trigger.Event;
-            if (evt != null) {
-                if (dataTypes.ChangeEvents.ContainsKey(evt)) {
-                    dataTypes.RecordChangeEventUsed(dataTypes.ChangeEvents[evt]);
-                    result = $"{InPascalCase(dataTypes.ChangeEvents[evt].Name)}.IsTriggered";
-                } else if (dataTypes.TimeEvents.ContainsKey(evt)) {
-                    result = $"IsTimeoutExpired({InPascalCase(dataTypes.TimeEvents[evt].When.Expr.Body)})";
-                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    result = $"IsMessageArrived({InPascalCase(dataTypes.PackageEvents[evt].Name)})";
-                } else {
-                    throw new NotImplementedException();
-                }
-            } else {
-                // Event is null, interesting, moving on...
-            }
-
-            if (result != null) {
-                foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) (?<!\")(\\w*)(?!\")")) {
-                    var lhs = m.Groups[1].Value;
-                    var rhs = m.Groups[3].Value;
-                    dataTypes.RecordCoalesceValues(lhs, rhs, attributesOfCurrentSignal);
-                }
-
-                foreach (Match m in Regex.Matches(result, "(\\w+) (==|!=) \"(\\w*)\"")) {
-                    var lhs = m.Groups[1].Value;
-                    var rhs = m.Groups[3].Value;
-                    dataTypes.RecordPossibleValueForProperty(lhs, rhs, attributesOfCurrentSignal);
-                }
-
-                var negateOrNot = (string s) => s == "==" ? "" : "!";
-
-                result = Regex.Replace(result, "(\\w+) (==|!=) \"(\\w*)\"",
-                    m => $"{negateOrNot(m.Groups[2].Value)}{m.Groups[1].Value}.Equals({dataTypes.GetFinalDataType(m.Groups[1].Value)}.{InPascalCase(m.Groups[3].Value)})");
-
-                return $"if ({result})";
-            }
-        }
-
-        return "";
-    }
-
     public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
     {
         // TODO: These signatures look implausible.

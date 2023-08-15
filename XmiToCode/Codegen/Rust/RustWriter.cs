@@ -27,9 +27,9 @@ struct {klass.Info.ClassName}_Ports {{
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
         PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-             $"{klass.Info.ClassName}__{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};" :
-             $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};",
-        _ => $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};"
+             $"pub {x.Key.Name}: {klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.Rust).Item1};" :
+             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1};",
+        _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1};"
         }))}
 }}
         ";
@@ -167,7 +167,7 @@ impl {klass.Info.ClassName} {{
     {
         if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
         {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType.Item1} {x.Value.Name}{x.Value.DataType.Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
+            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.Rust).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
         }
 
         return "";

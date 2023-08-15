@@ -82,19 +82,16 @@ public record TypeIdentifier (string RawName)
 }
 
 public record ClassMember(Identifier Identifier) : IAccessible {
-    // TODO: This is language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => context.IsLocalVariable(this)
         ? Identifier.Name
         : $"{context.InstanceReference}->{Identifier.Name}";
 }
 
 public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
-    // TODO: This is language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{UmlEnumeration.Name}__{Member.Name}";
 }
 
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
-    // TODO: This is language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
 }
 
@@ -105,19 +102,16 @@ public record BoolLiteral(bool Value) : IAccessible
 
 public record PulsedInLiteral(bool Value) : IAccessible
 {
-    // TODO: Language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
 }
 
 public record PulsedOutLiteral(bool Value) : IAccessible
 {
-    // TODO: Language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
 }
 
 public record Method(Identifier Identifier, Operation Operation) : ICallable
 {
-    // TODO: Language-specific
     public string Call(ProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch
     {
         TargetLanguage.CSharp => $"{Identifier.Name}({context.InstanceReference})",
@@ -174,11 +168,10 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public abstract string GenerateAssignment(string value);
 
-    public abstract (string, string) DataType { get; }
+    public abstract (string, string) DataType(TargetLanguage language);
 
     public string Name => InPascalCase(Property.Name);
 
-    // TODO: This is language-specific
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
         context.IsLocalVariable(this) ?
             // IsPort ?
@@ -199,7 +192,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     {
         public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
         // TODO: Language-specific
-        public override (string, string) DataType => AllowedValues.Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
+        public override (string, string) DataType(TargetLanguage language) => AllowedValues.Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
         public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
@@ -251,7 +244,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             // }
         // }
 
-        public override (string, string) DataType => UmlType.Type switch {
+        public override (string, string) DataType(TargetLanguage language) => UmlType.Type switch {
             "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
             "uml:Enumeration" => (InPascalCase(UmlType.Name), ""),
             // TODO: Language-specific
@@ -279,8 +272,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        // TODO: Language-specific
-        public override (string, string) DataType => ("bool", "");
+        public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
         public override string GenerateAssignment(string value)
         {
@@ -307,8 +299,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        // TODO: Language-specific
-        public override (string, string) DataType => ("int /*PulsedIn*/", "");
+        public override (string, string) DataType(TargetLanguage language) => language switch
+        {
+            TargetLanguage.CSharp => ("PulsedIn", ""),
+            TargetLanguage.C => ("int /*PulsedIn*/", ""),
+            TargetLanguage.Rust => ("bool /*PulsedIn*/", ""),
+            _ => throw new NotImplementedException(),
+        };
 
         // TODO: Language-specific
         public override string GenerateAssignment(string value)
@@ -340,8 +337,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
-        // TODO: Language-specific
-        public override (string, string) DataType => ("int /*PulsedOut*/", "");
+        public override (string, string) DataType(TargetLanguage language) => language switch
+        {
+            TargetLanguage.CSharp => ("PulsedOut", ""),
+            TargetLanguage.C => ("int /*PulsedOut*/", ""),
+            TargetLanguage.Rust => ("bool /*PulsedOut*/", ""),
+            _ => throw new NotImplementedException(),
+        };
 
         // TODO: Language-specific
         public override string GenerateAssignment(string value)

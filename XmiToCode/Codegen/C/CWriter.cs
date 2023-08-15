@@ -94,9 +94,9 @@ typedef struct {klass.Info.ClassName} {{
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
         PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-             $"{klass.Info.ClassName}__{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};" :
-             $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};",
-        _ => $"{x.Value.DataType.Item1} {x.Key.Name}{x.Value.DataType.Item2};"
+             $"{klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};" :
+             $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};",
+        _ => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};"
         }))}
 
     // Messages -- Incoming
@@ -183,7 +183,7 @@ void transition({klass.Info.ClassName} *self) {{
     {
         if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
         {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType.Item1} {x.Value.Name}{x.Value.DataType.Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
+            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.C).Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
         }
 
         return "";
