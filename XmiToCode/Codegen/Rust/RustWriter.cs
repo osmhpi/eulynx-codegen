@@ -105,7 +105,7 @@ impl {klass.Info.ClassName} {{
                 }}",
             BehaviorRecord record => $@"
                 fn make_state_{behaviorRecord.Name}__{x.Name}(&mut self){{
-                   // Not Implemented
+                   {Write(record.initializer)}
                 }}",
             _ => throw new NotImplementedException()
         }))}
@@ -185,7 +185,11 @@ impl {klass.Info.ClassName} {{
         var constraint = codeTransition.Constraint switch {
             TransitionConstraint.Else => "else",
             TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context)} == {equality.Rhs.Accessor(codeTransition.context)})",
-            TransitionConstraint.Compound compound => $"if NOTIMPLEMENTED",
+            TransitionConstraint.SingleVariable single =>
+                single.Positive ?
+                    $"if ({single.Variable.Accessor(codeTransition.context)})" :
+                    $"if (!{single.Variable.Accessor(codeTransition.context)})",
+            TransitionConstraint.NotImplemented compound => $"if NOTIMPLEMENTED",
             null => null,
             // Output which transition constraint is not implemented
             _ => throw new NotImplementedException($"Writing not implemented for {codeTransition.Constraint.GetType()}")

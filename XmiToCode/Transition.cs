@@ -193,7 +193,13 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             return ParseEqualityConstraint(equalsRegexMatch, expression, context);
         }
 
-        return new TransitionConstraint.Compound();
+        var singleVariableExpression = new Regex("^(NOT )?(\\S+)$").Match(expression);
+        if (singleVariableExpression.Success)
+        {
+            return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
+        }
+
+        return new TransitionConstraint.NotImplemented();
 
         // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 
@@ -269,6 +275,13 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         }
     }
 
+    protected TransitionConstraint ParseSingleVariableConstraint(Match singleVariableExpression, string expression, ProgramContext context)
+    {
+        var negation = singleVariableExpression.Groups[1].Value;
+        var identifier = context.ResolveAssignableIdentifier(new Identifier(singleVariableExpression.Groups[2].Value));
+        return new TransitionConstraint.SingleVariable(identifier, string.IsNullOrEmpty(negation));
+    }
+
     public static Transition Create(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes) {
         var transition = transitions.SingleOrDefault();
 
@@ -320,7 +333,8 @@ record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitio
 public record TransitionConstraint() {
     public record Else() : TransitionConstraint();
     public record Equality(IAssignable Lhs, IAccessible Rhs) : TransitionConstraint();
-    public record Compound() : TransitionConstraint();
+    public record SingleVariable(IAssignable Variable, bool Positive) : TransitionConstraint();
+    public record NotImplemented() : TransitionConstraint();
 }
 
 record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, MessageSchema MessageSchema) : Transition(From, To, Transitions)
@@ -352,7 +366,13 @@ record MessageEventTransition(IState From, IState To, List<UmlTransition> Transi
             return ParseEqualityConstraint(equalsRegexMatch, expression, context);
         }
 
-        return new TransitionConstraint.Compound();
+        var singleVariableExpression = new Regex("^(NOT )?(\\S+)$").Match(expression);
+        if (singleVariableExpression.Success)
+        {
+            return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
+        }
+
+        return new TransitionConstraint.NotImplemented();
 
         // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 
