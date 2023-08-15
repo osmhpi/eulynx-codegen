@@ -15,24 +15,10 @@ internal class RustWriter : ICodeWriter
         using var portsFile = File.Create($"../Eulynx/rust/src/{umlClass.GetName()}_Ports.rs");
         using var portsFileWriter = new StreamWriter(portsFile);
         await portsFileWriter.WriteAsync(WriteClassPorts(klass));
-    }
 
-    private string WriteClassPorts(Class klass)
-    {
-        return @$"
-#![allow(non_camel_case_types, non_snake_case)]
-
-struct {klass.Info.ClassName}_Ports {{
-
-    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-        PropertyOrPort.ComplexPropertyOrPort complex => null,
-        PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-             $"pub {x.Key.Name}: {klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.Rust).Item1}," :
-             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},",
-        _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},"
-        }))}
-}}
-        ";
+        using var constantsFile = File.Create($"../Eulynx/rust/src/constants.rs");
+        using var constantsFileWriter = new StreamWriter(constantsFile);
+        await constantsFileWriter.WriteAsync(WriteClassConstants(klass));
     }
 
     public string Write<T>(T element)
@@ -51,6 +37,51 @@ struct {klass.Info.ClassName}_Ports {{
             Class klass => WriteClass(klass),
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
+    }
+
+    private string WriteClassConstants(Class klass)
+    {
+        return @$"
+            #![allow(non_camel_case_types)]
+            {string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
+        ";
+    }
+
+    private string WriteClassPorts(Class klass)
+    {
+        return @$"
+#![allow(non_camel_case_types, non_snake_case)]
+
+use crate::constants::{{
+    {string.Join(",\n", klass.GetValueTypes().Select(x => $"{x.Identifier.Name}Value"))}
+}};
+
+pub struct {klass.Info.ClassName}_Ports {{
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        PropertyOrPort.ComplexPropertyOrPort complex => null,
+        PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
+             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1}," :
+             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},",
+        _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},"
+        }))}
+}}
+
+impl {klass.Info.ClassName}_Ports {{
+    pub fn new() -> Self {{
+        {klass.Info.ClassName}_Ports {{
+            {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+                PropertyOrPort.ComplexPropertyOrPort complex => null,
+                PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
+                    $"{x.Key.Name}: {x.Key.Name}Value::{s.Name}Value__{s.AllowedValues.First().Name}," :
+                    $"{x.Key.Name}: {x.Key.Name}Value::{x.Value.DataType(TargetLanguage.Rust).Item1},",
+                PropertyOrPort.BoolPropertyOrPort boolPort => $"{x.Key.Name}: false,",
+                 _ => $"{x.Key.Name}: false,"
+            }))}
+        }}
+        }}
+    }}
+        ";
     }
 
     private string WriteOperation(Operation operation)
@@ -76,9 +107,10 @@ struct {klass.Info.ClassName}_Ports {{
 
     private string WriteValueType(ValueType valueType)
     {
-        return @$"typedef enum {valueType.Class.ClassName}__{valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Class.ClassName}__{valueType.Identifier.Name}Value__{x.Name}"))}
-        }} {valueType.Class.ClassName}__{valueType.Identifier.Name}Value;";
+        return @$"
+        pub enum {valueType.Identifier.Name}Value {{
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
+        }}";
     }
 
     private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
@@ -94,19 +126,35 @@ struct {klass.Info.ClassName}_Ports {{
         return @$"
 #![allow(non_camel_case_types, non_snake_case)]
 
+use crate::{klass.Info.ClassName}_Ports::*;
+use crate::constants::{{
+    {string.Join(",\n", klass.GetValueTypes().Select(x => $"{x.Identifier.Name}Value"))}
+}};
+
+struct ChangeEvent {{
+    IsTriggered: bool
+}}
+
 {WriteStates((BehaviorRecord)klass.Behavior)}
 
-struct {klass.Info.ClassName} {{
+pub struct {klass.Info.ClassName} {{
     state: {klass.Info.BehaviorName}
 }}
 
 impl {klass.Info.ClassName} {{
-    fn new() -> {klass.Info.ClassName} {{
+    fn new(&mut ports: {klass.Info.ClassName}_Ports) -> {klass.Info.ClassName} {{
         let new{klass.Info.ClassName} = {klass.Info.ClassName}{{
             state: {klass.Info.BehaviorName}::{klass.Info.BehaviorName}__{klass.Behavior.subrecords[0].Name}
-        }}
+        }};
         make_state_{klass.Info.BehaviorName}__(&mut new{klass.Info.ClassName});
         new{klass.Info.ClassName}
+    }}
+
+    fn transition(&mut self, ports: &mut {klass.Info.ClassName}_Ports) -> () {{
+        match self.state {{
+            {string.Join("\n", klass.States.Select(t =>
+string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")} => \n\t\t\ttransition_from_{t.Name.Replace(".", "__")}(&mut self, ports),")))}
+        }}
     }}
 
     {WriteStateTransitions((BehaviorRecord)klass.Behavior)}
@@ -115,6 +163,8 @@ impl {klass.Info.ClassName} {{
         ";
     }
 
+    //{string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Name}; // {x.ChangeExpression.Body}"))}
+    //{string.Join("\n", klass.TransitionFunctions.Select(x => Write(x)))}
     private string WriteStates(BehaviorRecord behaviorRecord) {
         return @$"
         #[derive(PartialEq, Debug)]
@@ -156,8 +206,7 @@ impl {klass.Info.ClassName} {{
     private string WriteTransitionFunction(TransitionFunction transitionFunction)
     {
         // {GenerateConditions(thisName, fromState, dataTypes, context)}
-        return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
-
+        return $@"fn transition_from_{transitionFunction.Name.Replace(".", "__")}(&mut self, ports: &mut {transitionFunction.TheRootBehaviorName.ClassName}_Ports) {{
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
         }}
 ";
@@ -197,16 +246,16 @@ impl {klass.Info.ClassName} {{
 
         return wrapWithIfElseExpression(condition,
             Write(junctionTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
-                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
+                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToRust(junctionTransition.context)))}
                 {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}"));
     }
 
     private string WriteCodeTransition(CodeTransition codeTransition)
     {
         var condition = codeTransition.Transition switch {
-            ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
-            TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            ChangeEventTransition changeEvent => $"if (self.{changeEvent.theEvent.Name}.IsTriggered)",
+            TimeEventTransition timeEvent => $"if (self.{timeEvent.theEvent.Name}.IsTimeoutExpired)",
+            MessageEventTransition messageEvent => $"if (self.{messageEvent.MessageSchema.Identifier.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
