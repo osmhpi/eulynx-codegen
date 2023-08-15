@@ -27,9 +27,9 @@ struct {klass.Info.ClassName}_Ports {{
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
         PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-             $"pub {x.Key.Name}: {klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.Rust).Item1};" :
-             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1};",
-        _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1};"
+             $"pub {x.Key.Name}: {klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.Rust).Item1}," :
+             $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},",
+        _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},"
         }))}
 }}
         ";

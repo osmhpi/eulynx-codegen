@@ -191,7 +191,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)
     {
         public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
-        // TODO: Language-specific
         public override (string, string) DataType(TargetLanguage language) => AllowedValues.Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
         public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
 
@@ -247,7 +246,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         public override (string, string) DataType(TargetLanguage language) => UmlType.Type switch {
             "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
             "uml:Enumeration" => (InPascalCase(UmlType.Name), ""),
-            // TODO: Language-specific
             _ => ("int", "")
         };
 
