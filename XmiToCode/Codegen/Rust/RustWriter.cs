@@ -202,7 +202,7 @@ impl {klass.Info.ClassName} {{
 
             return wrapWithIfElseExpression(condition,
                 Write(codeTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
-         $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
+         $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToRust(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
 }

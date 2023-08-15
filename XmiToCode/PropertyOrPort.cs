@@ -2,6 +2,12 @@ using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationItem;
 
+public enum TargetLanguage {
+    CSharp,
+    C,
+    Rust
+}
+
 public interface IAccessible {
     public string Accessor(ProgramContext context);
 }
@@ -11,7 +17,7 @@ public interface IAssignable : IAccessible {
 }
 
 public interface ICallable {
-    public string Call(ProgramContext context);
+    public string Call(ProgramContext context, TargetLanguage targetLanguage);
 }
 
 public record MessageMember(Identifier MemberName, PackagedElement Type)
@@ -112,7 +118,13 @@ public record PulsedOutLiteral(bool Value) : IAccessible
 public record Method(Identifier Identifier, Operation Operation) : ICallable
 {
     // TODO: Language-specific
-    public string Call(ProgramContext context) => $"{Identifier.Name}({context.InstanceReference})";
+    public string Call(ProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch
+    {
+        TargetLanguage.CSharp => $"{Identifier.Name}({context.InstanceReference})",
+        TargetLanguage.C => $"{Identifier.Name}({context.InstanceReference})",
+        TargetLanguage.Rust => $"self.{Identifier.Name}()",
+        _ => throw new NotImplementedException()
+    };
 }
 
 public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : IAccessible, IAssignable {
