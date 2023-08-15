@@ -78,9 +78,7 @@ typedef struct TimeoutEvent
 
 {string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
 
-typedef struct {klass.Info.ClassName} {klass.Info.ClassName};
-
-{Write(klass.Behavior)}
+typedef enum {klass.Info.BehaviorName} {klass.Info.BehaviorName};
 
 // Value Types
 
@@ -117,6 +115,8 @@ typedef struct {klass.Info.ClassName} {{
 // Operations
 
 {string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
+
+{Write(klass.Behavior)}
 
 void new({klass.Info.ClassName} *x) {{
     x->state = make_state_{klass.Info.BehaviorName}(x);

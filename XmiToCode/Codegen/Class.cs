@@ -41,7 +41,8 @@ public record Class(
             .Select(x => x.Transition)
             .OfType<MessageEventTransition>()
             .Select(x => x.MessageSchema)
-            .Distinct()
+            .GroupBy(x => x.Identifier)
+            .Select(x => x.First())
             .ToList();
     }
 
