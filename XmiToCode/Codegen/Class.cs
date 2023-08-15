@@ -64,6 +64,11 @@ public record Class(
             .Distinct()
             .ToList();
     }
+
+    internal List<Operation> GetOperations()
+    {
+        return ClassContext.DataTypes.Operations;
+    }
 }
 
 public record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
@@ -88,6 +93,7 @@ public interface IBehaviorRecord
 {
     string Name { get; }
     List<IBehaviorRecord> subrecords { get; }
+    ClassInfo className { get; }
 }
 
 public record SimpleBehaviorRecord(string Name, string recordName, ClassInfo className) : IBehaviorRecord

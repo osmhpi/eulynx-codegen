@@ -111,7 +111,8 @@ public record PulsedOutLiteral(bool Value) : IAccessible
 
 public record Method(Identifier Identifier, Operation Operation) : ICallable
 {
-    public string Call(ProgramContext context) => $"{context.InstanceReference}.{Identifier.Name}()";
+    // TODO: Language-specific
+    public string Call(ProgramContext context) => $"{Identifier.Name}({context.InstanceReference})";
 }
 
 public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class) : IAccessible, IAssignable {

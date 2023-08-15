@@ -1,3 +1,5 @@
+using XmiToCode;
+
 internal class CWriter : ICodeWriter
 {
     public string DefaultInstanceReference => "self";
@@ -16,9 +18,19 @@ internal class CWriter : ICodeWriter
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
+            Operation operation => WriteOperation(operation),
             Class klass => WriteClass(klass),
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
+    }
+
+    private string WriteOperation(Operation operation)
+    {
+        // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
+        var instructions = "";
+        return @$"void {CodeGenerationItem.InPascalCase(operation.Op.Name)}(void *) {{
+            {instructions}
+        }}";
     }
 
     private string WriteMessageSchema(MessageSchema messageSchema)
@@ -66,6 +78,8 @@ typedef struct TimeoutEvent
 
 {string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
 
+typedef struct {klass.Info.ClassName} {klass.Info.ClassName};
+
 {Write(klass.Behavior)}
 
 // Value Types
@@ -100,12 +114,12 @@ typedef struct {klass.Info.ClassName} {{
 
 }} {klass.Info.ClassName};
 
+// Operations
+
+{string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
+
 void new({klass.Info.ClassName} *x) {{
-    x->state = make_state(x);
-}}
-
-{klass.Info.BehaviorName} make_state({klass.Info.ClassName} *self) {{
-
+    x->state = make_state_{klass.Info.BehaviorName}(x);
 }}
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => Write(x)))}
@@ -114,7 +128,7 @@ void transition({klass.Info.ClassName} *self) {{
   switch (self->state)
   {{
         {string.Join("\n", klass.States.Select(t =>
-            string.Join("\n", $"case {t.Name.Replace(".", "__")}: \n transition_from_{t.Name.Replace(".", "__")}(self);\nbreak;")))}
+            string.Join("\n", $"case {t.Name.Replace(".", "__")}: \n self->state = transition_from_{t.Name.Replace(".", "__")}(self);\nbreak;")))}
   }}
 }}
 ";
@@ -126,7 +140,10 @@ void transition({klass.Info.ClassName} *self) {{
         {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
 }} {behaviorRecord.Name};
 
-{string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => x.record switch {
+// State constructor forward declarations
+{string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"))}
+
+{string.Join("\n", EnumerateSubrecords(behaviorRecord).Append(("", behaviorRecord)).Select(x => x.record switch {
     SimpleBehaviorRecord simple => $@"
         {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({simple.className.ClassName} *self) {{
             return {behaviorRecord.Name}__{x.Name};
@@ -155,7 +172,7 @@ void transition({klass.Info.ClassName} *self) {{
     private string WriteTransitionFunction(TransitionFunction transitionFunction)
     {
         // {GenerateConditions(thisName, fromState, dataTypes, context)}
-        return $@"void transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
+        return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
         }}
@@ -225,6 +242,6 @@ void transition({klass.Info.ClassName} *self) {{
             return wrapWithIfElseExpression(condition,
                 Write(codeTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
          $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
-            return make_state__{codeTransition.stateName.Replace(".", "__")}(self);"));
+            return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
 }
