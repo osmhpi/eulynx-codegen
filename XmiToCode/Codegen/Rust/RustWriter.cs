@@ -1,8 +1,10 @@
+using XmiToCode;
+
 internal class RustWriter : ICodeWriter
 {
     public string DefaultInstanceReference => "self";
 
-    public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.rs";
+    public string GenerateFileName(UmlClass uml) => $"../Eulynx/rust/src/{uml.GetName()}.rs";
 
     public string Write<T>(T element)
     {
@@ -11,72 +13,121 @@ internal class RustWriter : ICodeWriter
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
             JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
             DeconstructMessageInstruction deconstructMessageInstruction => WriteDeconstructMessageInstruction(deconstructMessageInstruction),
-            SimpleBehaviorRecord simpleBehaviorRecord => WriteSimpleBehaviorRecord(simpleBehaviorRecord),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
-            BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
+            BehaviorRecord behaviorRecord => WriteStateTransitions(behaviorRecord),
+            GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
+            ValueType valueType => WriteValueType(valueType),
+            MessageSchema messageSchema => WriteMessageSchema(messageSchema),
+            Operation operation => WriteOperation(operation),
             Class klass => WriteClass(klass),
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
     }
 
-    private string WriteSimpleBehaviorRecord(SimpleBehaviorRecord simpleBehaviorRecord)
+    private string WriteOperation(Operation operation)
     {
-        return $@"public record {simpleBehaviorRecord.Name}() : {simpleBehaviorRecord.recordName}() {{
-            public static new {simpleBehaviorRecord.Name} New({simpleBehaviorRecord.className} This) => new {simpleBehaviorRecord.Name}();
+        // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
+        var instructions = "";
+        return @$"void {CodeGenerationItem.InPascalCase(operation.Op.Name)}(void *) {{
+            {instructions}
         }}";
+    }
+
+    private string WriteMessageSchema(MessageSchema messageSchema)
+    {
+        var translateType = (string type) => type switch {
+            "String" => ("char", "[4]"),
+            _ => (type, "")
+        };
+
+        return @$"typedef struct Message__{messageSchema.Identifier.Name} {{
+            {string.Join("\n", messageSchema.Members.Select(x => $"{translateType(x.TypeIdentifier.Name).Item1} {x.MemberName.Name}{translateType(x.TypeIdentifier.Name).Item2};"))}
+        }} Message__{messageSchema.Identifier.Name};";
+    }
+
+    private string WriteValueType(ValueType valueType)
+    {
+        return @$"typedef enum {valueType.Class.ClassName}__{valueType.Identifier.Name}Value {{
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Class.ClassName}__{valueType.Identifier.Name}Value__{x.Name}"))}
+        }} {valueType.Class.ClassName}__{valueType.Identifier.Name}Value;";
+    }
+
+    private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
+    {
+        return @$"typedef enum {globalEnumeration.Name} {{
+            {string.Join(",\n", globalEnumeration.Members.Select(x => $"{globalEnumeration.Name}__{x}"))}
+        }} {globalEnumeration.Name};
+        ";
     }
 
     private string WriteClass(Class klass)
     {
         return @$"
+#![allow(non_camel_case_types, non_snake_case)]
+
+{WriteStates((BehaviorRecord)klass.Behavior)}
+
 struct {klass.Info.ClassName} {{
     state: {klass.Info.BehaviorName}
 }}
 
 impl {klass.Info.ClassName} {{
     fn new() -> {klass.Info.ClassName} {{
-        let mut x: {klass.Info.ClassName} = {klass.Info.ClassName} {{
+        let new{klass.Info.ClassName} = {klass.Info.ClassName}{{
+            state: {klass.Info.BehaviorName}::
         }}
 
-        x.make_state()
-
-        x
+        {string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
     }}
 
-    fn make_state(&mut self) -> {klass.Info.ClassName} {{
+    {WriteStateTransitions((BehaviorRecord)klass.Behavior)}
 
-    }}
-
-    {string.Join("\n", klass.TransitionFunctions.Select(x => Write(x)))}
-
-    fn transition(&mut self) {{
-        match self.state {{
-            {string.Join(",\n", klass.States.Select(t =>
-                string.Join(",\n", $"{t.Name} => self.transition_from_{t.Name.Replace(".", "__")}()")))}
-    }}
 }}
-";
+        ";
     }
 
-    private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
+    private string WriteStates(BehaviorRecord behaviorRecord) {
+        return @$"
+        #[derive(PartialEq, Debug)]
+        enum {behaviorRecord.Name} {{
+            {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
+        }}
+        ";
+    }
+
+    private string WriteStateTransitions(BehaviorRecord behaviorRecord)
     {
-        return @$"public record {behaviorRecord.Name} : {behaviorRecord.parentBehaviorName} {{
-        {string.Join("\n", behaviorRecord.subrecords.Select(x => Write(x)))}
+        return @$"
+        {string.Join("\n", EnumerateSubrecords(behaviorRecord).Append(("", behaviorRecord)).Select(x => x.record switch {
+            SimpleBehaviorRecord simple => $@"
+                fn make_state_{behaviorRecord.Name}__{x.Name}(&mut self){{
+                    self.state = {behaviorRecord.Name}::{behaviorRecord.Name}__{x.Name};
+                }}",
+            BehaviorRecord record => $@"
+                fn make_state_{behaviorRecord.Name}__{x.Name}(&mut self){{
+                   // Not Implemented
+                }}",
+            _ => throw new NotImplementedException()
+        }))}
+        ";
+    }
 
-
-    public static new {behaviorRecord.Name} New({behaviorRecord.className} This) {{
-        {Write(behaviorRecord.initializer)}
-    }}
-
-    private {behaviorRecord.Name}() {{}}
-}}
-";
+    private static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
+    {
+        foreach (var s in record.subrecords)
+        {
+            yield return (s.Name, s);
+            foreach (var subsubrecord in EnumerateSubrecords(s))
+            {
+                yield return ($"{s.Name}__{subsubrecord.Name}", subsubrecord.record);
+            }
+        }
     }
 
     private string WriteTransitionFunction(TransitionFunction transitionFunction)
     {
         // {GenerateConditions(thisName, fromState, dataTypes, context)}
-        return $@"fn transition_from_{transitionFunction.Name.Replace(".", "__")}(&mut self) {{
+        return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
         }}
@@ -87,16 +138,7 @@ impl {klass.Info.ClassName} {{
     {
         if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
         {
-            if (deconstructMessageInstruction.attributesOfCurrentSignal.Count >= 2)
-            {
-                return
-                    @$"var ({string.Join(", ", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {deconstructMessageInstruction.context.InstanceReference}.{deconstructMessageInstruction.currentSignalName};";
-            }
-            else if (deconstructMessageInstruction.attributesOfCurrentSignal.Count == 1)
-            {
-                return
-                    @$"var {deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name} = {deconstructMessageInstruction.context.InstanceReference}.{deconstructMessageInstruction.currentSignalName}.{deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name};";
-            }
+            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType.Item1} {x.Value.Name}{x.Value.DataType.Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
         }
 
         return "";
@@ -104,19 +146,59 @@ impl {klass.Info.ClassName} {{
 
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
-        return $@"{{
-            {Write(junctionTransition.DeconstructMessageInstruction)}
-            {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
-            {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}
-        }}";
+        var condition = junctionTransition.Transition switch {
+            ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
+            TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
+            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            InitialTransition => "", // TODO
+            _ => throw new NotImplementedException()
+        };
+
+        var constraint = junctionTransition.Constraint switch {
+            TransitionConstraint.Else => "else",
+            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context)} == {equality.Rhs.Accessor(junctionTransition.context)})",
+            null => null,
+            _ => throw new NotImplementedException()
+        };
+
+        var wrapWithIfElseExpression = (string? expr, string block) =>
+            string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
+                {block}
+            }}";
+
+        return wrapWithIfElseExpression(condition,
+            Write(junctionTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
+                {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}"));
     }
 
     private string WriteCodeTransition(CodeTransition codeTransition)
     {
-        return $@"{{
-            {Write(codeTransition.DeconstructMessageInstruction)}
-            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
-            return {codeTransition.stateName}.New({codeTransition.context.InstanceReference});
-        }}";
+        var condition = codeTransition.Transition switch {
+            ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
+            TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
+            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            InitialTransition => "", // TODO
+            _ => throw new NotImplementedException()
+        };
+
+        var constraint = codeTransition.Constraint switch {
+            TransitionConstraint.Else => "else",
+            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context)} == {equality.Rhs.Accessor(codeTransition.context)})",
+            TransitionConstraint.Compound compound => $"if NOTIMPLEMENTED",
+            null => null,
+            // Output which transition constraint is not implemented
+            _ => throw new NotImplementedException($"Writing not implemented for {codeTransition.Constraint.GetType()}")
+        };
+
+        var wrapWithIfElseExpression = (string? expr, string block) =>
+            string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
+                {block}
+            }}";
+
+            return wrapWithIfElseExpression(condition,
+                Write(codeTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+         $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
+            return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
 }
