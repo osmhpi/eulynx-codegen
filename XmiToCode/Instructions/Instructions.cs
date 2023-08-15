@@ -9,19 +9,19 @@ record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
 {
     internal string ToCSharp(ProgramContext context)
     {
-        return $"new Message.{Schema.Identifier.Name}({string.Join(", ", Values.Select(x => x.Accessor(context)))})";
+        return $"new Message.{Schema.Identifier.Name}({string.Join(", ", Values.Select(x => x.Accessor(context, TargetLanguage.CSharp)))})";
     }
 
     internal string ToC(ProgramContext context)
     {
         var valuesAndProperties = Schema.Members.Zip(Values);
-        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context)}"))} }};";
+        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context, TargetLanguage.C)}"))} }};";
     }
 
     internal string ToRust(ProgramContext context)
     {
         var valuesAndProperties = Schema.Members.Zip(Values);
-        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context)}"))} }};";
+        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context, TargetLanguage.Rust)}"))} }};";
     }
 }
 
@@ -29,7 +29,7 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
 {
     internal override string ToCSharp(ProgramContext context)
     {
-        return $"{context.InstanceReference}.SendMessage({initialize.ToCSharp(context)}, {port.Accessor(context)});";
+        return $"{context.InstanceReference}.SendMessage({initialize.ToCSharp(context)}, {port.Accessor(context, TargetLanguage.CSharp)});";
     }
 
     internal override string ToC(ProgramContext context)
@@ -53,15 +53,15 @@ record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
 {
     internal override string ToCSharp(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
+        return $"{Lhs.Accessor(context, TargetLanguage.CSharp)} = {Rhs.Accessor(context, TargetLanguage.CSharp)};";
     }
     internal override string ToC(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
+        return $"{Lhs.Accessor(context, TargetLanguage.C)} = {Rhs.Accessor(context, TargetLanguage.C)};";
     }
     internal override string ToRust(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context)} = {Rhs.Accessor(context)};";
+        return $"{Lhs.Accessor(context, TargetLanguage.Rust)} = {Rhs.Accessor(context, TargetLanguage.Rust)};";
     }
 }
 
@@ -96,8 +96,8 @@ record BinaryExpression(IAccessible Lhs, IAccessible Rhs, BinaryExpressionOperat
     internal string ToCSharp(ProgramContext context)
     {
         return Operator switch {
-            BinaryExpressionOperator.Equal => $"{Lhs.Accessor(context)}.Equals({Rhs.Accessor(context)})",
-            BinaryExpressionOperator.NotEqual => $"!{Lhs.Accessor(context)}.Equals({Rhs.Accessor(context)})",
+            BinaryExpressionOperator.Equal => $"{Lhs.Accessor(context, TargetLanguage.CSharp)}.Equals({Rhs.Accessor(context, TargetLanguage.CSharp)})",
+            BinaryExpressionOperator.NotEqual => $"!{Lhs.Accessor(context, TargetLanguage.CSharp)}.Equals({Rhs.Accessor(context, TargetLanguage.CSharp)})",
             _ => throw new NotImplementedException()
         };
     }

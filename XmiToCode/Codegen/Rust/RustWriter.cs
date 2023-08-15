@@ -185,7 +185,7 @@ impl {klass.Info.ClassName} {{
 
         var constraint = junctionTransition.Constraint switch {
             TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context)} == {equality.Rhs.Accessor(junctionTransition.context)})",
+            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(junctionTransition.context, TargetLanguage.Rust)})",
             null => null,
             _ => throw new NotImplementedException()
         };
@@ -213,11 +213,11 @@ impl {klass.Info.ClassName} {{
 
         var constraint = codeTransition.Constraint switch {
             TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context)} == {equality.Rhs.Accessor(codeTransition.context)})",
+            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.Rust)})",
             TransitionConstraint.SingleVariable single =>
                 single.Positive ?
-                    $"if ({single.Variable.Accessor(codeTransition.context)})" :
-                    $"if (!{single.Variable.Accessor(codeTransition.context)})",
+                    $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})" :
+                    $"if (!{single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})",
             TransitionConstraint.NotImplemented compound => $"if NOTIMPLEMENTED",
             null => null,
             // Output which transition constraint is not implemented

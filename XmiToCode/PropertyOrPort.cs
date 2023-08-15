@@ -9,7 +9,7 @@ public enum TargetLanguage {
 }
 
 public interface IAccessible {
-    public string Accessor(ProgramContext context);
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage);
 }
 
 public interface IAssignable : IAccessible {
@@ -83,36 +83,36 @@ public record TypeIdentifier (string RawName)
 
 public record ClassMember(Identifier Identifier) : IAccessible {
     // TODO: This is language-specific
-    public string Accessor(ProgramContext context) => context.IsLocalVariable(this)
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => context.IsLocalVariable(this)
         ? Identifier.Name
         : $"{context.InstanceReference}->{Identifier.Name}";
 }
 
 public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
     // TODO: This is language-specific
-    public string Accessor(ProgramContext context) => $"{UmlEnumeration.Name}__{Member.Name}";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{UmlEnumeration.Name}__{Member.Name}";
 }
 
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
     // TODO: This is language-specific
-    public string Accessor(ProgramContext context) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
 }
 
 public record BoolLiteral(bool Value) : IAccessible
 {
-    public string Accessor(ProgramContext context) => Value ? "true" : "false";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "true" : "false";
 }
 
 public record PulsedInLiteral(bool Value) : IAccessible
 {
     // TODO: Language-specific
-    public string Accessor(ProgramContext context) => Value ? "1" : "0";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
 }
 
 public record PulsedOutLiteral(bool Value) : IAccessible
 {
     // TODO: Language-specific
-    public string Accessor(ProgramContext context) => Value ? "1" : "0";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
 }
 
 public record Method(Identifier Identifier, Operation Operation) : ICallable
@@ -161,11 +161,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         return $"{Name} = new {finalType.Item1}();";
     }
 
-    public string GenerateCondition(ProgramContext context, string otherInstance, IAccessible other, bool negate) {
-        var negateOrNot = negate ? "" : "!";
-        return $"{negateOrNot}{context.InstanceReference}.{Accessor(context)}.{EqualityComparer}({otherInstance}.{other.Accessor(context)})";
-    }
-
     protected virtual string GenerateInitialValue() {
         return "";
     }
@@ -184,7 +179,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public string Name => InPascalCase(Property.Name);
 
     // TODO: This is language-specific
-    public string Accessor(ProgramContext context) =>
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
         context.IsLocalVariable(this) ?
             // IsPort ?
             //     $"{Name}.Value" :
