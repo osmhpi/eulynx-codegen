@@ -28,7 +28,7 @@ internal class RustWriter : ICodeWriter
     {
         // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
         var instructions = "";
-        return @$"void {CodeGenerationItem.InPascalCase(operation.Op.Name)}(void *) {{
+        return @$"fn {CodeGenerationItem.InPascalCase(operation.Op.Name)}(mut &self) {{
             {instructions}
         }}";
     }
