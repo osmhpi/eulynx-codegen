@@ -1,6 +1,21 @@
 ﻿using System.Xml.Serialization;
 using XmiToCode;
 
+
+// Test if input arguments were supplied.
+if (args.Length == 0)
+{
+    Console.WriteLine("Please enter the programming language to generate: CSharp, C or Rust.");
+    Console.WriteLine("Usage: XmiToCode <language>");
+    return 1;
+}
+
+if (!Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage)) {
+    Console.WriteLine("Please enter the programming language to generate: CSharp, C or Rust.");
+    Console.WriteLine("Usage: XmiToCode <language>");
+    return 1;
+}
+
 using var inFile = File.OpenRead("../cleaned.xmi");
 
 var xmlSerializer = new XmlSerializer(typeof(XMI), "");
@@ -88,7 +103,12 @@ foreach (var interestingPackage in interestingPackages) {
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
         try {
             Console.WriteLine($"Writing {umlClass.GetName()}");
-            await umlClass.Generate(rust);
+            await umlClass.Generate(targetLanguage switch {
+                TargetLanguage.CSharp => csharp,
+                TargetLanguage.C => c,
+                TargetLanguage.Rust => rust,
+                _ => throw new NotImplementedException()
+            });
         } catch (Exception ex) {
             Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }
@@ -96,6 +116,8 @@ foreach (var interestingPackage in interestingPackages) {
 }
 
 await DataTypeHelper.GenerateDataTypes(dataTypes);
+
+return 0;
 
 static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
     return FindAllElements(package, "uml:Class");
