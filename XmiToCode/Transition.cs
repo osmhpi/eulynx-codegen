@@ -25,8 +25,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (Transitions.Count > 1 && fromState.IsInitialState) {
             // TODO: Temporary workaround: If there are transition constraints and more
             // than 1 transition, all constraints have to be fulfilled. Do that later.
-            return new CodeTransition(stateName, context,
-                new DeconstructMessageInstruction(currentSignalName, attributesOfCurrentSignal, context),
+            return new CodeTransition(stateName, context, null,
                 ParseActivities(fromState, (this, state, stateName), attributesOfCurrentSignal, dataTypes, context),
                 null, this);
         }
@@ -44,7 +43,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             attributesOfCurrentSignal = attributesOfCurrentSignal.Select(x => x.Value)
                 .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo)))
                 .ToDictionary(x => x.Name);
-            newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo)).ToDictionary(x => x.Name);
+            var members = context.ResolveIncomingMessageSchema(new TypeIdentifier(theSignal.Name)).MembersDict;
+            newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo, members[new Identifier(x.Name)].Member)).ToDictionary(x => x.Name);
             currentSignalName = InPascalCase(theSignal.Name);
             dataTypes.RecordSignalUsed(theSignal, attributesOfCurrentSignal);
         }
@@ -90,24 +90,6 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         }
 
         throw new NotImplementedException();
-    }
-
-    public string DeconstructMessageAttributes(string? currentSignalName, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal, ProgramContext context, bool peek = false)
-    {
-        var emptySignal = peek ? "" : $"{context.InstanceReference}.{currentSignalName} = null;";
-        if (currentSignalName != null && attributesOfCurrentSignal != null && attributesOfCurrentSignal.Count > 0) {
-            if (attributesOfCurrentSignal.Count >= 2) {
-                return
-                    @$"var ({string.Join(", ", attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {context.InstanceReference}.{currentSignalName};
-                    {emptySignal}";
-            } else if (attributesOfCurrentSignal.Count == 1) {
-                return
-                    @$"var {attributesOfCurrentSignal.Single().Value.Name} = {context.InstanceReference}.{currentSignalName}.{attributesOfCurrentSignal.Single().Value.Name};
-                    {emptySignal}";
-            }
-        }
-
-        return "";
     }
 
     public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal, DataTypeHelper dataTypes, ProgramContext context)
@@ -214,16 +196,19 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
 
         var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
 
-        if (ParseLiteral(rhs, out var literal)) {
+        if (TryParseLiteral(rhs, out var literal)) {
             var l = identifier.LookupValidLiteral(literal!);
+            identifier.EnsureComparableTypes(l);
             return new TransitionConstraint.Equality(identifier, l);
         } else {
-            var rhsIdentifier = context.ResolveAssignableIdentifier(new Identifier(rhs));
+            var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
             if (rhsIdentifier != null) {
+                identifier.EnsureComparableTypes(rhsIdentifier);
                 return new TransitionConstraint.Equality(identifier, rhsIdentifier);
             } else {
                 // It is a literal, but without quotes
                 var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
+                identifier.EnsureComparableTypes(l);
                 return new TransitionConstraint.Equality(identifier, l);
             }
         }
@@ -251,7 +236,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
                     var signal = dataTypes.Signals[theEvent.Signal];
-                    return new MessageEventTransition(from, to, transitions, theEvent, new MessageSchema(new TypeIdentifier(signal.Name), signal, dataTypes));
+                    return new MessageEventTransition(from, to, transitions, theEvent, new TypeIdentifier(signal.Name));
                 }
             } else {
                 return new InitialTransition(from, to, transitions);
@@ -291,7 +276,7 @@ public record TransitionConstraint() {
     public record NotImplemented() : TransitionConstraint();
 }
 
-record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, MessageSchema MessageSchema) : Transition(From, To, Transitions)
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions)
 {
     private IAccessible LookupSignalAttributeType(PackagedElement theSignal, DataTypeHelper dataTypes, string attributeName, string value) {
         var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);

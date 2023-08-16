@@ -20,6 +20,7 @@ internal class CWriter : ICodeWriter
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
             Operation operation => WriteOperation(operation),
             Class klass => WriteClass(klass),
+            null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
     }
@@ -35,13 +36,8 @@ internal class CWriter : ICodeWriter
 
     private string WriteMessageSchema(MessageSchema messageSchema)
     {
-        var translateType = (string type) => type switch {
-            "String" => ("char", "[4]"),
-            _ => (type, "")
-        };
-
         return @$"typedef struct Message__{messageSchema.Identifier.Name} {{
-            {string.Join("\n", messageSchema.Members.Select(x => $"{translateType(x.TypeIdentifier.Name).Item1} {x.MemberName.Name}{translateType(x.TypeIdentifier.Name).Item2};"))}
+            {string.Join("\n", messageSchema.Members.Select(x => $"{x.Member.DataType(TargetLanguage.C).Item1} {x.MemberName.Name}{x.Member.DataType(TargetLanguage.C).Item2};"))}
         }} Message__{messageSchema.Identifier.Name};";
     }
 
@@ -181,9 +177,9 @@ void transition({klass.Info.ClassName} *self) {{
 
     private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
     {
-        if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
-        {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.C).Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
+        if (deconstructMessageInstruction.Context.NewAttributes != null) {
+            return string.Join("\n",
+                deconstructMessageInstruction.Context.NewAttributes.Select(x => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.C).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};" ));
         }
 
         return "";
@@ -194,7 +190,7 @@ void transition({klass.Info.ClassName} *self) {{
         var condition = junctionTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
@@ -227,7 +223,7 @@ void transition({klass.Info.ClassName} *self) {{
         var condition = codeTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };

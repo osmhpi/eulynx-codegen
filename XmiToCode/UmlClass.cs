@@ -34,14 +34,11 @@ public class UmlClass : CodeGenerationItem
             .Where(x => x.XmiType == "uml:Operation")
             .Select(x => new Operation(x, _class.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
             .ToList();
-        var receptions = _class.OwnedReception
-            .Where(x => x.XmiType == "uml:Reception")
-            .ToList();
 
         var className = InPascalCase(_class.Name);
         // HACK
         var classInfo = new ClassInfo(className, "");
-        _dataTypes = new DataTypeHelper(properties, ports, operations, receptions, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases, classInfo);
+        _dataTypes = new DataTypeHelper(properties, ports, operations, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases, classInfo);
 
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
     }

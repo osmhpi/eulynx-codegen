@@ -6,6 +6,8 @@ public record BlockContext : ProgramContext
 
     public override string InstanceReference => _overrideInstanceReference ?? Parent.InstanceReference;
 
+    public Dictionary<string, PropertyOrPort>? NewAttributes => _newAttributes;
+
     public BlockContext(ProgramContext parent, Dictionary<string, PropertyOrPort>? newAttributes = null, string? overrideInstanceReference = null)
     {
         Parent = parent;
@@ -16,8 +18,8 @@ public record BlockContext : ProgramContext
     // Deconstructed Message Members
     public override IAccessible ResolveIdentifier(Identifier identifier)
     {
-        if (_newAttributes != null && _newAttributes.ContainsKey(identifier.Name)) {
-            return _newAttributes[identifier.Name];
+        if (NewAttributes != null && NewAttributes.ContainsKey(identifier.Name)) {
+            return NewAttributes[identifier.Name];
         }
 
         return Parent.ResolveIdentifier(identifier);
@@ -25,16 +27,16 @@ public record BlockContext : ProgramContext
 
     public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
-        if (_newAttributes != null && _newAttributes.ContainsKey(identifier.Name)) {
-            return _newAttributes[identifier.Name];
+        if (NewAttributes != null && NewAttributes.ContainsKey(identifier.Name)) {
+            return NewAttributes[identifier.Name];
         }
 
         return Parent.ResolveAssignableIdentifier(identifier);
     }
 
-    internal override MessageSchema ResolveMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
-        return Parent.ResolveMessageSchema(port, messageTypeIdentifier);
+        return Parent.ResolveOutgoingMessageSchema(port, messageTypeIdentifier);
     }
 
     internal override ICallable ResolveCallableIdentifier(Identifier identifier)
@@ -44,8 +46,13 @@ public record BlockContext : ProgramContext
 
     public override bool IsLocalVariable(IAccessible accessible)
     {
-        if (accessible is PropertyOrPort prop && _newAttributes != null && _newAttributes.ContainsValue(prop))
+        if (accessible is PropertyOrPort prop && NewAttributes != null && NewAttributes.ContainsValue(prop))
             return true;
         return Parent.IsLocalVariable(accessible);
+    }
+
+    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
+    {
+        return Parent.ResolveIncomingMessageSchema(signal);
     }
 }

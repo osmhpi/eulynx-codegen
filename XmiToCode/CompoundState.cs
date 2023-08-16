@@ -12,7 +12,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
-    public static bool ParseLiteral(string input, out LiteralIdentifier? identifier) {
+    public static bool TryParseLiteral(string input, out LiteralIdentifier? identifier) {
         var match = Regex.Match(input, "^\"(.*)\"$");
         if (match.Success) {
             identifier = new LiteralIdentifier(match.Groups[1].Value);
@@ -24,7 +24,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
     public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, ProgramContext context) {
         // var literal = Regex.Match(initializer, "^\"(.*)\"$");
-        if (ParseLiteral(initializer, out var literal)) {
+        if (TryParseLiteral(initializer, out var literal)) {
             // Resolve message
             var result = member.LookupValidLiteral(literal!);
             return result;
@@ -63,7 +63,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         var messageTypeIdentifier = new TypeIdentifier(messageName.Groups[1].Value);
         var portIdentifier = new Identifier(m.Groups[2].Value);
 
-        var messageSchema = context.ResolveMessageSchema(portIdentifier, messageTypeIdentifier);
+        var messageSchema = context.ResolveOutgoingMessageSchema(portIdentifier, messageTypeIdentifier);
 
         var parsedMessageName = InPascalCase(messageName.Groups[1].Value);
 
@@ -123,11 +123,11 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
         var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
 
-        if (ParseLiteral(rhs, out var literal)) {
+        if (TryParseLiteral(rhs, out var literal)) {
             var l = identifier.LookupValidLiteral(literal!);
             return new AssignmentInstruction(identifier, l);
         } else {
-            var rhsIdentifier = context.ResolveAssignableIdentifier(new Identifier(rhs));
+            var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
             if (rhsIdentifier != null) {
                 return new AssignmentInstruction(identifier, rhsIdentifier);
             } else {

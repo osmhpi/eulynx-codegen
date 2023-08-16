@@ -95,13 +95,8 @@ impl {klass.Info.ClassName}_Ports {{
 
     private string WriteMessageSchema(MessageSchema messageSchema)
     {
-        var translateType = (string type) => type switch {
-            "String" => ("char", "[4]"),
-            _ => (type, "")
-        };
-
         return @$"typedef struct Message__{messageSchema.Identifier.Name} {{
-            {string.Join("\n", messageSchema.Members.Select(x => $"{translateType(x.TypeIdentifier.Name).Item1} {x.MemberName.Name}{translateType(x.TypeIdentifier.Name).Item2};"))}
+            {string.Join("\n", messageSchema.Members.Select(x => $"{x.Member.DataType(TargetLanguage.C).Item1} {x.MemberName.Name}{x.Member.DataType(TargetLanguage.C).Item2};"))}
         }} Message__{messageSchema.Identifier.Name};";
     }
 
@@ -216,7 +211,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
     {
         if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
         {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.Rust).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
+            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.Rust).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
         }
 
         return "";
@@ -227,7 +222,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
         var condition = junctionTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
@@ -255,7 +250,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
         var condition = codeTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self.{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self.{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self.{messageEvent.MessageSchema.Identifier.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self.{messageEvent.MessageSchema.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };

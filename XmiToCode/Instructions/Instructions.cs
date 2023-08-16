@@ -52,15 +52,15 @@ record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
 {
     internal override string ToCSharp(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context, TargetLanguage.CSharp)} = {Rhs.Accessor(context, TargetLanguage.CSharp)};";
+        return Lhs.Assign(context, Rhs, TargetLanguage.CSharp);
     }
     internal override string ToC(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context, TargetLanguage.C)} = {Rhs.Accessor(context, TargetLanguage.C)};";
+        return Lhs.Assign(context, Rhs, TargetLanguage.C);
     }
     internal override string ToRust(ProgramContext context)
     {
-        return $"{Lhs.Accessor(context, TargetLanguage.Rust)} = {Rhs.Accessor(context, TargetLanguage.Rust)};";
+        return Lhs.Assign(context, Rhs, TargetLanguage.Rust);
     }
 }
 

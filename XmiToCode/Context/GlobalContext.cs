@@ -23,22 +23,13 @@ public record GlobalContext(DataTypeHelper DataTypes) : ProgramContext
         throw new NotImplementedException();
     }
 
-    internal override MessageSchema ResolveMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
     {
         throw new NotImplementedException();
     }
 
-    internal MessageSchema ResolveMessageSchema(ComplexPropertyOrPort port, TypeIdentifier messageTypeIdentifier)
+    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
-        var umlType = port.UmlType;
-        var receptions = umlType.OwnedReception
-            .Select(x => (Key: new TypeIdentifier(x.Name), Value: x))
-            .ToDictionary(x => x.Key, x => x.Value);
-
-        // A complex port has a class type with many receptions,
-        // each of which designate a possible message type
-        var reception = receptions[messageTypeIdentifier];
-        var signal = DataTypes.Signals[reception.Signal];
-        return new MessageSchema(messageTypeIdentifier, signal, DataTypes);
+        throw new NotImplementedException();
     }
 }

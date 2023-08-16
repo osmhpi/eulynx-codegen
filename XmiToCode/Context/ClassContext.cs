@@ -7,11 +7,12 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICode
     // Properties
     // Enums ?
 
-    // public Dictionary<TypeIdentifier, MessageSchema> Signals { get; }
-    //     = DataTypes.Signals.Values
-    //         .Select(x => (Key: new TypeIdentifier(x.Name), Value: x))
-    //         .Select(x => (x.Key, Value: new MessageSchema(x.Key)))
-    //         .ToDictionary(x => x.Key, x => x.Value);
+    public Dictionary<TypeIdentifier, MessageSchema> MessageSchema { get; }
+        = DataTypes.Ports.Values.OfType<ComplexPropertyOrPort>()
+            .SelectMany(x => x.UmlType.OwnedReception)
+            .Select(x => DataTypes.Signals[x.Signal])
+            .Select(x => new MessageSchema(new TypeIdentifier(x.Name), x, DataTypes))
+            .ToDictionary(x => x.Identifier);
 
     public override string InstanceReference { get; } = Writer.DefaultInstanceReference;
 
@@ -64,7 +65,12 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICode
         return Parent.ResolveCallableIdentifier(identifier);
     }
 
-    internal override MessageSchema ResolveMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
+    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
+    {
+        return MessageSchema[signal];
+    }
+
+    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
         if (UsedOutgoingMessageTypes.ContainsKey(messageTypeIdentifier)) {
             return UsedOutgoingMessageTypes[messageTypeIdentifier];
@@ -72,7 +78,18 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes, ICode
 
         var port = Ports[portIdentifier];
         if (port is ComplexPropertyOrPort complexPort) {
-            var result = Parent.ResolveMessageSchema(complexPort, messageTypeIdentifier);
+
+            var umlType = complexPort.UmlType;
+            var receptions = umlType.OwnedReception
+                .Select(x => (Key: new TypeIdentifier(x.Name), Value: x))
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            // A complex port has a class type with many receptions,
+            // each of which designate a possible message type
+            var reception = receptions[messageTypeIdentifier];
+            var signal = DataTypes.Signals[reception.Signal];
+            var result = MessageSchema[new TypeIdentifier(signal.Name)];
+
             UsedOutgoingMessageTypes[messageTypeIdentifier] = result;
             return result;
         }
