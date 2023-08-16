@@ -10,6 +10,7 @@ public enum TargetLanguage {
 
 public interface IAccessible {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage);
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage);
 }
 
 public interface IAssignable : IAccessible {
@@ -89,29 +90,45 @@ public record ClassMember(Identifier Identifier) : IAccessible {
                 ? Identifier.Name
                 : $"{context.InstanceReference}->{Identifier.Name}"
         };
+
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{UmlEnumeration.Name}__{Member.Name}";
+
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
+
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record BoolLiteral(bool Value) : IAccessible
 {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "true" : "false";
+
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record PulsedInLiteral(bool Value) : IAccessible
 {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record PulsedOutLiteral(bool Value) : IAccessible
 {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 }
 
 public record Method(Identifier Identifier, Operation Operation) : ICallable
@@ -189,6 +206,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
                 $"{context.InstanceReference}->{Name}"
         };
 
+    public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
+
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
     {
@@ -234,6 +254,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         // TODO: This is language-specific
         public override string GenerateAssignment(string value) =>
             $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
+
+        public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+            AllowedValues.Count == 0 ?
+                $"memcmp({Accessor(context, targetLanguage)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage)})) == 0" :
+                $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
     }
 
     public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType, ClassInfo Class) : PropertyOrPort(Property, IsPort, Class)

@@ -201,7 +201,8 @@ void transition({klass.Info.ClassName} *self) {{
 
         var constraint = junctionTransition.Constraint switch {
             TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context, TargetLanguage.C)} == {equality.Rhs.Accessor(junctionTransition.context, TargetLanguage.C)})",
+            TransitionConstraint.Equality equality =>
+                $"if ({equality.Lhs.Comparator(junctionTransition.context, equality.Rhs, TargetLanguage.C)})",
             TransitionConstraint.SingleVariable single =>
                 single.Positive ?
                     $"if ({single.Variable.Accessor(junctionTransition.context, TargetLanguage.C)})" :
@@ -233,7 +234,8 @@ void transition({klass.Info.ClassName} *self) {{
 
         var constraint = codeTransition.Constraint switch {
             TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.C)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.C)})",
+            TransitionConstraint.Equality equality =>
+                $"if ({equality.Lhs.Comparator(codeTransition.context, equality.Rhs, TargetLanguage.C)})",
             TransitionConstraint.SingleVariable single =>
                 single.Positive ?
                     $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.C)})" :
