@@ -46,6 +46,6 @@ public record BlockContext : ProgramContext
     {
         if (accessible is PropertyOrPort prop && _newAttributes != null && _newAttributes.ContainsValue(prop))
             return true;
-        return false;
+        return Parent.IsLocalVariable(accessible);
     }
 }
