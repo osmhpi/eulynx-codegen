@@ -28,18 +28,6 @@ if (xmi == null) {
 
 // This only selects top-level packages
 var packages = xmi.Model.PackagedElements.Where(x => x.Type == "uml:Package").ToList();
-foreach (var package in packages) {
-    Console.WriteLine(package.Name);
-}
-
-// Find a specific package
-/* var mostInterestingPackage = FindElementWithName(xmi.Model.PackagedElements, "EULYNX field element Subsystem - Functional Entities");
-var i = 1;
-while (mostInterestingPackage == null) {
-    mostInterestingPackage = FindElementWithName(xmi.Model.PackagedElements, "EULYNX field element Subsystem - Functional Entities");
-    i++;
-}
-Console.WriteLine(mostInterestingPackage.Name);*/
 
 var sysimProfile = xmi.Model.PackagedElements
     .Single(x => x.Type == "uml:Profile" && x.Name == "SySim Profile");
@@ -48,12 +36,6 @@ var eulynxProfile = xmi.Model.PackagedElements
 
 var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
 var genericFunctions = packages.Single(x => x.Name == "Generic Functions");
-
-// Get to F_EST_EfeS
-var genericRequirementsSubsystems = eulynxSystem.PackagedElements.Single(x => x.Name == "Generic requirements for subsystems");
-var fieldSubsystem = genericRequirementsSubsystems.PackagedElements.Single(x => x.Name == "EULYNX field element Subsystem");
-var functionalViewpoint = fieldSubsystem.PackagedElements.Single(x => x.Name == "EULYNX field element Subsystem - Functional Viewpoint");
-var functionalEntities = functionalViewpoint.PackagedElements.Single(x => x.Name == "EULYNX field element Subsystem - Functional Entities");
 
 var genericEvents = FindAllEvents(genericFunctions).ToList();
 
@@ -64,11 +46,11 @@ var dataTypes = FindAllDataTypes(sysimProfile)
     // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
     .ToDictionary(x => x.Id);
 
-var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI"};
+var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
 
-var interestingPackages = packages
-    .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name));
-interestingPackages = interestingPackages.Append(functionalEntities);
+var interestingPackages = eulynxSystem.PackagedElements
+    .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
+    .ToList();
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
@@ -77,7 +59,7 @@ var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
 var classWhitelist = new [] {
     // "F_Control_Point_Machine_Position",
     // "S_SCI_P_Command_And_Recieve",
-    //"S_SCI_EfeS_Prim",
+    "S_SCI_EfeS_Prim",
     // "S_SCI_Adj_Prim"
     "F_EST_EfeS"
 };
@@ -149,24 +131,4 @@ static IEnumerable<PackagedElement> FindAllElements(PackagedElement package, str
         .Where(x => x.Type == umlType);
     var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
     return elements.Concat(subpackages.SelectMany(x => FindAllElements(x, umlType)));
-}
-
-// Find element in list of elements
-static PackagedElement FindElementWithName(List<PackagedElement> packages, string name) {
-    var i = 0;
-    while(i < packages.Count) {
-        var element = packages[i];
-        if (element.Name == name) {
-            return element;
-        } else if (element.PackagedElements != null) {
-            var subelement = FindElementWithName(element.PackagedElements, name);
-            if (subelement != null) {
-                return subelement;
-            }
-        } else {
-            return null;
-        }
-        i++;
-    }
-    return null;
 }

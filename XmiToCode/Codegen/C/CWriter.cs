@@ -230,6 +230,10 @@ void transition({klass.Info.ClassName} *self) {{
         var constraint = codeTransition.Constraint switch {
             TransitionConstraint.Else => "else",
             TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.C)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.C)})",
+            TransitionConstraint.SingleVariable single =>
+                single.Positive ?
+                    $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.C)})" :
+                    $"if (!{single.Variable.Accessor(codeTransition.context, TargetLanguage.C)})",
             null => null,
             _ => throw new NotImplementedException()
         };
