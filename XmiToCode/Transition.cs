@@ -24,7 +24,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (Transitions.Count > 1 && fromState.IsInitialState) {
             // TODO: Temporary workaround: If there are transition constraints and more
             // than 1 transition, all constraints have to be fulfilled. Do that later.
-            return new CodeTransition(stateName, context, null,
+            return new CodeTransition(stateName, context,
                 ParseActivities(fromState, (this, state, stateName), dataTypes, context),
                 null, this);
         }
@@ -51,16 +51,16 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
 
         if (state.IsRegularState) {
             if (noTriggerConditions) {
-                return new CodeTransition(stateName, blockContext, messageSchema != null ? new DeconstructMessageInstruction(currentSignalName, messageSchema, blockContext) : null,
+                return new CodeTransition(stateName, blockContext,
                     ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(dataTypes, blockContext), this);
             } else {
-                return new CodeTransition(stateName, blockContext, messageSchema != null ? new DeconstructMessageInstruction(currentSignalName, messageSchema, blockContext) : null,
+                return new CodeTransition(stateName, blockContext,
                     ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(dataTypes, blockContext), this);
             }
         }
 
         if (state.IsJunction) {
-            return new JunctionTransition(blockContext, messageSchema != null ? new DeconstructMessageInstruction(currentSignalName, messageSchema, blockContext) : null,
+            return new JunctionTransition(blockContext,
                 ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext),
                 stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, classInfo, true),
                 GetTransitionConstraints(dataTypes, blockContext),

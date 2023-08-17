@@ -7,7 +7,6 @@ public class CSharpWriter : ICodeWriter {
         return element switch {
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
             JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
-            DeconstructMessageInstruction deconstructMessageInstruction => WriteDeconstructMessageInstruction(deconstructMessageInstruction),
             SimpleBehaviorRecord simpleBehaviorRecord => WriteSimpleBehaviorRecord(simpleBehaviorRecord),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
@@ -85,25 +84,9 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
 ";
     }
 
-    private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
-    {
-        // if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0) {
-        //     if (deconstructMessageInstruction.attributesOfCurrentSignal.Count >= 2) {
-        //         return
-        //             @$"var ({string.Join(", ", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName};";
-        //     } else if (deconstructMessageInstruction.attributesOfCurrentSignal.Count == 1) {
-        //         return
-        //             @$"var {deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name} = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName}.{deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name};";
-        //     }
-        // }
-
-        return "";
-    }
-
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
         return $@"{{
-            {Write(junctionTransition.DeconstructMessageInstruction)}
             {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
             {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}
         }}";
@@ -112,7 +95,6 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     private string WriteCodeTransition(CodeTransition codeTransition)
     {
         return $@"{{
-            {Write(codeTransition.DeconstructMessageInstruction)}
             {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
             return {codeTransition.stateName}.New({codeTransition.context.InstanceReference});
         }}";

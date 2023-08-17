@@ -27,7 +27,6 @@ internal class RustWriter : ICodeWriter
         {
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
             JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
-            DeconstructMessageInstruction deconstructMessageInstruction => WriteDeconstructMessageInstruction(deconstructMessageInstruction),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteStateTransitions(behaviorRecord),
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
@@ -207,16 +206,6 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
 ";
     }
 
-    private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
-    {
-        if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Members.Count > 0)
-        {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Members.Select(x => $"{x.Member.DataType(TargetLanguage.Rust).Item1} {x.Member.Name}{x.Member.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Member.Name};"));
-        }
-
-        return "";
-    }
-
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
         var condition = junctionTransition.Transition switch {
@@ -240,7 +229,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
             }}";
 
         return wrapWithIfElseExpression(condition,
-            Write(junctionTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+            wrapWithIfElseExpression(constraint,
                 $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToRust(junctionTransition.context)))}
                 {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}"));
     }
@@ -274,7 +263,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
             }}";
 
             return wrapWithIfElseExpression(condition,
-                Write(codeTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+                wrapWithIfElseExpression(constraint,
          $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToRust(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }

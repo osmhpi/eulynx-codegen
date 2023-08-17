@@ -12,7 +12,6 @@ internal class CWriter : ICodeWriter
         {
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
             JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
-            DeconstructMessageInstruction deconstructMessageInstruction => WriteDeconstructMessageInstruction(deconstructMessageInstruction),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
@@ -175,21 +174,6 @@ void transition({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
-    {
-        // if (deconstructMessageInstruction.Context.NewAttributes != null) {
-        //     return string.Join("\n",
-
-        //         deconstructMessageInstruction.Context.NewAttributes.Members.Select(x =>
-        //             $"{x.Member.DataType(TargetLanguage.C).Item1} {x.Member.Name}{x.Member.DataType(TargetLanguage.C).Item2};\n" +
-        //             // $"{deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value." +
-        //             x.Member.Assign(deconstructMessageInstruction.Context, x.Member, TargetLanguage.C)
-        //         ));
-        // }
-
-        return "";
-    }
-
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
         var condition = junctionTransition.Transition switch {
@@ -218,7 +202,7 @@ void transition({klass.Info.ClassName} *self) {{
             }}";
 
         return wrapWithIfElseExpression(condition,
-            Write(junctionTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+            wrapWithIfElseExpression(constraint,
                 $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
                 {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}"));
     }
@@ -251,7 +235,7 @@ void transition({klass.Info.ClassName} *self) {{
             }}";
 
             return wrapWithIfElseExpression(condition,
-                Write(codeTransition.DeconstructMessageInstruction) + wrapWithIfElseExpression(constraint,
+            wrapWithIfElseExpression(constraint,
          $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
