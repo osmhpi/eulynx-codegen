@@ -7,7 +7,7 @@ public record ClassInfo(string ClassName, string BehaviorName);
 public record Class(
     ClassInfo Info,
     ClassContext ClassContext,
-    IBehaviorRecord Behavior,
+    BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
     List<StateName> States,
     List<GlobalEnumeration> GlobalEnumerations)
@@ -94,15 +94,23 @@ public record GlobalEnumeration(PackagedElement Enumeration) {
 
 public interface IBehaviorRecord
 {
+    IState? State { get; }
     string Name { get; }
     List<IBehaviorRecord> subrecords { get; }
     ClassInfo className { get; }
 }
 
-public record SimpleBehaviorRecord(string Name, string recordName, ClassInfo className) : IBehaviorRecord
+public record SimpleBehaviorRecord(IState? State, string Name, string recordName, ClassInfo className) : IBehaviorRecord
 {
     public List<IBehaviorRecord> subrecords { get; } = new();
 }
 
-
-public record BehaviorRecord(StateMachine StateMachine, string Name, string parentBehaviorName, ClassInfo className, ICodeTransition initializer, List<IBehaviorRecord> subrecords) : IBehaviorRecord;
+public record BehaviorRecord(
+    IState? State,
+    StateMachine StateMachine,
+    string Name,
+    string? parentBehaviorName,
+    ClassInfo className,
+    ICodeTransition initializer,
+    List<IBehaviorRecord> subrecords
+) : IBehaviorRecord;

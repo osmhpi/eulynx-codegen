@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using XmiToCode;
 
 public record StateName(IState Subvertex, string Name);
@@ -86,26 +85,26 @@ public class StateMachine : CodeGenerationItem
 
     private IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
         if (x.InternalStateMachine != null) {
-            return x.InternalStateMachine.ParseStateRecord(x.Name, recordName, className, dataTypes, context);
+            return x.InternalStateMachine.ParseStateRecord(x, x.Name, recordName, className, dataTypes, context);
         } else {
-            return new SimpleBehaviorRecord(x.Name, recordName, className);
+            return new SimpleBehaviorRecord(x, x.Name, recordName, className);
         }
     }
 
-    private IBehaviorRecord ParseStateRecord(string name, string parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
+    private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
         var newContext = new BlockContext(context); // , overrideInstanceReference: "This"
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
-        var initialTransition = GetTransitionsFromState(parentBehaviorName + "." + name, _initialState).Single();
+        var initialTransition = GetTransitionsFromState((parentBehaviorName != null ? parentBehaviorName + "." : "") + name, _initialState).Single();
         var initializer = initialTransition.transition.GenerateTransition(name,
             _initialState, initialTransition.state, initialTransition.stateName,
             dataTypes, false, this, newContext, className);
 
-        return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
+        return new BehaviorRecord(x, this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
-    public IBehaviorRecord Parse(ClassInfo className, DataTypeHelper dataTypes, ClassContext context) {
-        return ParseStateRecord(GetName(), "object", className, dataTypes, context);
+    public BehaviorRecord Parse(ClassInfo className, DataTypeHelper dataTypes, ClassContext context) {
+        return ParseStateRecord(null, GetName(), null, className, dataTypes, context);
     }
 
     public IEnumerable<(CompoundState FromState, UmlTransition Transition)> GetTransitionsOriginatingFromAnyState() {

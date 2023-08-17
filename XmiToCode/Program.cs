@@ -71,7 +71,7 @@ var typeAliases = new Dictionary<(string, string), (string, string)>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
-var c = new CWriter();
+var c = new CWriter(true);
 
 foreach (var interestingPackage in interestingPackages) {
     // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");

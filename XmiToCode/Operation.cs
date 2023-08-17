@@ -4,6 +4,8 @@ using static CodeGenerationItem;
 namespace XmiToCode;
 
 public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
+    public Identifier Identifier { get; } = new Identifier(Op.Name);
+
     public string Write(DataTypeHelper dataTypes, ProgramContext context) {
         var instructions = CompoundState.ParseInstructions(Behavior.Body, context);
 

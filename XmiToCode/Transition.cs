@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
 
-using static CodeGenerationItem;
 using static CompoundState;
 
 public abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
@@ -17,9 +16,6 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         StateMachine stateMachine,
         ProgramContext context,
         ClassInfo classInfo) {
-
-        // var attributesOfCurrentSignal = preJunctionAttributesOfCurrentSignal ?? new Dictionary<string, PropertyOrPort>();
-        string? currentSignalName = null;
 
         if (Transitions.Count > 1 && fromState.IsInitialState) {
             // TODO: Temporary workaround: If there are transition constraints and more
@@ -39,12 +35,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
             var signal = theEvent.Signal;
             var theSignal = dataTypes.Signals[signal];
-            // attributesOfCurrentSignal = attributesOfCurrentSignal.Select(x => x.Value)
-            //     .Concat(theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo)))
-            //     .ToDictionary(x => x.Name);
             messageSchema = context.ResolveIncomingMessageSchema(new TypeIdentifier(theSignal.Name));
-            // newAttributes = theSignal.OwnedAttribute.Select(x => PropertyOrPort.Create(x, dataTypes.DataTypes, false, classInfo, messageSchema.MembersDict[new Identifier(x.Name)].Member)).ToDictionary(x => x.Name);
-            currentSignalName = InPascalCase(theSignal.Name);
         }
 
         var blockContext = new BlockContext(context, messageSchema);
@@ -238,15 +229,9 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
     }
 }
 
-record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions)
-{
+record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
 
-}
-
-record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions)
-{
-
-}
+record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
 
 public record TransitionConstraint() {
     public record Else() : TransitionConstraint();
@@ -257,21 +242,6 @@ public record TransitionConstraint() {
 
 record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions)
 {
-    private IAccessible LookupSignalAttributeType(PackagedElement theSignal, DataTypeHelper dataTypes, string attributeName, string value) {
-        var attribute = theSignal.OwnedAttribute.SingleOrDefault(x => x.Name == attributeName);
-        if (attribute != null && dataTypes.DataTypes.ContainsKey(attribute.Type)) {
-            var attributeDataType = dataTypes.DataTypes[attribute.Type];
-
-            if (attributeDataType.Type == "uml:Enumeration")
-            {
-                var enumerationMembers = attributeDataType.OwnedLiteral.Select(x => new EnumerationMember(attributeDataType, x)).ToDictionary(x => x.Member.Name);
-                return enumerationMembers.GetValueOrDefault(value, null);
-            }
-        }
-
-        return dataTypes.LookupPropertyValueType(InPascalCase(value));
-    }
-
     protected override TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context)
     {
         var expression = SingleTransition.OwnedRule.Specification.Body;
@@ -378,7 +348,4 @@ record MessageEventTransition(IState From, IState To, List<UmlTransition> Transi
     }
 }
 
-record InitialTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions)
-{
-
-}
+record InitialTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions);

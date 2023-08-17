@@ -2,6 +2,13 @@ using XmiToCode;
 
 internal class CWriter : ICodeWriter
 {
+    private readonly bool _enableKlee;
+
+    public CWriter(bool enableKlee)
+    {
+        _enableKlee = enableKlee;
+    }
+
     public string DefaultInstanceReference => "self";
 
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.c";
@@ -23,10 +30,6 @@ internal class CWriter : ICodeWriter
     {
         return element switch
         {
-            CodeTransition codeTransition => WriteCodeTransition(codeTransition),
-            JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
-            TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
-            BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
@@ -41,7 +44,7 @@ internal class CWriter : ICodeWriter
     {
         // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
         var instructions = "";
-        return @$"void {CodeGenerationItem.InPascalCase(operation.Op.Name)}(void *) {{
+        return @$"void {operation.Identifier.Name}(void *) {{
             {instructions}
         }}";
     }
@@ -73,6 +76,11 @@ internal class CWriter : ICodeWriter
 
     private string WriteClass(Class klass)
     {
+        var states = PrefixWith((BehaviorRecord)klass.Behavior, EnumerateSubrecords(klass.Behavior))
+            .Where(x => x.record.State != null)
+            .ToDictionary(x => x.record.State!, x => x.Name);
+
+
         //  #include ""{klass.Info.ClassName}.h""
         return @$"
 {WriteHeader(klass)}
@@ -81,38 +89,210 @@ internal class CWriter : ICodeWriter
 
 {string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
 
-{Write(klass.Behavior)}
+{WriteBehaviorRecord(klass.Behavior, states)}
 
 void new({klass.Info.ClassName} *x) {{
     x->state = make_state_{klass.Info.BehaviorName}(x);
 }}
 
-{string.Join("\n", klass.TransitionFunctions.Select(x => Write(x)))}
+{string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
 void transition({klass.Info.ClassName} *self) {{
   switch (self->state)
   {{
-        {string.Join("\n", klass.States.Select(t =>
-            string.Join("\n", $"case {t.Name.Replace(".", "__")}: \n self->state = transition_from_{t.Name.Replace(".", "__")}(self);\nbreak;")))}
+        {string.Join("\n", PrefixWith((BehaviorRecord)klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
+            string.Join("\n", $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;")))}
   }}
+}}
+
+typedef enum Event
+{{
+  Event_Change749,
+  Event_Change980,
+  Event_Change987,
+  Event_Change999,
+  Event_Change1162,
+  Event_Change1179,
+  Event_Change1175,
+  Event_Change1178,
+  Event_Change1225,
+  Event_Change1172,
+  Event_Change1223,
+  Event_Change743,
+  Event_Change1171,
+  Event_Change745,
+  Event_Change1180,
+  Event_Change1181,
+  Event_Change1227,
+  Event_Change742,
+  Event_Change1177,
+
+  Event_MsgPdiNotAvailable,
+  Event_MsgResetPdi,
+  Event_MsgPdiVersionCheck,
+}} Event;
+
+void process_events(SSciEfesPrim *self, Event *event, size_t len)
+{{
+  for (int i = 0; i < len; ++i)
+  {{
+    Event e = event[i];
+    klee_open_merge();
+    switch (e)
+    {{
+    case Event_Change749:
+      self->Change749.IsTriggered = 1;
+      break;
+    case Event_Change980:
+      self->Change980.IsTriggered = 1;
+      break;
+    case Event_Change987:
+      self->Change987.IsTriggered = 1;
+      break;
+    case Event_Change999:
+      self->Change999.IsTriggered = 1;
+      break;
+    case Event_Change1162:
+      self->Change1162.IsTriggered = 1;
+      break;
+    case Event_Change1179:
+      self->Change1179.IsTriggered = 1;
+      break;
+    case Event_Change1175:
+      self->Change1175.IsTriggered = 1;
+      break;
+    case Event_Change1178:
+      self->Change1178.IsTriggered = 1;
+      break;
+    case Event_Change1225:
+      self->Change1225.IsTriggered = 1;
+      break;
+    case Event_Change1172:
+      self->Change1172.IsTriggered = 1;
+      break;
+    case Event_Change1223:
+      self->Change1223.IsTriggered = 1;
+      break;
+    case Event_Change743:
+      self->Change743.IsTriggered = 1;
+      break;
+    case Event_Change1171:
+      self->Change1171.IsTriggered = 1;
+      break;
+    case Event_Change745:
+      self->Change745.IsTriggered = 1;
+      break;
+    case Event_Change1180:
+      self->Change1180.IsTriggered = 1;
+      break;
+    case Event_Change1181:
+      self->Change1181.IsTriggered = 1;
+      break;
+    case Event_Change1227:
+      self->Change1227.IsTriggered = 1;
+      break;
+    case Event_Change742:
+      self->Change742.IsTriggered = 1;
+      break;
+    case Event_Change1177:
+      self->Change1177.IsTriggered = 1;
+      break;
+    case Event_MsgPdiNotAvailable:
+      self->MsgPdiNotAvailable.Value = (Message__MsgPdiNotAvailable){{}};
+      self->MsgPdiNotAvailable.Some = 1;
+      break;
+    case Event_MsgResetPdi:
+      self->MsgResetPdi.Value = (Message__MsgResetPdi){{
+          .ReportedResetReason = ResetReason__ContentTelegramError}};
+      self->MsgResetPdi.Some = 1;
+      break;
+    case Event_MsgPdiVersionCheck:
+      self->MsgPdiVersionCheck.Value = (Message__MsgPdiVersionCheck){{
+          .ChecksumData = {0},
+          .PDIVersion = {0},
+          .Result = ResultValue__Match}};
+      self->MsgPdiVersionCheck.Some = 1;
+      break;
+    }}
+
+    transition(self);
+    klee_close_merge();
+
+    klee_assert(
+      self->state == SSciEfesPrimBehaviour__RequestedNoScp ||
+      self->state == SSciEfesPrimBehaviour__ImpermissibleNoScp ||
+      self->state == SSciEfesPrimBehaviour__Impermissible ||
+      self->state == SSciEfesPrimBehaviour__Disconnected ||
+      self->state == SSciEfesPrimBehaviour__DisconnectedNoScp ||
+      self->state == SSciEfesPrimBehaviour__Active ||
+      self->state == SSciEfesPrimBehaviour__Active__Establishing ||
+      self->state == SSciEfesPrimBehaviour__Active__Establishing__WaitingForVersionCheck ||
+      self->state == SSciEfesPrimBehaviour__Active__Establishing__WaitingForInitialisation ||
+      self->state == SSciEfesPrimBehaviour__Active__Establishing__ReceivingStatus ||
+      self->state == SSciEfesPrimBehaviour__Active__Establishing__OtherVersionRequired ||
+      self->state == SSciEfesPrimBehaviour__Active__Established ||
+      self->state == SSciEfesPrimBehaviour__Suspended);
+  }}
+}}
+
+int main()
+{{
+  {klass.Info.ClassName} x = {{0}};
+  new (&x);
+
+  Event one;
+  klee_make_symbolic(&one, sizeof(Event), ""one"");
+  Event two;
+  klee_make_symbolic(&two, sizeof(Event), ""two"");
+  Event three;
+  klee_make_symbolic(&three, sizeof(Event), ""three"");
+  Event four;
+  klee_make_symbolic(&four, sizeof(Event), ""four"");
+  Event five;
+  klee_make_symbolic(&five, sizeof(Event), ""five"");
+  Event six;
+  klee_make_symbolic(&six, sizeof(Event), ""six"");
+
+  Event event_sequence[6] = {{one, two, three, four, five, six}};
+  process_events(&x, event_sequence, 6);
+
+  return 0;
 }}
 ";
     }
 
-    private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
+    private string WriteBehaviorRecord(BehaviorRecord behaviorRecord, Dictionary<IState, string> states)
     {
         return
-            string.Join("\n", EnumerateSubrecords(behaviorRecord).Append(("", behaviorRecord)).Select(x => x.record switch {
-                SimpleBehaviorRecord simple => $@"
-                    {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({simple.className.ClassName} *self) {{
-                        return {behaviorRecord.Name}__{x.Name};
-                    }}",
-                BehaviorRecord record => $@"
-                    {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name}({record.className.ClassName} *self) {{
-                        {Write(record.initializer)}
-                    }}",
-                _ => throw new NotImplementedException()
-            }));
+            string.Join("\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord))
+                .Append((behaviorRecord.Name, behaviorRecord))
+                .Select(x => x.record switch {
+                    SimpleBehaviorRecord simple => $@"
+                        {behaviorRecord.Name} make_state_{x.Name} ({simple.className.ClassName} *self) {{
+                            return {x.Name};
+                        }}",
+                    BehaviorRecord record => $@"
+                        {behaviorRecord.Name} make_state_{x.Name}({record.className.ClassName} *self) {{
+                            {WriteICodeTransition(record.initializer, states)}
+                        }}",
+                    _ => throw new NotImplementedException()
+                }));
+    }
+
+    private string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states)
+    {
+        return initializer switch
+        {
+            JunctionTransition j => WriteJunctionTransition(j, states),
+            CodeTransition c => WriteCodeTransition(c, states),
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    private static IEnumerable<(string Name, IBehaviorRecord record)> PrefixWith(BehaviorRecord behaviorRecord, IEnumerable<(string Name, IBehaviorRecord record)> records) {
+        foreach (var (Name, record) in records) {
+            yield return ($"{behaviorRecord.Name}__{Name}", record);
+        }
     }
 
     private static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
@@ -127,12 +307,11 @@ void transition({klass.Info.ClassName} *self) {{
         }
     }
 
-    private string WriteTransitionFunction(TransitionFunction transitionFunction)
+    private string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        // {GenerateConditions(thisName, fromState, dataTypes, context)}
         return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
-            {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
+            {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
 
             // Do not transition
             return self->state;
@@ -140,7 +319,7 @@ void transition({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteJunctionTransition(JunctionTransition junctionTransition)
+    private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
     {
         var condition = junctionTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
@@ -170,10 +349,10 @@ void transition({klass.Info.ClassName} *self) {{
         return wrapWithIfElseExpression(condition,
             wrapWithIfElseExpression(constraint,
                 $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
-                {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}"));
+                {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"));
     }
 
-    private string WriteCodeTransition(CodeTransition codeTransition)
+    private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
         var condition = codeTransition.Transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
@@ -200,10 +379,9 @@ void transition({klass.Info.ClassName} *self) {{
                 {block}
             }}";
 
-            return wrapWithIfElseExpression(condition,
-            wrapWithIfElseExpression(constraint,
-         $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
-            return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
+        return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint,
+            $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
+                return make_state_{states[codeTransition.Transition.To]}(self);"));
     }
 
     private string WriteHeader(Class klass)
@@ -211,6 +389,8 @@ void transition({klass.Info.ClassName} *self) {{
         return @$"
 #include <stdbool.h>
 #include <string.h>
+#include ""klee/klee.h""
+
 #define Option(X) struct {{ int Some; X Value; }}
 
 typedef struct ChangeEvent
@@ -224,8 +404,6 @@ typedef struct TimeoutEvent
 }} TimeoutEvent;
 
 {string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
-
-typedef enum {klass.Info.BehaviorName} {klass.Info.BehaviorName};
 
 // Value Types
 
@@ -265,11 +443,11 @@ typedef struct {klass.Info.ClassName} {{
     private string WriteBehaviorEnum(BehaviorRecord behaviorRecord)
     {
         return @$"typedef enum {behaviorRecord.Name} {{
-        {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
+        {string.Join(",\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord)).Select(x => x.Name))}
 }} {behaviorRecord.Name};";
     }
 
     private string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
-        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
+        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
     }
 }
