@@ -31,8 +31,8 @@ public class DataTypeHelper {
         Dictionary<(string, string), (string, string)> typeAliases,
         ClassInfo classInfo)
     {
-        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false, classInfo)).ToDictionary(x => x.Name);
-        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true, classInfo)).ToDictionary(x => x.Name);
+        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
+        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
         // SignalProperties = receptions.SelectMany(x => signals[x.Signal].OwnedAttribute.Select(attribute => PropertyOrPort.Create(attribute, dataTypes))).ToDictionary(x => x.Name);
 
         Operations = operations;

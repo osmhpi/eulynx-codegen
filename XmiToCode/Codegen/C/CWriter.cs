@@ -6,6 +6,19 @@ internal class CWriter : ICodeWriter
 
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.c";
 
+    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    {
+        using var file = File.Create(GenerateFileName(umlClass));
+        using var writer = new StreamWriter(file);
+
+        await writer.WriteAsync(Write(klass));
+
+        using var headerFile = File.Create($"../Eulynx/{umlClass.GetName()}.h");
+        using var headerWriter = new StreamWriter(headerFile);
+
+        await headerWriter.WriteAsync(WriteHeader(klass));
+    }
+
     public string Write<T>(T element)
     {
         return element switch
@@ -60,52 +73,9 @@ internal class CWriter : ICodeWriter
 
     private string WriteClass(Class klass)
     {
+        //  #include ""{klass.Info.ClassName}.h""
         return @$"
-#include <stdbool.h>
-#define Option(X) struct {{ int Some; X Value; }}
-
-typedef struct ChangeEvent
-{{
-  int IsTriggered;
-}} ChangeEvent;
-
-typedef struct TimeoutEvent
-{{
-  int IsTimeoutExpired;
-}} TimeoutEvent;
-
-{string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
-
-typedef enum {klass.Info.BehaviorName} {klass.Info.BehaviorName};
-
-// Value Types
-
-{string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
-
-// Message Types
-{string.Join("\n", klass.GetIncomingMessageTypes().Select(x => Write(x)))}
-{string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => Write(x)))}
-
-typedef struct {klass.Info.ClassName} {{
-    {klass.Info.BehaviorName} state;
-
-    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-        PropertyOrPort.ComplexPropertyOrPort complex => null,
-        _ => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};"
-        }))}
-
-    // Messages -- Incoming
-    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
-    // Messages -- Outgoing
-    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
-
-    // Change Events
-    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Name}; // {x.ChangeExpression.Body}"))}
-
-    // Timeout Events
-    {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}
-
-}} {klass.Info.ClassName};
+{WriteHeader(klass)}
 
 // Operations
 
@@ -131,25 +101,18 @@ void transition({klass.Info.ClassName} *self) {{
 
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
     {
-        return @$"typedef enum {behaviorRecord.Name} {{
-        {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
-}} {behaviorRecord.Name};
-
-// State constructor forward declarations
-{string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"))}
-
-{string.Join("\n", EnumerateSubrecords(behaviorRecord).Append(("", behaviorRecord)).Select(x => x.record switch {
-    SimpleBehaviorRecord simple => $@"
-        {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({simple.className.ClassName} *self) {{
-            return {behaviorRecord.Name}__{x.Name};
-        }}",
-    BehaviorRecord record => $@"
-        {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name}({record.className.ClassName} *self) {{
-            {Write(record.initializer)}
-        }}",
-    _ => throw new NotImplementedException()
-}))}
-";
+        return
+            string.Join("\n", EnumerateSubrecords(behaviorRecord).Append(("", behaviorRecord)).Select(x => x.record switch {
+                SimpleBehaviorRecord simple => $@"
+                    {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({simple.className.ClassName} *self) {{
+                        return {behaviorRecord.Name}__{x.Name};
+                    }}",
+                BehaviorRecord record => $@"
+                    {behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name}({record.className.ClassName} *self) {{
+                        {Write(record.initializer)}
+                    }}",
+                _ => throw new NotImplementedException()
+            }));
     }
 
     private static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
@@ -170,6 +133,9 @@ void transition({klass.Info.ClassName} *self) {{
         return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
+
+            // Do not transition
+            return self->state;
         }}
 ";
     }
@@ -240,11 +206,70 @@ void transition({klass.Info.ClassName} *self) {{
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
     }
 
-    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    private string WriteHeader(Class klass)
     {
-        using var file = File.Create(GenerateFileName(umlClass));
-        using var writer = new StreamWriter(file);
+        return @$"
+#include <stdbool.h>
+#include <string.h>
+#define Option(X) struct {{ int Some; X Value; }}
 
-        await writer.WriteAsync(Write(klass));
+typedef struct ChangeEvent
+{{
+  int IsTriggered;
+}} ChangeEvent;
+
+typedef struct TimeoutEvent
+{{
+  int IsTimeoutExpired;
+}} TimeoutEvent;
+
+{string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
+
+typedef enum {klass.Info.BehaviorName} {klass.Info.BehaviorName};
+
+// Value Types
+
+{string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
+
+// Message Types
+{string.Join("\n", klass.GetIncomingMessageTypes().Select(x => Write(x)))}
+{string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => Write(x)))}
+
+{WriteBehaviorEnum((BehaviorRecord)klass.Behavior)}
+
+typedef struct {klass.Info.ClassName} {{
+    {klass.Info.BehaviorName} state;
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        PropertyOrPort.ComplexPropertyOrPort complex => null,
+        _ => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};"
+        }))}
+
+    // Messages -- Incoming
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
+    // Messages -- Outgoing
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
+
+    // Change Events
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Name}; // {x.ChangeExpression.Body}"))}
+
+    // Timeout Events
+    {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}
+
+}} {klass.Info.ClassName};
+
+{WriteBehaviorFunctionSignatures((BehaviorRecord)klass.Behavior)}
+";
+    }
+
+    private string WriteBehaviorEnum(BehaviorRecord behaviorRecord)
+    {
+        return @$"typedef enum {behaviorRecord.Name} {{
+        {string.Join(",\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name}__{x.Name}"))}
+}} {behaviorRecord.Name};";
+    }
+
+    private string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
+        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
     }
 }

@@ -23,22 +23,62 @@ public interface ICallable {
     public string Call(ProgramContext context, TargetLanguage targetLanguage);
 }
 
+public interface IAccessor {
+    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage);
+}
+
+public class ClassAccessor : IAccessor {
+    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
+        return targetLanguage switch
+        {
+            TargetLanguage.Rust => $"{propertyOrPort.Name}",
+            _ => context.IsLocalVariable(propertyOrPort) ?
+            // IsPort ?
+            //     $"{propertyOrPort.Name}.Value" :
+                $"{propertyOrPort.Name}" :
+            // IsPort ?
+            //     $"{context.InstanceReference}->{propertyOrPort.Name}.Value" :
+                $"{context.InstanceReference}->{propertyOrPort.Name}"
+        };
+    }
+}
+
+public class MessageAccessor : IAccessor {
+    private readonly TypeIdentifier _messageType;
+    private readonly Identifier _memberName;
+
+    public MessageAccessor(TypeIdentifier messageType, Identifier memberName)
+    {
+        _messageType = messageType;
+        _memberName = memberName;
+    }
+    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
+        return $"{context.InstanceReference}->{_messageType.Name}.Value.{_memberName.Name}";
+    }
+}
+
 public record MessageMember(TypeIdentifier Message, Identifier MemberName, PackagedElement Type, PropertyOrPort Member) : IAccessible, IAssignable
 {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
     {
-        return $"{context.InstanceReference}->{Message.Name}.Value.{Member.Name}";
+        return Member.Accessor(context, targetLanguage);
     }
 
     public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
+        // return $"{Accessor(context, targetLanguage)} = {other.Accessor(context, targetLanguage)};";
         return Member.Assign(context, other, targetLanguage);
     }
 
     public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
-        return $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
+        return Member.Comparator(context, other, targetLanguage);
     }
+
+    // public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    // {
+    //     return $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
+    // }
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)
     {
@@ -51,7 +91,8 @@ public record MessageMember(TypeIdentifier Message, Identifier MemberName, Packa
 public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
 {
     public List<MessageMember> Members { get; } = Signal.OwnedAttribute
-        .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type], PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""))))
+        .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type],
+            PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name)))))
         .ToList();
 
     public IEnumerable<ValueType> GetValueTypes() {
@@ -190,23 +231,23 @@ public record Method(Identifier Identifier, Operation Operation) : ICallable
     };
 }
 
-public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor = null)
+public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
     {
         var umlType = types[property.Type];
         return umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, IsPort, Class, ProxyFor),
+            "Boolean" => new BoolPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
             // "DateTime",
             // "Decimal",
             // "Double",
             // "Integer",
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, IsPort, Class, ProxyFor),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort, Class, ProxyFor),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort, Class, ProxyFor),
+            "String" => new StringPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
+            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
+            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
             // "Timespan",
-            _ => new ComplexPropertyOrPort(property, IsPort, umlType, Class, ProxyFor)
+            _ => new ComplexPropertyOrPort(property, IsPort, umlType, Class, TheAccessor, ProxyFor)
         };
     }
 
@@ -236,18 +277,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public string Name => InPascalCase(Property.Name);
 
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
-        targetLanguage switch
-        {
-            TargetLanguage.Rust => $"{Name}",
-            _ => context.IsLocalVariable(this) ?
-            // IsPort ?
-            //     $"{Name}.Value" :
-                $"{Name}" :
-            // IsPort ?
-            //     $"{context.InstanceReference}->{Name}.Value" :
-                $"{context.InstanceReference}->{Name}"
-        };
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => TheAccessor.Accessor(this, context, targetLanguage);
 
     public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
@@ -266,7 +296,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public abstract void EnsureComparableTypes(IAccessible rhsIdentifier);
 
 
-    public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
+    public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
             var result = new HashSet<StringPropertyOrPort>();
@@ -349,7 +379,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
+    public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         // public ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : base(Property, IsPort)
         // {
@@ -400,7 +430,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    public record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
+    public record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
@@ -434,7 +464,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
+    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -479,7 +509,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
+    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {

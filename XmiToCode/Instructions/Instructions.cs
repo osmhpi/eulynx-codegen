@@ -15,7 +15,7 @@ record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
     internal string ToC(ProgramContext context)
     {
         var valuesAndProperties = Schema.Members.Zip(Values);
-        return $"Message__{Schema.Identifier.Name} msg = {{ {string.Join(", ", valuesAndProperties.Select(x => $".{x.First.MemberName.Name} = {x.Second.Accessor(context, TargetLanguage.C)}"))} }};";
+        return string.Join("\n", valuesAndProperties.Select(x => $"{x.First.Assign(context, x.Second, TargetLanguage.C)}"));
     }
 
     internal string ToRust(ProgramContext context)
@@ -36,7 +36,6 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
     {
         return $@"
   {initialize.ToC(context)}
-  {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Value = msg;
   {context.InstanceReference}->{initialize.Schema.Identifier.Name}.Some = 1;";
     }
 
