@@ -125,14 +125,17 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
         if (TryParseLiteral(rhs, out var literal)) {
             var l = identifier.LookupValidLiteral(literal!);
+            identifier.EnsureComparableTypes(l);
             return new AssignmentInstruction(identifier, l);
         } else {
             var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
             if (rhsIdentifier != null) {
+                identifier.EnsureComparableTypes(rhsIdentifier);
                 return new AssignmentInstruction(identifier, rhsIdentifier);
             } else {
                 // It is a literal, but without quotes
                 var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
+                identifier.EnsureComparableTypes(l);
                 return new AssignmentInstruction(identifier, l);
             }
         }

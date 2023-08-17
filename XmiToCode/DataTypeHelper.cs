@@ -14,7 +14,6 @@ public class DataTypeHelper {
     public Dictionary<string, PackagedElement> Signals { get; }
     public Dictionary<string, PackagedElement> DataTypes { get; }
     public HashSet<PackagedElement> UsedChangeEvents { get; }
-    public Dictionary<PackagedElement, Dictionary<string, PropertyOrPort>> UsedSignals { get; }
 
     private readonly Dictionary<string, PropertyOrPort> _coalescedValues;
     // Externally provided aliases for types
@@ -46,7 +45,6 @@ public class DataTypeHelper {
 
         _coalescedValues = new Dictionary<string, PropertyOrPort>();
         UsedChangeEvents = new HashSet<PackagedElement>();
-        UsedSignals = new Dictionary<PackagedElement, Dictionary<string, PropertyOrPort>>();
     }
 
     private PropertyOrPort GetPropertyOrPort(string identifier, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null) {
@@ -86,11 +84,6 @@ public class DataTypeHelper {
         }
 
         return _coalescedValues[v];
-    }
-
-    public void RecordSignalUsed(PackagedElement packagedElement, Dictionary<string, PropertyOrPort> attributesOfCurrentSignal)
-    {
-        UsedSignals[packagedElement] = attributesOfCurrentSignal;
     }
 
     public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {

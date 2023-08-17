@@ -2,13 +2,13 @@ public record BlockContext : ProgramContext
 {
     public ProgramContext Parent { get; }
     private readonly string? _overrideInstanceReference;
-    private readonly Dictionary<string, PropertyOrPort>? _newAttributes;
+    private readonly MessageSchema? _newAttributes;
 
     public override string InstanceReference => _overrideInstanceReference ?? Parent.InstanceReference;
 
-    public Dictionary<string, PropertyOrPort>? NewAttributes => _newAttributes;
+    public MessageSchema? NewAttributes => _newAttributes;
 
-    public BlockContext(ProgramContext parent, Dictionary<string, PropertyOrPort>? newAttributes = null, string? overrideInstanceReference = null)
+    public BlockContext(ProgramContext parent, MessageSchema? newAttributes = null, string? overrideInstanceReference = null)
     {
         Parent = parent;
         _overrideInstanceReference = overrideInstanceReference;
@@ -18,8 +18,8 @@ public record BlockContext : ProgramContext
     // Deconstructed Message Members
     public override IAccessible ResolveIdentifier(Identifier identifier)
     {
-        if (NewAttributes != null && NewAttributes.ContainsKey(identifier.Name)) {
-            return NewAttributes[identifier.Name];
+        if (NewAttributes != null && NewAttributes.MembersDict.ContainsKey(identifier)) {
+            return NewAttributes.MembersDict[identifier];
         }
 
         return Parent.ResolveIdentifier(identifier);
@@ -27,8 +27,8 @@ public record BlockContext : ProgramContext
 
     public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
-        if (NewAttributes != null && NewAttributes.ContainsKey(identifier.Name)) {
-            return NewAttributes[identifier.Name];
+        if (NewAttributes != null && NewAttributes.MembersDict.ContainsKey(identifier)) {
+            return NewAttributes.MembersDict[identifier];
         }
 
         return Parent.ResolveAssignableIdentifier(identifier);
@@ -46,7 +46,7 @@ public record BlockContext : ProgramContext
 
     public override bool IsLocalVariable(IAccessible accessible)
     {
-        if (accessible is PropertyOrPort prop && NewAttributes != null && NewAttributes.ContainsValue(prop))
+        if (accessible is MessageMember member && NewAttributes != null && NewAttributes.Members.Contains(member))
             return true;
         return Parent.IsLocalVariable(accessible);
     }

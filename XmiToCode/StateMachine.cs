@@ -60,14 +60,14 @@ public class StateMachine : CodeGenerationItem
         return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context, theRootBehaviorName));
     }
 
-    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false, Dictionary<string, PropertyOrPort>? attributesOfCurrentSignal = null)
+    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, attributesOfCurrentSignal, context, classInfo)).ToList();
+        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, context, classInfo)).ToList();
     }
 
     public string GetName() {
@@ -99,7 +99,7 @@ public class StateMachine : CodeGenerationItem
         var initialTransition = GetTransitionsFromState(parentBehaviorName + "." + name, _initialState).Single();
         var initializer = initialTransition.transition.GenerateTransition(name,
             _initialState, initialTransition.state, initialTransition.stateName,
-            dataTypes, false, this, null, newContext, className);
+            dataTypes, false, this, newContext, className);
 
         return new BehaviorRecord(this, name, parentBehaviorName, className, initializer, subrecords);
     }

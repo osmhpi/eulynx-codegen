@@ -36,16 +36,19 @@ internal class CWriter : ICodeWriter
 
     private string WriteMessageSchema(MessageSchema messageSchema)
     {
-        return @$"typedef struct Message__{messageSchema.Identifier.Name} {{
+        return @$"
+        {string.Join("\n", messageSchema.GetValueTypes().Select(x => Write(x)))}
+
+        typedef struct Message__{messageSchema.Identifier.Name} {{
             {string.Join("\n", messageSchema.Members.Select(x => $"{x.Member.DataType(TargetLanguage.C).Item1} {x.MemberName.Name}{x.Member.DataType(TargetLanguage.C).Item2};"))}
         }} Message__{messageSchema.Identifier.Name};";
     }
 
     private string WriteValueType(ValueType valueType)
     {
-        return @$"typedef enum {valueType.Class.ClassName}__{valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Class.ClassName}__{valueType.Identifier.Name}Value__{x.Name}"))}
-        }} {valueType.Class.ClassName}__{valueType.Identifier.Name}Value;";
+        return @$"typedef enum {valueType.Identifier.Name}Value {{
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
+        }} {valueType.Identifier.Name}Value;";
     }
 
     private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
@@ -89,9 +92,6 @@ typedef struct {klass.Info.ClassName} {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
-        PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-             $"{klass.Info.ClassName}__{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};" :
-             $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};",
         _ => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};"
         }))}
 
@@ -177,10 +177,15 @@ void transition({klass.Info.ClassName} *self) {{
 
     private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
     {
-        if (deconstructMessageInstruction.Context.NewAttributes != null) {
-            return string.Join("\n",
-                deconstructMessageInstruction.Context.NewAttributes.Select(x => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.C).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};" ));
-        }
+        // if (deconstructMessageInstruction.Context.NewAttributes != null) {
+        //     return string.Join("\n",
+
+        //         deconstructMessageInstruction.Context.NewAttributes.Members.Select(x =>
+        //             $"{x.Member.DataType(TargetLanguage.C).Item1} {x.Member.Name}{x.Member.DataType(TargetLanguage.C).Item2};\n" +
+        //             // $"{deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value." +
+        //             x.Member.Assign(deconstructMessageInstruction.Context, x.Member, TargetLanguage.C)
+        //         ));
+        // }
 
         return "";
     }

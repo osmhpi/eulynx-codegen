@@ -209,9 +209,9 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
 
     private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
     {
-        if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0)
+        if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Members.Count > 0)
         {
-            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => $"{x.Value.DataType(TargetLanguage.Rust).Item1} {x.Value.Name}{x.Value.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Value.Name};"));
+            return string.Join("\n", deconstructMessageInstruction.attributesOfCurrentSignal.Members.Select(x => $"{x.Member.DataType(TargetLanguage.Rust).Item1} {x.Member.Name}{x.Member.DataType(TargetLanguage.Rust).Item2} = {deconstructMessageInstruction.Context.InstanceReference}->{deconstructMessageInstruction.currentSignalName}.Value.{x.Member.Name};"));
         }
 
         return "";

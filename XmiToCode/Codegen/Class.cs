@@ -19,7 +19,7 @@ public record Class(
             .Select(x => new ValueType(
                 Info,
                 x.Key,
-                ((PropertyOrPort.StringPropertyOrPort)x.Value).AllowedValues))
+                ((PropertyOrPort.StringPropertyOrPort)x.Value).GetAllowedValues()))
             .Where(x => x.AllowedValues.Count > 0);
     }
 

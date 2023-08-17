@@ -23,38 +23,51 @@ public interface ICallable {
     public string Call(ProgramContext context, TargetLanguage targetLanguage);
 }
 
-public record MessageMember(Identifier MemberName, PackagedElement Type, PropertyOrPort Member)
+public record MessageMember(TypeIdentifier Message, Identifier MemberName, PackagedElement Type, PropertyOrPort Member) : IAccessible, IAssignable
 {
-    // public TypeIdentifier TypeIdentifier { get; } =
-    //     // Type.Name == "String" ? new TypeIdentifier(MemberName.Name + "Value") :
-    //     new TypeIdentifier(Type.Name);
-    // internal IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier)
-    // {
-    //     var literals = Type.OwnedLiteral
-    //         .Select(x => (Key: new LiteralIdentifier(x.Name), Value: x))
-    //         .ToDictionary(x => x.Key, x => x.Value);
-    //     var theIdentifier = literals[literalIdentifier];
-    //     return new EnumerationMember(Type, theIdentifier);
-    // }
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+    {
+        return $"{context.InstanceReference}->{Message.Name}.Value.{Member.Name}";
+    }
+
+    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    {
+        return Member.Assign(context, other, targetLanguage);
+    }
+
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    {
+        return $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
+    }
+
+    public void EnsureComparableTypes(IAccessible rhsIdentifier)
+    {
+        Member.EnsureComparableTypes(rhsIdentifier);
+    }
+
     public IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier) => Member.LookupValidLiteral(literalIdentifier);
 }
 
 public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
 {
     public List<MessageMember> Members { get; } = Signal.OwnedAttribute
-        .Select(x => new MessageMember(new Identifier(x.Name), DataTypes.DataTypes[x.Type], PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""))))
+        .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type], PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""))))
         .ToList();
+
+    public IEnumerable<ValueType> GetValueTypes() {
+        return Members
+            .Where(x => x.Member is PropertyOrPort.StringPropertyOrPort)
+            .Select(x => new ValueType(
+                new ClassInfo(Identifier.Name, ""),
+                x.MemberName,
+                ((PropertyOrPort.StringPropertyOrPort)x.Member).AllowedValues))
+            .Where(x => x.AllowedValues.Count > 0);
+    }
 
     public Dictionary<Identifier, MessageMember> MembersDict => Members.ToDictionary(x => x.MemberName);
 
     internal MessageMember GetMemberByIndex(int i)
     {
-        // var properties = Signal.OwnedAttribute
-        //     .Select(x => (Key: new Identifier(x.Name), Value: x))
-        //     .ToList();
-        // var property = properties[i];
-        // var identifier = property.Key;
-        // var type = DataTypes.DataTypes[property.Value.Type];
         return Members[i];
     }
 }
@@ -118,7 +131,7 @@ public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Mem
 }
 
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{Class.ClassName}__{EnumType}__{Literal.Name}";
+    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{EnumType}__{Literal.Name}";
 
     public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
@@ -217,11 +230,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public abstract IAccessible RecordPossibleValue(LiteralIdentifier value);
 
-    public virtual string GeneratePropertyValueType()
-    {
-         return "";
-    }
-
     public abstract string GenerateAssignment(string value);
 
     public abstract (string, string) DataType(TargetLanguage language);
@@ -257,14 +265,35 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public abstract void EnsureComparableTypes(IAccessible rhsIdentifier);
 
-    public virtual string EqualityComparer => "Equals";
 
     public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, ProxyFor)
     {
+        private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
+            var result = new HashSet<StringPropertyOrPort>();
+            var toBeProcessed = new HashSet<StringPropertyOrPort>() { this };
+
+            while (toBeProcessed.Count > 0) {
+                var item = toBeProcessed.First();
+                toBeProcessed.Remove(item);
+                result.Add(item);
+                foreach (var other in item._equalTypes) {
+                    if (result.Contains(other))
+                        continue;
+                    toBeProcessed.Add(other);
+                }
+            }
+
+            return result;
+        }
         public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
-        public override (string, string) DataType(TargetLanguage language) => AllowedValues.Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
-        // TODO: Deprecated
-        public override string EqualityComparer => AllowedValues.Count > 0 ? "Equals" : "SequenceEqual";
+        public HashSet<LiteralIdentifier> GetAllowedValues() {
+            var result = new HashSet<LiteralIdentifier>();
+            foreach (var source in FindAllWithEqualDataTypes()) {
+                result.UnionWith(source.AllowedValues);
+            }
+            return result;
+        }
+        public override (string, string) DataType(TargetLanguage language) => GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
@@ -272,25 +301,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             return new ImplicitEnumMember($"{Name}Value", literal, Class);
         }
 
-        public override string GeneratePropertyValueType()
-        {
-            if (AllowedValues.Count == 0) {
-                return "";
-            }
-
-            return $@"
-            public enum {Name}Value {{
-                {string.Join(",\n", AllowedValues.Select(GenerateEnumMemberName))}
-            }}";
-        }
-
         public static string GenerateEnumMemberName(LiteralIdentifier literal) {
-            // var sanitizedValue = InPascalCase(value.Replace(",", " And "));
-
-            // if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
-            //     sanitizedValue = "_" + sanitizedValue;
-            // }
-
             return literal.Name;
         }
 
@@ -299,20 +310,30 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
 
         public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-            AllowedValues.Count == 0 ?
+            GetAllowedValues().Count == 0 ?
                 $"memcmp({Accessor(context, targetLanguage)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage)})) == 0" :
                 base.Comparator(context, other, targetLanguage);
 
         public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-            AllowedValues.Count == 0 ?
+            GetAllowedValues().Count == 0 ?
                 $"memcpy({Accessor(context, targetLanguage)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage)}));" :
                 base.Assign(context, other, targetLanguage);
+
+        private HashSet<StringPropertyOrPort> _equalTypes = new HashSet<StringPropertyOrPort>();
+        private void RecordEqualTypes(StringPropertyOrPort other) {
+            _equalTypes.Add(other);
+            other._equalTypes.Add(this);
+        }
 
         public override void EnsureComparableTypes(IAccessible rhsIdentifier)
         {
             switch (rhsIdentifier) {
+                case MessageMember messageMember:
+                    EnsureComparableTypes(messageMember.Member);
+                    break;
                 case StringPropertyOrPort stringPropertyOrPort:
                     // e.g. checksum data
+                    RecordEqualTypes(stringPropertyOrPort);
                     break;
                 case ImplicitEnumMember implicitEnumMember:
                     // most likely created from RecordPossibleValue, so probably already in set
@@ -452,7 +473,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
         public override void EnsureComparableTypes(IAccessible rhsIdentifier)
         {
-            throw new NotImplementedException();
+            if (rhsIdentifier is not PulsedInLiteral) {
+                throw new Exception("Incomparable types");
+            }
         }
     }
 
@@ -495,7 +518,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
         public override void EnsureComparableTypes(IAccessible rhsIdentifier)
         {
-            throw new NotImplementedException();
+            if (rhsIdentifier is not PulsedOutLiteral) {
+                throw new Exception("Incomparable types");
+            }
         }
     }
 }

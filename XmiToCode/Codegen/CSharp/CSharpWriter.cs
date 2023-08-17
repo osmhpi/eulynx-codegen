@@ -87,15 +87,15 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
 
     private string WriteDeconstructMessageInstruction(DeconstructMessageInstruction deconstructMessageInstruction)
     {
-        if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0) {
-            if (deconstructMessageInstruction.attributesOfCurrentSignal.Count >= 2) {
-                return
-                    @$"var ({string.Join(", ", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName};";
-            } else if (deconstructMessageInstruction.attributesOfCurrentSignal.Count == 1) {
-                return
-                    @$"var {deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name} = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName}.{deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name};";
-            }
-        }
+        // if (deconstructMessageInstruction.currentSignalName != null && deconstructMessageInstruction.attributesOfCurrentSignal != null && deconstructMessageInstruction.attributesOfCurrentSignal.Count > 0) {
+        //     if (deconstructMessageInstruction.attributesOfCurrentSignal.Count >= 2) {
+        //         return
+        //             @$"var ({string.Join(", ", deconstructMessageInstruction.attributesOfCurrentSignal.Select(x => x.Value.Name))}) = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName};";
+        //     } else if (deconstructMessageInstruction.attributesOfCurrentSignal.Count == 1) {
+        //         return
+        //             @$"var {deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name} = {deconstructMessageInstruction.Context.InstanceReference}.{deconstructMessageInstruction.currentSignalName}.{deconstructMessageInstruction.attributesOfCurrentSignal.Single().Value.Name};";
+        //     }
+        // }
 
         return "";
     }
