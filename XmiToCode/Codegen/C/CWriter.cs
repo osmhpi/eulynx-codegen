@@ -131,13 +131,13 @@ void transition({klass.Info.ClassName} *self) {{
         };
     }
 
-    private static IEnumerable<(string Name, IBehaviorRecord record)> PrefixWith(BehaviorRecord behaviorRecord, IEnumerable<(string Name, IBehaviorRecord record)> records) {
+    protected static IEnumerable<(string Name, IBehaviorRecord record)> PrefixWith(BehaviorRecord behaviorRecord, IEnumerable<(string Name, IBehaviorRecord record)> records) {
         foreach (var (Name, record) in records) {
             yield return ($"{behaviorRecord.Name}__{Name}", record);
         }
     }
 
-    private static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
+    protected static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
     {
         foreach (var s in record.subrecords)
         {

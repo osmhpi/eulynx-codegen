@@ -1,34 +1,26 @@
+using static CodeGenerationHelper;
+
 internal class KleeWriter : CWriter {
     protected override string WriteClass(Class klass)
     {
+        var inputTriggers = klass.GetPropertiesAndPorts().Values
+            .OfType<PropertyOrPort.PulsedInPropertyOrPort>()
+            .ToList();
+
+        var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
+            .Where(x => x.record.State != null)
+            .Select(x => x.Name);
+
         return @$"
         {base.WriteClass(klass)}
 
 typedef enum Event
 {{
-  Event_Change749,
-  Event_Change980,
-  Event_Change987,
-  Event_Change999,
-  Event_Change1162,
-  Event_Change1179,
-  Event_Change1175,
-  Event_Change1178,
-  Event_Change1225,
-  Event_Change1172,
-  Event_Change1223,
-  Event_Change743,
-  Event_Change1171,
-  Event_Change745,
-  Event_Change1180,
-  Event_Change1181,
-  Event_Change1227,
-  Event_Change742,
-  Event_Change1177,
+    {JoinLines(inputTriggers.Select(x => $"Event_{x.Identifier.Name},"))}
 
-  Event_MsgPdiNotAvailable,
-  Event_MsgResetPdi,
-  Event_MsgPdiVersionCheck,
+    Event_MsgPdiNotAvailable,
+    Event_MsgResetPdi,
+    Event_MsgPdiVersionCheck,
 }} Event;
 
 void process_events(SSciEfesPrim *self, Event *event, size_t len)
@@ -39,63 +31,10 @@ void process_events(SSciEfesPrim *self, Event *event, size_t len)
     klee_open_merge();
     switch (e)
     {{
-    case Event_Change749:
-      self->Change749.IsTriggered = 1;
-      break;
-    case Event_Change980:
-      self->Change980.IsTriggered = 1;
-      break;
-    case Event_Change987:
-      self->Change987.IsTriggered = 1;
-      break;
-    case Event_Change999:
-      self->Change999.IsTriggered = 1;
-      break;
-    case Event_Change1162:
-      self->Change1162.IsTriggered = 1;
-      break;
-    case Event_Change1179:
-      self->Change1179.IsTriggered = 1;
-      break;
-    case Event_Change1175:
-      self->Change1175.IsTriggered = 1;
-      break;
-    case Event_Change1178:
-      self->Change1178.IsTriggered = 1;
-      break;
-    case Event_Change1225:
-      self->Change1225.IsTriggered = 1;
-      break;
-    case Event_Change1172:
-      self->Change1172.IsTriggered = 1;
-      break;
-    case Event_Change1223:
-      self->Change1223.IsTriggered = 1;
-      break;
-    case Event_Change743:
-      self->Change743.IsTriggered = 1;
-      break;
-    case Event_Change1171:
-      self->Change1171.IsTriggered = 1;
-      break;
-    case Event_Change745:
-      self->Change745.IsTriggered = 1;
-      break;
-    case Event_Change1180:
-      self->Change1180.IsTriggered = 1;
-      break;
-    case Event_Change1181:
-      self->Change1181.IsTriggered = 1;
-      break;
-    case Event_Change1227:
-      self->Change1227.IsTriggered = 1;
-      break;
-    case Event_Change742:
-      self->Change742.IsTriggered = 1;
-      break;
-    case Event_Change1177:
-      self->Change1177.IsTriggered = 1;
-      break;
+    {JoinLines(inputTriggers.Select(x =>
+        @$"case Event_{x.Identifier.Name}:
+        self->{x.Identifier.Name}.IsTriggered = true;
+        break;"))}
     case Event_MsgPdiNotAvailable:
       self->MsgPdiNotAvailable.Value = (Message__MsgPdiNotAvailable){{}};
       self->MsgPdiNotAvailable.Some = 1;
@@ -118,19 +57,8 @@ void process_events(SSciEfesPrim *self, Event *event, size_t len)
     klee_close_merge();
 
     klee_assert(
-      self->state == SSciEfesPrimBehaviour__RequestedNoScp ||
-      self->state == SSciEfesPrimBehaviour__ImpermissibleNoScp ||
-      self->state == SSciEfesPrimBehaviour__Impermissible ||
-      self->state == SSciEfesPrimBehaviour__Disconnected ||
-      self->state == SSciEfesPrimBehaviour__DisconnectedNoScp ||
-      self->state == SSciEfesPrimBehaviour__Active ||
-      self->state == SSciEfesPrimBehaviour__Active__Establishing ||
-      self->state == SSciEfesPrimBehaviour__Active__Establishing__WaitingForVersionCheck ||
-      self->state == SSciEfesPrimBehaviour__Active__Establishing__WaitingForInitialisation ||
-      self->state == SSciEfesPrimBehaviour__Active__Establishing__ReceivingStatus ||
-      self->state == SSciEfesPrimBehaviour__Active__Establishing__OtherVersionRequired ||
-      self->state == SSciEfesPrimBehaviour__Active__Established ||
-      self->state == SSciEfesPrimBehaviour__Suspended);
+        {JoinLines(states.Select(x => $"self->state == {x}"), "||")}
+    );
   }}
 }}
 

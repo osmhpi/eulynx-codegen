@@ -17,7 +17,7 @@ public static class CodeGenerationHelper {
         return result;
     }
 
-    public static string JoinLines(IEnumerable<string> lines) {
-        return string.Join("\n", lines.Where(x => !string.IsNullOrWhiteSpace(x)));
+    public static string JoinLines(IEnumerable<string> lines, string delimiter = "") {
+        return string.Join($"{delimiter} \n", lines.Where(x => !string.IsNullOrWhiteSpace(x)));
     }
 }

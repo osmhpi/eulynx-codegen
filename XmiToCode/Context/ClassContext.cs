@@ -20,12 +20,12 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
 
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
         = DataTypes.Ports.Values
-            .Select(x => (Key: new Identifier(x.Property.Name), Value: x))
+            .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
     public Dictionary<Identifier, PropertyOrPort> Properties { get; }
         = DataTypes.Properties.Values
-            .Select(x => (Key: new Identifier(x.Property.Name), Value: x))
+            .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
     public override bool IsLocalVariable(IAccessible accessible) => false;
