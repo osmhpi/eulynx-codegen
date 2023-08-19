@@ -97,7 +97,7 @@ void transition({klass.Info.ClassName} *self) {{
   switch (self->state)
   {{
         {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
-            string.Join("\n", $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;")))}
+            $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;"))}
   }}
 }}
 ";
@@ -149,7 +149,7 @@ void transition({klass.Info.ClassName} *self) {{
         }
     }
 
-    private string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
+    protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
         return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
 
@@ -231,7 +231,7 @@ void transition({klass.Info.ClassName} *self) {{
 #include <stdbool.h>
 #include <string.h>
 
-#define Option(X) struct {{ int Some; X Value; }}
+#define Option(X) struct {{ bool Some; X Value; }}
 
 typedef struct PulsedIn
 {{

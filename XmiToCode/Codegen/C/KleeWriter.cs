@@ -1,6 +1,25 @@
 using static CodeGenerationHelper;
 
 internal class KleeWriter : CWriter {
+
+    protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
+    {
+        return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
+            int result = 0;
+            {string.Join("\n", transitionFunction.Transitions
+                .Select(x => x.Transition switch {
+                    ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered) result++;",
+                    TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired) result++;",
+                    MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some) result++;",
+                    InitialTransition => "", // TODO
+                    _ => throw new NotImplementedException()
+                }))}
+            return result;
+        }}
+
+        {base.WriteTransitionFunction(transitionFunction, states)}";
+    }
+
     protected override string WriteClass(Class klass)
     {
         var inputTriggers = klass.GetPropertiesAndPorts().Values
@@ -16,15 +35,28 @@ internal class KleeWriter : CWriter {
 
 typedef enum Event
 {{
-    {JoinLines(inputTriggers.Select(x => $"Event_{x.Identifier.Name},"))}
-    {JoinLines(klass.GetTimeoutEvents().Select(x => $"Event_{x},"))}
-
-    Event_MsgPdiNotAvailable,
-    Event_MsgResetPdi,
-    Event_MsgPdiVersionCheck,
+    {JoinLines(
+        inputTriggers.Select(x => $"Event_{x.Identifier.Name}").Concat(
+            klass.GetTimeoutEvents().Select(x => $"Event_{x}")
+        ).Concat(
+            klass.GetIncomingMessageTypes().Select(x => $"Event_{x.Identifier.Name}")
+        ), ",")
+    }
 }} Event;
 
-void process_events(SSciEfesPrim *self, Event *event, size_t len)
+int count_firing_transitions({klass.Info.ClassName} *self) {{
+    int result = 0;
+
+    switch (self->state)
+    {{
+        {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
+            string.Join("\n", $"case {t.Name}: \n self->state = count_transition_from_{t.Name}(self);\nbreak;")))}
+    }}
+
+    return result;
+}}
+
+void process_events({klass.Info.ClassName} *self, Event *event, size_t len)
 {{
   for (int i = 0; i < len; ++i)
   {{
@@ -40,22 +72,11 @@ void process_events(SSciEfesPrim *self, Event *event, size_t len)
         @$"case Event_{x}:
         self->{x}.IsTimeoutExpired = true;
         break;"))}
-    case Event_MsgPdiNotAvailable:
-      self->MsgPdiNotAvailable.Value = (Message__MsgPdiNotAvailable){{}};
-      self->MsgPdiNotAvailable.Some = 1;
-      break;
-    case Event_MsgResetPdi:
-      self->MsgResetPdi.Value = (Message__MsgResetPdi){{
-          .ReportedResetReason = ResetReason__ContentTelegramError}};
-      self->MsgResetPdi.Some = 1;
-      break;
-    case Event_MsgPdiVersionCheck:
-      self->MsgPdiVersionCheck.Value = (Message__MsgPdiVersionCheck){{
-          .ChecksumData = {0},
-          .PDIVersion = {0},
-          .Result = ResultValue__Match}};
-      self->MsgPdiVersionCheck.Some = 1;
-      break;
+    {JoinLines(klass.GetIncomingMessageTypes().Select(x =>
+        @$"case Event_{x.Identifier.Name}:
+        self->{x.Identifier.Name}.Value = (Message__{x.Identifier.Name}){{0}};
+        self->{x.Identifier.Name}.Some = true;
+        break;"))}
     }}
 
     transition(self);

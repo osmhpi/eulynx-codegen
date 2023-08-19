@@ -4,6 +4,7 @@ public record Condition();
 
 public interface ICodeTransition {
     public Transition Transition { get; }
+    public BooleanExpression? Constraint { get; }
 }
 
 public record CodeTransition(string stateName, ProgramContext context, List<Instruction> Activities, BooleanExpression? Constraint, Transition Transition) : ICodeTransition;
