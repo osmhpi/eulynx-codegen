@@ -57,9 +57,8 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
 
     internal override ICallable ResolveCallableIdentifier(Identifier identifier)
     {
-        var operation = DataTypes.Operations.SingleOrDefault(x => new Identifier(x.Op.Name) == identifier);
-        if (operation != null) {
-            return new Method(new Identifier(operation.Op.Name), operation);
+        if (DataTypes.Operations.Contains(identifier)) {
+            return new MethodCall(identifier);
         }
 
         return Parent.ResolveCallableIdentifier(identifier);

@@ -4,7 +4,7 @@ public class DataTypeHelper {
 
     public Dictionary<string, PropertyOrPort> Properties { get; private set; }
     public Dictionary<string, PropertyOrPort> Ports { get; }
-    public List<Operation> Operations { get; }
+    public List<Identifier> Operations { get; }
     public Dictionary<string, PackagedElement> ChangeEvents { get; }
     public Dictionary<string, PackagedElement> TimeEvents { get; }
     public Dictionary<string, PackagedElement> PackageEvents { get; }
@@ -19,7 +19,7 @@ public class DataTypeHelper {
     public DataTypeHelper(
         List<OwnedAttribute> properties,
         List<OwnedAttribute> ports,
-        List<Operation> operations,
+        List<Identifier> operationNames,
         Dictionary<string, PackagedElement> changeEvents,
         Dictionary<string, PackagedElement> timeEvents,
         Dictionary<string, PackagedElement> packageEvents,
@@ -31,7 +31,7 @@ public class DataTypeHelper {
         Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
         Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
 
-        Operations = operations;
+        Operations = operationNames;
         ChangeEvents = changeEvents;
         TimeEvents = timeEvents;
         PackageEvents = packageEvents;

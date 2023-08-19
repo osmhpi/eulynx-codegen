@@ -1,6 +1,6 @@
 using XmiToCode;
 
-public record Method(Identifier Identifier, Operation Operation) : ICallable
+public record MethodCall(Identifier Identifier) : ICallable
 {
     public string Call(ProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch
     {

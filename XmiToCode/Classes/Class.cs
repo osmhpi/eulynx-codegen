@@ -8,6 +8,7 @@ public record Class(
     BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
     List<StateName> States,
+    List<Operation> Operations,
     List<GlobalEnumeration> GlobalEnumerations)
 {
     public IEnumerable<ValueType> GetValueTypes() {
@@ -64,11 +65,6 @@ public record Class(
             .Select(x => x.theEvent.Name)
             .Distinct()
             .ToList();
-    }
-
-    internal List<Operation> GetOperations()
-    {
-        return ClassContext.DataTypes.Operations;
     }
 }
 

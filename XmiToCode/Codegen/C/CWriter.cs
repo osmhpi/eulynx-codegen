@@ -1,4 +1,5 @@
 using XmiToCode;
+using static CodeGenerationHelper;
 
 internal class CWriter : ICodeWriter
 {
@@ -33,19 +34,16 @@ internal class CWriter : ICodeWriter
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
-            Operation operation => WriteOperation(operation),
             Class klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
     }
 
-    private string WriteOperation(Operation operation)
+    private string WriteOperation(Operation operation, Class klass)
     {
-        // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
-        var instructions = "";
-        return @$"void {operation.Identifier.Name}(void *) {{
-            {instructions}
+        return @$"void {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
+            {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
         }}";
     }
 
@@ -86,7 +84,7 @@ internal class CWriter : ICodeWriter
 
 // Operations
 
-{string.Join("\n", klass.GetOperations().Select(x => Write(x)))}
+{string.Join("\n", klass.Operations.Select(x => WriteOperation(x, klass)))}
 
 {WriteBehaviorRecord(klass.Behavior, states)}
 

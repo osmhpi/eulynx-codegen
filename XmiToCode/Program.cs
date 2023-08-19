@@ -91,16 +91,22 @@ foreach (var interestingPackage in interestingPackages) {
         var ports = umlClassPackage.OwnedAttribute
             .Where(x => x.XmiType == "uml:Port")
             .ToList();
-        var operations = umlClassPackage.OwnedOperation
+        var operationNames = umlClassPackage.OwnedOperation
             .Where(x => x.XmiType == "uml:Operation")
-            .Select(x => new Operation(x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
+            .Select(x => new Identifier(x.Name))
             .ToList();
 
         var className = new TypeIdentifier(umlClassPackage.Name);
         // HACK
         var classInfo = new ClassInfo(className.Name, "");
-        var dth = new DataTypeHelper(properties, ports, operations, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
+        var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
         var classContext = new ClassContext(global, dth);
+
+        var operations = umlClassPackage.OwnedOperation
+            .Where(x => x.XmiType == "uml:Operation")
+            .Select(x => (x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
+            .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
+            .ToList();
 
         var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext);
         try {
@@ -110,7 +116,7 @@ foreach (var interestingPackage in interestingPackages) {
                 TargetLanguage.C => c,
                 TargetLanguage.Rust => rust,
                 _ => throw new NotImplementedException()
-            }, classContext);
+            }, classContext, operations);
         } catch (Exception ex) {
             Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }

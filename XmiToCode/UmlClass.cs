@@ -140,7 +140,7 @@ public class UmlClass
         return InPascalCase(_class.Name);
     }
 
-    internal async Task Generate(ICodeWriter w, ClassContext context)
+    internal async Task Generate(ICodeWriter w, ClassContext context, List<Operation> operations)
     {
         var className = InPascalCase(_class.Name);
         var behaviorName = _stateMachine.GetName();
@@ -163,6 +163,7 @@ public class UmlClass
             _stateMachine.Parse(info, _dataTypes, context),
             _stateMachine.ParseTransitionFunctions(info, _dataTypes, context).ToList(),
             _stateMachine.GetStates(behaviorName).ToList(),
+            operations,
             enumerations
         );
 

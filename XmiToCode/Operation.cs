@@ -1,36 +1,9 @@
-using System.Text.RegularExpressions;
-using static CodeGenerationHelper;
-
 namespace XmiToCode;
 
-public record Operation(OwnedOperation Op, OwnedBehavior Behavior) {
+public record Operation(OwnedOperation Op, OwnedBehavior Behavior, List<Instruction> Instructions) {
     public Identifier Identifier { get; } = new Identifier(Op.Name);
 
-    public string Write(DataTypeHelper dataTypes, ProgramContext context) {
-        var instructions = CompoundState.ParseInstructions(Behavior.Body, context);
-
-        // foreach (Match m in Regex.Matches(instructions, "(\\w+) = \"([^\"]*)\"")) {
-        //     var lhs = m.Groups[1].Value;
-        //     var rhs = m.Groups[2].Value;
-        //     dataTypes.RecordPossibleValueForProperty(lhs, rhs);
-        // }
-
-        // instructions = Regex.Replace(instructions, "(\\w+) = \"([^\"]*)\"",
-        //     m => $"{m.Groups[1].Value} = {dataTypes.GetFinalDataType(m.Groups[1].Value)}.{DataTypeHelper.GenerateEnumMemberName(m.Groups[2].Value)}");
-
-        // var portOrDirectAccess = (string prop) => dataTypes.Ports.ContainsKey(prop) ? $"{prop}.Value" : prop;
-        // instructions = Regex.Replace(instructions, "\\w+", m => $"{portOrDirectAccess(m.Groups[0].Value)}");
-
-        // instructions = instructions
-        //     .Replace("Then", ") {")
-        //     .Replace("Elseif", "} else if (")
-        //     .Replace("Else", "} else {")
-        //     .Replace("End If", "}")
-        //     .Replace("If", "if (")
-        //     .Replace("Return", "return");
-
-        return @$"public void {InPascalCase(Op.Name)}() {{
-            {instructions}
-        }}";
+    public static List<Instruction> ParseInstructions(OwnedBehavior behavior, ProgramContext context) {
+        return CompoundState.ParseInstructions(behavior.Body, context);
     }
 }
