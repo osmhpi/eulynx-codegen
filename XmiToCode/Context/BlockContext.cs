@@ -4,8 +4,6 @@ public record BlockContext : ProgramContext
     private readonly string? _overrideInstanceReference;
     private readonly MessageSchema? _newAttributes;
 
-    public override string InstanceReference => _overrideInstanceReference ?? Parent.InstanceReference;
-
     public MessageSchema? NewAttributes => _newAttributes;
 
     public BlockContext(ProgramContext parent, MessageSchema? newAttributes = null, string? overrideInstanceReference = null)

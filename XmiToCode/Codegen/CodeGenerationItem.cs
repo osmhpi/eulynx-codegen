@@ -1,6 +1,6 @@
 using System.Globalization;
 
-public abstract class CodeGenerationItem {
+public static class CodeGenerationHelper {
 
     public static string InPascalCase(string s) {
 

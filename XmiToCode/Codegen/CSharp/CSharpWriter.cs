@@ -96,7 +96,7 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     {
         return $@"{{
             {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
-            return {codeTransition.stateName}.New({codeTransition.context.InstanceReference});
+            return {codeTransition.stateName}.New(this);
         }}";
     }
 
@@ -107,4 +107,27 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
 
         await writer.WriteAsync(Write(klass));
     }
+
+    // public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {
+    //     var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
+    //     var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
+    //         // There are two enumerations which map to the same name (but are not used currently)
+    //         // - Line Direction Control Information
+    //         // - Line_Direction_Control_Information
+    //         // This behavior is possibly dangerous...
+    //         // Temporary workaround:
+    //         .Where(x => whitelist.Contains(x.Value.Name));
+
+    //     var result = $@"namespace Eulynx;
+
+    //     {JoinLines(enumerations.Select(x => $@"
+    //         public enum {InPascalCase(x.Value.Name)} {{
+    //             {string.Join(",\n", x.Value.OwnedLiteral.Select(lit => GenerateEnumMemberName(lit.Name)))}
+    //         }}"))}
+    //     ";
+
+    //     using var file = File.Create($"../Eulynx/DataTypes.cs");
+    //     using var writer = new StreamWriter(file);
+    //     await writer.WriteAsync(result);
+    // }
 }

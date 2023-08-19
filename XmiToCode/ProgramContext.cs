@@ -1,5 +1,4 @@
 public abstract record ProgramContext {
-    public abstract string InstanceReference { get; }
     public abstract IAccessible ResolveIdentifier(Identifier identifier);
     public abstract IAssignable ResolveAssignableIdentifier(Identifier identifier);
     internal abstract MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal);

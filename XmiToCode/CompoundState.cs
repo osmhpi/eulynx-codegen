@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
-using static CodeGenerationItem;
+using static CodeGenerationHelper;
 
 public record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
 {

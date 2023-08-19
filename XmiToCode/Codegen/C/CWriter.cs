@@ -76,10 +76,9 @@ internal class CWriter : ICodeWriter
 
     private string WriteClass(Class klass)
     {
-        var states = PrefixWith((BehaviorRecord)klass.Behavior, EnumerateSubrecords(klass.Behavior))
+        var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
             .Where(x => x.record.State != null)
             .ToDictionary(x => x.record.State!, x => x.Name);
-
 
         //  #include ""{klass.Info.ClassName}.h""
         return @$"
@@ -97,10 +96,16 @@ void new({klass.Info.ClassName} *x) {{
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
+void evaluateChangeEvents({klass.Info.ClassName} *self) {{
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({WriteBooleanExpression(x.Condition, klass.ClassContext)});"))}
+}}
+
 void transition({klass.Info.ClassName} *self) {{
+  evaluateChangeEvents(self);
+
   switch (self->state)
   {{
-        {string.Join("\n", PrefixWith((BehaviorRecord)klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
+        {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
             string.Join("\n", $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;")))}
   }}
 }}
@@ -329,17 +334,7 @@ int main()
             _ => throw new NotImplementedException()
         };
 
-        var constraint = junctionTransition.Constraint switch {
-            TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality =>
-                $"if ({equality.Lhs.Comparator(junctionTransition.context, equality.Rhs, TargetLanguage.C)})",
-            TransitionConstraint.SingleVariable single =>
-                single.Positive ?
-                    $"if ({single.Variable.Accessor(junctionTransition.context, TargetLanguage.C)})" :
-                    $"if (!{single.Variable.Accessor(junctionTransition.context, TargetLanguage.C)})",
-            null => null,
-            _ => throw new NotImplementedException()
-        };
+        var constraint = junctionTransition.Constraint != null ? WriteIfOrElse(junctionTransition.Constraint, junctionTransition.context) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -348,8 +343,27 @@ int main()
 
         return wrapWithIfElseExpression(condition,
             wrapWithIfElseExpression(constraint,
-                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
+                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}
                 {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"));
+    }
+
+    private string WriteIfOrElse(BooleanExpression expression, ProgramContext context) {
+        return expression switch {
+            BooleanExpression.Else => "else",
+            _ => $"if ({WriteBooleanExpression(expression, context)})"
+        };
+    }
+
+    private string WriteBooleanExpression(BooleanExpression expression, ProgramContext context) {
+        return expression switch {
+            BooleanExpression.Equality equality =>
+                equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C),
+            BooleanExpression.SingleVariable single =>
+                single.Positive ?
+                    single.Variable.Accessor(context, TargetLanguage.C) :
+                    $"!{single.Variable.Accessor(context, TargetLanguage.C)}",
+            _ => throw new NotImplementedException()
+        };
     }
 
     private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
@@ -362,17 +376,7 @@ int main()
             _ => throw new NotImplementedException()
         };
 
-        var constraint = codeTransition.Constraint switch {
-            TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality =>
-                $"if ({equality.Lhs.Comparator(codeTransition.context, equality.Rhs, TargetLanguage.C)})",
-            TransitionConstraint.SingleVariable single =>
-                single.Positive ?
-                    $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.C)})" :
-                    $"if (!{single.Variable.Accessor(codeTransition.context, TargetLanguage.C)})",
-            null => null,
-            _ => throw new NotImplementedException()
-        };
+        var constraint = codeTransition.Constraint != null ? WriteIfOrElse(codeTransition.Constraint, codeTransition.context) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -392,6 +396,16 @@ int main()
 #include ""klee/klee.h""
 
 #define Option(X) struct {{ int Some; X Value; }}
+
+typedef struct PulsedIn
+{{
+    bool IsTriggered;
+}} PulsedIn;
+
+typedef struct PulsedOut
+{{
+    bool Trigger;
+}} PulsedOut;
 
 typedef struct ChangeEvent
 {{
@@ -413,7 +427,7 @@ typedef struct TimeoutEvent
 {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => Write(x)))}
 {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => Write(x)))}
 
-{WriteBehaviorEnum((BehaviorRecord)klass.Behavior)}
+{WriteBehaviorEnum(klass.Behavior)}
 
 typedef struct {klass.Info.ClassName} {{
     {klass.Info.BehaviorName} state;
@@ -429,14 +443,14 @@ typedef struct {klass.Info.ClassName} {{
     {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
 
     // Change Events
-    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Name}; // {x.ChangeExpression.Body}"))}
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body}"))}
 
     // Timeout Events
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}
 
 }} {klass.Info.ClassName};
 
-{WriteBehaviorFunctionSignatures((BehaviorRecord)klass.Behavior)}
+{WriteBehaviorFunctionSignatures(klass.Behavior)}
 ";
     }
 

@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using static CodeGenerationItem;
+using static CodeGenerationHelper;
 
 namespace XmiToCode;
 

@@ -73,12 +73,12 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public TransitionConstraint? GetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
+    public BooleanExpression? GetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
 
             if (specification == "else") {
-                return new TransitionConstraint.Else();
+                return new BooleanExpression.Else();
             }
 
             return DoGetTransitionConstraints(dataTypes, context);
@@ -87,7 +87,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return null;
     }
 
-    protected virtual TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
+    protected virtual BooleanExpression DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
 
         var expression = SingleTransition.OwnedRule.Specification.Body.Trim();
 
@@ -105,7 +105,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
         }
 
-        return new TransitionConstraint.NotImplemented();
+        return new BooleanExpression.NotImplemented();
 
         // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 
@@ -159,7 +159,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         // return $"if ({expression})";
     }
 
-    protected TransitionConstraint ParseEqualityConstraint(Match equalsRegexMatch, string expression, ProgramContext context)
+    protected static BooleanExpression ParseEqualityConstraint(Match equalsRegexMatch, string expression, ProgramContext context)
     {
         var lhs = equalsRegexMatch.Groups[1].Value;
         var rhs = equalsRegexMatch.Groups[2].Value;
@@ -169,29 +169,29 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (TryParseLiteral(rhs, out var literal)) {
             var l = identifier.LookupValidLiteral(literal!);
             identifier.EnsureComparableTypes(l);
-            return new TransitionConstraint.Equality(identifier, l);
+            return new BooleanExpression.Equality(identifier, l);
         } else {
             var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
             if (rhsIdentifier != null) {
                 identifier.EnsureComparableTypes(rhsIdentifier);
-                return new TransitionConstraint.Equality(identifier, rhsIdentifier);
+                return new BooleanExpression.Equality(identifier, rhsIdentifier);
             } else {
                 // It is a literal, but without quotes
                 var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
                 identifier.EnsureComparableTypes(l);
-                return new TransitionConstraint.Equality(identifier, l);
+                return new BooleanExpression.Equality(identifier, l);
             }
         }
     }
 
-    protected TransitionConstraint ParseSingleVariableConstraint(Match singleVariableExpression, string expression, ProgramContext context)
+    protected static BooleanExpression ParseSingleVariableConstraint(Match singleVariableExpression, string expression, ProgramContext context)
     {
         var negation = singleVariableExpression.Groups[1].Value;
         var identifier = context.ResolveAssignableIdentifier(new Identifier(singleVariableExpression.Groups[2].Value));
-        return new TransitionConstraint.SingleVariable(identifier, string.IsNullOrEmpty(negation));
+        return new BooleanExpression.SingleVariable(identifier, string.IsNullOrEmpty(negation));
     }
 
-    public static Transition Create(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes) {
+    public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, ProgramContext context) {
         var transition = transitions.SingleOrDefault();
 
         if (transition != null) {
@@ -202,7 +202,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     return new TimeEventTransition(from, to, transitions, theEvent);
                 } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.ChangeEvents[evt];
-                    return new ChangeEventTransition(from, to, transitions, theEvent);
+                    return new ChangeEventTransition(from, to, transitions, theEvent, ParseExpression(theEvent.ChangeExpression.Body, context));
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
                     var signal = dataTypes.Signals[theEvent.Signal];
@@ -216,36 +216,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new ArgumentException(nameof(transitions));
     }
 
-    record Expression();
-
-    protected string AsalExpressionToCSharp(string expression) {
-        // ASAL is specified in section 8.6.8 in Eu.Doc.30
-        return expression.ReplaceLineEndings(" ")
-            .Replace("AND ", " && ")
-            .Replace(" OR ", " || ")
-            .Replace("NOT ", "!")
-            .Replace(" = ", " == ")
-            .Replace(" <> ", " != ");
-    }
-}
-
-record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
-
-record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
-
-public record TransitionConstraint() {
-    public record Else() : TransitionConstraint();
-    public record Equality(IAssignable Lhs, IAccessible Rhs) : TransitionConstraint();
-    public record SingleVariable(IAssignable Variable, bool Positive) : TransitionConstraint();
-    public record NotImplemented() : TransitionConstraint();
-}
-
-record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions)
-{
-    protected override TransitionConstraint DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context)
-    {
-        var expression = SingleTransition.OwnedRule.Specification.Body;
-
+    protected static BooleanExpression ParseExpression(string expression, ProgramContext context) {
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
         var equalsRegexMatch = new Regex("^(.+) = (.+)$").Match(expression);
@@ -260,7 +231,27 @@ record MessageEventTransition(IState From, IState To, List<UmlTransition> Transi
             return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
         }
 
-        return new TransitionConstraint.NotImplemented();
+        return new BooleanExpression.NotImplemented();
+    }
+}
+
+record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent, BooleanExpression Condition) : Transition(From, To, Transitions);
+
+record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
+
+public record BooleanExpression() {
+    public record Else() : BooleanExpression();
+    public record Equality(IAssignable Lhs, IAccessible Rhs) : BooleanExpression();
+    public record SingleVariable(IAssignable Variable, bool Positive) : BooleanExpression();
+    public record NotImplemented() : BooleanExpression();
+}
+
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions)
+{
+    protected override BooleanExpression DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context)
+    {
+        var expression = SingleTransition.OwnedRule.Specification.Body;
+        return ParseExpression(expression, context);
 
         // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 

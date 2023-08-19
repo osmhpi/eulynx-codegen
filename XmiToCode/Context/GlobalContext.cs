@@ -1,9 +1,9 @@
 using static PropertyOrPort;
 
-public record GlobalContext(DataTypeHelper DataTypes) : ProgramContext
+// What does this thing do ??
+// Probably we should resolve global enumerations here...
+public record GlobalContext() : ProgramContext
 {
-    public override string InstanceReference => throw new NotImplementedException();
-
     public override bool IsLocalVariable(IAccessible accessible) => false;
 
     public override IAssignable ResolveAssignableIdentifier(Identifier identifier)

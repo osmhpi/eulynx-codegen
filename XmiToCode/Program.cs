@@ -73,6 +73,8 @@ var csharp = new CSharpWriter();
 var rust = new RustWriter();
 var c = new CWriter(true);
 
+var global = new GlobalContext();
+
 foreach (var interestingPackage in interestingPackages) {
     // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
     // Dictionary<string, PackagedElement> packageEvents = new Dictionary<string, PackagedElement>();
@@ -82,7 +84,25 @@ foreach (var interestingPackage in interestingPackages) {
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
     foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
-        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases);
+
+        var properties = umlClassPackage.OwnedAttribute
+            .Where(x => x.XmiType == "uml:Property")
+            .ToList();
+        var ports = umlClassPackage.OwnedAttribute
+            .Where(x => x.XmiType == "uml:Port")
+            .ToList();
+        var operations = umlClassPackage.OwnedOperation
+            .Where(x => x.XmiType == "uml:Operation")
+            .Select(x => new Operation(x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
+            .ToList();
+
+        var className = new TypeIdentifier(umlClassPackage.Name);
+        // HACK
+        var classInfo = new ClassInfo(className.Name, "");
+        var dth = new DataTypeHelper(properties, ports, operations, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
+        var classContext = new ClassContext(global, dth);
+
+        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext);
         try {
             Console.WriteLine($"Writing {umlClass.GetName()}");
             await umlClass.Generate(targetLanguage switch {
@@ -90,14 +110,12 @@ foreach (var interestingPackage in interestingPackages) {
                 TargetLanguage.C => c,
                 TargetLanguage.Rust => rust,
                 _ => throw new NotImplementedException()
-            });
+            }, classContext);
         } catch (Exception ex) {
             Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
         }
     }
 }
-
-await DataTypeHelper.GenerateDataTypes(dataTypes);
 
 return 0;
 

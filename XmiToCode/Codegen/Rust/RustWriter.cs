@@ -87,7 +87,7 @@ impl {klass.Info.ClassName}_Ports {{
     {
         // var instructions = CompoundState.ParseInstructions(operation.Behavior.Body, context);
         var instructions = "";
-        return @$"fn {CodeGenerationItem.InPascalCase(operation.Op.Name)}(mut &self) {{
+        return @$"fn {CodeGenerationHelper.InPascalCase(operation.Op.Name)}(mut &self) {{
             {instructions}
         }}";
     }
@@ -217,8 +217,8 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
         };
 
         var constraint = junctionTransition.Constraint switch {
-            TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(junctionTransition.context, TargetLanguage.Rust)})",
+            BooleanExpression.Else => "else",
+            BooleanExpression.Equality equality => $"if ({equality.Lhs.Accessor(junctionTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(junctionTransition.context, TargetLanguage.Rust)})",
             null => null,
             _ => throw new NotImplementedException()
         };
@@ -245,13 +245,13 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
         };
 
         var constraint = codeTransition.Constraint switch {
-            TransitionConstraint.Else => "else",
-            TransitionConstraint.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.Rust)})",
-            TransitionConstraint.SingleVariable single =>
+            BooleanExpression.Else => "else",
+            BooleanExpression.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.Rust)})",
+            BooleanExpression.SingleVariable single =>
                 single.Positive ?
                     $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})" :
                     $"if (!{single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})",
-            TransitionConstraint.NotImplemented compound => $"if NOTIMPLEMENTED",
+            BooleanExpression.NotImplemented compound => $"if NOTIMPLEMENTED",
             null => null,
             // Output which transition constraint is not implemented
             _ => throw new NotImplementedException($"Writing not implemented for {codeTransition.Constraint.GetType()}")

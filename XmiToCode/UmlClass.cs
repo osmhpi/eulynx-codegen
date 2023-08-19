@@ -1,6 +1,7 @@
 using XmiToCode;
+using static CodeGenerationHelper;
 
-public class UmlClass : CodeGenerationItem
+public class UmlClass
 {
     private readonly PackagedElement _class;
     private readonly Dictionary<string, PackagedElement> _changeEvents;
@@ -15,37 +16,22 @@ public class UmlClass : CodeGenerationItem
         Dictionary<string, PackagedElement> timeEvents,
         Dictionary<string, PackagedElement> packageEvents,
         Dictionary<string, PackagedElement> signals,
-        Dictionary<string, PackagedElement> dataTypes,
-        Dictionary<(string, string), (string, string)> typeAliases)
+        DataTypeHelper dataTypes,
+        ProgramContext context)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
         _timeEvents = timeEvents;
         _packageEvents = packageEvents;
         _signals = signals;
+        _dataTypes = dataTypes;
 
-        var properties = _class.OwnedAttribute
-            .Where(x => x.XmiType == "uml:Property")
-            .ToList();
-        var ports = _class.OwnedAttribute
-            .Where(x => x.XmiType == "uml:Port")
-            .ToList();
-        var operations = _class.OwnedOperation
-            .Where(x => x.XmiType == "uml:Operation")
-            .Select(x => new Operation(x, _class.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
-            .ToList();
-
-        var className = InPascalCase(_class.Name);
-        // HACK
-        var classInfo = new ClassInfo(className, "");
-        _dataTypes = new DataTypeHelper(properties, ports, operations, _changeEvents, _timeEvents, _packageEvents, _signals, dataTypes, typeAliases, classInfo);
-
-        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, changeEvents, timeEvents), classPackage.StateMachine.Name);
+        _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
     }
 
-    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents) {
+    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, ProgramContext context) {
         var states = region.Subvertices.Select(x => {
-            var subRegion = FlattenRegions(x.Regions);
+            var subRegion = FlattenRegions(x.Regions, context);
             return new CompoundState(
                 new List<PartialState>() { new PartialState(x, region) },
                 subRegion != null ? new StateMachine(subRegion, x.Name) : null);
@@ -57,14 +43,15 @@ public class UmlClass : CodeGenerationItem
             states.OfType<CompoundState>()
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => Transition.Create(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes))).ToList();
+                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes, context))).ToList();
 
         var transitions = region.Transitions
-            .Select(transition => Transition.Create(
+            .Select(transition => Transition.Parse(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
                 new List<UmlTransition> { transition },
-                _dataTypes
+                _dataTypes,
+                context
             ))
             .Concat(substateTransitionsToStates)
             .ToList();
@@ -96,14 +83,14 @@ public class UmlClass : CodeGenerationItem
         }
     }
 
-    private Region? FlattenRegions(List<UmlRegion> regions) {
+    private Region? FlattenRegions(List<UmlRegion> regions, ProgramContext context) {
         if (regions.Count == 0) {
             return null;
         }
 
         var states = regions.Select(region =>
             region.Subvertices.Select(x => {
-                var subregion = FlattenRegions(x.Regions);
+                var subregion = FlattenRegions(x.Regions, context);
                 return new CompoundState(
                     new List<PartialState>() { new PartialState(x, region) },
                     subregion != null ? new StateMachine(subregion, x.Name) : null);
@@ -134,7 +121,7 @@ public class UmlClass : CodeGenerationItem
             flattenedStates
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => Transition.Create(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes))).ToList();
+                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes, context))).ToList();
 
         var transitions = regions.SelectMany(region => region.Transitions
             .SelectMany(transition => flattenedStates
@@ -142,7 +129,7 @@ public class UmlClass : CodeGenerationItem
                 .SelectMany(from => flattenedStates
                     .Where(x => x.IsTargetOfTransition(transition))
                     .Where(x => x.IsNextStateAfterTransition(from, transition))
-                    .Select(to => Transition.Create(from, to, new List<UmlTransition> { transition }, _dataTypes))
+                    .Select(to => Transition.Parse(from, to, new List<UmlTransition> { transition }, _dataTypes, context))
                 )
             )).Concat(substateTransitionsToFlattenedStates).Append(initialTransition).ToList();
 
@@ -153,34 +140,10 @@ public class UmlClass : CodeGenerationItem
         return InPascalCase(_class.Name);
     }
 
-    public string Write(CSharpWriter w) {
-        var className = InPascalCase(_class.Name);
-        var behaviorName = _stateMachine.GetName();
-
-        var global = new GlobalContext(_dataTypes);
-        var classContext = new ClassContext(global, _dataTypes, w);
-
-        var info = new ClassInfo(className, behaviorName);
-
-        var klass = new Class(
-            info,
-            classContext,
-            _stateMachine.Parse(info, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext).ToList(),
-            _stateMachine.GetStates(behaviorName).ToList(),
-            new()
-        );
-
-        return w.Write(klass);
-    }
-
-    internal async Task Generate(ICodeWriter w)
+    internal async Task Generate(ICodeWriter w, ClassContext context)
     {
         var className = InPascalCase(_class.Name);
         var behaviorName = _stateMachine.GetName();
-
-        var global = new GlobalContext(_dataTypes);
-        var classContext = new ClassContext(global, _dataTypes, w);
 
         var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
         var enumerations = _dataTypes.DataTypes.Where(x => x.Value.Type == "uml:Enumeration")
@@ -196,9 +159,9 @@ public class UmlClass : CodeGenerationItem
 
         var klass = new Class(
             info,
-            classContext,
-            _stateMachine.Parse(info, _dataTypes, classContext),
-            _stateMachine.ParseTransitionFunctions(info, _dataTypes, classContext).ToList(),
+            context,
+            _stateMachine.Parse(info, _dataTypes, context),
+            _stateMachine.ParseTransitionFunctions(info, _dataTypes, context).ToList(),
             _stateMachine.GetStates(behaviorName).ToList(),
             enumerations
         );

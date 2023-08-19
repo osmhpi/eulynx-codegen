@@ -2,7 +2,7 @@ using XmiToCode;
 
 public record StateName(IState Subvertex, string Name);
 
-public class StateMachine : CodeGenerationItem
+public class StateMachine
 {
     public Region Region { get { return _region; } }
     public IState InitialState { get { return _initialState; } }

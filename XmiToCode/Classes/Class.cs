@@ -1,8 +1,6 @@
 using System.Text.RegularExpressions;
 using XmiToCode;
-using static CodeGenerationItem;
-
-public record ClassInfo(string ClassName, string BehaviorName);
+using static CodeGenerationHelper;
 
 public record Class(
     ClassInfo Info,
@@ -48,12 +46,12 @@ public record Class(
             .ToList();
     }
 
-    internal IEnumerable<PackagedElement> GetChangeEvents() {
+    internal IEnumerable<(PackagedElement Event, BooleanExpression Condition)> GetChangeEvents() {
         return TransitionFunctions
             .SelectMany(x => x.Transitions)
             .Select(x => x.Transition)
             .OfType<ChangeEventTransition>()
-            .Select(x => x.theEvent)
+            .Select(x => (x.theEvent, x.Condition))
             .Distinct()
             .ToList();
     }
@@ -91,26 +89,3 @@ public record GlobalEnumeration(PackagedElement Enumeration) {
         return sanitizedValue;
     }
 }
-
-public interface IBehaviorRecord
-{
-    IState? State { get; }
-    string Name { get; }
-    List<IBehaviorRecord> subrecords { get; }
-    ClassInfo className { get; }
-}
-
-public record SimpleBehaviorRecord(IState? State, string Name, string recordName, ClassInfo className) : IBehaviorRecord
-{
-    public List<IBehaviorRecord> subrecords { get; } = new();
-}
-
-public record BehaviorRecord(
-    IState? State,
-    StateMachine StateMachine,
-    string Name,
-    string? parentBehaviorName,
-    ClassInfo className,
-    ICodeTransition initializer,
-    List<IBehaviorRecord> subrecords
-) : IBehaviorRecord;

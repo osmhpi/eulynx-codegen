@@ -1,235 +1,48 @@
-using System.Text.RegularExpressions;
 using XmiToCode;
-using static CodeGenerationItem;
+using static CodeGenerationHelper;
 
-public enum TargetLanguage {
-    CSharp,
-    C,
-    Rust
-}
-
-public interface IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage);
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage);
-    void EnsureComparableTypes(IAccessible rhsIdentifier);
-}
-
-public interface IAssignable : IAccessible {
-    IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier);
-    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage);
-}
-
-public interface ICallable {
-    public string Call(ProgramContext context, TargetLanguage targetLanguage);
-}
-
-public interface IAccessor {
-    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage);
-}
-
-public class ClassAccessor : IAccessor {
-    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
-        return targetLanguage switch
-        {
-            TargetLanguage.Rust => $"{propertyOrPort.Name}",
-            _ => context.IsLocalVariable(propertyOrPort) ?
-            // IsPort ?
-            //     $"{propertyOrPort.Name}.Value" :
-                $"{propertyOrPort.Name}" :
-            // IsPort ?
-            //     $"{context.InstanceReference}->{propertyOrPort.Name}.Value" :
-                $"{context.InstanceReference}->{propertyOrPort.Name}"
-        };
-    }
-}
-
-public class MessageAccessor : IAccessor {
-    private readonly TypeIdentifier _messageType;
-    private readonly Identifier _memberName;
-
-    public MessageAccessor(TypeIdentifier messageType, Identifier memberName)
-    {
-        _messageType = messageType;
-        _memberName = memberName;
-    }
-    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
-        return $"{context.InstanceReference}->{_messageType.Name}.Value.{_memberName.Name}";
-    }
-}
-
-public record MessageMember(TypeIdentifier Message, Identifier MemberName, PackagedElement Type, PropertyOrPort Member) : IAccessible, IAssignable
-{
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
-    {
-        return Member.Accessor(context, targetLanguage);
-    }
-
-    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
-    {
-        // return $"{Accessor(context, targetLanguage)} = {other.Accessor(context, targetLanguage)};";
-        return Member.Assign(context, other, targetLanguage);
-    }
-
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
-    {
-        return Member.Comparator(context, other, targetLanguage);
-    }
-
-    // public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
-    // {
-    //     return $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-    // }
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        Member.EnsureComparableTypes(rhsIdentifier);
-    }
-
-    public IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier) => Member.LookupValidLiteral(literalIdentifier);
-}
-
-public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
-{
-    public List<MessageMember> Members { get; } = Signal.OwnedAttribute
-        .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type],
-            PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name)))))
-        .ToList();
-
-    public IEnumerable<ValueType> GetValueTypes() {
-        return Members
-            .Where(x => x.Member is PropertyOrPort.StringPropertyOrPort)
-            .Select(x => new ValueType(
-                new ClassInfo(Identifier.Name, ""),
-                x.MemberName,
-                ((PropertyOrPort.StringPropertyOrPort)x.Member).AllowedValues))
-            .Where(x => x.AllowedValues.Count > 0);
-    }
-
-    public Dictionary<Identifier, MessageMember> MembersDict => Members.ToDictionary(x => x.MemberName);
-
-    internal MessageMember GetMemberByIndex(int i)
-    {
-        return Members[i];
-    }
-}
-
-// Could be an enum member
-public record LiteralIdentifier (string RawName)
-{
-    public string Name => InPascalCase(Sanitize(RawName));
-
-    private static string Sanitize(string value) {
-        var sanitizedValue = InPascalCase(value.Replace(",", " And "));
-
-        if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
-            sanitizedValue = "_" + sanitizedValue;
-        }
-
-        return sanitizedValue;
-    }
-}
-
-// Could be a reference to a port or variable
-public record Identifier (string RawName)
-{
-    public string Name { get; } = InPascalCase(RawName);
-}
-
-// Could be an enumeration or message class
-public record TypeIdentifier (string RawName)
-{
-    public string Name { get; } = InPascalCase(RawName);
-}
-
-public record ClassMember(Identifier Identifier) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
-        targetLanguage switch {
-            TargetLanguage.Rust => Identifier.Name,
-            _ => context.IsLocalVariable(this)
-                ? Identifier.Name
-                : $"{context.InstanceReference}->{Identifier.Name}"
-        };
-
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record EnumerationMember(PackagedElement UmlEnumeration, OwnedLiteral Member) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{UmlEnumeration.Name}__{Member.Name}";
-
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => $"{EnumType}__{Literal.Name}";
-
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record BoolLiteral(bool Value) : IAccessible
-{
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "true" : "false";
-
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record PulsedInLiteral(bool Value) : IAccessible
-{
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record PulsedOutLiteral(bool Value) : IAccessible
-{
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => Value ? "1" : "0";
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
-
-    public void EnsureComparableTypes(IAccessible rhsIdentifier)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public record Method(Identifier Identifier, Operation Operation) : ICallable
-{
-    public string Call(ProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch
-    {
-        TargetLanguage.CSharp => $"{Identifier.Name}({context.InstanceReference})",
-        TargetLanguage.C => $"{Identifier.Name}({context.InstanceReference})",
-        TargetLanguage.Rust => $"self.{Identifier.Name}()",
-        _ => throw new NotImplementedException()
-    };
-}
+/***
+Eu.ModSt.7510
+    In ports and out ports are described according to the port definition schema below:
+        <Port information type><PNo><Port direction>_<Port information>:<Data type>
+Eu.ModSt.7511
+    Port information type
+        Used port information type:
+         - D or d: data ports (D-Ports),
+         - T or t: trigger ports (T-Ports).
+Eu.ModSt.7512
+    Data ports and trigger ports start with a small letter (such as d3in_Point_Position or t4out_Timeout)
+    if they are part of an internal connection between two FEs or between a FE and a TFE. In this case they
+    are referred to as functional ports and have the colour green like the corresponding F E (5).
+Eu.ModSt.7513
+    Data ports and trigger ports start with a capital letter if they are part of an external connection between
+    a FE and the system environment (system interface) or if it is an open port (such as D4in_ Normal_Mode or
+    T1in_SIL_not_fulfiled). In this case they are refered to as logical ports and have the colour blue (6).
+Eu.ModSt.7514
+    Data ports and trigger ports which are part of a connection between TFEs or a TFE and the system environment
+    (technical system interface) are referred to as technical functional ports and have the colour Yellow (10).
+    They start with a small letter if they are part of an internal connection between two TFEs and with a capital
+    letter if they are part of an external connection between a TFE and the system environment (technical system interface).
+Eu.ModSt.7515
+    Data ports (5), (6)
+        Data ports are especially suited to indicate permanently available information.
+        The value of a D-port only changes if it is explicitly changed.
+Eu.ModSt.7516
+    Data in ports are used as arguments of Boolean expressions in change events or transition guards.
+    They may represent arguments in data transformations or other data, that need to be permanently reachable by
+    the behaviour of a FE (e.g configuration data: d21in_Con_Downgrade_Most_Restrict). Their values can be
+    permanently regarded as valid.
+Eu.ModSt.7517
+    Data out ports are used to provide continuous data created within a FE for its environment (e.g. to be available
+    for adjacent FEs, reachable via their data in ports).
+Eu.ModSt.7518
+    Trigger ports (8)
+        Trigger ports are especially suited to indicate singular events. They have a Boolean value that always enters
+        false and only briefly changes to true when the event occurs (data types PulsedIn or PulsedOut). Afterwards the
+        value is automatically returned to false.
+Eu.ModSt.7519
+    Trigger in ports are mainly used as arguments of Boolean expressions in change events.
+***/
 
 public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
     public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
@@ -271,13 +84,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public abstract IAccessible RecordPossibleValue(LiteralIdentifier value);
 
-    public abstract string GenerateAssignment(string value);
-
     public abstract (string, string) DataType(TargetLanguage language);
 
     public string Name => InPascalCase(Property.Name);
 
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => TheAccessor.Accessor(this, context, targetLanguage);
+    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage) => TheAccessor.Accessor(this, context, targetLanguage);
 
     public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
@@ -334,10 +145,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         public static string GenerateEnumMemberName(LiteralIdentifier literal) {
             return literal.Name;
         }
-
-        // TODO: This is language-specific
-        public override string GenerateAssignment(string value) =>
-            $"{DataType}.{DataTypeHelper.GenerateEnumMemberName(value)}";
 
         public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
             GetAllowedValues().Count == 0 ?
@@ -411,11 +218,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             throw new Exception("Incomparable types");
         }
 
-        public override string GenerateAssignment(string value)
-        {
-            throw new NotImplementedException();
-        }
-
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
             if (UmlType.Type != "uml:Enumeration") {
@@ -433,15 +235,6 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
-
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "true";
-            if (value == "FALSE")
-                return "false";
-            throw new ArgumentException(value);
-        }
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
@@ -464,25 +257,29 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
+    /***
+    Eu.ModSt.7546
+        The data types "PulsedIn" and "PulsedOut" represent redefinitions of the data type Boolean and are
+        exclusively reserved to be assigned to Trigger Ports (T-Ports). That is, a Trigger In Port is typed
+        with the data type "PulsedIn" and a Trigger Out Port with the data type "PulsedOut".
+    Eu.ModSt.7547
+        Outgoing data typed with "PulsedOut" (as default false) that are set to true (for example,
+        T1out_Cd_indicate_signal_aspect := true) automatically change back to false after a defined time.
+        The defined time frame is sufficient to trigger a transition in a receiving state machine.
+    Eu.ModSt.7548
+        Incoming data at receiver side typed with "PulsedIn" apply the behaviour of the corresponding outgoing
+        data at sender side typed with "PulsedOut".
+    ***/
+
     record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
             TargetLanguage.CSharp => ("PulsedIn", ""),
-            TargetLanguage.C => ("int /*PulsedIn*/", ""),
+            TargetLanguage.C => ("PulsedIn", ""),
             TargetLanguage.Rust => ("bool /*PulsedIn*/", ""),
             _ => throw new NotImplementedException(),
         };
-
-        // TODO: Language-specific
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "1";
-            if (value == "FALSE")
-                return "0";
-            throw new ArgumentException(value);
-        }
 
         // TODO: Language-specific
         protected override string GenerateInitialValue()
@@ -493,10 +290,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
             if (literal.Name == "True")
-                return new PulsedInLiteral(true);
-
-            if (literal.Name == "False")
-                return new PulsedInLiteral(false);
+                return new PulsedInLiteral();
 
             throw new ArgumentException($"Invalid pulsed in value: {literal}");
         }
@@ -507,6 +301,16 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
                 throw new Exception("Incomparable types");
             }
         }
+
+        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        {
+            throw new InvalidOperationException("PulsedIn cannot be assigned to");
+        }
+
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+        {
+            return $"{base.Accessor(context, targetLanguage)}.IsTriggered";
+        }
     }
 
     record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
@@ -514,20 +318,10 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
             TargetLanguage.CSharp => ("PulsedOut", ""),
-            TargetLanguage.C => ("int /*PulsedOut*/", ""),
+            TargetLanguage.C => ("PulsedOut", ""),
             TargetLanguage.Rust => ("bool /*PulsedOut*/", ""),
             _ => throw new NotImplementedException(),
         };
-
-        // TODO: Language-specific
-        public override string GenerateAssignment(string value)
-        {
-            if (value == "TRUE")
-                return "1";
-            if (value == "FALSE")
-                return "0";
-            throw new ArgumentException(value);
-        }
 
         // TODO: Language-specific
         protected override string GenerateInitialValue()
@@ -538,10 +332,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
             if (literal.Name == "True")
-                return new PulsedOutLiteral(true);
-
-            if (literal.Name == "False")
-                return new PulsedOutLiteral(false);
+                return new PulsedOutLiteral();
 
             throw new ArgumentException($"Invalid pulsed out value: {literal}");
         }
@@ -551,6 +342,14 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             if (rhsIdentifier is not PulsedOutLiteral) {
                 throw new Exception("Incomparable types");
             }
+        }
+
+        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        {
+            return targetLanguage switch {
+                TargetLanguage.C => $"{Accessor(context, targetLanguage)}.Trigger = {other.Accessor(context, targetLanguage)};",
+                _ => base.Assign(context, other, targetLanguage)
+            };
         }
     }
 }
