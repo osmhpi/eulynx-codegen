@@ -71,7 +71,7 @@ var typeAliases = new Dictionary<(string, string), (string, string)>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
-var c = new CWriter(true);
+var c = new KleeWriter();
 
 var global = new GlobalContext();
 
