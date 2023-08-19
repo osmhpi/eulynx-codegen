@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationHelper;
 
@@ -16,7 +17,7 @@ Eu.ModSt.7512
     are referred to as functional ports and have the colour green like the corresponding F E (5).
 Eu.ModSt.7513
     Data ports and trigger ports start with a capital letter if they are part of an external connection between
-    a FE and the system environment (system interface) or if it is an open port (such as D4in_ Normal_Mode or
+    a FE and the system environment (system interface) or if it is an open port (such as D4in_Normal_Mode or
     T1in_SIL_not_fulfiled). In this case they are refered to as logical ports and have the colour blue (6).
 Eu.ModSt.7514
     Data ports and trigger ports which are part of a connection between TFEs or a TFE and the system environment
@@ -45,10 +46,19 @@ Eu.ModSt.7519
 ***/
 
 public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+
+    public Identifier Identifier { get; } = new Identifier(Property.Name);
+
+    public bool IsExternalInterface => Identifier.RawName.StartsWith("T") || Identifier.RawName.StartsWith("D");
+    public bool IsDataPort => Identifier.RawName.StartsWith("d") || Identifier.RawName.StartsWith("D");
+    public bool IsTriggerPort => Identifier.RawName.StartsWith("t") || Identifier.RawName.StartsWith("T");
+    public bool IsInPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)in_([\\w_]+)$");
+    public bool IsOutPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)out_([\\w_]+)$");
+
     public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
     {
         var umlType = types[property.Type];
-        return umlType.Name switch {
+        PropertyOrPort result = umlType.Name switch {
             "Boolean" => new BoolPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
             // "DateTime",
             // "Decimal",
@@ -62,6 +72,17 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
             // "Timespan",
             _ => new ComplexPropertyOrPort(property, IsPort, umlType, Class, TheAccessor, ProxyFor)
         };
+
+        // Extra validation of naming conventions
+        if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
+            throw new ArgumentException($"Naming convention was violated for {result.Identifier.RawName}");
+        }
+
+        if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
+            throw new ArgumentException($"Naming convention was violated for {result.Identifier.RawName}");
+        }
+
+        return result;
     }
 
     public string GenerateDeclaration((string, string) finalType) {
@@ -271,7 +292,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         data at sender side typed with "PulsedOut".
     ***/
 
-    record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -313,7 +334,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {

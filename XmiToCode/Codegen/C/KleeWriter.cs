@@ -17,6 +17,7 @@ internal class KleeWriter : CWriter {
 typedef enum Event
 {{
     {JoinLines(inputTriggers.Select(x => $"Event_{x.Identifier.Name},"))}
+    {JoinLines(klass.GetTimeoutEvents().Select(x => $"Event_{x},"))}
 
     Event_MsgPdiNotAvailable,
     Event_MsgResetPdi,
@@ -34,6 +35,10 @@ void process_events(SSciEfesPrim *self, Event *event, size_t len)
     {JoinLines(inputTriggers.Select(x =>
         @$"case Event_{x.Identifier.Name}:
         self->{x.Identifier.Name}.IsTriggered = true;
+        break;"))}
+    {JoinLines(klass.GetTimeoutEvents().Select(x =>
+        @$"case Event_{x}:
+        self->{x}.IsTimeoutExpired = true;
         break;"))}
     case Event_MsgPdiNotAvailable:
       self->MsgPdiNotAvailable.Value = (Message__MsgPdiNotAvailable){{}};
