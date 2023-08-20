@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmiToCode", "XmiToCode.csproj", "{F9E044A2-709F-41AE-B988-3451AD173AF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmiToCode.Test", "..\XmiToCode.Test\XmiToCode.Test.csproj", "{B98977CF-42CB-4A8A-8A27-C408CA3DFBD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{F9E044A2-709F-41AE-B988-3451AD173AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9E044A2-709F-41AE-B988-3451AD173AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9E044A2-709F-41AE-B988-3451AD173AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B98977CF-42CB-4A8A-8A27-C408CA3DFBD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B98977CF-42CB-4A8A-8A27-C408CA3DFBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B98977CF-42CB-4A8A-8A27-C408CA3DFBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B98977CF-42CB-4A8A-8A27-C408CA3DFBD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

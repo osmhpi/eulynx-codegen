@@ -244,18 +244,7 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
             _ => throw new NotImplementedException()
         };
 
-        var constraint = codeTransition.Constraint switch {
-            BooleanExpression.Else => "else",
-            BooleanExpression.Equality equality => $"if ({equality.Lhs.Accessor(codeTransition.context, TargetLanguage.Rust)} == {equality.Rhs.Accessor(codeTransition.context, TargetLanguage.Rust)})",
-            BooleanExpression.SingleVariable single =>
-                single.Positive ?
-                    $"if ({single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})" :
-                    $"if (!{single.Variable.Accessor(codeTransition.context, TargetLanguage.Rust)})",
-            BooleanExpression.NotImplemented compound => $"if NOTIMPLEMENTED",
-            null => null,
-            // Output which transition constraint is not implemented
-            _ => throw new NotImplementedException($"Writing not implemented for {codeTransition.Constraint.GetType()}")
-        };
+        var constraint = codeTransition.Constraint != null ? WriteIfOrElse(codeTransition.Constraint, codeTransition.context) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -266,5 +255,12 @@ string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")}
                 wrapWithIfElseExpression(constraint,
          $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToRust(codeTransition.context)))}
             return make_state_{codeTransition.stateName.Replace(".", "__")}(self);"));
+    }
+
+    private string WriteIfOrElse(IAccessible expression, ProgramContext context) {
+        return expression switch {
+            BooleanExpression.Else => "else",
+            _ => $"if ({expression.Accessor(context, TargetLanguage.Rust)})"
+        };
     }
 }

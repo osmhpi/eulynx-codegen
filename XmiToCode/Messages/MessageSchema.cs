@@ -4,7 +4,7 @@ public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, D
 {
     public List<MessageMember> Members { get; } = Signal.OwnedAttribute
         .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type],
-            PropertyOrPort.Create(x, DataTypes.DataTypes, false, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name)))))
+            PropertyOrPort.Create(x, DataTypes.DataTypes, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name)))))
         .ToList();
 
     public IEnumerable<ValueType> GetValueTypes() {

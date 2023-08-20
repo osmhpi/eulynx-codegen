@@ -59,9 +59,9 @@ internal class CWriter : ICodeWriter
 
     private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
     {
-        return @$"typedef enum {globalEnumeration.Name} {{
-            {string.Join(",\n", globalEnumeration.Members.Select(x => $"{globalEnumeration.Name}__{x}"))}
-        }} {globalEnumeration.Name};
+        return @$"typedef enum {globalEnumeration.Name.Name} {{
+            {string.Join(",\n", globalEnumeration.Members.Select(x => $"{globalEnumeration.Name.Name}__{x.Name}"))}
+        }} {globalEnumeration.Name.Name};
         ";
     }
 
@@ -88,7 +88,7 @@ void new({klass.Info.ClassName} *x) {{
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
 void evaluateChangeEvents({klass.Info.ClassName} *self) {{
-    {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({WriteBooleanExpression(x.Condition, klass.ClassContext)});"))}
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({x.Condition.Accessor(klass.ClassContext, TargetLanguage.C)});"))}
 }}
 
 void transition({klass.Info.ClassName} *self) {{
@@ -184,24 +184,30 @@ void transition({klass.Info.ClassName} *self) {{
                 {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"));
     }
 
-    private string WriteIfOrElse(BooleanExpression expression, ProgramContext context) {
+    private string WriteIfOrElse(IAccessible expression, ProgramContext context) {
         return expression switch {
             BooleanExpression.Else => "else",
-            _ => $"if ({WriteBooleanExpression(expression, context)})"
+            _ => $"if ({expression.Accessor(context, TargetLanguage.C)})"
         };
     }
 
-    private string WriteBooleanExpression(BooleanExpression expression, ProgramContext context) {
-        return expression switch {
-            BooleanExpression.Equality equality =>
-                equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C),
-            BooleanExpression.SingleVariable single =>
-                single.Positive ?
-                    single.Variable.Accessor(context, TargetLanguage.C) :
-                    $"!{single.Variable.Accessor(context, TargetLanguage.C)}",
-            _ => throw new NotImplementedException()
-        };
-    }
+    // private string WriteBooleanExpression(BooleanExpression expression, ProgramContext context) {
+    //     return expression switch {
+    //         BooleanExpression.Equality equality =>
+    //             equality.Positive ?
+    //                 equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C) :
+    //                 $"!({equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C)})",
+    //         BooleanExpression.SingleVariable single =>
+    //             single.Positive ?
+    //                 single.Variable.Accessor(context, TargetLanguage.C) :
+    //                 $"!{single.Variable.Accessor(context, TargetLanguage.C)}",
+    //         BooleanExpression.Conjunction conjunction =>
+    //             $"({conjunction.Lhs.Accessor(context, TargetLanguage.C)}) && ({conjunction.Rhs.Accessor(context, TargetLanguage.C)})",
+    //         BooleanExpression.Disjunction conjunction =>
+    //             $"({conjunction.Lhs.Accessor(context, TargetLanguage.C)}) || ({conjunction.Rhs.Accessor(context, TargetLanguage.C)})",
+    //         _ => throw new NotImplementedException()
+    //     };
+    // }
 
     private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
@@ -253,7 +259,7 @@ typedef struct TimeoutEvent
   int IsTimeoutExpired;
 }} TimeoutEvent;
 
-{string.Join("\n", klass.GlobalEnumerations.Select(x => Write(x)))}
+{string.Join("\n", klass.ClassContext.Global.Enumerations.Select(x => Write(x)))}
 
 // Value Types
 

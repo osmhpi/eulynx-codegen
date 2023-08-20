@@ -92,7 +92,7 @@ public class StateMachine
     }
 
     private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
-        var newContext = new BlockContext(context); // , overrideInstanceReference: "This"
+        var newContext = new BlockContext(context);
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
         var initialTransition = GetTransitionsFromState((parentBehaviorName != null ? parentBehaviorName + "." : "") + name, _initialState).Single();

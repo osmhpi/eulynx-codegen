@@ -1,6 +1,6 @@
 using static PropertyOrPort;
 
-public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : ProgramContext
+public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : ProgramContext
 {
     // Signals
     // Ports
@@ -13,8 +13,6 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
             .Select(x => DataTypes.Signals[x.Signal])
             .Select(x => new MessageSchema(new TypeIdentifier(x.Name), x, DataTypes))
             .ToDictionary(x => x.Identifier);
-
-    // public override string InstanceReference { get; } = Writer.DefaultInstanceReference;
 
     public Dictionary<TypeIdentifier, MessageSchema> UsedOutgoingMessageTypes { get; } = new();
 
@@ -42,7 +40,7 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
             return property;
         }
 
-        return Parent.ResolveAssignableIdentifier(identifier);
+        return Global.ResolveAssignableIdentifier(identifier);
     }
 
     public override IAccessible ResolveIdentifier(Identifier identifier)
@@ -52,7 +50,7 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
             return port;
         }
 
-        return Parent.ResolveIdentifier(identifier);
+        return Global.ResolveIdentifier(identifier);
     }
 
     internal override ICallable ResolveCallableIdentifier(Identifier identifier)
@@ -61,7 +59,7 @@ public record ClassContext(GlobalContext Parent, DataTypeHelper DataTypes) : Pro
             return new MethodCall(identifier);
         }
 
-        return Parent.ResolveCallableIdentifier(identifier);
+        return Global.ResolveCallableIdentifier(identifier);
     }
 
     internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)

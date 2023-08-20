@@ -45,7 +45,7 @@ Eu.ModSt.7519
     Trigger in ports are mainly used as arguments of Boolean expressions in change events.
 ***/
 
-public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
 
     public Identifier Identifier { get; } = new Identifier(Property.Name);
 
@@ -55,48 +55,34 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
     public bool IsInPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)in_([\\w_]+)$");
     public bool IsOutPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)out_([\\w_]+)$");
 
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
+    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
     {
         var umlType = types[property.Type];
         PropertyOrPort result = umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
+            "Boolean" => new BoolPropertyOrPort(property, Class, TheAccessor, ProxyFor),
             // "DateTime",
             // "Decimal",
             // "Double",
             // "Integer",
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, IsPort, Class, TheAccessor, ProxyFor),
+            "String" => new StringPropertyOrPort(property, Class, TheAccessor, ProxyFor),
+            "PulsedIn" => new PulsedInPropertyOrPort(property, Class, TheAccessor, ProxyFor),
+            "PulsedOut" => new PulsedOutPropertyOrPort(property, Class, TheAccessor, ProxyFor),
             // "Timespan",
-            _ => new ComplexPropertyOrPort(property, IsPort, umlType, Class, TheAccessor, ProxyFor)
+            _ => new ComplexPropertyOrPort(property, umlType, Class, TheAccessor, ProxyFor)
         };
 
         // Extra validation of naming conventions
         if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
-            throw new ArgumentException($"Naming convention was violated for {result.Identifier.RawName}");
+            throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
         }
 
         if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
-            throw new ArgumentException($"Naming convention was violated for {result.Identifier.RawName}");
+            throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
         }
 
         return result;
-    }
-
-    public string GenerateDeclaration((string, string) finalType) {
-        if (IsPort) {
-            return $"public Port<{finalType.Item1}> {Name} {{ get; set; }}";
-        }
-        return $"public {finalType.Item1} {Name} {{ get; set; }}";
-    }
-
-    public string GenerateInitializer((string, string) finalType) {
-        if (IsPort) {
-            return $"{Name} = new Port<{finalType.Item1}>({GenerateInitialValue()});";
-        }
-        return $"{Name} = new {finalType.Item1}();";
     }
 
     protected virtual string GenerateInitialValue() {
@@ -127,8 +113,12 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
 
     public abstract void EnsureComparableTypes(IAccessible rhsIdentifier);
 
+    public virtual IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+    {
+        return context.ResolveIdentifier(identifier);
+    }
 
-    public record StringPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record StringPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
     {
         private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
             var result = new HashSet<StringPropertyOrPort>();
@@ -207,22 +197,8 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    public record ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
     {
-        // public ComplexPropertyOrPort(OwnedAttribute Property, bool IsPort, PackagedElement UmlType) : base(Property, IsPort)
-        // {
-            // Console.WriteLine(InPascalCase(UmlType.Name));
-            // if (UmlType.Type == "uml:Class") {
-            //     foreach (var reception in UmlType.OwnedReception) {
-            //         Console.WriteLine("  ->" + reception.Name);
-            //     }
-            // } else if (UmlType.Type == "uml:Enumeration") {
-            //     foreach (var literal in UmlType.OwnedLiteral) {
-            //         Console.WriteLine("  --" + literal.Name);
-            //     }
-            // }
-        // }
-
         public override (string, string) DataType(TargetLanguage language) => UmlType.Type switch {
             "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
             "uml:Enumeration" => (InPascalCase(UmlType.Name), ""),
@@ -245,22 +221,31 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
                 throw new NotImplementedException();
             }
 
-            var literals = UmlType.OwnedLiteral
-                .Select(x => (Key: new LiteralIdentifier(x.Name), Value: x))
-                .ToDictionary(x => x.Key, x => x.Value);
-            var theIdentifier = literals[literal];
-            return new EnumerationMember(UmlType, theIdentifier);
+            var enumLiteral = UmlType.OwnedLiteral
+                .Select(x => new GlobalEnumIdentifier(x.Name))
+                .Single(x => x.RawName == literal.RawName);
+            return new EnumerationMember(UmlType, enumLiteral);
+        }
+
+        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        {
+            var enumLiteral = UmlType.OwnedLiteral
+                .Select(x => new GlobalEnumIdentifier(x.Name))
+                .SingleOrDefault(x => x.RawName == identifier.RawName);
+            if (enumLiteral != null) {
+                return new EnumerationMember(UmlType, enumLiteral);
+            }
+
+            return base.LookupValidIdentifier(identifier, context);
         }
     }
 
-    public record BoolPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record BoolPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
-            // if (value != "TRUE" && value != "FALSE")
-            //     throw new ArgumentException($"Invalid bool value: {value}");
             if (literal.Name == "True")
                 return new BoolLiteral(true);
 
@@ -268,6 +253,17 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
                 return new BoolLiteral(false);
 
             throw new ArgumentException($"Invalid bool value: {literal}");
+        }
+
+        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        {
+            if (identifier.Name == "True")
+                return new BoolLiteral(true);
+
+            if (identifier.Name == "False")
+                return new BoolLiteral(false);
+
+            return base.LookupValidIdentifier(identifier, context);
         }
 
         public override void EnsureComparableTypes(IAccessible rhsIdentifier)
@@ -292,7 +288,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         data at sender side typed with "PulsedOut".
     ***/
 
-    public record PulsedInPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record PulsedInPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -334,7 +330,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
         }
     }
 
-    public record PulsedOutPropertyOrPort(OwnedAttribute Property, bool IsPort, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, IsPort, Class, TheAccessor, ProxyFor)
+    public record PulsedOutPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -356,6 +352,14 @@ public abstract record PropertyOrPort(OwnedAttribute Property, bool IsPort, Clas
                 return new PulsedOutLiteral();
 
             throw new ArgumentException($"Invalid pulsed out value: {literal}");
+        }
+
+        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        {
+            if (identifier.Name == "True")
+                return new PulsedOutLiteral();
+
+            return base.LookupValidIdentifier(identifier, context);
         }
 
         public override void EnsureComparableTypes(IAccessible rhsIdentifier)

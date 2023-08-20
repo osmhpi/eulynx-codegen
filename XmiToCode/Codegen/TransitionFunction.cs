@@ -4,10 +4,10 @@ public record Condition();
 
 public interface ICodeTransition {
     public Transition Transition { get; }
-    public BooleanExpression? Constraint { get; }
+    public IAccessible? Constraint { get; }
 }
 
-public record CodeTransition(string stateName, ProgramContext context, List<Instruction> Activities, BooleanExpression? Constraint, Transition Transition) : ICodeTransition;
+public record CodeTransition(string stateName, ProgramContext context, List<Instruction> Activities, IAccessible? Constraint, Transition Transition) : ICodeTransition;
 
-public record JunctionTransition(ProgramContext context, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, BooleanExpression? Constraint, Transition Transition) : ICodeTransition;
+public record JunctionTransition(ProgramContext context, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, IAccessible? Constraint, Transition Transition) : ICodeTransition;
 

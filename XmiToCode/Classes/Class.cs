@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using XmiToCode;
 using static CodeGenerationHelper;
 
@@ -8,8 +7,7 @@ public record Class(
     BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
     List<StateName> States,
-    List<Operation> Operations,
-    List<GlobalEnumeration> GlobalEnumerations)
+    List<Operation> Operations)
 {
     public IEnumerable<ValueType> GetValueTypes() {
         return ClassContext.Ports
@@ -47,7 +45,7 @@ public record Class(
             .ToList();
     }
 
-    internal IEnumerable<(PackagedElement Event, BooleanExpression Condition)> GetChangeEvents() {
+    internal IEnumerable<(PackagedElement Event, IAccessible Condition)> GetChangeEvents() {
         return TransitionFunctions
             .SelectMany(x => x.Transitions)
             .Select(x => x.Transition)
@@ -72,16 +70,7 @@ public record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralI
 
 public record GlobalEnumeration(PackagedElement Enumeration) {
 
-    public string Name => InPascalCase(Enumeration.Name);
-    public IEnumerable<string> Members => Enumeration.OwnedLiteral.Select(lit => GenerateEnumMemberName(lit.Name));
-
-    private static string GenerateEnumMemberName(string value) {
-        var sanitizedValue = InPascalCase(value.Replace("-", " ").Replace(",", " And ").Replace("/", " Or "));
-
-        if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
-            sanitizedValue = "_" + sanitizedValue;
-        }
-
-        return sanitizedValue;
-    }
+    public TypeIdentifier Name { get; } = new TypeIdentifier(Enumeration.Name);
+    public IEnumerable<GlobalEnumIdentifier> Members { get; } =
+        Enumeration.OwnedLiteral.Select(lit => new GlobalEnumIdentifier(lit.Name));
 }

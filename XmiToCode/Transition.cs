@@ -73,7 +73,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public BooleanExpression? GetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
+    public IAccessible? GetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
 
@@ -87,25 +87,9 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return null;
     }
 
-    protected virtual BooleanExpression DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
+    protected virtual IAccessible DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
 
-        var expression = SingleTransition.OwnedRule.Specification.Body.Trim();
-
-        // ASAL is specified in section 8.6.8 in Eu.Doc.30
-
-        var equalsRegexMatch = new Regex("^(.+) = (.+)$").Match(expression);
-        if (equalsRegexMatch.Success)
-        {
-            return ParseEqualityConstraint(equalsRegexMatch, expression, context);
-        }
-
-        var singleVariableExpression = new Regex("^(NOT )?(\\S+)$").Match(expression);
-        if (singleVariableExpression.Success)
-        {
-            return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
-        }
-
-        return new BooleanExpression.NotImplemented();
+        return ParseExpression(SingleTransition.OwnedRule.Specification.Body.Trim(), context);
 
         // var expression = AsalExpressionToCSharp(SingleTransition.OwnedRule.Specification.Body);
 
@@ -159,37 +143,54 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         // return $"if ({expression})";
     }
 
-    protected static BooleanExpression ParseEqualityConstraint(Match equalsRegexMatch, string expression, ProgramContext context)
-    {
-        var lhs = equalsRegexMatch.Groups[1].Value;
-        var rhs = equalsRegexMatch.Groups[2].Value;
+    // private static BooleanExpression ParseConjunctionExpression(Match conjunctionRegexMatch, string expression, ProgramContext context)
+    // {
+    //     var lhs = conjunctionRegexMatch.Groups[1].Value;
+    //     var rhs = conjunctionRegexMatch.Groups[2].Value;
 
-        var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
+    //     return new BooleanExpression.Conjunction(ParseExpression(lhs.Trim(), context), ParseExpression(rhs.Trim(), context));
+    // }
 
-        if (TryParseLiteral(rhs, out var literal)) {
-            var l = identifier.LookupValidLiteral(literal!);
-            identifier.EnsureComparableTypes(l);
-            return new BooleanExpression.Equality(identifier, l);
-        } else {
-            var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
-            if (rhsIdentifier != null) {
-                identifier.EnsureComparableTypes(rhsIdentifier);
-                return new BooleanExpression.Equality(identifier, rhsIdentifier);
-            } else {
-                // It is a literal, but without quotes
-                var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
-                identifier.EnsureComparableTypes(l);
-                return new BooleanExpression.Equality(identifier, l);
-            }
-        }
-    }
+    // private static BooleanExpression ParseDisjunctionExpression(Match disjunctionRegexMatch, string expression, ProgramContext context)
+    // {
+    //     var lhs = disjunctionRegexMatch.Groups[1].Value;
+    //     var rhs = disjunctionRegexMatch.Groups[2].Value;
 
-    protected static BooleanExpression ParseSingleVariableConstraint(Match singleVariableExpression, string expression, ProgramContext context)
-    {
-        var negation = singleVariableExpression.Groups[1].Value;
-        var identifier = context.ResolveAssignableIdentifier(new Identifier(singleVariableExpression.Groups[2].Value));
-        return new BooleanExpression.SingleVariable(identifier, string.IsNullOrEmpty(negation));
-    }
+    //     return new BooleanExpression.Disjunction(ParseExpression(lhs.Trim(), context), ParseExpression(rhs.Trim(), context));
+    // }
+
+    // protected static BooleanExpression ParseEqualityConstraint(Match equalsRegexMatch, string expression, ProgramContext context)
+    // {
+    //     var negation = equalsRegexMatch.Groups["negation"].Value;
+    //     var lhs = equalsRegexMatch.Groups["lhs"].Value;
+    //     var rhs = equalsRegexMatch.Groups["rhs"].Value;
+
+    //     var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
+
+    //     if (TryParseLiteral(rhs, out var literal)) {
+    //         var l = identifier.LookupValidLiteral(literal!);
+    //         identifier.EnsureComparableTypes(l);
+    //         return new BooleanExpression.Equality(identifier, l, string.IsNullOrEmpty(negation));
+    //     } else {
+    //         var rhsIdentifier = identifier.LookupValidIdentifier(new Identifier(rhs), context);
+    //         if (rhsIdentifier != null) {
+    //             identifier.EnsureComparableTypes(rhsIdentifier);
+    //             return new BooleanExpression.Equality(identifier, rhsIdentifier, string.IsNullOrEmpty(negation));
+    //         } else {
+    //             // It is a literal, but without quotes
+    //             var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
+    //             identifier.EnsureComparableTypes(l);
+    //             return new BooleanExpression.Equality(identifier, l, string.IsNullOrEmpty(negation));
+    //         }
+    //     }
+    // }
+
+    // protected static BooleanExpression ParseSingleVariableConstraint(Match singleVariableExpression, string expression, ProgramContext context)
+    // {
+    //     var negation = singleVariableExpression.Groups[1].Value;
+    //     var identifier = context.ResolveAssignableIdentifier(new Identifier(singleVariableExpression.Groups[2].Value));
+    //     return new BooleanExpression.SingleVariable(identifier, string.IsNullOrEmpty(negation));
+    // }
 
     public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, ProgramContext context) {
         var transition = transitions.SingleOrDefault();
@@ -216,39 +217,107 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new ArgumentException(nameof(transitions));
     }
 
-    protected static BooleanExpression ParseExpression(string expression, ProgramContext context) {
+    protected static IAccessible ParseExpression(string expression, ProgramContext context) {
+        expression = expression.Replace('\n', ' ').Trim();
+
+        var parser = new Parser(expression);
+        return parser.ParseExpression(context);
+
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
-        var equalsRegexMatch = new Regex("^(.+) = (.+)$").Match(expression);
-        if (equalsRegexMatch.Success)
-        {
-            return ParseEqualityConstraint(equalsRegexMatch, expression, context);
-        }
+        // var fancyRegexMatch = new Regex("^\\(?(.+)\\)? (AND|OR) \\(?(.+)\\)?$").Match(expression);
+        // var fancyRegexMatch = new Regex(@"\((?>\((?<c>)|[^()]+|\)(?<-c>))*(?(c)(?!))\)").Match(expression);
+        // if (fancyRegexMatch.Success) {
+        //     // return ParseConjunctionExpression(fancyRegexMatch, expression, context);
+        // }
 
-        var singleVariableExpression = new Regex("^(NOT )?(\\S+)$").Match(expression);
-        if (singleVariableExpression.Success)
-        {
-            return ParseSingleVariableConstraint(singleVariableExpression, expression, context);
-        }
+        // var conjunctionRegexMatch = new Regex("^(.+) AND (.+)$").Match(expression);
+        // if (conjunctionRegexMatch.Success) {
+        //     return ParseConjunctionExpression(conjunctionRegexMatch, expression, context);
+        // }
 
-        return new BooleanExpression.NotImplemented();
+        // var disjunctionRegexMatch = new Regex("^(.+) OR (.+)$").Match(expression);
+        // if (disjunctionRegexMatch.Success) {
+        //     return ParseDisjunctionExpression(disjunctionRegexMatch, expression, context);
+        // }
+
+        // // HACK
+        // var disjunctionRegexWorkaroundMatch = new Regex("^(.+) or (.+)$").Match(expression);
+        // if (disjunctionRegexWorkaroundMatch.Success) {
+        //     return ParseDisjunctionExpression(disjunctionRegexWorkaroundMatch, expression, context);
+        // }
+
+        // var equalsRegexMatch = new Regex("^(?<negation>NOT )?\\(?(?<lhs>.+) = (?<rhs>.+)\\)?$").Match(expression);
+        // if (equalsRegexMatch.Success)
+        // {
+        //     return ParseEqualityConstraint(equalsRegexMatch, expression, context);
+        // }
+
+        // var singleVariableExpressionMatch = new Regex("^(NOT )?(\\S+)$").Match(expression);
+        // if (singleVariableExpressionMatch.Success)
+        // {
+        //     return ParseSingleVariableConstraint(singleVariableExpressionMatch, expression, context);
+        // }
+
+        // // HACK
+        // var singleVariableExpressionWorkaroundMatch = new Regex("^((Not|NOt) )?(\\S+)$").Match(expression);
+        // if (singleVariableExpressionWorkaroundMatch.Success)
+        // {
+        //     return ParseSingleVariableConstraint(singleVariableExpressionWorkaroundMatch, expression, context);
+        // }
+
+        throw new NotImplementedException($"Could not parse boolean expression: {expression}");
     }
 }
 
-record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent, BooleanExpression Condition) : Transition(From, To, Transitions);
+record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent, IAccessible Condition) : Transition(From, To, Transitions);
 
 record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
 
-public record BooleanExpression() {
-    public record Else() : BooleanExpression();
-    public record Equality(IAssignable Lhs, IAccessible Rhs) : BooleanExpression();
-    public record SingleVariable(IAssignable Variable, bool Positive) : BooleanExpression();
-    public record NotImplemented() : BooleanExpression();
+public abstract record BooleanExpression() : IAccessible {
+    public abstract string Accessor(ProgramContext context, TargetLanguage targetLanguage);
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void EnsureComparableTypes(IAccessible rhsIdentifier)
+    {
+        throw new NotImplementedException();
+    }
+
+    public record Else() : BooleanExpression()
+    {
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage) => "else";
+    }
+
+    public record Equality(IAccessible Lhs, IAccessible Rhs, bool Positive) : BooleanExpression()
+    {
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+            Positive ? Lhs.Comparator(context, Rhs, targetLanguage) : $"!({Lhs.Comparator(context, Rhs, targetLanguage)})";
+    }
+
+    public record Negation(IAccessible Variable) : BooleanExpression()
+    {
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+            => $"!({Variable.Accessor(context, targetLanguage)})";
+    }
+
+    public record Conjunction(IAccessible Lhs, IAccessible Rhs) : BooleanExpression()
+    {
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+            => $"({Lhs.Accessor(context, targetLanguage)}) && ({Rhs.Accessor(context, targetLanguage)})";
+    }
+
+    public record Disjunction(IAccessible Lhs, IAccessible Rhs) : BooleanExpression() {
+        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+            => $"({Lhs.Accessor(context, targetLanguage)}) || ({Rhs.Accessor(context, targetLanguage)})";
+    }
 }
 
 record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions)
 {
-    protected override BooleanExpression DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context)
+    protected override IAccessible DoGetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context)
     {
         var expression = SingleTransition.OwnedRule.Specification.Body;
         return ParseExpression(expression, context);

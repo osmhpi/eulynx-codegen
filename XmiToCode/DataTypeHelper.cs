@@ -28,8 +28,8 @@ public class DataTypeHelper {
         Dictionary<(string, string), (string, string)> typeAliases,
         ClassInfo classInfo)
     {
-        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, false, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
-        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, true, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
+        Properties = properties.Select(x => PropertyOrPort.Create(x, dataTypes, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
+        Ports = ports.Select(x => PropertyOrPort.Create(x, dataTypes, classInfo, new ClassAccessor())).ToDictionary(x => x.Name);
 
         Operations = operationNames;
         ChangeEvents = changeEvents;

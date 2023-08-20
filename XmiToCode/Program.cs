@@ -46,24 +46,24 @@ var dataTypes = FindAllDataTypes(sysimProfile)
     // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
     .ToDictionary(x => x.Id);
 
-var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
+// var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
 
 var interestingPackages = eulynxSystem.PackagedElements
-    .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
+    // .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
     .ToList();
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
 var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
 
-var classWhitelist = new [] {
+var classWhitelist = new string[] {};
+classWhitelist = new [] {
     // "F_Control_Point_Machine_Position",
     // "S_SCI_P_Command_And_Recieve",
     "S_SCI_EfeS_Prim",
     // "S_SCI_Adj_Prim"
     "F_EST_EfeS"
 };
-// var classWhitelist = new List<string>();
 
 var typeAliases = new Dictionary<(string, string), (string, string)>() {
     { ("D50inPdiConnectionStateValue", ""), ("SSciEfesPrim.D50outPdiConnectionStateValue", "") }
@@ -71,57 +71,78 @@ var typeAliases = new Dictionary<(string, string), (string, string)>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
-var c = new KleeWriter();
+var c = new CWriter();
 
-var global = new GlobalContext();
+// var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
+var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
+    .Select(x => new GlobalEnumeration(x.Value))
+    // There are two enumerations which map to the same name (but are not used currently)
+    // - Line Direction Control Information
+    // - Line_Direction_Control_Information
+    // This behavior is dangerous...
+    // Temporary workaround:
+    .Where(x => x.Name.Name != "LineDirectionControlInformation")
+    .ToList();
+
+var global = new GlobalContext(enumerations);
+
+var successful = new List<string>();
+var all = 0;
+var modelIssues = 0;
 
 foreach (var interestingPackage in interestingPackages) {
-    // var eventsSubpackage = interestingPackage.PackagedElements.SingleOrDefault(x => x.Name == "Events");
-    // Dictionary<string, PackagedElement> packageEvents = new Dictionary<string, PackagedElement>();
-    // if (eventsSubpackage != null) {
-    //     packageEvents = eventsSubpackage.PackagedElements.Where(x => x.Type == "uml:SignalEvent").ToDictionary(x => x.Id);
-    // }
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
     foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
+        Console.Write($"Writing {umlClassPackage.Name}...");
+        all++;
 
-        var properties = umlClassPackage.OwnedAttribute
-            .Where(x => x.XmiType == "uml:Property")
-            .ToList();
-        var ports = umlClassPackage.OwnedAttribute
-            .Where(x => x.XmiType == "uml:Port")
-            .ToList();
-        var operationNames = umlClassPackage.OwnedOperation
-            .Where(x => x.XmiType == "uml:Operation")
-            .Select(x => new Identifier(x.Name))
-            .ToList();
-
-        var className = new TypeIdentifier(umlClassPackage.Name);
-        // HACK
-        var classInfo = new ClassInfo(className.Name, "");
-        var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
-        var classContext = new ClassContext(global, dth);
-
-        var operations = umlClassPackage.OwnedOperation
-            .Where(x => x.XmiType == "uml:Operation")
-            .Select(x => (x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
-            .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
-            .ToList();
-
-        var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext);
         try {
-            Console.WriteLine($"Writing {umlClass.GetName()}");
+            var properties = umlClassPackage.OwnedAttribute
+                .Where(x => x.XmiType == "uml:Property")
+                .ToList();
+            var ports = umlClassPackage.OwnedAttribute
+                .Where(x => x.XmiType == "uml:Port")
+                .ToList();
+            var operationNames = umlClassPackage.OwnedOperation
+                .Where(x => x.XmiType == "uml:Operation")
+                .Select(x => new Identifier(x.Name))
+                .ToList();
+
+            var className = new TypeIdentifier(umlClassPackage.Name);
+            // HACK
+            var classInfo = new ClassInfo(className.Name, "");
+            var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
+            var classContext = new ClassContext(global, dth);
+
+            var operations = umlClassPackage.OwnedOperation
+                .Where(x => x.XmiType == "uml:Operation")
+                .Select(x => (x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
+                .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
+                .ToList();
+
+            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext);
             await umlClass.Generate(targetLanguage switch {
                 TargetLanguage.CSharp => csharp,
                 TargetLanguage.C => c,
                 TargetLanguage.Rust => rust,
                 _ => throw new NotImplementedException()
             }, classContext, operations);
+
+            successful.Add(className.Name);
+            Console.WriteLine(" done.");
+        } catch (ModelException ex) {
+            Console.WriteLine($" failed due to model issue: ({ex.Message})");
+            modelIssues++;
         } catch (Exception ex) {
-            Console.WriteLine($"Could not generate class: {umlClass.GetName()} ({ex.Message})");
+            Console.WriteLine($" failed: ({ex.Message})");
         }
     }
 }
+
+Console.WriteLine($"Successfully generated {successful.Count} out of {all} ({all-modelIssues} valid) classes:");
+foreach (var success in successful)
+    Console.WriteLine($" - {success}");
 
 return 0;
 

@@ -23,5 +23,7 @@ public record MessageMember(TypeIdentifier Message, Identifier MemberName, Packa
         Member.EnsureComparableTypes(rhsIdentifier);
     }
 
+    public IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context) => Member.LookupValidIdentifier(identifier, context);
+
     public IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier) => Member.LookupValidLiteral(literalIdentifier);
 }

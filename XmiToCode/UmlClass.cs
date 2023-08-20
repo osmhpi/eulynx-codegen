@@ -145,16 +145,6 @@ public class UmlClass
         var className = InPascalCase(_class.Name);
         var behaviorName = _stateMachine.GetName();
 
-        var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
-        var enumerations = _dataTypes.DataTypes.Where(x => x.Value.Type == "uml:Enumeration")
-            // There are two enumerations which map to the same name (but are not used currently)
-            // - Line Direction Control Information
-            // - Line_Direction_Control_Information
-            // This behavior is possibly dangerous...
-            // Temporary workaround:
-            .Where(x => whitelist.Contains(x.Value.Name))
-            .Select(x => new GlobalEnumeration(x.Value)).ToList();
-
         var info = new ClassInfo(className, behaviorName);
 
         var klass = new Class(
@@ -163,8 +153,7 @@ public class UmlClass
             _stateMachine.Parse(info, _dataTypes, context),
             _stateMachine.ParseTransitionFunctions(info, _dataTypes, context).ToList(),
             _stateMachine.GetStates(behaviorName).ToList(),
-            operations,
-            enumerations
+            operations
         );
 
         await w.WriteAllFilesAsync(this, klass);

@@ -30,11 +30,9 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             return result;
         }
 
-        var initializerInPascalCase = InPascalCase(initializer);
-
         // Does the initializer refer to a known variable or constant?
         var id = new Identifier(initializer);
-        var accessible = context.ResolveIdentifier(id);
+        var accessible = member.LookupValidIdentifier(id, context);
         if (accessible != null) {
             var result = accessible;
             return result;
@@ -106,7 +104,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             return ParseMethodInvocationInstruction(methodInvocationMatch, context);
         }
 
-        throw new Exception("Unprocessable instruction");
+        throw new NotImplementedException($"Unprocessable instruction: {instruction}");
     }
 
     private static Instruction ParseMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
@@ -128,7 +126,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             identifier.EnsureComparableTypes(l);
             return new AssignmentInstruction(identifier, l);
         } else {
-            var rhsIdentifier = context.ResolveIdentifier(new Identifier(rhs));
+            var rhsIdentifier = identifier.LookupValidIdentifier(new Identifier(rhs), context);
             if (rhsIdentifier != null) {
                 identifier.EnsureComparableTypes(rhsIdentifier);
                 return new AssignmentInstruction(identifier, rhsIdentifier);
@@ -144,6 +142,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
     public static List<Instruction> ParseInstructions(string instructions, ProgramContext context) {
         return instructions
             .Split(";")
+            .SelectMany(x => x.Split("\n"))
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => ParseInstruction(x, context))
             .ToList();
