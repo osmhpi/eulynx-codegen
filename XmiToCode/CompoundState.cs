@@ -23,7 +23,6 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
     }
 
     public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, ProgramContext context) {
-        // var literal = Regex.Match(initializer, "^\"(.*)\"$");
         if (TryParseLiteral(initializer, out var literal)) {
             // Resolve message
             var result = member.LookupValidLiteral(literal!);
@@ -43,103 +42,11 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         }
     }
 
-    public static Instruction ParseSendMessageInstruction(Match messageRegexMatch, ProgramContext context){
-        var m = messageRegexMatch;
-
-        var messageConstructor = m.Groups[1].Value.Replace(" ", "");
-
-        if (!messageConstructor.EndsWith(")")) {
-            messageConstructor += "()";
-        }
-
-        var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
-        if (!messageName.Success) {
-            throw new Exception($"Invalid message expression: {messageConstructor}");
-        }
-
-        // Lookup message type
-        var messageTypeIdentifier = new TypeIdentifier(messageName.Groups[1].Value);
-        var portIdentifier = new Identifier(m.Groups[2].Value);
-
-        var messageSchema = context.ResolveOutgoingMessageSchema(portIdentifier, messageTypeIdentifier);
-
-        var parsedMessageName = InPascalCase(messageName.Groups[1].Value);
-
-        var messageInitializerValue = "";
-
-        var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
-        if (messageInitializer.Success) {
-            messageInitializerValue = messageInitializer.Groups[2].Value;
-            var fields = messageInitializerValue.Split(",").Select((x, i) => ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
-            var ins = new MessageInitializer(messageSchema, fields);
-            var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-            return r;
-        } else {
-            var ins = new MessageInitializer(messageSchema, new());
-            var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-            return r;
-        }
-    }
-
     public static Instruction ParseInstruction(string instruction, ProgramContext context) {
         var result = instruction.Trim();
 
         var parser = new Parser(result);
         return parser.ParseInstructions(context);
-
-        // ASAL is specified in section 8.6.8 in Eu.Doc.30
-
-        var messageRegexMatch = new Regex("^send (.+)\\s?to (.+)$").Match(result);
-        if (messageRegexMatch.Success)
-        {
-            return ParseSendMessageInstruction(messageRegexMatch, context);
-        }
-
-        var assignmentRegexMatch = new Regex("^(.+) := (.+)$").Match(result);
-        if (assignmentRegexMatch.Success)
-        {
-            return ParseAssignmentInstruction(assignmentRegexMatch, result, context);
-        }
-
-        var methodInvocationMatch = new Regex("^(\\w+)\\((.*)\\)$").Match(result);
-        if (methodInvocationMatch.Success)
-        {
-            return ParseMethodInvocationInstruction(methodInvocationMatch, context);
-        }
-
-        throw new NotImplementedException($"Unprocessable instruction: {instruction}");
-    }
-
-    private static Instruction ParseMethodInvocationInstruction(Match methodInvocationMatch, ProgramContext context)
-    {
-        var identifier = new Identifier(methodInvocationMatch.Groups[1].Value);
-        var callable = context.ResolveCallableIdentifier(identifier);
-        return new MethodCallInstruction(callable);
-    }
-
-    private static Instruction ParseAssignmentInstruction(Match assignmentRegexMatch, string result, ProgramContext context)
-    {
-        var lhs = assignmentRegexMatch.Groups[1].Value;
-        var rhs = assignmentRegexMatch.Groups[2].Value;
-
-        var identifier = context.ResolveAssignableIdentifier(new Identifier(lhs));
-
-        if (TryParseLiteral(rhs, out var literal)) {
-            var l = identifier.LookupValidLiteral(literal!);
-            identifier.EnsureComparableTypes(l);
-            return new AssignmentInstruction(identifier, l);
-        } else {
-            var rhsIdentifier = identifier.LookupValidIdentifier(new Identifier(rhs), context);
-            if (rhsIdentifier != null) {
-                identifier.EnsureComparableTypes(rhsIdentifier);
-                return new AssignmentInstruction(identifier, rhsIdentifier);
-            } else {
-                // It is a literal, but without quotes
-                var l = identifier.LookupValidLiteral(new LiteralIdentifier(rhs));
-                identifier.EnsureComparableTypes(l);
-                return new AssignmentInstruction(identifier, l);
-            }
-        }
     }
 
     public static List<Instruction> ParseInstructions(string instructions, ProgramContext context) {
