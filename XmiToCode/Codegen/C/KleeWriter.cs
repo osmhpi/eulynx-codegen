@@ -40,6 +40,7 @@ typedef enum Event
 
 int count_firing_transitions({klass.Info.ClassName} *self) {{
     int result = 0;
+    evaluateChangeEvents(self);
 
     switch (self->state)
     {{
