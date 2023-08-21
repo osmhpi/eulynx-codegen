@@ -16,7 +16,7 @@ if (!Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage)) {
     return 1;
 }
 
-using var inFile = File.OpenRead("../cleaned.xmi");
+using var inFile = File.OpenRead("../cleaned_23.xmi");
 
 var xmlSerializer = new XmlSerializer(typeof(XMI), "");
 var xmi = xmlSerializer.Deserialize(inFile) as XMI;
@@ -35,9 +35,22 @@ var eulynxProfile = xmi.Model.PackagedElements
     .Single(x => x.Type == "uml:Package" && x.Name == "EULYNX_Profile");
 
 var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
-var genericFunctions = packages.Single(x => x.Name == "Generic Functions");
 
-var genericEvents = FindAllEvents(genericFunctions).ToList();
+var genericEvents = new List<PackagedElement>();
+
+// v19
+var genericFunctions = packages.SingleOrDefault(x => x.Name == "Generic Functions");
+if (genericFunctions != null) {
+    genericEvents = FindAllEvents(genericFunctions).ToList();
+}
+
+// v23
+var collectionOfSignalEvents = packages.SingleOrDefault(x => x.Name == "Collection of signal events");
+if (collectionOfSignalEvents != null) {
+    // Collection of signal events
+    // Internal subsystem events
+    genericEvents = FindAllEvents(collectionOfSignalEvents).ToList();
+}
 
 var dataTypes = FindAllDataTypes(sysimProfile)
     .Concat(FindAllDataTypes(eulynxProfile))
@@ -46,10 +59,11 @@ var dataTypes = FindAllDataTypes(sysimProfile)
     // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
     .ToDictionary(x => x.Id);
 
-// var packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
+var packageWhitelist = new string[] {};
+// packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
 
 var interestingPackages = eulynxSystem.PackagedElements
-    // .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
+    .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
     .ToList();
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
@@ -57,13 +71,13 @@ var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent"
 var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
 
 var classWhitelist = new string[] {};
-classWhitelist = new [] {
-    // "F_Control_Point_Machine_Position",
-    // "S_SCI_P_Command_And_Recieve",
-    "S_SCI_EfeS_Prim",
-    // "S_SCI_Adj_Prim"
-    "F_EST_EfeS"
-};
+// classWhitelist = new [] {
+//     // "F_Control_Point_Machine_Position",
+//     // "S_SCI_P_Command_And_Recieve",
+//     "S_SCI_EfeS_Prim",
+//     // "S_SCI_Adj_Prim"
+//     "F_EST_EfeS"
+// };
 
 var classBlacklist = new string[] {
     // seem to cause endless loops
@@ -80,7 +94,7 @@ var typeAliases = new Dictionary<(string, string), (string, string)>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
-var c = new CWriter();
+var c = new KleeWriter();
 
 // var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
 var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
