@@ -191,24 +191,6 @@ void transition({klass.Info.ClassName} *self) {{
         };
     }
 
-    // private string WriteBooleanExpression(BooleanExpression expression, ProgramContext context) {
-    //     return expression switch {
-    //         BooleanExpression.Equality equality =>
-    //             equality.Positive ?
-    //                 equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C) :
-    //                 $"!({equality.Lhs.Comparator(context, equality.Rhs, TargetLanguage.C)})",
-    //         BooleanExpression.SingleVariable single =>
-    //             single.Positive ?
-    //                 single.Variable.Accessor(context, TargetLanguage.C) :
-    //                 $"!{single.Variable.Accessor(context, TargetLanguage.C)}",
-    //         BooleanExpression.Conjunction conjunction =>
-    //             $"({conjunction.Lhs.Accessor(context, TargetLanguage.C)}) && ({conjunction.Rhs.Accessor(context, TargetLanguage.C)})",
-    //         BooleanExpression.Disjunction conjunction =>
-    //             $"({conjunction.Lhs.Accessor(context, TargetLanguage.C)}) || ({conjunction.Rhs.Accessor(context, TargetLanguage.C)})",
-    //         _ => throw new NotImplementedException()
-    //     };
-    // }
-
     private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
         var condition = codeTransition.Transition switch {

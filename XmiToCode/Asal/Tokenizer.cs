@@ -52,9 +52,11 @@ public class Tokenizer {
         => TryTokenizePattern(TokenType.Conjunction, new Regex("^AND"), input, current, out result);
 
     private int TryTokenizeDisjunction(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR"), input, current, out result);
+        // Ignore case to work around some model issues
+        => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR", RegexOptions.IgnoreCase), input, current, out result);
 
     private int TryTokenizeNegation(string input, int current, out Token? result)
+        // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.Negation, new Regex("^NOT"), input, current, out result);
 
     private int TryTokenizeExclusiveDisjunction(string input, int current, out Token? result)
