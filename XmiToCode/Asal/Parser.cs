@@ -54,7 +54,7 @@ public class Parser
             Eat(TokenType.ParenClose);
             return negate ? new BooleanExpression.Negation(node) : node;
         }
-        throw new InvalidOperationException();
+        throw new ArgumentException();
     }
 
     public IAccessible Term(ProgramContext context) {
@@ -111,10 +111,11 @@ public class Parser
         return node;
     }
 
-    public Instruction InstrIf(ProgramContext context) {
-        // instr_if : if term then
-        // instr_methodcall : factor OpenParen CloseParen
-        // var node = Term(context);
+    public Instruction Instr(ProgramContext context) {
+        // instr  : term ((AND | OR | XOR) term)*
+        // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
+        // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
+
         while (_current_token.Current.TokenType == TokenType.If || _current_token.Current.TokenType == TokenType.Name || _current_token.Current.TokenType == TokenType.SendMessageToPort) {
             var token = _current_token.Current;
             if (token.TokenType == TokenType.If) {
@@ -167,25 +168,15 @@ public class Parser
                     messageInitializerValue = messageInitializer.Groups[2].Value;
                     var fields = messageInitializerValue.Split(",").Select((x, i) => CompoundState.ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
                     var ins = new MessageInitializer(messageSchema, fields);
-                    var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-                    return r;
+                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 } else {
                     var ins = new MessageInitializer(messageSchema, new());
-                    var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
-                    return r;
+                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 }
             }
         }
+
         throw new NotImplementedException();
-    }
-
-    public Instruction Instr(ProgramContext context) {
-        // instr  : term ((AND | OR | XOR) term)*
-        // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
-        // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
-
-        var node = InstrIf(context);
-        return node;
     }
 
     public IAccessible ParseExpression(ProgramContext context) {

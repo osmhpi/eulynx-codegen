@@ -109,7 +109,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             }
         }
 
-        throw new ArgumentException(nameof(transitions));
+        throw new ArgumentException("Could not parse provided transition");
     }
 
     protected static IAccessible ParseExpression(string expression, ProgramContext context) {

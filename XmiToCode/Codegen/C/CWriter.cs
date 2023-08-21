@@ -91,6 +91,14 @@ void evaluateChangeEvents({klass.Info.ClassName} *self) {{
     {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({x.Condition.Accessor(klass.ClassContext, TargetLanguage.C)});"))}
 }}
 
+void resetTriggers({klass.Info.ClassName} *self) {{
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->{x.Identifier.Name}.Some = false;"))}
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PropertyOrPort.PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
+
+    {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
+}}
+
 void transition({klass.Info.ClassName} *self) {{
   evaluateChangeEvents(self);
 
@@ -99,6 +107,8 @@ void transition({klass.Info.ClassName} *self) {{
         {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
             $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;"))}
   }}
+
+  resetTriggers(self);
 }}
 ";
     }
@@ -161,29 +171,6 @@ void transition({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
-    {
-        var condition = junctionTransition.Transition switch {
-            ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
-            TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
-            InitialTransition => "", // TODO
-            _ => throw new NotImplementedException()
-        };
-
-        var constraint = junctionTransition.Constraint != null ? WriteIfOrElse(junctionTransition.Constraint, junctionTransition.context) : null;
-
-        var wrapWithIfElseExpression = (string? expr, string block) =>
-            string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
-                {block}
-            }}";
-
-        return wrapWithIfElseExpression(condition,
-            wrapWithIfElseExpression(constraint,
-                $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}
-                {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"));
-    }
-
     private string WriteIfOrElse(IAccessible expression, ProgramContext context) {
         return expression switch {
             BooleanExpression.Else => "else",
@@ -191,9 +178,8 @@ void transition({klass.Info.ClassName} *self) {{
         };
     }
 
-    private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
-    {
-        var condition = codeTransition.Transition switch {
+    protected string WrapWithGuard(Transition transition, IAccessible? c, ProgramContext context, string instructions) {
+        var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
             MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
@@ -201,16 +187,30 @@ void transition({klass.Info.ClassName} *self) {{
             _ => throw new NotImplementedException()
         };
 
-        var constraint = codeTransition.Constraint != null ? WriteIfOrElse(codeTransition.Constraint, codeTransition.context) : null;
+        var constraint = c != null ? WriteIfOrElse(c, context) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
                 {block}
             }}";
 
-        return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint,
+        return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint, instructions));
+    }
+
+    private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
+    {
+        return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint, junctionTransition.context,
+            $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}
+                    {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"
+        );
+    }
+
+    private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
+    {
+        return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint, codeTransition.context,
             $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
-                return make_state_{states[codeTransition.Transition.To]}(self);"));
+                return make_state_{states[codeTransition.Transition.To]}(self);"
+        );
     }
 
     protected virtual string WriteHeader(Class klass)
@@ -267,7 +267,7 @@ typedef struct {klass.Info.ClassName} {{
     {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
 
     // Change Events
-    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body}"))}
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body.ReplaceLineEndings("")}"))}
 
     // Timeout Events
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}

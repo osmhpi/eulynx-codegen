@@ -7,13 +7,7 @@ internal class KleeWriter : CWriter {
         return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
             int result = 0;
             {string.Join("\n", transitionFunction.Transitions
-                .Select(x => x.Transition switch {
-                    ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered) result++;",
-                    TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired) result++;",
-                    MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some) result++;",
-                    InitialTransition => "", // TODO
-                    _ => throw new NotImplementedException()
-                }))}
+                .Select(x => WrapWithGuard(x.Transition, x.Constraint, x.context, "result++;")))}
             return result;
         }}
 
@@ -50,7 +44,7 @@ int count_firing_transitions({klass.Info.ClassName} *self) {{
     switch (self->state)
     {{
         {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
-            string.Join("\n", $"case {t.Name}: \n self->state = count_transition_from_{t.Name}(self);\nbreak;")))}
+            string.Join("\n", $"case {t.Name}: \n result += count_transition_from_{t.Name}(self);\nbreak;")))}
     }}
 
     return result;
@@ -58,6 +52,7 @@ int count_firing_transitions({klass.Info.ClassName} *self) {{
 
 void process_events({klass.Info.ClassName} *self, Event *event, size_t len)
 {{
+  resetTriggers(self);
   for (int i = 0; i < len; ++i)
   {{
     Event e = event[i];
@@ -88,28 +83,82 @@ void process_events({klass.Info.ClassName} *self, Event *event, size_t len)
   }}
 }}
 
+int new_symbolic({klass.Info.ClassName} *self) {{
+    klee_make_symbolic(&self->state, sizeof(self->state), ""state"");
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        PropertyOrPort.ComplexPropertyOrPort complex => null,
+        _ => $"klee_make_symbolic(&self->{x.Key.Name}, sizeof(self->{x.Key.Name}), \"{x.Key.Name}\");"
+    }))}
+
+    // Messages -- Incoming
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"klee_make_symbolic(&self->{x.Identifier.Name}, sizeof(self->{x.Identifier.Name}), \"{x.Identifier.Name}\");"))}
+    // Messages -- Outgoing
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"klee_make_symbolic(&self->{x.Identifier.Name}, sizeof(self->{x.Identifier.Name}), \"{x.Identifier.Name}\");"))}
+
+    // Change Events
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"klee_make_symbolic(&self->{x.Event.Name}, sizeof(self->{x.Event.Name}), \"{x.Event.Name}\");"))}
+
+    // Timeout Events
+    {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"klee_make_symbolic(&self->{x}, sizeof(self->{x}), \"{x}\");"))}
+}}
+
+int experiment_deterministic_transitions() {{
+    {klass.Info.ClassName} x;
+
+    // Experiment: Deterministic transitions
+    klee_make_symbolic(&x, sizeof(x), ""{klass.Info.ClassName}"");
+
+    resetTriggers(&x);
+
+    Event event;
+    klee_make_symbolic(&event, sizeof(Event), ""event"");
+
+    switch (event)
+    {{
+    {JoinLines(inputTriggers.Select(x =>
+        @$"case Event_{x.Identifier.Name}:
+        x.{x.Identifier.Name}.IsTriggered = true;
+        break;"))}
+    {JoinLines(klass.GetTimeoutEvents().Select(x =>
+        @$"case Event_{x}:
+        x.{x}.IsTimeoutExpired = true;
+        break;"))}
+    {JoinLines(klass.GetIncomingMessageTypes().Select(x =>
+        @$"case Event_{x.Identifier.Name}:
+        x.{x.Identifier.Name}.Value = (Message__{x.Identifier.Name}){{0}};
+        x.{x.Identifier.Name}.Some = true;
+        break;"))}
+    }}
+
+    klee_assert(count_firing_transitions(&x) <= 1);
+}}
+
+int experiment_transition_sequence() {{
+    {klass.Info.ClassName} x;
+
+    new (&x);
+
+    Event one;
+    klee_make_symbolic(&one, sizeof(Event), ""one"");
+    Event two;
+    klee_make_symbolic(&two, sizeof(Event), ""two"");
+    Event three;
+    klee_make_symbolic(&three, sizeof(Event), ""three"");
+    Event four;
+    klee_make_symbolic(&four, sizeof(Event), ""four"");
+    Event five;
+    klee_make_symbolic(&five, sizeof(Event), ""five"");
+    Event six;
+    klee_make_symbolic(&six, sizeof(Event), ""six"");
+
+    Event event_sequence[6] = {{one, two, three, four, five, six}};
+    process_events(&x, event_sequence, 6);
+}}
+
 int main()
 {{
-  {klass.Info.ClassName} x = {{0}};
-  new (&x);
-
-  Event one;
-  klee_make_symbolic(&one, sizeof(Event), ""one"");
-  Event two;
-  klee_make_symbolic(&two, sizeof(Event), ""two"");
-  Event three;
-  klee_make_symbolic(&three, sizeof(Event), ""three"");
-  Event four;
-  klee_make_symbolic(&four, sizeof(Event), ""four"");
-  Event five;
-  klee_make_symbolic(&five, sizeof(Event), ""five"");
-  Event six;
-  klee_make_symbolic(&six, sizeof(Event), ""six"");
-
-  Event event_sequence[6] = {{one, two, three, four, five, six}};
-  process_events(&x, event_sequence, 6);
-
-  return 0;
+    return experiment_deterministic_transitions();
 }}";
     }
 

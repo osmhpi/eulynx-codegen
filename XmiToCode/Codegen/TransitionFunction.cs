@@ -5,6 +5,7 @@ public record Condition();
 public interface ICodeTransition {
     public Transition Transition { get; }
     public IAccessible? Constraint { get; }
+    public ProgramContext context { get; }
 }
 
 public record CodeTransition(string stateName, ProgramContext context, List<Instruction> Activities, IAccessible? Constraint, Transition Transition) : ICodeTransition;
