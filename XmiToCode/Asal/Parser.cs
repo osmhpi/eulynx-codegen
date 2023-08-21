@@ -1,5 +1,8 @@
 // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
+using System.Text.RegularExpressions;
+using static CodeGenerationHelper;
+
 public class Parser
 {
     private readonly Tokenizer _lexer;
@@ -108,7 +111,88 @@ public class Parser
         return node;
     }
 
+    public Instruction InstrIf(ProgramContext context) {
+        // instr_if : if term then
+        // instr_methodcall : factor OpenParen CloseParen
+        // var node = Term(context);
+        while (_current_token.Current.TokenType == TokenType.If || _current_token.Current.TokenType == TokenType.Name || _current_token.Current.TokenType == TokenType.SendMessageToPort) {
+            var token = _current_token.Current;
+            if (token.TokenType == TokenType.If) {
+                Eat(TokenType.If);
+                var condition = Expr(context);
+                Eat(TokenType.Then);
+                return new IfThenElseInstruction(condition);
+            } else if (token.TokenType == TokenType.Name) {
+                var identifier = new Identifier(token.Value);
+                Eat(TokenType.Name);
+                if (_current_token.Current.TokenType == TokenType.ParenOpen) {
+                    // Method call
+                    var callable = context.ResolveCallableIdentifier(identifier);
+                    Eat(TokenType.ParenOpen);
+                    Eat(TokenType.ParenClose);
+                    return new MethodCallInstruction(callable);
+                } else if (_current_token.Current.TokenType == TokenType.Assignment) {
+                    // Assignment
+                    var assignable = context.ResolveAssignableIdentifier(identifier);
+                    Eat(TokenType.Assignment);
+                    var otherFactor = Factor(context, assignable);
+                    return new AssignmentInstruction(assignable, otherFactor);
+                }
+            } else if (token.TokenType == TokenType.SendMessageToPort) {
+                var m = new Regex("^send (.+)\\s?to (.+)$").Match(token.Value);
+
+                var messageConstructor = m.Groups[1].Value.Replace(" ", "");
+
+                if (!messageConstructor.EndsWith(")")) {
+                    messageConstructor += "()";
+                }
+
+                var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
+                if (!messageName.Success) {
+                    throw new Exception($"Invalid message expression: {messageConstructor}");
+                }
+
+                // Lookup message type
+                var messageTypeIdentifier = new TypeIdentifier(messageName.Groups[1].Value);
+                var portIdentifier = new Identifier(m.Groups[2].Value);
+
+                var messageSchema = context.ResolveOutgoingMessageSchema(portIdentifier, messageTypeIdentifier);
+
+                var parsedMessageName = InPascalCase(messageName.Groups[1].Value);
+
+                var messageInitializerValue = "";
+
+                var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
+                if (messageInitializer.Success) {
+                    messageInitializerValue = messageInitializer.Groups[2].Value;
+                    var fields = messageInitializerValue.Split(",").Select((x, i) => CompoundState.ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
+                    var ins = new MessageInitializer(messageSchema, fields);
+                    var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+                    return r;
+                } else {
+                    var ins = new MessageInitializer(messageSchema, new());
+                    var r = new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+                    return r;
+                }
+            }
+        }
+        throw new NotImplementedException();
+    }
+
+    public Instruction Instr(ProgramContext context) {
+        // instr  : term ((AND | OR | XOR) term)*
+        // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
+        // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
+
+        var node = InstrIf(context);
+        return node;
+    }
+
     public IAccessible ParseExpression(ProgramContext context) {
         return Expr(context);
+    }
+
+    public Instruction ParseInstructions(ProgramContext context) {
+        return Instr(context);
     }
 }

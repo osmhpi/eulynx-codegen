@@ -29,6 +29,8 @@ public class Tokenizer {
 
     private int TryTokenizeName(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Name, new Regex("^[\\w_]+"), input, current, out result);
+    private int TryTokenizeAssignment(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Assignment, new Regex("^:="), input, current, out result);
 
     private int TryTokenizeGreaterThanOrEqual(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.GreaterThanOrEqual, new Regex("^>="), input, current, out result);
@@ -57,10 +59,21 @@ public class Tokenizer {
 
     private int TryTokenizeNegation(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Negation, new Regex("^NOT"), input, current, out result);
+        => TryTokenizePattern(TokenType.Negation, new Regex("^NOT", RegexOptions.IgnoreCase), input, current, out result);
 
     private int TryTokenizeExclusiveDisjunction(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.ExclusiveDisjunction, new Regex("XOR"), input, current, out result);
+
+    private int TryTokenizeIf(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.If, new Regex("^If"), input, current, out result);
+    private int TryTokenizeThen(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Then, new Regex("^Then"), input, current, out result);
+    private int TryTokenizeElse(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Else, new Regex("^Else"), input, current, out result);
+    private int TryTokenizeElseIf(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.ElseIf, new Regex("^ElseIf"), input, current, out result);
+    private int TryTokenizeSendMessageToPort(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
 
     private int TryTokenizeStringLiteral(string input, int current, out Token? result) {
         if (input[current] == '"') {
@@ -96,6 +109,7 @@ public class Tokenizer {
             SkipWhitespace,
             TryTokenizeParenClose,
             TryTokenizeParenOpen,
+            TryTokenizeAssignment,
             TryTokenizeGreaterThanOrEqual,
             TryTokenizeLessThanOrEqual,
             TryTokenizeNotEqual,
@@ -106,6 +120,11 @@ public class Tokenizer {
             TryTokenizeDisjunction,
             TryTokenizeNegation,
             TryTokenizeExclusiveDisjunction,
+            TryTokenizeIf,
+            TryTokenizeThen,
+            TryTokenizeElse,
+            TryTokenizeElseIf,
+            TryTokenizeSendMessageToPort,
             TryTokenizeStringLiteral,
             TryTokenizeName,
         };

@@ -5,6 +5,9 @@ public enum TokenType {
     Name,
     StringLiteral,
 
+    // Assignment
+    Assignment,
+
     // Logical operators
     GreaterThan,
     LessThan,
@@ -16,6 +19,15 @@ public enum TokenType {
     Disjunction,
     Negation,
     ExclusiveDisjunction,
+
+    // Conditional execution
+    If,
+    Then,
+    ElseIf,
+    Else,
+
+    // Message sending
+    SendMessageToPort,
 }
 
 public record Token(TokenType TokenType, string Value);

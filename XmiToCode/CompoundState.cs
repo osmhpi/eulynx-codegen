@@ -84,6 +84,9 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
     public static Instruction ParseInstruction(string instruction, ProgramContext context) {
         var result = instruction.Trim();
 
+        var parser = new Parser(result);
+        return parser.ParseInstructions(context);
+
         // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
         var messageRegexMatch = new Regex("^send (.+)\\s?to (.+)$").Match(result);

@@ -65,6 +65,15 @@ classWhitelist = new [] {
     "F_EST_EfeS"
 };
 
+var classBlacklist = new string[] {
+    // seem to cause endless loops
+    "F_Observe_Overall_Point_Position",
+    "F_SCI_TDS_Report_TVPS",
+
+    // Demo data
+    "Block1"
+};
+
 var typeAliases = new Dictionary<(string, string), (string, string)>() {
     { ("D50inPdiConnectionStateValue", ""), ("SSciEfesPrim.D50outPdiConnectionStateValue", "") }
 };
@@ -93,7 +102,9 @@ var modelIssues = 0;
 foreach (var interestingPackage in interestingPackages) {
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
-    foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage).Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))) {
+    foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage)
+        .Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))
+        .Where(x => !classBlacklist.Contains(x.Name))) {
         Console.Write($"Writing {umlClassPackage.Name}...");
         all++;
 
