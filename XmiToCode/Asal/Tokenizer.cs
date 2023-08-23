@@ -65,7 +65,8 @@ public class Tokenizer {
         => TryTokenizePattern(TokenType.ExclusiveDisjunction, new Regex("XOR"), input, current, out result);
 
     private int TryTokenizeIf(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.If, new Regex("^If"), input, current, out result);
+        // Ignore case to work around some model issues
+        => TryTokenizePattern(TokenType.If, new Regex("^If", RegexOptions.IgnoreCase), input, current, out result);
     private int TryTokenizeThen(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Then, new Regex("^Then"), input, current, out result);
     private int TryTokenizeElse(string input, int current, out Token? result)
@@ -104,9 +105,40 @@ public class Tokenizer {
         return 0;
     }
 
+    private int SkipLineComment(string input, int current, out Token? result) {
+        result = null;
+        var match = Regex.Match(input.Substring(current), "^//.*^");
+        if (match.Success) {
+            return match.Length;
+        }
+        return 0;
+    }
+
+    private int SkipMultilineComment(string input, int current, out Token? result) {
+        result = null;
+        if (input[current] == '/' && input.Length > current + 1 && input[current + 1] == '*') {
+            var consumedChars = 2;
+            char? currentChar = input[current + consumedChars];
+            char? nextChar = current + consumedChars + 1 < input.Length ? input[current + consumedChars + 1] : null;
+            while (currentChar != '*' && nextChar != '/') {
+                if (currentChar == null || nextChar == null) {
+                    throw new Exception("Unterminated comment");
+                }
+                consumedChars++;
+                currentChar = current + consumedChars < input.Length ? input[current + consumedChars] : null;
+                nextChar = current + consumedChars + 1 < input.Length ? input[current + consumedChars + 1] : null;
+            }
+            return consumedChars + 2;
+        }
+        result = null;
+        return 0;
+    }
+
     public IEnumerable<Token> Tokenize(string input) {
         var tokenizers = new [] {
             SkipWhitespace,
+            SkipLineComment,
+            SkipMultilineComment,
             TryTokenizeParenClose,
             TryTokenizeParenOpen,
             TryTokenizeAssignment,

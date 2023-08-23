@@ -94,7 +94,7 @@ var typeAliases = new Dictionary<(string, string), (string, string)>() {
 
 var csharp = new CSharpWriter();
 var rust = new RustWriter();
-var c = new KleeWriter();
+var c = new CWriter();
 
 // var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
 var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")

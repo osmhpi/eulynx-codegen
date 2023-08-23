@@ -112,11 +112,11 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new ArgumentException("Could not parse provided transition");
     }
 
-    protected static IAccessible ParseExpression(string expression, ProgramContext context) {
+    protected static IAccessible? ParseExpression(string expression, ProgramContext context) {
         expression = expression.Replace('\n', ' ').Trim();
 
-        var parser = new Parser(expression);
-        return parser.ParseExpression(context);
+        var parser = new Parser();
+        return parser.ParseExpression(expression, context);
     }
 }
 

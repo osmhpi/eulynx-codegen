@@ -42,11 +42,11 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         }
     }
 
-    public static Instruction ParseInstruction(string instruction, ProgramContext context) {
+    public static Instruction? ParseInstruction(string instruction, ProgramContext context) {
         var result = instruction.Trim();
 
-        var parser = new Parser(result);
-        return parser.ParseInstructions(context);
+        var parser = new Parser();
+        return parser.ParseInstructions(result, context);
     }
 
     public static List<Instruction> ParseInstructions(string instructions, ProgramContext context) {
@@ -55,6 +55,8 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             .SelectMany(x => x.Split("\n"))
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => ParseInstruction(x, context))
+            .Where(x => x != null)
+            .Select(x => x!)
             .ToList();
     }
 

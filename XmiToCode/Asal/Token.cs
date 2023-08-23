@@ -4,6 +4,8 @@ public enum TokenType {
     ParenClose,
     Name,
     StringLiteral,
+    LineComment,
+    MultiLineComment,
 
     // Assignment
     Assignment,
