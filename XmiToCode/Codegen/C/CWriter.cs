@@ -92,7 +92,7 @@ void evaluateChangeEvents({klass.Info.ClassName} *self) {{
 }}
 
 void resetTriggers({klass.Info.ClassName} *self) {{
-    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->{x.Identifier.Name}.Some = false;"))}
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.Some = false;"))}
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PropertyOrPort.PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
 
@@ -182,7 +182,7 @@ void transition({klass.Info.ClassName} *self) {{
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->{messageEvent.MessageSchema.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageSchema.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
@@ -251,8 +251,7 @@ typedef struct TimeoutEvent
 {string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
 
 // Message Types
-{string.Join("\n", klass.GetIncomingMessageTypes().Select(x => Write(x)))}
-{string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => Write(x)))}
+{string.Join("\n", klass.GetAllMessageTypes().Select(x => Write(x)))}
 
 {WriteBehaviorEnum(klass.Behavior)}
 
@@ -265,9 +264,9 @@ typedef struct {klass.Info.ClassName} {{
         }))}
 
     // Messages -- Incoming
-    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) In{x.Identifier.Name};"))}
     // Messages -- Outgoing
-    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) {x.Identifier.Name};"))}
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) Out{x.Identifier.Name};"))}
 
     // Change Events
     {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body.ReplaceLineEndings("")}"))}

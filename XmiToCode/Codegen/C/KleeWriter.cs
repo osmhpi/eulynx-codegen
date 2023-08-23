@@ -56,8 +56,8 @@ return $@"
         break;"))}
     {JoinLines(klass.GetIncomingMessageTypes().Select(x =>
         @$"case Event_{x.Identifier.Name}:
-        self->{x.Identifier.Name}.Value = (Message__{x.Identifier.Name}){{0}};
-        self->{x.Identifier.Name}.Some = true;
+        self->In{x.Identifier.Name}.Value = (Message__{x.Identifier.Name}){{0}};
+        self->In{x.Identifier.Name}.Some = true;
         break;"))}
     }}";
     }
@@ -82,7 +82,8 @@ return $@"
             .Select(x => x.Name);
 
         return @$"
-        {base.WriteClass(klass)}
+#include <assert.h>
+{base.WriteClass(klass)}
 
 {WriteEventEnum(klass, inputTriggers)}
 
@@ -152,6 +153,7 @@ int experiment_deterministic_transitions() {{
     {WriteDispatchEvent("event", klass, inputTriggers)}
 
     klee_assert(count_firing_transitions(&x) <= 1);
+    return 0;
 }}
 
 /*

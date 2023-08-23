@@ -39,10 +39,16 @@ public record Class(
             .OfType<MessageEventTransition>()
             .Select(x => x.MessageSchema)
             .Distinct()
-            // .GroupBy(x => x.Identifier)
-            // .Select(x => x.First())
             .Select(x => ClassContext.MessageSchema[x])
             .ToList();
+    }
+
+    internal IEnumerable<MessageSchema> GetAllMessageTypes() {
+        return GetOutgoingMessageTypes().Concat(
+            GetIncomingMessageTypes()
+        )
+            .GroupBy(x => x.Identifier)
+            .Select(x => x.First());
     }
 
     internal IEnumerable<(PackagedElement Event, IAccessible Condition)> GetChangeEvents() {

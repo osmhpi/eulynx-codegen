@@ -9,7 +9,7 @@ record MessageInitializer(MessageSchema Schema, List<IAccessible> Values)
     internal string ToC(ProgramContext context)
     {
         var valuesAndProperties = Schema.Members.Zip(Values);
-        return string.Join("\n", valuesAndProperties.Select(x => $"{x.First.Assign(context, x.Second, TargetLanguage.C)}"));
+        return string.Join("\n", valuesAndProperties.Select(x => x.First.Assign(context, x.Second, TargetLanguage.C)));
     }
 
     internal string ToRust(ProgramContext context)

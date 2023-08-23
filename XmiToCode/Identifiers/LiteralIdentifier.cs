@@ -7,7 +7,7 @@ public record LiteralIdentifier(string RawName) : Identifier(RawName)
     public override string Name => InPascalCase(Sanitize(RawName));
 
     protected virtual string Sanitize(string value) {
-        var sanitizedValue = InPascalCase(value.Replace(",", " And "));
+        var sanitizedValue = InPascalCase(value.Replace("-", " ").Replace(",", " And "));
 
         if (Regex.IsMatch(value, "^\\d")) { // Starts with a digit
             sanitizedValue = "_" + sanitizedValue;

@@ -70,7 +70,7 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
     internal override MessageSchema ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
         if (UsedOutgoingMessageTypes.ContainsKey(messageTypeIdentifier)) {
-            return UsedOutgoingMessageTypes[messageTypeIdentifier];
+            return new OutgoingMessageSchema(UsedOutgoingMessageTypes[messageTypeIdentifier]);
         }
 
         var port = Ports[portIdentifier];
@@ -88,7 +88,7 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
             var result = MessageSchema[new TypeIdentifier(signal.Name)];
 
             UsedOutgoingMessageTypes[messageTypeIdentifier] = result;
-            return result;
+            return new OutgoingMessageSchema(result);
         }
 
         throw new NotImplementedException();

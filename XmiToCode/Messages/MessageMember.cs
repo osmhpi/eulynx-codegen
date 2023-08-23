@@ -9,7 +9,6 @@ public record MessageMember(TypeIdentifier Message, Identifier MemberName, Packa
 
     public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
-        // return $"{Accessor(context, targetLanguage)} = {other.Accessor(context, targetLanguage)};";
         return Member.Assign(context, other, targetLanguage);
     }
 

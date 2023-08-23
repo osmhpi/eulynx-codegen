@@ -10,7 +10,7 @@ record SendMessageInstruction(MessageInitializer initialize, IAccessible port) :
     {
         return $@"
   {initialize.ToC(context)}
-  self->{initialize.Schema.Identifier.Name}.Some = 1;";
+  self->Out{initialize.Schema.Identifier.Name}.Some = 1;";
     }
 
     internal override string ToRust(ProgramContext context)

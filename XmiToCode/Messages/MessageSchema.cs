@@ -2,9 +2,9 @@ using XmiToCode;
 
 public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, DataTypeHelper DataTypes)
 {
-    public List<MessageMember> Members { get; } = Signal.OwnedAttribute
+    public virtual List<MessageMember> Members { get; } = Signal.OwnedAttribute
         .Select(x => new MessageMember(Identifier, new Identifier(x.Name), DataTypes.DataTypes[x.Type],
-            PropertyOrPort.Create(x, DataTypes.DataTypes, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name)))))
+            PropertyOrPort.Create(x, DataTypes.DataTypes, new ClassInfo("Message", ""), new MessageAccessor(Identifier, new Identifier(x.Name), false))))
         .ToList();
 
     public IEnumerable<ValueType> GetValueTypes() {
@@ -23,4 +23,11 @@ public record MessageSchema(TypeIdentifier Identifier, PackagedElement Signal, D
     {
         return Members[i];
     }
+}
+
+public record OutgoingMessageSchema(MessageSchema Inner) : MessageSchema(Inner.Identifier, Inner.Signal, Inner.DataTypes) {
+    public override List<MessageMember> Members { get; } = Inner.Signal.OwnedAttribute
+        .Select(x => new MessageMember(Inner.Identifier, new Identifier(x.Name), Inner.DataTypes.DataTypes[x.Type],
+            PropertyOrPort.Create(x, Inner.DataTypes.DataTypes, new ClassInfo("Message", ""), new MessageAccessor(Inner.Identifier, new Identifier(x.Name), true))))
+        .ToList();
 }

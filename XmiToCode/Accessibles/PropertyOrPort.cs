@@ -145,7 +145,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             }
             return result;
         }
-        public override (string, string) DataType(TargetLanguage language) => GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
+
+        public override (string, string) DataType(TargetLanguage language) =>
+            GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
