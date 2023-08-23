@@ -7,7 +7,7 @@ internal class CWriter : ICodeWriter
 
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.c";
 
-    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    public virtual async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
     {
         using var file = File.Create(GenerateFileName(umlClass));
         using var writer = new StreamWriter(file);
@@ -199,9 +199,12 @@ void transition({klass.Info.ClassName} *self) {{
 
     private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
     {
+        // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
+        var sortedTransitions = junctionTransition.CodeTransitions.OrderBy(x => x.Constraint is BooleanExpression.Else);
+
         return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint, junctionTransition.context,
             $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}
-                    {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"
+                    {string.Join("\n", sortedTransitions.Select(x => WriteICodeTransition(x, states)))}"
         );
     }
 
