@@ -80,12 +80,8 @@ var classWhitelist = new string[] {};
 // };
 
 var classBlacklist = new string[] {
-    // seem to cause endless loops
-    "F_Observe_Overall_Point_Position",
-    "F_SCI_TDS_Report_TVPS",
-
     // Demo data
-    "Block1"
+    // "Block1"
 };
 
 var typeAliases = new Dictionary<(string, string), (string, string)>() {

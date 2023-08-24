@@ -74,13 +74,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         };
 
         // Extra validation of naming conventions
-        if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
-            throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
-        }
+        // if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
+        //     throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
+        // }
 
-        if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
-            throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
-        }
+        // if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
+        //     throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
+        // }
 
         return result;
     }
