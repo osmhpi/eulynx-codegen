@@ -30,12 +30,12 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
 
     public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
-        var port = DataTypes.Ports.Values.SingleOrDefault(x => x.Name == identifier.Name);
+        var port = Ports.ContainsKey(identifier) ? Ports[identifier] : null;
         if (port != null) {
             return port;
         }
 
-        var property = DataTypes.Properties.Values.SingleOrDefault(x => x.Name == identifier.Name);
+        var property = Properties.ContainsKey(identifier) ? Properties[identifier] : null;
         if (property != null) {
             return property;
         }
@@ -45,9 +45,14 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
 
     public override IAccessible ResolveIdentifier(Identifier identifier)
     {
-        var port = DataTypes.Ports.Values.SingleOrDefault(x => x.Name == identifier.Name);
+        var port = Ports.ContainsKey(identifier) ? Ports[identifier] : null;
         if (port != null) {
             return port;
+        }
+
+        var property = Properties.ContainsKey(identifier) ? Properties[identifier] : null;
+        if (property != null) {
+            return property;
         }
 
         return Global.ResolveIdentifier(identifier);
