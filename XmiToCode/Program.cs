@@ -61,9 +61,13 @@ var dataTypes = FindAllDataTypes(sysimProfile)
 
 var packageWhitelist = new string[] {};
 // packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
+var packageBlacklist = new string[] {
+    "Generic recycle bin",
+};
 
 var interestingPackages = eulynxSystem.PackagedElements
     .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
+    .Where(x => !packageBlacklist.Contains(x.Name))
     .ToList();
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
@@ -109,6 +113,15 @@ var successful = new List<string>();
 var all = 0;
 var modelIssues = 0;
 
+ICodeWriter writer = targetLanguage switch {
+    TargetLanguage.CSharp => csharp,
+    TargetLanguage.C => c,
+    TargetLanguage.Rust => rust,
+    _ => throw new NotImplementedException()
+};
+
+await writer.WriteCommonFilesAsync(global);
+
 foreach (var interestingPackage in interestingPackages) {
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
@@ -142,13 +155,8 @@ foreach (var interestingPackage in interestingPackages) {
                 .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
                 .ToList();
 
-            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext);
-            await umlClass.Generate(targetLanguage switch {
-                TargetLanguage.CSharp => csharp,
-                TargetLanguage.C => c,
-                TargetLanguage.Rust => rust,
-                _ => throw new NotImplementedException()
-            }, classContext, operations);
+            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext, interestingPackage);
+            await umlClass.Generate(writer, classContext, operations);
 
             successful.Add(className.Name);
             Console.WriteLine(" done.");

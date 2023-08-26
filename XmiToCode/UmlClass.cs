@@ -11,13 +11,16 @@ public class UmlClass
     private readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
+    public PackagedElement ParentPackage { get; }
+
     public UmlClass(PackagedElement classPackage,
         Dictionary<string, PackagedElement> changeEvents,
         Dictionary<string, PackagedElement> timeEvents,
         Dictionary<string, PackagedElement> packageEvents,
         Dictionary<string, PackagedElement> signals,
         DataTypeHelper dataTypes,
-        ProgramContext context)
+        ProgramContext context,
+        PackagedElement parentPackage)
     {
         _class = classPackage;
         _changeEvents = changeEvents;
@@ -25,7 +28,7 @@ public class UmlClass
         _packageEvents = packageEvents;
         _signals = signals;
         _dataTypes = dataTypes;
-
+        ParentPackage = parentPackage;
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
     }
 
@@ -156,6 +159,6 @@ public class UmlClass
             operations
         );
 
-        await w.WriteAllFilesAsync(this, klass);
+        await w.WriteClassFilesAsync(this, klass);
     }
 }

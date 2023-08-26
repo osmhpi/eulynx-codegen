@@ -100,12 +100,17 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
         }}";
     }
 
-    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    public async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
         using var file = File.Create(GenerateFileName(umlClass));
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(Write(klass));
+    }
+
+    public Task WriteCommonFilesAsync(GlobalContext global)
+    {
+        return Task.CompletedTask;
     }
 
     // public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {

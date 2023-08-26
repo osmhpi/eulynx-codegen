@@ -3,18 +3,58 @@ using static CodeGenerationHelper;
 
 internal class CWriter : ICodeWriter
 {
-    public string DefaultInstanceReference => "self";
+    public async Task WriteCommonFilesAsync(GlobalContext global) {
+        var filename = $"../Eulynx/C/eulynx_common.h";
 
-    public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.c";
+        using var file = File.Create(filename);
+        using var writer = new StreamWriter(file);
 
-    public virtual async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+        await writer.WriteAsync(WriteCommonHeader(global));
+
+    }
+
+    private string WriteCommonHeader(GlobalContext global) {
+        return @$"
+#include <stdbool.h>
+#include <string.h>
+
+#define Option(X) struct {{ bool Some; X Value; }}
+
+typedef struct PulsedIn
+{{
+    bool IsTriggered;
+}} PulsedIn;
+
+typedef struct PulsedOut
+{{
+    bool Trigger;
+}} PulsedOut;
+
+typedef struct ChangeEvent
+{{
+  int IsTriggered;
+}} ChangeEvent;
+
+typedef struct TimeoutEvent
+{{
+  int IsTimeoutExpired;
+}} TimeoutEvent;
+
+{string.Join("\n", global.Enumerations.Select(x => Write(x)))}";
+    }
+
+    public virtual async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
-        using var file = File.Create(GenerateFileName(umlClass));
+        var cFilename = $"../Eulynx/C/{InPascalCase(umlClass.ParentPackage.Name)}/{umlClass.GetName()}.c";
+        var fileinfo = new FileInfo(cFilename);
+        if (!fileinfo.Directory.Exists) fileinfo.Directory.Create();
+
+        using var file = File.Create(cFilename);
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(Write(klass));
 
-        using var headerFile = File.Create($"../Eulynx/{umlClass.GetName()}.h");
+        using var headerFile = File.Create($"../Eulynx/C/{InPascalCase(umlClass.ParentPackage.Name)}/{umlClass.GetName()}.h");
         using var headerWriter = new StreamWriter(headerFile);
 
         await headerWriter.WriteAsync(WriteHeader(klass));
@@ -71,9 +111,8 @@ internal class CWriter : ICodeWriter
             .Where(x => x.record.State != null)
             .ToDictionary(x => x.record.State!, x => x.Name);
 
-        //  #include ""{klass.Info.ClassName}.h""
         return @$"
-{WriteHeader(klass)}
+#include ""{klass.Info.ClassName}.h""
 
 // Operations
 
@@ -219,32 +258,7 @@ void transition({klass.Info.ClassName} *self) {{
     protected virtual string WriteHeader(Class klass)
     {
         return @$"
-#include <stdbool.h>
-#include <string.h>
-
-#define Option(X) struct {{ bool Some; X Value; }}
-
-typedef struct PulsedIn
-{{
-    bool IsTriggered;
-}} PulsedIn;
-
-typedef struct PulsedOut
-{{
-    bool Trigger;
-}} PulsedOut;
-
-typedef struct ChangeEvent
-{{
-  int IsTriggered;
-}} ChangeEvent;
-
-typedef struct TimeoutEvent
-{{
-  int IsTimeoutExpired;
-}} TimeoutEvent;
-
-{string.Join("\n", klass.ClassContext.Global.Enumerations.Select(x => Write(x)))}
+#include ""../eulynx_common.h""
 
 // Value Types
 

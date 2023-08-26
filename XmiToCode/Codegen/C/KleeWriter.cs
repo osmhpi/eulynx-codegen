@@ -1,7 +1,7 @@
 using static CodeGenerationHelper;
 
 internal class KleeWriter : CWriter {
-    public override async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    public override async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
         using var file = File.Create($"../Klee/{umlClass.GetName()}.c");
         using var writer = new StreamWriter(file);

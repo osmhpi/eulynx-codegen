@@ -7,7 +7,7 @@ internal class RustWriter : ICodeWriter
 
     public string GenerateFileName(UmlClass uml) => $"../Eulynx/rust/src/{uml.GetName()}.rs";
 
-    public async Task WriteAllFilesAsync(UmlClass umlClass, Class klass)
+    public async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
         using var file = File.Create(GenerateFileName(umlClass));
         using var writer = new StreamWriter(file);
@@ -20,6 +20,11 @@ internal class RustWriter : ICodeWriter
         using var constantsFile = File.Create($"../Eulynx/rust/src/constants.rs");
         using var constantsFileWriter = new StreamWriter(constantsFile);
         await constantsFileWriter.WriteAsync(WriteClassConstants(klass));
+    }
+
+    public Task WriteCommonFilesAsync(GlobalContext global)
+    {
+        return Task.CompletedTask;
     }
 
     public string Write<T>(T element)
@@ -40,7 +45,6 @@ internal class RustWriter : ICodeWriter
         return @$"
             #![allow(non_camel_case_types)]
             {string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
-            {string.Join("\n", klass.GetComplexValueTypes().Select(x => Write(x)))}
         ";
     }
 
