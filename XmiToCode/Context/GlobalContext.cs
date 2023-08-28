@@ -1,15 +1,22 @@
-public record GlobalContext(List<GlobalEnumeration> Enumerations) : ProgramContext
-{
-    public override bool IsLocalVariable(IAccessible accessible) => false;
+using XmiToCode;
 
-    public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
+public record GlobalContext(List<GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> signals, Dictionary<string, XmiToCode.PackagedElement> DataTypes, Dictionary<string, XmiToCode.PackagedElement> changeEvents, Dictionary<string, XmiToCode.PackagedElement> timeEvents, List<XmiToCode.PackagedElement> genericEvents) : ProgramContext
+{
+    public bool IsLocalVariable(IAccessible accessible) => false;
+
+    public Dictionary<(string, TypeIdentifier), MessageSchema> Messages { get; } =
+        signals.Values
+            .Select(x => (x.Item1, new MessageSchema(x.Signal, DataTypes)))
+            .ToDictionary(x => (x.Item1.Id, x.Item2.Identifier), x => x.Item2);
+
+    public IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
         throw new ModelException($"Could not resolve assignable identifier {identifier.Name}");
     }
 
     // Signals
     // Enums
-    public override IAccessible ResolveIdentifier(Identifier identifier)
+    public IAccessible ResolveIdentifier(Identifier identifier)
     {
         var matchingEnumerations = Enumerations
             .Where(x => x.Members.Any(x => x.RawName == identifier.RawName))
@@ -27,17 +34,22 @@ public record GlobalContext(List<GlobalEnumeration> Enumerations) : ProgramConte
         throw new ModelException($"Could not resolve accessible identifier {identifier.Name}");
     }
 
-    internal override ICallable ResolveCallableIdentifier(Identifier identifier)
+    public MessageSchema ResolveSignal(string signalId)
+    {
+        return Messages.Values.Single(x => x.Signal.Id == signalId);
+    }
+
+    public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
         throw new NotImplementedException();
     }
 
-    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
+    public MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
     {
         throw new NotImplementedException();
     }
 
-    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         throw new NotImplementedException();
     }

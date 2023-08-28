@@ -1,56 +1,59 @@
+using XmiToCode;
+
 public record BlockContext : ProgramContext
 {
     public ProgramContext Parent { get; }
-    private readonly string? _overrideInstanceReference;
-    private readonly MessageSchema? _newAttributes;
+    private readonly MessageSchema? _locals;
 
-    public MessageSchema? NewAttributes => _newAttributes;
+    public MessageSchema? Locals => _locals;
 
-    public BlockContext(ProgramContext parent, MessageSchema? newAttributes = null, string? overrideInstanceReference = null)
+    public BlockContext(ProgramContext parent, MessageSchema? locals = null)
     {
         Parent = parent;
-        _overrideInstanceReference = overrideInstanceReference;
-        _newAttributes = newAttributes;
+        _locals = locals;
     }
 
-    // Deconstructed Message Members
-    public override IAccessible ResolveIdentifier(Identifier identifier)
+    public IAccessible ResolveIdentifier(Identifier identifier)
     {
-        if (NewAttributes != null && NewAttributes.MembersDict.ContainsKey(identifier)) {
-            return NewAttributes.MembersDict[identifier];
+        if (Locals != null && Locals.MembersDict.ContainsKey(identifier)) {
+            var messageProperty = Locals.MembersDict[identifier];
+            return new MessageMember(Locals.Identifier, messageProperty,
+                new MessageAccessor(Locals.Identifier, identifier, false));
         }
 
         return Parent.ResolveIdentifier(identifier);
     }
 
-    public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
+    public IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
-        if (NewAttributes != null && NewAttributes.MembersDict.ContainsKey(identifier)) {
-            return NewAttributes.MembersDict[identifier];
+        if (Locals != null && Locals.MembersDict.ContainsKey(identifier)) {
+            var messageProperty = Locals.MembersDict[identifier];
+            return new MessageMember(Locals.Identifier, messageProperty,
+                new MessageAccessor(Locals.Identifier, identifier, false));
         }
 
         return Parent.ResolveAssignableIdentifier(identifier);
     }
 
-    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         return Parent.ResolveOutgoingMessageSchema(port, messageTypeIdentifier);
     }
 
-    internal override ICallable ResolveCallableIdentifier(Identifier identifier)
+    public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
         return Parent.ResolveCallableIdentifier(identifier);
     }
 
-    public override bool IsLocalVariable(IAccessible accessible)
+    public bool IsLocalVariable(IAccessible accessible)
     {
-        if (accessible is MessageMember member && NewAttributes != null && NewAttributes.Members.Contains(member))
+        if (accessible is MessageMember member && Locals != null && Locals.Members.Contains(member.Member))
             return true;
         return Parent.IsLocalVariable(accessible);
     }
 
-    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
+    MessageSchema ProgramContext.ResolveSignal(string signalId)
     {
-        return Parent.ResolveIncomingMessageSchema(signal);
+        return Parent.ResolveSignal(signalId);
     }
 }

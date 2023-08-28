@@ -12,10 +12,10 @@ public class MessageAccessor : IAccessor
     }
 
     public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
-        var p = _isOutMessage ? "Out" : "In";
+        var inOrOut = _isOutMessage ? "Out" : "In";
         return targetLanguage switch
         {
-            TargetLanguage.C => $"self->{p}{_messageType.Name}.Value.{_memberName.Name}",
+            TargetLanguage.C => $"self->{inOrOut}{_messageType.Name}.Value.{_memberName.Name}",
             _ => $"this->{_messageType.Name}.Value.{_memberName.Name}"
         };
     }

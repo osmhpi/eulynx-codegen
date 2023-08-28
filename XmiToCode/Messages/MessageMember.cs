@@ -1,20 +1,18 @@
-using XmiToCode;
-
-public record MessageMember(TypeIdentifier Message, Identifier MemberName, PackagedElement Type, PropertyOrPort Member) : IAccessible, IAssignable
+public record MessageMember(TypeIdentifier Message, PropertyOrPort Member, IAccessor TheAccessor) : IAccessible, IAssignable
 {
     public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
     {
-        return Member.Accessor(context, targetLanguage);
+        return Member.Accessor(context, targetLanguage, TheAccessor);
     }
 
     public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
-        return Member.Assign(context, other, targetLanguage);
+        return Member.Assign(context, other, targetLanguage, TheAccessor);
     }
 
     public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
-        return Member.Comparator(context, other, targetLanguage);
+        return Member.Comparator(context, other, targetLanguage, TheAccessor);
     }
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)

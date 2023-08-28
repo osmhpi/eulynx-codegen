@@ -28,7 +28,7 @@ public record Class(
 
     internal IEnumerable<MessageSchema> GetOutgoingMessageTypes()
     {
-        return ClassContext.UsedOutgoingMessageTypes.Values;
+        return ClassContext.OutgoingMessages.Values;
     }
 
     internal IEnumerable<MessageSchema> GetIncomingMessageTypes()
@@ -39,16 +39,8 @@ public record Class(
             .OfType<MessageEventTransition>()
             .Select(x => x.MessageSchema)
             .Distinct()
-            .Select(x => ClassContext.MessageSchema[x])
+            .Select(x => ClassContext.IncomingMessages[x])
             .ToList();
-    }
-
-    internal IEnumerable<MessageSchema> GetAllMessageTypes() {
-        return GetOutgoingMessageTypes().Concat(
-            GetIncomingMessageTypes()
-        )
-            .GroupBy(x => x.Identifier)
-            .Select(x => x.First());
     }
 
     internal IEnumerable<(PackagedElement Event, IAccessible Condition)> GetChangeEvents() {

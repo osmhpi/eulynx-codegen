@@ -1,7 +1,7 @@
 public class CSharpWriter : ICodeWriter {
     public string DefaultInstanceReference => "this";
 
-    public string GenerateFileName(UmlClass uml) => $"../Eulynx/{uml.GetName()}.cs";
+    public string GenerateFileName(Class klass) => $"../Eulynx/{klass.Info.ClassName}.cs";
 
     public string Write<T>(T element) {
         return element switch {
@@ -100,9 +100,9 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
         }}";
     }
 
-    public async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    public async Task WriteClassFilesAsync(Class klass)
     {
-        using var file = File.Create(GenerateFileName(umlClass));
+        using var file = File.Create(GenerateFileName(klass));
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(Write(klass));
@@ -111,6 +111,13 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     public Task WriteCommonFilesAsync(GlobalContext global)
     {
         return Task.CompletedTask;
+    }
+
+    public async Task WritePackageFilesAsync(Package pkg)
+    {
+        foreach (var klass in pkg.Classes) {
+            await WriteClassFilesAsync(klass);
+        }
     }
 
     // public static async Task GenerateDataTypes(Dictionary<string, PackagedElement> dataTypes) {

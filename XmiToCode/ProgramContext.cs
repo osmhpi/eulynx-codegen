@@ -1,8 +1,11 @@
-public abstract record ProgramContext {
-    public abstract IAccessible ResolveIdentifier(Identifier identifier);
-    public abstract IAssignable ResolveAssignableIdentifier(Identifier identifier);
-    internal abstract MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal);
-    internal abstract MessageSchema ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier);
-    internal abstract ICallable ResolveCallableIdentifier(Identifier identifier);
-    public abstract bool IsLocalVariable(IAccessible accessible);
+using XmiToCode;
+
+public interface ProgramContext {
+    public IAccessible ResolveIdentifier(Identifier identifier);
+    public IAssignable ResolveAssignableIdentifier(Identifier identifier);
+    // public MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal);
+    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier);
+    public ICallable ResolveCallableIdentifier(Identifier identifier);
+    public bool IsLocalVariable(IAccessible accessible);
+    public MessageSchema ResolveSignal(string signalId);
 }

@@ -34,8 +34,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             // The transition is triggered by an incoming message that has additional attributes
             var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
             var signal = theEvent.Signal;
-            var theSignal = dataTypes.Signals[signal];
-            messageSchema = context.ResolveIncomingMessageSchema(new TypeIdentifier(theSignal.Name));
+            messageSchema = context.ResolveSignal(signal);
         }
 
         var blockContext = new BlockContext(context, messageSchema);
@@ -98,11 +97,11 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     return new TimeEventTransition(from, to, transitions, theEvent);
                 } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.ChangeEvents[evt];
-                    return new ChangeEventTransition(from, to, transitions, theEvent, ParseExpression(theEvent.ChangeExpression.Body, context));
+                    return new ChangeEventTransition(from, to, transitions, theEvent, ParseExpression(theEvent.ChangeExpression.Body, context) ?? throw new Exception("Change event must have condition."));
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
-                    var signal = dataTypes.Signals[theEvent.Signal];
-                    return new MessageEventTransition(from, to, transitions, theEvent, new TypeIdentifier(signal.Name));
+                    var signal = context.ResolveSignal(theEvent.Signal);
+                    return new MessageEventTransition(from, to, transitions, theEvent, signal.Identifier);
                 }
             } else {
                 return new InitialTransition(from, to, transitions);

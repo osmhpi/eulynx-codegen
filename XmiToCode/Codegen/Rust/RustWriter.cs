@@ -5,15 +5,15 @@ internal class RustWriter : ICodeWriter
 {
     public string DefaultInstanceReference => "self";
 
-    public string GenerateFileName(UmlClass uml) => $"../Eulynx/rust/src/{uml.GetName()}.rs";
+    public string GenerateFileName(Class uml) => $"../Eulynx/rust/src/{uml.Info.ClassName}.rs";
 
-    public async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    public async Task WriteClassFilesAsync(Class klass)
     {
-        using var file = File.Create(GenerateFileName(umlClass));
+        using var file = File.Create(GenerateFileName(klass));
         using var writer = new StreamWriter(file);
         await writer.WriteAsync(Write(klass));
 
-        using var portsFile = File.Create($"../Eulynx/rust/src/{umlClass.GetName()}_Ports.rs");
+        using var portsFile = File.Create($"../Eulynx/rust/src/{klass.Info.ClassName}_Ports.rs");
         using var portsFileWriter = new StreamWriter(portsFile);
         await portsFileWriter.WriteAsync(WriteClassPorts(klass));
 
@@ -25,6 +25,13 @@ internal class RustWriter : ICodeWriter
     public Task WriteCommonFilesAsync(GlobalContext global)
     {
         return Task.CompletedTask;
+    }
+
+    public async Task WritePackageFilesAsync(Package pkg)
+    {
+        foreach (var klass in pkg.Classes) {
+            await WriteClassFilesAsync(klass);
+        }
     }
 
     public string Write<T>(T element)
@@ -98,7 +105,7 @@ impl {klass.Info.ClassName}_Ports {{
         {string.Join("\n", messageSchema.GetValueTypes().Select(x => Write(x)))}
 
         typedef struct Message__{messageSchema.Identifier.Name} {{
-            {string.Join("\n", messageSchema.Members.Select(x => $"{x.Member.DataType(TargetLanguage.C).Item1} {x.MemberName.Name}{x.Member.DataType(TargetLanguage.C).Item2};"))}
+            {string.Join("\n", messageSchema.Members.Select(x => $"{x.DataType(TargetLanguage.C).Item1} {x.Identifier.Name}{x.DataType(TargetLanguage.C).Item2};"))}
         }} Message__{messageSchema.Identifier.Name};";
     }
 

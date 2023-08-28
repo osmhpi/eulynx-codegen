@@ -45,9 +45,10 @@ Eu.ModSt.7519
     Trigger in ports are mainly used as arguments of Boolean expressions in change events.
 ***/
 
-public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
 
     public Identifier Identifier { get; } = new Identifier(Property.Name);
+    public IAccessor TheAccessor { get; } = new ClassAccessor();
 
     public bool IsExternalInterface => Identifier.RawName.StartsWith("T") || Identifier.RawName.StartsWith("D");
     public bool IsDataPort => Identifier.RawName.StartsWith("d") || Identifier.RawName.StartsWith("D");
@@ -55,22 +56,26 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
     public bool IsInPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)in_([\\w_]+)$");
     public bool IsOutPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)out_([\\w_]+)$");
 
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor = null)
+    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, PropertyOrPort? ProxyFor = null)
     {
+        if (property.Type == null) {
+            return new UntypedPropertyOrPort(property, Class, ProxyFor);
+        }
+
         var umlType = types[property.Type];
         PropertyOrPort result = umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, Class, TheAccessor, ProxyFor),
+            "Boolean" => new BoolPropertyOrPort(property, Class, ProxyFor),
             // "DateTime",
             // "Decimal",
             // "Double",
             // "Integer",
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, Class, TheAccessor, ProxyFor),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, Class, TheAccessor, ProxyFor),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, Class, TheAccessor, ProxyFor),
+            "String" => new StringPropertyOrPort(property, Class, ProxyFor),
+            "PulsedIn" => new PulsedInPropertyOrPort(property, Class, ProxyFor),
+            "PulsedOut" => new PulsedOutPropertyOrPort(property, Class, ProxyFor),
             // "Timespan",
-            _ => new ComplexPropertyOrPort(property, umlType, Class, TheAccessor, ProxyFor)
+            _ => new ComplexPropertyOrPort(property, umlType, Class, ProxyFor)
         };
 
         // Extra validation of naming conventions
@@ -95,21 +100,28 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
 
     public string Name => InPascalCase(Property.Name);
 
-    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage) => TheAccessor.Accessor(this, context, targetLanguage);
+    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+        TheAccessor.Accessor(this, context, targetLanguage);
 
-    public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
-        $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
+    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage, IAccessor accessor)
+        => accessor.Accessor(this, context, targetLanguage);
 
+    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        Comparator(context, other, targetLanguage, TheAccessor);
+
+    public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
+        $"{Accessor(context, targetLanguage, accessor)} == {other.Accessor(context, targetLanguage)}";
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
     {
         return RecordPossibleValue(literal);
     }
 
-    public virtual string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
-    {
-        return $"{Accessor(context, targetLanguage)} = {other.Accessor(context, targetLanguage)};";
-    }
+    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        => Assign(context, other, targetLanguage, TheAccessor);
+
+    public virtual string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
+        => $"{Accessor(context, targetLanguage, accessor)} = {other.Accessor(context, targetLanguage)};";
 
     public abstract void EnsureComparableTypes(IAccessible rhsIdentifier);
 
@@ -118,7 +130,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         return context.ResolveIdentifier(identifier);
     }
 
-    public record StringPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
+    public record StringPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
         private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
             var result = new HashSet<StringPropertyOrPort>();
@@ -146,8 +158,10 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             return result;
         }
 
-        public override (string, string) DataType(TargetLanguage language) =>
-            GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
+        public override (string, string) DataType(TargetLanguage language) {
+            // TODO: fallback should be ("void*", "") except for whitelisted PDI version etc.
+            return GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
+        }
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
@@ -159,17 +173,17 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             return literal.Name;
         }
 
-        public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
             GetAllowedValues().Count == 0 ?
-                $"memcmp({Accessor(context, targetLanguage)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage)})) == 0" :
-                base.Comparator(context, other, targetLanguage);
+                $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
+                base.Comparator(context, other, targetLanguage, accessor);
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
             GetAllowedValues().Count == 0 ?
-                $"memcpy({Accessor(context, targetLanguage)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage)}));" :
-                base.Assign(context, other, targetLanguage);
+                $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
+                base.Assign(context, other, targetLanguage, accessor);
 
-        private HashSet<StringPropertyOrPort> _equalTypes = new HashSet<StringPropertyOrPort>();
+        private HashSet<StringPropertyOrPort> _equalTypes = new();
         private void RecordEqualTypes(StringPropertyOrPort other) {
             _equalTypes.Add(other);
             other._equalTypes.Add(this);
@@ -193,13 +207,29 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
                     throw new Exception("Incomparable types");
             }
 
-            if (ProxyFor != null) {
-                ProxyFor.EnsureComparableTypes(rhsIdentifier);
-            }
+            ProxyFor?.EnsureComparableTypes(rhsIdentifier);
         }
     }
 
-    public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
+    public record UntypedPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    {
+        public override (string, string) DataType(TargetLanguage language)
+        {
+            return ("void*", "");
+        }
+
+        public override void EnsureComparableTypes(IAccessible rhsIdentifier)
+        {
+            throw new Exception("Untyped property");
+        }
+
+        public override IAccessible RecordPossibleValue(LiteralIdentifier value)
+        {
+            throw new Exception("Untyped property");
+        }
+    }
+
+    public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => UmlType.Type switch {
             "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
@@ -242,7 +272,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         }
     }
 
-    public record BoolPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
+    public record BoolPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
@@ -290,7 +320,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         data at sender side typed with "PulsedOut".
     ***/
 
-    public record PulsedInPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
+    public record PulsedInPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -321,7 +351,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             }
         }
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
         {
             throw new InvalidOperationException("PulsedIn cannot be assigned to");
         }
@@ -332,7 +362,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         }
     }
 
-    public record PulsedOutPropertyOrPort(OwnedAttribute Property, ClassInfo Class, IAccessor TheAccessor, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, TheAccessor, ProxyFor)
+    public record PulsedOutPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -371,11 +401,11 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             }
         }
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
         {
             return targetLanguage switch {
-                TargetLanguage.C => $"{Accessor(context, targetLanguage)}.Trigger = {other.Accessor(context, targetLanguage)};",
-                _ => base.Assign(context, other, targetLanguage)
+                TargetLanguage.C => $"{Accessor(context, targetLanguage, accessor)}.Trigger = {other.Accessor(context, targetLanguage)};",
+                _ => base.Assign(context, other, targetLanguage, accessor)
             };
         }
     }

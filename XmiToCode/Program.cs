@@ -1,16 +1,9 @@
 ﻿using System.Xml.Serialization;
 using XmiToCode;
 
-
 // Test if input arguments were supplied.
-if (args.Length == 0)
+if (args.Length == 0 || !Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
 {
-    Console.WriteLine("Please enter the programming language to generate: CSharp, C or Rust.");
-    Console.WriteLine("Usage: XmiToCode <language>");
-    return 1;
-}
-
-if (!Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage)) {
     Console.WriteLine("Please enter the programming language to generate: CSharp, C or Rust.");
     Console.WriteLine("Usage: XmiToCode <language>");
     return 1;
@@ -19,12 +12,7 @@ if (!Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage)) {
 using var inFile = File.OpenRead("../cleaned_23.xmi");
 
 var xmlSerializer = new XmlSerializer(typeof(XMI), "");
-var xmi = xmlSerializer.Deserialize(inFile) as XMI;
-
-
-if (xmi == null) {
-    throw new Exception("Could not deserialize input");
-}
+var xmi = xmlSerializer.Deserialize(inFile) as XMI ?? throw new Exception("Could not deserialize input");
 
 // This only selects top-level packages
 var packages = xmi.Model.PackagedElements.Where(x => x.Type == "uml:Package").ToList();
@@ -72,16 +60,17 @@ var interestingPackages = eulynxSystem.PackagedElements
 
 var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
 var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
-var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Id);
+var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Signal.Id, x => (x.Hierarchy.Last(), x.Signal));
 
 var classWhitelist = new string[] {};
-// classWhitelist = new [] {
-//     // "F_Control_Point_Machine_Position",
-//     // "S_SCI_P_Command_And_Recieve",
-//     "S_SCI_EfeS_Prim",
-//     // "S_SCI_Adj_Prim"
-//     "F_EST_EfeS"
-// };
+classWhitelist = new [] {
+    // "F_Control_Point_Machine_Position",
+    // "S_SCI_P_Command_And_Recieve",
+    // "S_SCI_EfeS_Prim",
+    // "S_SCI_Adj_Prim"
+    // "F_EST_EfeS",
+    "F_SCI_EfeS_Sec"
+};
 
 var classBlacklist = new string[] {
     // Demo data
@@ -107,11 +96,12 @@ var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
     .Where(x => x.Name.Name != "LineDirectionControlInformation")
     .ToList();
 
-var global = new GlobalContext(enumerations);
+var global = new GlobalContext(enumerations, signals, dataTypes, changeEvents, timeEvents, genericEvents);
+var parsedPackages = interestingPackages.Select(x => Package.CreateFromUml(x, global)).ToList();
 
-var successful = new List<string>();
-var all = 0;
-var modelIssues = 0;
+// var successful = new List<string>();
+// var all = 0;
+// var modelIssues = 0;
 
 ICodeWriter writer = targetLanguage switch {
     TargetLanguage.CSharp => csharp,
@@ -122,6 +112,11 @@ ICodeWriter writer = targetLanguage switch {
 
 await writer.WriteCommonFilesAsync(global);
 
+foreach (var package in parsedPackages) {
+    await writer.WritePackageFilesAsync(package);
+}
+
+/*
 foreach (var interestingPackage in interestingPackages) {
     var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
 
@@ -146,7 +141,7 @@ foreach (var interestingPackage in interestingPackages) {
             var className = new TypeIdentifier(umlClassPackage.Name);
             // HACK
             var classInfo = new ClassInfo(className.Name, "");
-            var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, signals, dataTypes, typeAliases, classInfo);
+            var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, new(), dataTypes, typeAliases, classInfo);
             var classContext = new ClassContext(global, dth);
 
             var operations = umlClassPackage.OwnedOperation
@@ -155,7 +150,7 @@ foreach (var interestingPackage in interestingPackages) {
                 .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
                 .ToList();
 
-            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, signals, dth, classContext, interestingPackage);
+            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, new(), dth, classContext, interestingPackage);
             await umlClass.Generate(writer, classContext, operations);
 
             successful.Add(className.Name);
@@ -167,42 +162,38 @@ foreach (var interestingPackage in interestingPackages) {
             Console.WriteLine($" failed: ({ex.Message})");
         }
     }
-}
+}*/
 
-Console.WriteLine($"Successfully generated {successful.Count} out of {all} ({all-modelIssues} valid) classes:");
-foreach (var success in successful)
-    Console.WriteLine($" - {success}");
+// Console.WriteLine($"Successfully generated {successful.Count} out of {all} ({all-modelIssues} valid) classes:");
+// foreach (var success in successful)
+//     Console.WriteLine($" - {success}");
 
 return 0;
 
 static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
-    return FindAllElements(package, "uml:Class");
-}
-
-static IEnumerable<PackagedElement> FindAllClassesWithStateMachines(PackagedElement package) {
-    return FindAllClasses(package)
-        .Where(x => x.StateMachine != null);
+    return FindAllElements(package, "uml:Class").Select(x => x.Element);
 }
 
 static IEnumerable<PackagedElement> FindAllEvents(PackagedElement package) {
-    return FindAllElements(package, "uml:SignalEvent");
+    return FindAllElements(package, "uml:SignalEvent").Select(x => x.Element);
 }
 
-static IEnumerable<PackagedElement> FindAllSignals(PackagedElement package) {
+static IEnumerable<(PackagedElement Signal, List<PackagedElement> Hierarchy)> FindAllSignals(PackagedElement package) {
     return FindAllElements(package, "uml:Signal");
 }
 
 static IEnumerable<PackagedElement> FindAllDataTypes(PackagedElement package) {
-    return FindAllElements(package, "uml:DataType");
+    return FindAllElements(package, "uml:DataType").Select(x => x.Element);
 }
 
 static IEnumerable<PackagedElement> FindAllEnumerations(PackagedElement package) {
-    return FindAllElements(package, "uml:Enumeration");
+    return FindAllElements(package, "uml:Enumeration").Select(x => x.Element);
 }
 
-static IEnumerable<PackagedElement> FindAllElements(PackagedElement package, string umlType) {
+static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> FindAllElements(PackagedElement package, string umlType) {
     var elements = package.PackagedElements
-        .Where(x => x.Type == umlType);
+        .Where(x => x.Type == umlType)
+        .Select(x => (x, new List<PackagedElement> { package }));
     var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
-    return elements.Concat(subpackages.SelectMany(x => FindAllElements(x, umlType)));
+    return elements.Concat(subpackages.SelectMany(x => FindAllElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
 }

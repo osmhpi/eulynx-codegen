@@ -1,20 +1,14 @@
 using static PropertyOrPort;
 
-public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : ProgramContext
+public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : ProgramContext
 {
-    // Signals
-    // Ports
-    // Properties
-    // Enums ?
-
-    public Dictionary<TypeIdentifier, MessageSchema> MessageSchema { get; }
+    public Dictionary<TypeIdentifier, MessageSchema> IncomingMessages { get; }
         = DataTypes.Ports.Values.OfType<ComplexPropertyOrPort>()
             .SelectMany(x => x.UmlType.OwnedReception)
-            .Select(x => DataTypes.Signals[x.Signal])
-            .Select(x => new MessageSchema(new TypeIdentifier(x.Name), x, DataTypes))
+            .Select(x => Global.ResolveSignal(x.Signal))
             .ToDictionary(x => x.Identifier);
 
-    public Dictionary<TypeIdentifier, MessageSchema> UsedOutgoingMessageTypes { get; } = new();
+    public Dictionary<TypeIdentifier, MessageSchema> OutgoingMessages { get; } = new();
 
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
         = DataTypes.Ports.Values
@@ -26,9 +20,9 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
             .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
-    public override bool IsLocalVariable(IAccessible accessible) => false;
+    public bool IsLocalVariable(IAccessible accessible) => false;
 
-    public override IAssignable ResolveAssignableIdentifier(Identifier identifier)
+    public IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
         var port = Ports.ContainsKey(identifier) ? Ports[identifier] : null;
         if (port != null) {
@@ -43,7 +37,7 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
         return Global.ResolveAssignableIdentifier(identifier);
     }
 
-    public override IAccessible ResolveIdentifier(Identifier identifier)
+    public IAccessible ResolveIdentifier(Identifier identifier)
     {
         var port = Ports.ContainsKey(identifier) ? Ports[identifier] : null;
         if (port != null) {
@@ -58,7 +52,7 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
         return Global.ResolveIdentifier(identifier);
     }
 
-    internal override ICallable ResolveCallableIdentifier(Identifier identifier)
+    public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
         if (DataTypes.Operations.Contains(identifier)) {
             return new MethodCall(identifier);
@@ -67,15 +61,15 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
         return Global.ResolveCallableIdentifier(identifier);
     }
 
-    internal override MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
+    public MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
     {
-        return MessageSchema[signal];
+        return IncomingMessages[signal];
     }
 
-    internal override MessageSchema ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
+    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
-        if (UsedOutgoingMessageTypes.ContainsKey(messageTypeIdentifier)) {
-            return new OutgoingMessageSchema(UsedOutgoingMessageTypes[messageTypeIdentifier]);
+        if (OutgoingMessages.ContainsKey(messageTypeIdentifier)) {
+            return OutgoingMessages[messageTypeIdentifier].Members.Select(x => new MessageMember(messageTypeIdentifier, x, new MessageAccessor(messageTypeIdentifier, x.Identifier, true))).ToList();
         }
 
         var port = Ports[portIdentifier];
@@ -89,13 +83,17 @@ public record ClassContext(GlobalContext Global, DataTypeHelper DataTypes) : Pro
             // A complex port has a class type with many receptions,
             // each of which designate a possible message type
             var reception = receptions[messageTypeIdentifier];
-            var signal = DataTypes.Signals[reception.Signal];
-            var result = MessageSchema[new TypeIdentifier(signal.Name)];
+            var signal = ResolveSignal(reception.Signal);
 
-            UsedOutgoingMessageTypes[messageTypeIdentifier] = result;
-            return new OutgoingMessageSchema(result);
+            OutgoingMessages[messageTypeIdentifier] = signal;
+            return signal.Members.Select(x => new MessageMember(messageTypeIdentifier, x, new MessageAccessor(messageTypeIdentifier, x.Identifier, true))).ToList();
         }
 
         throw new NotImplementedException();
+    }
+
+    public MessageSchema ResolveSignal(string signalId)
+    {
+        return Global.ResolveSignal(signalId);
     }
 }

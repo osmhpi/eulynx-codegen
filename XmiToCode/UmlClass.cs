@@ -8,7 +8,7 @@ public class UmlClass
     private readonly Dictionary<string, PackagedElement> _timeEvents;
     private readonly Dictionary<string, PackagedElement> _packageEvents;
     private readonly Dictionary<string, PackagedElement> _signals;
-    private readonly StateMachine _stateMachine;
+    public readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
     public PackagedElement ParentPackage { get; }
@@ -141,24 +141,5 @@ public class UmlClass
 
     public string GetName() {
         return InPascalCase(_class.Name);
-    }
-
-    internal async Task Generate(ICodeWriter w, ClassContext context, List<Operation> operations)
-    {
-        var className = InPascalCase(_class.Name);
-        var behaviorName = _stateMachine.GetName();
-
-        var info = new ClassInfo(className, behaviorName);
-
-        var klass = new Class(
-            info,
-            context,
-            _stateMachine.Parse(info, _dataTypes, context),
-            _stateMachine.ParseTransitionFunctions(info, _dataTypes, context).ToList(),
-            _stateMachine.GetStates(behaviorName).ToList(),
-            operations
-        );
-
-        await w.WriteClassFilesAsync(this, klass);
     }
 }

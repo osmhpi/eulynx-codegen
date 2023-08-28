@@ -135,7 +135,7 @@ public class Parser
             } else if (token.TokenType == TokenType.SendMessageToPort) {
                 var m = new Regex("^send (.+)\\s?to (.+)$").Match(token.Value);
 
-                var messageConstructor = m.Groups[1].Value.Replace(" ", "");
+                var messageConstructor = m.Groups[1].Value.Trim();
 
                 if (!messageConstructor.EndsWith(")")) {
                     messageConstructor += "()";
@@ -154,16 +154,24 @@ public class Parser
 
                 var parsedMessageName = InPascalCase(messageName.Groups[1].Value);
 
-                var messageInitializerValue = "";
-
                 var messageInitializer = Regex.Match(messageConstructor, "^(\\w+)\\((.+)\\)");
                 if (messageInitializer.Success) {
-                    messageInitializerValue = messageInitializer.Groups[2].Value;
-                    var fields = messageInitializerValue.Split(",").Select((x, i) => CompoundState.ParseMessageInitializer(x, parsedMessageName, messageSchema.GetMemberByIndex(i), context)).ToList();
-                    var ins = new MessageInitializer(messageSchema, fields);
+                    var messageInitializerValue = messageInitializer.Groups[2].Value;
+
+                    int i = 0;
+                    var fields = new List<IAccessible>();
+                    foreach (var initializerValue in messageInitializerValue.Split(",")) {
+                        var lhs = messageSchema[i];
+                        var accessible = CompoundState.ParseMessageInitializer(initializerValue.Trim(), parsedMessageName, lhs, context);
+                        lhs.EnsureComparableTypes(accessible);
+                        fields.Add(accessible);
+                        i++;
+                    }
+
+                    var ins = new MessageInitializer(messageTypeIdentifier, messageSchema, fields);
                     return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 } else {
-                    var ins = new MessageInitializer(messageSchema, new());
+                    var ins = new MessageInitializer(messageTypeIdentifier, messageSchema, new());
                     return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 }
             }

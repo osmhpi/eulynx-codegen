@@ -10,8 +10,23 @@ internal class CWriter : ICodeWriter
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(WriteCommonHeader(global));
-
     }
+
+    public async Task WritePackageFilesAsync(Package pkg) {
+        var packageDir = Path.Combine("../Eulynx/C/", pkg.Name.Name);
+
+        foreach (var klass in pkg.Classes) {
+            await WriteClassFilesAsync(klass, packageDir);
+        }
+
+        if (pkg.Classes.Count > 0) {
+            Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {pkg.Classes.Count} classes:");
+            foreach (var success in pkg.Classes.Select(x => x.Info.ClassName))
+                Console.WriteLine($"   - {success}");
+            Console.WriteLine();
+        }
+    }
+
 
     private string WriteCommonHeader(GlobalContext global) {
         return @$"
@@ -40,21 +55,33 @@ typedef struct TimeoutEvent
   int IsTimeoutExpired;
 }} TimeoutEvent;
 
-{string.Join("\n", global.Enumerations.Select(x => Write(x)))}";
+{string.Join("\n", global.Enumerations.Select(x => Write(x)))}
+
+// Message Types
+{JoinLines(global.Messages.Select(x => WriteMessageSchema(x.Value)))}
+";
     }
 
-    public virtual async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    public virtual async Task WriteClassFilesAsync(Class klass, string? prefix)
     {
-        var cFilename = $"../Eulynx/C/{InPascalCase(umlClass.ParentPackage.Name)}/{umlClass.GetName()}.c";
+        var cFilename = $"../Eulynx/C/{klass.Info.ClassName}.c";
+        if (prefix != null) {
+            cFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.c");
+        }
+
         var fileinfo = new FileInfo(cFilename);
-        if (!fileinfo.Directory.Exists) fileinfo.Directory.Create();
+        if (fileinfo.Directory != null && !fileinfo.Directory.Exists) fileinfo.Directory.Create();
 
         using var file = File.Create(cFilename);
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(Write(klass));
 
-        using var headerFile = File.Create($"../Eulynx/C/{InPascalCase(umlClass.ParentPackage.Name)}/{umlClass.GetName()}.h");
+        var headerFilename = $"../Eulynx/C/{klass.Info.ClassName}.h";
+        if (prefix != null) {
+            headerFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.h");
+        }
+        using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
         await headerWriter.WriteAsync(WriteHeader(klass));
@@ -66,7 +93,6 @@ typedef struct TimeoutEvent
         {
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             ValueType valueType => WriteValueType(valueType),
-            MessageSchema messageSchema => WriteMessageSchema(messageSchema),
             Class klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
@@ -85,8 +111,10 @@ typedef struct TimeoutEvent
         return @$"
         {string.Join("\n", messageSchema.GetValueTypes().Select(x => Write(x)))}
 
+        /// {messageSchema.Identifier.RawName}
+        /// UML Identifier: {messageSchema.Signal.Id}
         typedef struct Message__{messageSchema.Identifier.Name} {{
-            {string.Join("\n", messageSchema.Members.Select(x => $"{x.Member.DataType(TargetLanguage.C).Item1} {x.MemberName.Name}{x.Member.DataType(TargetLanguage.C).Item2};"))}
+            {string.Join("\n", messageSchema.Members.Select(x => $"{x.DataType(TargetLanguage.C).Item1} {x.Identifier.Name}{x.DataType(TargetLanguage.C).Item2};"))}
         }} Message__{messageSchema.Identifier.Name};";
     }
 
@@ -99,8 +127,11 @@ typedef struct TimeoutEvent
 
     private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
     {
-        return @$"typedef enum {globalEnumeration.Name.Name} {{
-            {string.Join(",\n", globalEnumeration.Members.Select(x => $"{globalEnumeration.Name.Name}__{x.Name}"))}
+        return @$"/// {globalEnumeration.Name.RawName}
+        /// UML Identifier: {globalEnumeration.Enumeration.Id}
+        typedef enum {globalEnumeration.Name.Name} {{
+            {string.Join(",\n\n", globalEnumeration.Members.Select(x => @$"/// {x.RawName}
+            {globalEnumeration.Name.Name}__{x.Name}"))}
         }} {globalEnumeration.Name.Name};
         ";
     }
@@ -264,9 +295,6 @@ void transition({klass.Info.ClassName} *self) {{
 
 {string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
 
-// Message Types
-{string.Join("\n", klass.GetAllMessageTypes().Select(x => Write(x)))}
-
 {WriteBehaviorEnum(klass.Behavior)}
 
 typedef struct {klass.Info.ClassName} {{
@@ -303,5 +331,10 @@ typedef struct {klass.Info.ClassName} {{
 
     private string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
         return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
+    }
+
+    public virtual Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    {
+        return WriteClassFilesAsync(klass, null);
     }
 }
