@@ -6,7 +6,6 @@ set(CMAKE_C_STANDARD 99)
 set(sources
   ./GenericRequirementsForSci/FSciEfesSec.c
   ./GenericRequirementsForSci/SSciAdjPrim.c
-  ./GenericRequirementsForSci/SSciAdjSec.c
   ./GenericRequirementsForSci/SSciEfesPrim.c
   ./GenericRequirementsForSubsystems/FEstEfes.c
   ./SubsystemIo/FControlSafeStateOfAllPhysicalOutputChannel.c
@@ -17,7 +16,6 @@ set(sources
   ./SubsystemLevelCrossing/FControlLocalOperation.c
   ./SubsystemLevelCrossing/FObserveDetectionElement.c
   ./SubsystemLevelCrossing/FObserveLcpf.c
-  ./SubsystemLevelCrossing/SSciLcCommand.c
   ./SubsystemLightSignal/FControlLuminosity.c
   ./SubsystemLightSignal/FControlSignalAspect.c
   ./SubsystemLightSignal/FObserveLuminosity.c
@@ -31,7 +29,6 @@ set(sources
   ./SubsystemPoint/FObserveAbilityToMove.c
   ./SubsystemPoint/FObserveDegradedPointPosition.c
   ./SubsystemPoint/FSciPReceive.c
-  ./SubsystemPoint/SSciPCommand.c
   ./SubsystemTrainDetectionSystem/FHandleInternalFcUCommand.c
   ./SubsystemTrainDetectionSystem/FObserveAbilityToBeForcedToClear.c
   ./SubsystemTrainDetectionSystem/FObserveTdp.c
@@ -45,7 +42,6 @@ set(sources
 set(headers
   ./GenericRequirementsForSci/FSciEfesSec.h
   ./GenericRequirementsForSci/SSciAdjPrim.h
-  ./GenericRequirementsForSci/SSciAdjSec.h
   ./GenericRequirementsForSci/SSciEfesPrim.h
   ./GenericRequirementsForSubsystems/FEstEfes.h
   ./SubsystemIo/FControlSafeStateOfAllPhysicalOutputChannel.h
@@ -56,7 +52,6 @@ set(headers
   ./SubsystemLevelCrossing/FControlLocalOperation.h
   ./SubsystemLevelCrossing/FObserveDetectionElement.h
   ./SubsystemLevelCrossing/FObserveLcpf.h
-  ./SubsystemLevelCrossing/SSciLcCommand.h
   ./SubsystemLightSignal/FControlLuminosity.h
   ./SubsystemLightSignal/FControlSignalAspect.h
   ./SubsystemLightSignal/FObserveLuminosity.h
@@ -70,7 +65,6 @@ set(headers
   ./SubsystemPoint/FObserveAbilityToMove.h
   ./SubsystemPoint/FObserveDegradedPointPosition.h
   ./SubsystemPoint/FSciPReceive.h
-  ./SubsystemPoint/SSciPCommand.h
   ./SubsystemTrainDetectionSystem/FHandleInternalFcUCommand.h
   ./SubsystemTrainDetectionSystem/FObserveAbilityToBeForcedToClear.h
   ./SubsystemTrainDetectionSystem/FObserveTdp.h
