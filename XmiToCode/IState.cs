@@ -1,4 +1,7 @@
-using XmiToCode;
+using XmiToCode.Context;
+using XmiToCode.Instructions;
+
+namespace XmiToCode;
 
 public interface IState
 {

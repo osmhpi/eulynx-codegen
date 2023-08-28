@@ -1,3 +1,7 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+
+namespace XmiToCode.Instructions;
 
 record MethodCallInstruction(ICallable Callable) : Instruction
 {

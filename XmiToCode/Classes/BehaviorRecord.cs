@@ -1,3 +1,7 @@
+using XmiToCode.Codegen;
+
+namespace XmiToCode.Classes;
+
 public record BehaviorRecord(
     IState? State,
     StateMachine StateMachine,

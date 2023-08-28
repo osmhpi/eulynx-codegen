@@ -1,5 +1,7 @@
-using XmiToCode;
-using static CodeGenerationHelper;
+using XmiToCode.Context;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode;
 
 public class UmlClass
 {

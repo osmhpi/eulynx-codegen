@@ -1,3 +1,5 @@
+namespace XmiToCode;
+
 public enum TargetLanguage {
     CSharp,
     C,

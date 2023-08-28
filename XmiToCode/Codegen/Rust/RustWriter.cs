@@ -1,5 +1,10 @@
-using XmiToCode;
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Context;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Codegen.Rust;
 
 internal class RustWriter : ICodeWriter
 {
@@ -39,7 +44,7 @@ internal class RustWriter : ICodeWriter
         return element switch
         {
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
-            ValueType valueType => WriteValueType(valueType),
+            Classes.ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
             Class klass => WriteClass(klass),
             null => "",
@@ -109,7 +114,7 @@ impl {klass.Info.ClassName}_Ports {{
         }} Message__{messageSchema.Identifier.Name};";
     }
 
-    private string WriteValueType(ValueType valueType)
+    private string WriteValueType(Classes.ValueType valueType)
     {
         return @$"
         pub enum {valueType.Identifier.Name}Value {{

@@ -1,6 +1,11 @@
 using System.Text.RegularExpressions;
-using XmiToCode;
-using static CodeGenerationHelper;
+using XmiToCode.Classes;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Accessibles;
 
 /***
 Eu.ModSt.7510

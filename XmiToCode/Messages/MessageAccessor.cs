@@ -1,3 +1,9 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Messages;
+
 public class MessageAccessor : IAccessor
 {
     private readonly TypeIdentifier _messageType;

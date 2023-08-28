@@ -1,3 +1,7 @@
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Instructions;
+
 namespace XmiToCode;
 
 public record Operation(OwnedOperation Op, OwnedBehavior Behavior, List<Instruction> Instructions) {

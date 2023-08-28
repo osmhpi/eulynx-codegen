@@ -1,4 +1,8 @@
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+
+namespace XmiToCode.Context;
 
 public record BlockContext : IProgramContext
 {

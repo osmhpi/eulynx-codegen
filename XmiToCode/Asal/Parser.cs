@@ -1,7 +1,13 @@
 // ASAL is specified in section 8.6.8 in Eu.Doc.30
 
 using System.Text.RegularExpressions;
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Instructions;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Asal;
 
 public class Parser
 {

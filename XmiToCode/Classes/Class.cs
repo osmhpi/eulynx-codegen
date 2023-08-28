@@ -1,4 +1,10 @@
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Codegen;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+
+namespace XmiToCode.Classes;
 
 public record Class(
     ClassInfo Info,

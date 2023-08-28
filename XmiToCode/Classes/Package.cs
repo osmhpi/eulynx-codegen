@@ -1,4 +1,7 @@
-using XmiToCode;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Classes;
 
 public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events) {
     public static readonly string[] CLASS_WHITELIST =

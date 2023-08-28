@@ -1,4 +1,7 @@
-using XmiToCode;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Accessibles;
 
 public record EnumerationMember(TypeIdentifier EnumerationType, GlobalEnumIdentifier Member) : IAccessible {
 

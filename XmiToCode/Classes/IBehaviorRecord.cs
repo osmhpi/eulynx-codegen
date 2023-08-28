@@ -1,3 +1,5 @@
+namespace XmiToCode.Classes;
+
 public interface IBehaviorRecord
 {
     IState? State { get; }

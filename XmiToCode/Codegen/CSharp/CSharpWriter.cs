@@ -1,3 +1,8 @@
+using XmiToCode.Classes;
+using XmiToCode.Context;
+
+namespace XmiToCode.Codegen.CSharp;
+
 public class CSharpWriter : ICodeWriter {
     public string DefaultInstanceReference => "this";
 

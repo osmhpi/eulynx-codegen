@@ -1,3 +1,4 @@
+namespace XmiToCode.Asal;
 
 public enum TokenType {
     ParenOpen,

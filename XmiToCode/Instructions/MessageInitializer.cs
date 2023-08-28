@@ -1,4 +1,10 @@
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Instructions;
 
 record MessageInitializer(TypeIdentifier Message, List<MessageMember> Schema, List<IAccessible> Values)
 {

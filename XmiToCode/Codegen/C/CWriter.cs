@@ -1,5 +1,10 @@
-using XmiToCode;
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Context;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Codegen.C;
 
 internal class CWriter : ICodeWriter
 {
@@ -92,7 +97,7 @@ typedef struct TimeoutEvent
     {
         return element switch
         {
-            ValueType valueType => WriteValueType(valueType),
+            Classes.ValueType valueType => WriteValueType(valueType),
             Class klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
@@ -118,7 +123,7 @@ typedef struct TimeoutEvent
         }} Message__{messageSchema.Identifier.Name};";
     }
 
-    private string WriteValueType(ValueType valueType)
+    private string WriteValueType(Classes.ValueType valueType)
     {
         return @$"typedef enum {valueType.Identifier.Name}Value {{
             {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}

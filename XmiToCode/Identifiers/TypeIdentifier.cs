@@ -1,4 +1,7 @@
-using static CodeGenerationHelper;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Identifiers;
+
 // Could be an enumeration or message class
 public record TypeIdentifier (string RawName)
 {

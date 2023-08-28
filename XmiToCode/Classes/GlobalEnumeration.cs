@@ -1,4 +1,6 @@
-using XmiToCode;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Classes;
 
 public record GlobalEnumeration(PackagedElement Enumeration) {
 

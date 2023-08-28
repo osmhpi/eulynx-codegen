@@ -1,4 +1,8 @@
 using XmiToCode;
+using XmiToCode.Classes;
+using XmiToCode.Codegen;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
 
 public record StateName(IState Subvertex, string Name);
 

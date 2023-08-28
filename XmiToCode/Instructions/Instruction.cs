@@ -1,3 +1,7 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+
+namespace XmiToCode.Instructions;
 
 public abstract record Instruction {
     internal abstract string ToCSharp(IProgramContext context);

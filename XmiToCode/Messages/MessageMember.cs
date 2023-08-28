@@ -1,3 +1,9 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Messages;
+
 public record MessageMember(TypeIdentifier Message, PropertyOrPort Member, IAccessor TheAccessor) : IAccessible, IAssignable
 {
     public string Accessor(IProgramContext context, TargetLanguage targetLanguage)

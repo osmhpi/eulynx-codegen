@@ -1,6 +1,13 @@
 using System.Text.RegularExpressions;
-using XmiToCode;
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Asal;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Instructions;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode;
 
 public record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
 {

@@ -1,4 +1,8 @@
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode;
 
 public class DataTypeHelper {
 

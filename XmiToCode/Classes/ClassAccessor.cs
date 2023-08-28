@@ -1,3 +1,8 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Context;
+
+namespace XmiToCode.Classes;
+
 public class ClassAccessor : IAccessor {
     public string Accessor(PropertyOrPort propertyOrPort, IProgramContext context, TargetLanguage targetLanguage) {
         return targetLanguage switch

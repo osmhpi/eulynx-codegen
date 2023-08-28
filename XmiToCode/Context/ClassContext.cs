@@ -1,4 +1,9 @@
-using static PropertyOrPort;
+using XmiToCode.Accessibles;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+using static XmiToCode.Accessibles.PropertyOrPort;
+
+namespace XmiToCode.Context;
 
 public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IProgramContext
 {

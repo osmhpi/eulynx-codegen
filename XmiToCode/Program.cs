@@ -1,5 +1,11 @@
 ﻿using System.Xml.Serialization;
 using XmiToCode;
+using XmiToCode.Classes;
+using XmiToCode.Codegen;
+using XmiToCode.Codegen.C;
+using XmiToCode.Codegen.CSharp;
+using XmiToCode.Codegen.Rust;
+using XmiToCode.Context;
 
 // Test if input arguments were supplied.
 if (args.Length == 0 || !Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))

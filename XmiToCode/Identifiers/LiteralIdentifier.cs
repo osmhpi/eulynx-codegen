@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
-using static CodeGenerationHelper;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Identifiers;
 
 // Could be an enum member
 public record LiteralIdentifier(string RawName) : Identifier(RawName)

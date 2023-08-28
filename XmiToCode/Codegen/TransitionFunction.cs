@@ -1,3 +1,10 @@
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Context;
+using XmiToCode.Instructions;
+
+namespace XmiToCode.Codegen;
+
 public record TransitionFunction(ClassInfo TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
 
 public record Condition();

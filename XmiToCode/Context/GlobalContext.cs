@@ -1,4 +1,9 @@
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Identifiers;
+using XmiToCode.Messages;
+
+namespace XmiToCode.Context;
 
 public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> signals, Dictionary<string, XmiToCode.PackagedElement> DataTypes, Dictionary<string, XmiToCode.PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, List<PackagedElement> genericEvents) : IProgramContext
 {

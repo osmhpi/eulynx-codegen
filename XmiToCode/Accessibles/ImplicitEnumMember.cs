@@ -1,3 +1,9 @@
+using XmiToCode.Classes;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Accessibles;
+
 public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal, ClassInfo Class) : IAccessible {
     public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => $"{EnumType}__{Literal.Name}";
 

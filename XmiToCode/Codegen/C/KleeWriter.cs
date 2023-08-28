@@ -1,4 +1,8 @@
-using static CodeGenerationHelper;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+
+namespace XmiToCode.Codegen.C;
 
 internal class KleeWriter : CWriter {
     public override async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)

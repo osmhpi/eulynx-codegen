@@ -1,3 +1,8 @@
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Accessibles;
+
 public record ClassMember(Identifier Identifier) : IAccessible {
     public string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
         targetLanguage switch {

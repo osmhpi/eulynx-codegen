@@ -1,4 +1,8 @@
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Classes;
+using XmiToCode.Identifiers;
+
+namespace XmiToCode.Messages;
 
 public record MessageSchema(PackagedElement Signal, Dictionary<string, PackagedElement> DataTypes)
 {
@@ -9,10 +13,10 @@ public record MessageSchema(PackagedElement Signal, Dictionary<string, PackagedE
             PropertyOrPort.Create(x, DataTypes, new ClassInfo("Message", "")))
         .ToList();
 
-    public IEnumerable<ValueType> GetValueTypes() {
+    public IEnumerable<Classes.ValueType> GetValueTypes() {
         return Members
             .Where(x => x is PropertyOrPort.StringPropertyOrPort)
-            .Select(x => new ValueType(
+            .Select(x => new Classes.ValueType(
                 new ClassInfo(Identifier.Name, ""),
                 x.Identifier,
                 // x.MemberName,

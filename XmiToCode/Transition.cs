@@ -1,7 +1,13 @@
-using System.Text.RegularExpressions;
-using XmiToCode;
+using XmiToCode.Accessibles;
+using XmiToCode.Asal;
+using XmiToCode.Classes;
+using XmiToCode.Codegen;
+using XmiToCode.Context;
+using XmiToCode.Identifiers;
+using XmiToCode.Instructions;
+using XmiToCode.Messages;
 
-using static CompoundState;
+namespace XmiToCode;
 
 public abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();

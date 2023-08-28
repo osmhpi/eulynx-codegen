@@ -1,5 +1,7 @@
 using System.Globalization;
 
+namespace XmiToCode.Codegen;
+
 public static class CodeGenerationHelper {
 
     public static string InPascalCase(string s) {

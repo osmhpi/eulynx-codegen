@@ -1,3 +1,7 @@
+using XmiToCode.Context;
+
+namespace XmiToCode.Accessibles;
+
 public record PulsedInLiteral() : IAccessible
 {
     public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch {
