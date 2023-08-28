@@ -1,5 +1,5 @@
 public class ClassAccessor : IAccessor {
-    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
+    public string Accessor(PropertyOrPort propertyOrPort, IProgramContext context, TargetLanguage targetLanguage) {
         return targetLanguage switch
         {
             TargetLanguage.Rust => $"ports.{propertyOrPort.Name}",

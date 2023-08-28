@@ -1,13 +1,13 @@
 using XmiToCode;
 
-public record GlobalContext(List<GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> signals, Dictionary<string, XmiToCode.PackagedElement> DataTypes, Dictionary<string, XmiToCode.PackagedElement> changeEvents, Dictionary<string, XmiToCode.PackagedElement> timeEvents, List<XmiToCode.PackagedElement> genericEvents) : ProgramContext
+public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> signals, Dictionary<string, XmiToCode.PackagedElement> DataTypes, Dictionary<string, XmiToCode.PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, List<PackagedElement> genericEvents) : IProgramContext
 {
     public bool IsLocalVariable(IAccessible accessible) => false;
 
-    public Dictionary<(string, TypeIdentifier), MessageSchema> Messages { get; } =
+    public Dictionary<TypeIdentifier, MessageSchema> Messages { get; } =
         signals.Values
-            .Select(x => (x.Item1, new MessageSchema(x.Signal, DataTypes)))
-            .ToDictionary(x => (x.Item1.Id, x.Item2.Identifier), x => x.Item2);
+            .Select(x => new MessageSchema(x.Signal, DataTypes))
+            .ToDictionary(x => x.Identifier);
 
     public IAssignable ResolveAssignableIdentifier(Identifier identifier)
     {
@@ -18,7 +18,7 @@ public record GlobalContext(List<GlobalEnumeration> Enumerations, Dictionary<str
     // Enums
     public IAccessible ResolveIdentifier(Identifier identifier)
     {
-        var matchingEnumerations = Enumerations
+        var matchingEnumerations = Enumerations.Values
             .Where(x => x.Members.Any(x => x.RawName == identifier.RawName))
             .ToList();
 
@@ -28,7 +28,7 @@ public record GlobalContext(List<GlobalEnumeration> Enumerations, Dictionary<str
             }
             var result = matchingEnumerations.Single();
 
-            return new EnumerationMember(result.Enumeration, result.Members.Single(x => x.RawName == identifier.RawName));
+            return new EnumerationMember(result.Name, result.Members.Single(x => x.RawName == identifier.RawName));
         }
 
         throw new ModelException($"Could not resolve accessible identifier {identifier.Name}");
@@ -49,7 +49,7 @@ public record GlobalContext(List<GlobalEnumeration> Enumerations, Dictionary<str
         throw new NotImplementedException();
     }
 
-    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         throw new NotImplementedException();
     }

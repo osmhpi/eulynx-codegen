@@ -20,13 +20,13 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
 
     public List<Class> Classes { get; }
          = GetElements(UmlPackage, "uml:Class")
-            .Where(x => x.StateMachine != null)
-            .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Name))
-            .Where(x => !CLASS_BLACKLIST.Contains(x.Name))
+            .Where(x => x.Element.StateMachine != null)
+            .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Element.Name))
+            .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name))
             .Select(x => {
-                Console.Write($"  Parsing {x.Name}...");
+                Console.Write($"  Parsing {x.Element.Name}...");
                 try {
-                    return ParseClass(x, Global, Context, Events, UmlPackage);
+                    return ParseClass(x.Element, Global, Context, Events, UmlPackage, x.Hierarchy);
                 } catch (ModelException ex) {
                     Console.WriteLine($" failed due to model issue: ({ex.Message})");
                     return null;
@@ -36,14 +36,15 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
                 }
             }).Where(x => x != null).Select(x => x!).ToList();
 
-    private static List<PackagedElement> GetElements(PackagedElement package, string umlType) {
+    private static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> GetElements(PackagedElement package, string umlType) {
         var elements = package.PackagedElements
-            .Where(x => x.Type == umlType);
+            .Where(x => x.Type == umlType)
+            .Select(x => (x, new List<PackagedElement> { package }));
         var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
-        return elements.Concat(subpackages.SelectMany(x => GetElements(x, umlType))).ToList();
+        return elements.Concat(subpackages.SelectMany(x => GetElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
 
-    private static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage) {
+    private static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy) {
         // TODO: Clean up this method
 
         var properties = klass.OwnedAttribute
@@ -81,7 +82,8 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
             umlClass._stateMachine.Parse(info, dth, classContext),
             umlClass._stateMachine.ParseTransitionFunctions(info, dth, classContext).ToList(),
             umlClass._stateMachine.GetStates(behaviorName).ToList(),
-            operations
+            operations,
+            hierarchy
         );
 
         return result;
@@ -89,7 +91,7 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
 
     public static Package CreateFromUml(PackagedElement package, GlobalContext global) {
         var context = new PackageContext(global, package);
-        var events = GetElements(package, "uml:SignalEvent")
+        var events = GetElements(package, "uml:SignalEvent").Select(x => x.Element)
             .Concat(global.genericEvents).ToDictionary(x => x.Id);
         return new Package(package, global, context, events);
     }

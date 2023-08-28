@@ -1,5 +1,4 @@
 using XmiToCode;
-using static CodeGenerationHelper;
 
 public record Class(
     ClassInfo Info,
@@ -7,7 +6,8 @@ public record Class(
     BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
     List<StateName> States,
-    List<Operation> Operations)
+    List<Operation> Operations,
+    List<PackagedElement> PackageHierarchy)
 {
     public IEnumerable<ValueType> GetValueTypes() {
         return ClassContext.Ports
@@ -37,7 +37,7 @@ public record Class(
             .SelectMany(x => x.Transitions)
             .Select(x => x.Transition)
             .OfType<MessageEventTransition>()
-            .Select(x => x.MessageSchema)
+            .Select(x => x.MessageType)
             .Distinct()
             .Select(x => ClassContext.IncomingMessages[x])
             .ToList();
@@ -65,10 +65,3 @@ public record Class(
 }
 
 public record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
-
-public record GlobalEnumeration(PackagedElement Enumeration) {
-
-    public TypeIdentifier Name { get; } = new TypeIdentifier(Enumeration.Name);
-    public IEnumerable<GlobalEnumIdentifier> Members { get; } =
-        Enumeration.OwnedLiteral.Select(lit => new GlobalEnumIdentifier(lit.Name));
-}

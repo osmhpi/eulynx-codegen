@@ -1,16 +1,16 @@
 public record MessageMember(TypeIdentifier Message, PropertyOrPort Member, IAccessor TheAccessor) : IAccessible, IAssignable
 {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage)
     {
         return Member.Accessor(context, targetLanguage, TheAccessor);
     }
 
-    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    public string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
         return Member.Assign(context, other, targetLanguage, TheAccessor);
     }
 
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
         return Member.Comparator(context, other, targetLanguage, TheAccessor);
     }
@@ -20,7 +20,7 @@ public record MessageMember(TypeIdentifier Message, PropertyOrPort Member, IAcce
         Member.EnsureComparableTypes(rhsIdentifier);
     }
 
-    public IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context) => Member.LookupValidIdentifier(identifier, context);
+    public IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context) => Member.LookupValidIdentifier(identifier, context);
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literalIdentifier) => Member.LookupValidLiteral(literalIdentifier);
 }

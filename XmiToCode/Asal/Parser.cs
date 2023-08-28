@@ -19,7 +19,7 @@ public class Parser
             throw new Exception("Invalid syntax");
     }
 
-    public IAccessible Factor(IEnumerator<Token> _current_token, ProgramContext context, IAssignable? lhs = null) {
+    public IAccessible Factor(IEnumerator<Token> _current_token, IProgramContext context, IAssignable? lhs = null) {
         // factor : (NOT) Name | StringLiteral | LPAREN expr RPAREN
         var token = _current_token.Current;
         var negate = false;
@@ -50,7 +50,7 @@ public class Parser
         throw new ArgumentException();
     }
 
-    public IAccessible Term(IEnumerator<Token> _current_token, ProgramContext context) {
+    public IAccessible Term(IEnumerator<Token> _current_token, IProgramContext context) {
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
         var node = Factor(_current_token, context);
         while (_current_token.Current.TokenType == TokenType.GreaterThan || _current_token.Current.TokenType == TokenType.LessThan || _current_token.Current.TokenType == TokenType.GreaterThanOrEqual || _current_token.Current.TokenType == TokenType.LessThanOrEqual || _current_token.Current.TokenType == TokenType.Equal || _current_token.Current.TokenType == TokenType.NotEqual) {
@@ -79,7 +79,7 @@ public class Parser
         return node;
     }
 
-    public IAccessible Expr(IEnumerator<Token> _current_token, ProgramContext context) {
+    public IAccessible Expr(IEnumerator<Token> _current_token, IProgramContext context) {
         // expr   : term ((AND | OR | XOR) term)*
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
         // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
@@ -104,7 +104,7 @@ public class Parser
         return node;
     }
 
-    public Instruction Instr(IEnumerator<Token> _current_token, ProgramContext context) {
+    public Instruction Instr(IEnumerator<Token> _current_token, IProgramContext context) {
         // instr  : term ((AND | OR | XOR) term)*
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
         // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
@@ -161,17 +161,17 @@ public class Parser
                     int i = 0;
                     var fields = new List<IAccessible>();
                     foreach (var initializerValue in messageInitializerValue.Split(",")) {
-                        var lhs = messageSchema[i];
+                        var lhs = messageSchema.Members[i];
                         var accessible = CompoundState.ParseMessageInitializer(initializerValue.Trim(), parsedMessageName, lhs, context);
                         lhs.EnsureComparableTypes(accessible);
                         fields.Add(accessible);
                         i++;
                     }
 
-                    var ins = new MessageInitializer(messageTypeIdentifier, messageSchema, fields);
+                    var ins = new MessageInitializer(messageSchema.MessageIdentifier, messageSchema.Members, fields);
                     return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 } else {
-                    var ins = new MessageInitializer(messageTypeIdentifier, messageSchema, new());
+                    var ins = new MessageInitializer(messageSchema.MessageIdentifier, messageSchema.Members, new());
                     return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 }
             }
@@ -180,14 +180,14 @@ public class Parser
         throw new NotImplementedException();
     }
 
-    public IAccessible? ParseExpression(string input, ProgramContext context) {
+    public IAccessible? ParseExpression(string input, IProgramContext context) {
         var _current_token = _lexer.Tokenize(input).GetEnumerator();
         if (_current_token.MoveNext())
             return Expr(_current_token, context);
         return null;
     }
 
-    public Instruction? ParseInstructions(string input, ProgramContext context) {
+    public Instruction? ParseInstructions(string input, IProgramContext context) {
         var _current_token = _lexer.Tokenize(input).GetEnumerator();
         if (_current_token.MoveNext())
             return Instr(_current_token, context);

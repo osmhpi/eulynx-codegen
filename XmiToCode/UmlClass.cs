@@ -19,7 +19,7 @@ public class UmlClass
         Dictionary<string, PackagedElement> packageEvents,
         Dictionary<string, PackagedElement> signals,
         DataTypeHelper dataTypes,
-        ProgramContext context,
+        IProgramContext context,
         PackagedElement parentPackage)
     {
         _class = classPackage;
@@ -32,7 +32,7 @@ public class UmlClass
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
     }
 
-    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, ProgramContext context) {
+    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, IProgramContext context) {
         var states = region.Subvertices.Select(x => {
             var subRegion = FlattenRegions(x.Regions, context);
             return new CompoundState(
@@ -86,7 +86,7 @@ public class UmlClass
         }
     }
 
-    private Region? FlattenRegions(List<UmlRegion> regions, ProgramContext context) {
+    private Region? FlattenRegions(List<UmlRegion> regions, IProgramContext context) {
         if (regions.Count == 0) {
             return null;
         }

@@ -1,12 +1,11 @@
 using XmiToCode;
 
-public record EnumerationMember(PackagedElement UmlEnumeration, GlobalEnumIdentifier Member) : IAccessible {
-    public TypeIdentifier EnumerationType => new TypeIdentifier(UmlEnumeration.Name);
+public record EnumerationMember(TypeIdentifier EnumerationType, GlobalEnumIdentifier Member) : IAccessible {
 
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage)
         => $"{EnumerationType.Name}__{Member.Name}";
 
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)

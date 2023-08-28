@@ -22,7 +22,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         return false;
     }
 
-    public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, ProgramContext context) {
+    public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, IProgramContext context) {
         if (TryParseLiteral(initializer, out var literal)) {
             // Resolve message
             var result = member.LookupValidLiteral(literal!);
@@ -42,14 +42,14 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         }
     }
 
-    public static Instruction? ParseInstruction(string instruction, ProgramContext context) {
+    public static Instruction? ParseInstruction(string instruction, IProgramContext context) {
         var result = instruction.Trim();
 
         var parser = new Parser();
         return parser.ParseInstructions(result, context);
     }
 
-    public static List<Instruction> ParseInstructions(string instructions, ProgramContext context) {
+    public static List<Instruction> ParseInstructions(string instructions, IProgramContext context) {
         return instructions
             .Split(";")
             .SelectMany(x => x.Split("\n"))
@@ -60,17 +60,17 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             .ToList();
     }
 
-    public List<Instruction> ParseExit(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> ParseExit(IState next, Transition transition, IProgramContext context, DataTypeHelper dataTypes)
     {
         return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Exit?.Name ?? "", context)).ToList();
     }
 
-    public List<Instruction> ParseTransition(IState next, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context, DataTypeHelper dataTypes)
     {
         return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
     }
 
-    public List<Instruction> GenerateEntry(IState previous, Transition transition, ProgramContext context, DataTypeHelper dataTypes)
+    public List<Instruction> GenerateEntry(IState previous, Transition transition, IProgramContext context, DataTypeHelper dataTypes)
     {
         return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Entry?.Name ?? "", context)).ToList();
     }

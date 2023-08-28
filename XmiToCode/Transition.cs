@@ -14,7 +14,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         DataTypeHelper dataTypes,
         bool noTriggerConditions,
         StateMachine stateMachine,
-        ProgramContext context,
+        IProgramContext context,
         ClassInfo classInfo) {
 
         if (Transitions.Count > 1 && fromState.IsInitialState) {
@@ -61,7 +61,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new NotImplementedException();
     }
 
-    public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, ProgramContext context)
+    public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, IProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
@@ -72,7 +72,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public IAccessible? GetTransitionConstraints(DataTypeHelper dataTypes, ProgramContext context) {
+    public IAccessible? GetTransitionConstraints(DataTypeHelper dataTypes, IProgramContext context) {
         if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
             var specification = SingleTransition.OwnedRule.Specification.Body;
 
@@ -86,7 +86,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return null;
     }
 
-    public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, ProgramContext context) {
+    public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, IProgramContext context) {
         var transition = transitions.SingleOrDefault();
 
         if (transition != null) {
@@ -100,8 +100,8 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     return new ChangeEventTransition(from, to, transitions, theEvent, ParseExpression(theEvent.ChangeExpression.Body, context) ?? throw new Exception("Change event must have condition."));
                 } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
                     var theEvent = dataTypes.PackageEvents[evt];
-                    var signal = context.ResolveSignal(theEvent.Signal);
-                    return new MessageEventTransition(from, to, transitions, theEvent, signal.Identifier);
+                    var messageSchema = context.ResolveSignal(theEvent.Signal);
+                    return new MessageEventTransition(from, to, transitions, theEvent, messageSchema.Identifier);
                 }
             } else {
                 return new InitialTransition(from, to, transitions);
@@ -111,7 +111,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new ArgumentException("Could not parse provided transition");
     }
 
-    protected static IAccessible? ParseExpression(string expression, ProgramContext context) {
+    protected static IAccessible? ParseExpression(string expression, IProgramContext context) {
         expression = expression.Replace('\n', ' ').Trim();
 
         var parser = new Parser();
@@ -124,8 +124,8 @@ record ChangeEventTransition(IState From, IState To, List<UmlTransition> Transit
 record TimeEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement theEvent) : Transition(From, To, Transitions);
 
 public abstract record BooleanExpression() : IAccessible {
-    public abstract string Accessor(ProgramContext context, TargetLanguage targetLanguage);
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    public abstract string Accessor(IProgramContext context, TargetLanguage targetLanguage);
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
         throw new NotImplementedException();
     }
@@ -137,33 +137,33 @@ public abstract record BooleanExpression() : IAccessible {
 
     public record Else() : BooleanExpression()
     {
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage) => "else";
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage) => "else";
     }
 
     public record Equality(IAccessible Lhs, IAccessible Rhs, bool Positive) : BooleanExpression()
     {
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
             Positive ? Lhs.Comparator(context, Rhs, targetLanguage) : $"!({Lhs.Comparator(context, Rhs, targetLanguage)})";
     }
 
     public record Negation(IAccessible Variable) : BooleanExpression()
     {
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage)
             => $"!({Variable.Accessor(context, targetLanguage)})";
     }
 
     public record Conjunction(IAccessible Lhs, IAccessible Rhs) : BooleanExpression()
     {
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage)
             => $"({Lhs.Accessor(context, targetLanguage)}) && ({Rhs.Accessor(context, targetLanguage)})";
     }
 
     public record Disjunction(IAccessible Lhs, IAccessible Rhs) : BooleanExpression() {
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage)
             => $"({Lhs.Accessor(context, targetLanguage)}) || ({Rhs.Accessor(context, targetLanguage)})";
     }
 }
 
-record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageSchema) : Transition(From, To, Transitions);
+record MessageEventTransition(IState From, IState To, List<UmlTransition> Transitions, PackagedElement evt, TypeIdentifier MessageType) : Transition(From, To, Transitions);
 
 record InitialTransition(IState From, IState To, List<UmlTransition> Transitions) : Transition(From, To, Transitions);

@@ -1,13 +1,13 @@
 using XmiToCode;
 
-public record BlockContext : ProgramContext
+public record BlockContext : IProgramContext
 {
-    public ProgramContext Parent { get; }
+    public IProgramContext Parent { get; }
     private readonly MessageSchema? _locals;
 
     public MessageSchema? Locals => _locals;
 
-    public BlockContext(ProgramContext parent, MessageSchema? locals = null)
+    public BlockContext(IProgramContext parent, MessageSchema? locals = null)
     {
         Parent = parent;
         _locals = locals;
@@ -35,7 +35,7 @@ public record BlockContext : ProgramContext
         return Parent.ResolveAssignableIdentifier(identifier);
     }
 
-    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         return Parent.ResolveOutgoingMessageSchema(port, messageTypeIdentifier);
     }
@@ -52,7 +52,7 @@ public record BlockContext : ProgramContext
         return Parent.IsLocalVariable(accessible);
     }
 
-    MessageSchema ProgramContext.ResolveSignal(string signalId)
+    MessageSchema IProgramContext.ResolveSignal(string signalId)
     {
         return Parent.ResolveSignal(signalId);
     }

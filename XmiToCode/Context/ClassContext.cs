@@ -1,6 +1,6 @@
 using static PropertyOrPort;
 
-public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : ProgramContext
+public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IProgramContext
 {
     public Dictionary<TypeIdentifier, MessageSchema> IncomingMessages { get; }
         = DataTypes.Ports.Values.OfType<ComplexPropertyOrPort>()
@@ -61,15 +61,13 @@ public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : Pr
         return Global.ResolveCallableIdentifier(identifier);
     }
 
-    public MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
-    {
-        return IncomingMessages[signal];
-    }
-
-    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
+    public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
     {
         if (OutgoingMessages.ContainsKey(messageTypeIdentifier)) {
-            return OutgoingMessages[messageTypeIdentifier].Members.Select(x => new MessageMember(messageTypeIdentifier, x, new MessageAccessor(messageTypeIdentifier, x.Identifier, true))).ToList();
+            var uniqueMessageIdentifier = OutgoingMessages[messageTypeIdentifier].Identifier;
+            return (uniqueMessageIdentifier, OutgoingMessages[messageTypeIdentifier].Members.Select(x =>
+                new MessageMember(uniqueMessageIdentifier, x, new MessageAccessor(uniqueMessageIdentifier, x.Identifier, true))
+            ).ToList());
         }
 
         var port = Ports[portIdentifier];
@@ -86,7 +84,9 @@ public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : Pr
             var signal = ResolveSignal(reception.Signal);
 
             OutgoingMessages[messageTypeIdentifier] = signal;
-            return signal.Members.Select(x => new MessageMember(messageTypeIdentifier, x, new MessageAccessor(messageTypeIdentifier, x.Identifier, true))).ToList();
+
+            // signal.Identifier is different from messageTypeIdentifier (uniqueness)
+            return (signal.Identifier, signal.Members.Select(x => new MessageMember(signal.Identifier, x, new MessageAccessor(signal.Identifier, x.Identifier, true))).ToList());
         }
 
         throw new NotImplementedException();

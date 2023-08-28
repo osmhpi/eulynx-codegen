@@ -54,12 +54,12 @@ public class StateMachine
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, IProgramContext context)
     {
         return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context, theRootBehaviorName));
     }
 
-    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, ProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
+    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, IProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
@@ -83,7 +83,7 @@ public class StateMachine
         }
     }
 
-    private IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, ProgramContext context) {
+    private IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, IProgramContext context) {
         if (x.InternalStateMachine != null) {
             return x.InternalStateMachine.ParseStateRecord(x, x.Name, recordName, className, dataTypes, context);
         } else {
@@ -91,7 +91,7 @@ public class StateMachine
         }
     }
 
-    private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, ProgramContext context) {
+    private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, IProgramContext context) {
         var newContext = new BlockContext(context);
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
@@ -119,7 +119,7 @@ public class StateMachine
             );
     }
 
-    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(ClassInfo theRootBehaviorName, DataTypeHelper dataTypes, ProgramContext context)
+    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(ClassInfo theRootBehaviorName, DataTypeHelper dataTypes, IProgramContext context)
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);

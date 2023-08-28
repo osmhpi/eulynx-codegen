@@ -85,23 +85,12 @@ var csharp = new CSharpWriter();
 var rust = new RustWriter();
 var c = new CWriter();
 
-// var whitelist = new [] {"ResetReason", "CloseReason", "AbilityToMoveState", "PointPositionState", "PointPositionDegradedState"};
 var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
     .Select(x => new GlobalEnumeration(x.Value))
-    // There are two enumerations which map to the same name (but are not used currently)
-    // - Line Direction Control Information
-    // - Line_Direction_Control_Information
-    // This behavior is dangerous...
-    // Temporary workaround:
-    .Where(x => x.Name.Name != "LineDirectionControlInformation")
-    .ToList();
+    .ToDictionary(x => x.Name);
 
 var global = new GlobalContext(enumerations, signals, dataTypes, changeEvents, timeEvents, genericEvents);
 var parsedPackages = interestingPackages.Select(x => Package.CreateFromUml(x, global)).ToList();
-
-// var successful = new List<string>();
-// var all = 0;
-// var modelIssues = 0;
 
 ICodeWriter writer = targetLanguage switch {
     TargetLanguage.CSharp => csharp,
@@ -115,58 +104,6 @@ await writer.WriteCommonFilesAsync(global);
 foreach (var package in parsedPackages) {
     await writer.WritePackageFilesAsync(package);
 }
-
-/*
-foreach (var interestingPackage in interestingPackages) {
-    var packageEvents = FindAllEvents(interestingPackage).Concat(genericEvents).ToDictionary(x => x.Id);
-
-    foreach (var umlClassPackage in FindAllClassesWithStateMachines(interestingPackage)
-        .Where(x => !classWhitelist.Any() || classWhitelist.Contains(x.Name))
-        .Where(x => !classBlacklist.Contains(x.Name))) {
-        Console.Write($"Writing {umlClassPackage.Name}...");
-        all++;
-
-        try {
-            var properties = umlClassPackage.OwnedAttribute
-                .Where(x => x.XmiType == "uml:Property")
-                .ToList();
-            var ports = umlClassPackage.OwnedAttribute
-                .Where(x => x.XmiType == "uml:Port")
-                .ToList();
-            var operationNames = umlClassPackage.OwnedOperation
-                .Where(x => x.XmiType == "uml:Operation")
-                .Select(x => new Identifier(x.Name))
-                .ToList();
-
-            var className = new TypeIdentifier(umlClassPackage.Name);
-            // HACK
-            var classInfo = new ClassInfo(className.Name, "");
-            var dth = new DataTypeHelper(properties, ports, operationNames, changeEvents, timeEvents, packageEvents, new(), dataTypes, typeAliases, classInfo);
-            var classContext = new ClassContext(global, dth);
-
-            var operations = umlClassPackage.OwnedOperation
-                .Where(x => x.XmiType == "uml:Operation")
-                .Select(x => (x, umlClassPackage.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
-                .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
-                .ToList();
-
-            var umlClass = new UmlClass(umlClassPackage, changeEvents, timeEvents, packageEvents, new(), dth, classContext, interestingPackage);
-            await umlClass.Generate(writer, classContext, operations);
-
-            successful.Add(className.Name);
-            Console.WriteLine(" done.");
-        } catch (ModelException ex) {
-            Console.WriteLine($" failed due to model issue: ({ex.Message})");
-            modelIssues++;
-        } catch (Exception ex) {
-            Console.WriteLine($" failed: ({ex.Message})");
-        }
-    }
-}*/
-
-// Console.WriteLine($"Successfully generated {successful.Count} out of {all} ({all-modelIssues} valid) classes:");
-// foreach (var success in successful)
-//     Console.WriteLine($" - {success}");
 
 return 0;
 

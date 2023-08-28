@@ -1,11 +1,11 @@
 public record PulsedInLiteral() : IAccessible
 {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch {
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch {
         TargetLanguage.C => "true",
         _ => "1"
     };
 
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)

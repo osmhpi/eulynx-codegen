@@ -1,15 +1,15 @@
 
 record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
 {
-    internal override string ToCSharp(ProgramContext context)
+    internal override string ToCSharp(IProgramContext context)
     {
         return Lhs.Assign(context, Rhs, TargetLanguage.CSharp);
     }
-    internal override string ToC(ProgramContext context)
+    internal override string ToC(IProgramContext context)
     {
         return Lhs.Assign(context, Rhs, TargetLanguage.C);
     }
-    internal override string ToRust(ProgramContext context)
+    internal override string ToRust(IProgramContext context)
     {
         return Lhs.Assign(context, Rhs, TargetLanguage.Rust);
     }

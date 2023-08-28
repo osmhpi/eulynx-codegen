@@ -100,16 +100,16 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
 
     public string Name => InPascalCase(Property.Name);
 
-    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+    public virtual string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
         TheAccessor.Accessor(this, context, targetLanguage);
 
-    public virtual string Accessor(ProgramContext context, TargetLanguage targetLanguage, IAccessor accessor)
+    public virtual string Accessor(IProgramContext context, TargetLanguage targetLanguage, IAccessor accessor)
         => accessor.Accessor(this, context, targetLanguage);
 
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         Comparator(context, other, targetLanguage, TheAccessor);
 
-    public virtual string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
+    public virtual string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         $"{Accessor(context, targetLanguage, accessor)} == {other.Accessor(context, targetLanguage)}";
 
     public IAccessible LookupValidLiteral(LiteralIdentifier literal)
@@ -117,15 +117,15 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         return RecordPossibleValue(literal);
     }
 
-    public string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    public string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
         => Assign(context, other, targetLanguage, TheAccessor);
 
-    public virtual string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
+    public virtual string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
         => $"{Accessor(context, targetLanguage, accessor)} = {other.Accessor(context, targetLanguage)};";
 
     public abstract void EnsureComparableTypes(IAccessible rhsIdentifier);
 
-    public virtual IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+    public virtual IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context)
     {
         return context.ResolveIdentifier(identifier);
     }
@@ -173,12 +173,12 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             return literal.Name;
         }
 
-        public override string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
+        public override string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
             GetAllowedValues().Count == 0 ?
                 $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
                 base.Comparator(context, other, targetLanguage, accessor);
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
+        public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
             GetAllowedValues().Count == 0 ?
                 $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
                 base.Assign(context, other, targetLanguage, accessor);
@@ -231,9 +231,13 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
 
     public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
     {
+        // TODO: We re-implement three times an implemention detail of GlobalEnumeration:
+        // new UniqueTypeIdentifier(UmlType.Name, UmlType.Id)
+        // Better look it up and use property
+
         public override (string, string) DataType(TargetLanguage language) => UmlType.Type switch {
             "uml:Class" => ("Channel<EulynxMessages.Message>", ""),
-            "uml:Enumeration" => (InPascalCase(UmlType.Name), ""),
+            "uml:Enumeration" => (new UniqueTypeIdentifier(UmlType.Name, UmlType.Id).Name, ""),
             _ => ("int", "")
         };
 
@@ -256,16 +260,16 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             var enumLiteral = UmlType.OwnedLiteral
                 .Select(x => new GlobalEnumIdentifier(x.Name))
                 .Single(x => x.RawName == literal.RawName);
-            return new EnumerationMember(UmlType, enumLiteral);
+            return new EnumerationMember(new UniqueTypeIdentifier(UmlType.Name, UmlType.Id), enumLiteral);
         }
 
-        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        public override IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context)
         {
             var enumLiteral = UmlType.OwnedLiteral
                 .Select(x => new GlobalEnumIdentifier(x.Name))
                 .SingleOrDefault(x => x.RawName == identifier.RawName);
             if (enumLiteral != null) {
-                return new EnumerationMember(UmlType, enumLiteral);
+                return new EnumerationMember(new UniqueTypeIdentifier(UmlType.Name, UmlType.Id), enumLiteral);
             }
 
             return base.LookupValidIdentifier(identifier, context);
@@ -287,7 +291,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             throw new ArgumentException($"Invalid bool value: {literal}");
         }
 
-        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        public override IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context)
         {
             if (identifier.Name == "True")
                 return new BoolLiteral(true);
@@ -351,12 +355,12 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             }
         }
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
+        public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
         {
             throw new InvalidOperationException("PulsedIn cannot be assigned to");
         }
 
-        public override string Accessor(ProgramContext context, TargetLanguage targetLanguage)
+        public override string Accessor(IProgramContext context, TargetLanguage targetLanguage)
         {
             return $"{base.Accessor(context, targetLanguage)}.IsTriggered";
         }
@@ -386,7 +390,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             throw new ArgumentException($"Invalid pulsed out value: {literal}");
         }
 
-        public override IAccessible LookupValidIdentifier(Identifier identifier, ProgramContext context)
+        public override IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context)
         {
             if (identifier.Name == "True")
                 return new PulsedOutLiteral();
@@ -401,7 +405,7 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             }
         }
 
-        public override string Assign(ProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
+        public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor)
         {
             return targetLanguage switch {
                 TargetLanguage.C => $"{Accessor(context, targetLanguage, accessor)}.Trigger = {other.Accessor(context, targetLanguage)};",

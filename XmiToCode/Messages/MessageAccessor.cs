@@ -11,7 +11,7 @@ public class MessageAccessor : IAccessor
         _isOutMessage = isOutMessage;
     }
 
-    public string Accessor(PropertyOrPort propertyOrPort, ProgramContext context, TargetLanguage targetLanguage) {
+    public string Accessor(PropertyOrPort propertyOrPort, IProgramContext context, TargetLanguage targetLanguage) {
         var inOrOut = _isOutMessage ? "Out" : "In";
         return targetLanguage switch
         {

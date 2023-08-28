@@ -55,7 +55,8 @@ typedef struct TimeoutEvent
   int IsTimeoutExpired;
 }} TimeoutEvent;
 
-{string.Join("\n", global.Enumerations.Select(x => Write(x)))}
+// Enumerations
+{string.Join("\n", global.Enumerations.Values.Select(x => WriteGlobalEnumeration(x)))}
 
 // Message Types
 {JoinLines(global.Messages.Select(x => WriteMessageSchema(x.Value)))}
@@ -91,7 +92,6 @@ typedef struct TimeoutEvent
     {
         return element switch
         {
-            GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             ValueType valueType => WriteValueType(valueType),
             Class klass => WriteClass(klass),
             null => "",
@@ -241,18 +241,18 @@ void transition({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteIfOrElse(IAccessible expression, ProgramContext context) {
+    private string WriteIfOrElse(IAccessible expression, IProgramContext context) {
         return expression switch {
             BooleanExpression.Else => "else",
             _ => $"if ({expression.Accessor(context, TargetLanguage.C)})"
         };
     }
 
-    protected string WrapWithGuard(Transition transition, IAccessible? c, ProgramContext context, string instructions) {
+    protected string WrapWithGuard(Transition transition, IAccessible? c, IProgramContext context, string instructions) {
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageSchema.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.Some)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
@@ -297,6 +297,8 @@ void transition({klass.Info.ClassName} *self) {{
 
 {WriteBehaviorEnum(klass.Behavior)}
 
+/// Contained in:
+{JoinLines(klass.PackageHierarchy.Select(x => $"/// {x.Name}"))}
 typedef struct {klass.Info.ClassName} {{
     {klass.Info.BehaviorName} state;
 

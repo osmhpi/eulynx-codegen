@@ -1,6 +1,6 @@
 using XmiToCode;
 
-public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage) : ProgramContext
+public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage) : IProgramContext
 {
     // public Dictionary<string, PackagedElement> Signals { get; } =
     //     GetElements(UmlPackage, "uml:Signal")
@@ -42,7 +42,7 @@ public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage) :
         return Parent.ResolveIncomingMessageSchema(signal);
     }
 
-    public List<MessageMember> ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
+    public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         return Parent.ResolveOutgoingMessageSchema(port, messageTypeIdentifier);
     }

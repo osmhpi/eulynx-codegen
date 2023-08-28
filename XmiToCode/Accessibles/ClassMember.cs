@@ -1,5 +1,5 @@
 public record ClassMember(Identifier Identifier) : IAccessible {
-    public string Accessor(ProgramContext context, TargetLanguage targetLanguage) =>
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
         targetLanguage switch {
             TargetLanguage.Rust => Identifier.Name,
             TargetLanguage.C => context.IsLocalVariable(this)
@@ -10,7 +10,7 @@ public record ClassMember(Identifier Identifier) : IAccessible {
                 : $"this.{Identifier.Name}"
         };
 
-    public string Comparator(ProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
+    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)
