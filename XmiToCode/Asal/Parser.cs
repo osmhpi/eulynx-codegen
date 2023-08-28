@@ -115,7 +115,10 @@ public class Parser
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
         // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
 
-        while (_current_token.Current.TokenType == TokenType.If || _current_token.Current.TokenType == TokenType.Name || _current_token.Current.TokenType == TokenType.SendMessageToPort) {
+        while (_current_token.Current.TokenType == TokenType.If ||
+        _current_token.Current.TokenType == TokenType.Name ||
+        _current_token.Current.TokenType == TokenType.SendMessageToPort ||
+        _current_token.Current.TokenType == TokenType.Return) {
             var token = _current_token.Current;
             if (token.TokenType == TokenType.If) {
                 Eat(_current_token, TokenType.If);
@@ -182,6 +185,10 @@ public class Parser
                     var ins = new MessageInitializer(messageSchema.MessageIdentifier, messageSchema.Members, new());
                     return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
                 }
+            } else if (token.TokenType == TokenType.Return) {
+                Eat(_current_token, TokenType.Return);
+                var value = Expr(_current_token, context);
+                return new ReturnInstruction(value);
             }
         }
 
