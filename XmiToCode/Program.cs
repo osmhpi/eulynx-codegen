@@ -54,7 +54,15 @@ var dataTypes = FindAllDataTypes(sysimProfile)
     .ToDictionary(x => x.Id);
 
 var packageWhitelist = new string[] {};
-// packageWhitelist = new [] { "Subsystem Point", "Generic requirements for SCI", "Generic requirements for subsystems"};
+packageWhitelist = new [] {
+    "Generic requirements for SCI",
+    "Generic requirements for subsystems",
+    "Subsystem Point",
+    "Subsystem IO",
+    "Subsystem Light Signal",
+    "Subsystem Level Crossing",
+    "Subsystem Train Detection System",
+};
 var packageBlacklist = new string[] {
     "Generic recycle bin",
 };

@@ -27,14 +27,21 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
             .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Element.Name))
             .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name))
             .Select(x => {
-                Console.Write($"  Parsing {x.Element.Name}...");
+                Console.Write($"Parsing {x.Element.Name}...");
                 try {
-                    return ParseClass(x.Element, Global, Context, Events, UmlPackage, x.Hierarchy);
+                    var result = ParseClass(x.Element, Global, Context, Events, UmlPackage, x.Hierarchy);
+                    Console.WriteLine($" done.");
+                    Console.WriteLine();
+                    return result;
                 } catch (ModelException ex) {
                     Console.WriteLine($" failed due to model issue: ({ex.Message})");
+                    Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
+                    Console.WriteLine();
                     return null;
                 } catch (Exception ex) {
                     Console.WriteLine($" failed: ({ex.Message})");
+                    Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
+                    Console.WriteLine();
                     return null;
                 }
             }).Where(x => x != null).Select(x => x!).ToList();
@@ -43,7 +50,9 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
         var elements = package.PackagedElements
             .Where(x => x.Type == umlType)
             .Select(x => (x, new List<PackagedElement> { package }));
-        var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
+        var subpackages = package.PackagedElements
+            .Where(x => x.Type == "uml:Package")
+            .Where(x => x.Name != "Recycle bin" && x.Name != "Recycle Bin" && x.Name != "Not synchronized model elements");
         return elements.Concat(subpackages.SelectMany(x => GetElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
 
