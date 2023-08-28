@@ -58,7 +58,8 @@ packageWhitelist = new [] {
     "Generic requirements for SCI",
     "Generic requirements for subsystems",
     "Subsystem Point",
-    "Subsystem IO",
+    // Too many weird state machines, skip this:
+    // "Subsystem IO",
     "Subsystem Light Signal",
     "Subsystem Level Crossing",
     "Subsystem Train Detection System",

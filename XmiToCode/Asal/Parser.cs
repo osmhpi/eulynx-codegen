@@ -137,6 +137,8 @@ public class Parser
                     Eat(_current_token, TokenType.Assignment);
                     var otherFactor = Factor(_current_token, context, assignable);
                     return new AssignmentInstruction(assignable, otherFactor);
+                } else {
+                    throw new NotImplementedException();
                 }
             } else if (token.TokenType == TokenType.SendMessageToPort) {
                 var m = new Regex("^send (.+)\\s?to (.+)$").Match(token.Value);
@@ -147,7 +149,7 @@ public class Parser
                     messageConstructor += "()";
                 }
 
-                var messageName = Regex.Match(messageConstructor, "^(\\w+)\\((.*)\\)$");
+                var messageName = Regex.Match(messageConstructor, "^(\\w+)\\s?\\((.*)\\)$");
                 if (!messageName.Success) {
                     throw new Exception($"Invalid message expression: {messageConstructor}");
                 }

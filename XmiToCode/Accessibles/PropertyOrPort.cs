@@ -64,7 +64,10 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
     public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, PropertyOrPort? ProxyFor = null)
     {
         if (property.Type == null) {
-            return new UntypedPropertyOrPort(property, Class, ProxyFor);
+            Console.WriteLine($"Warn: Property {property.Name} has no type, assuming string.");
+            return new StringPropertyOrPort(property, Class, ProxyFor);
+
+            // return new UntypedPropertyOrPort(property, Class, ProxyFor);
         }
 
         var umlType = types[property.Type];
@@ -84,13 +87,15 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
         };
 
         // Extra validation of naming conventions
-        // if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
-        //     throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
-        // }
+        if (result is PulsedInPropertyOrPort && (!result.IsTriggerPort || !result.IsInPort)) {
+            Console.WriteLine($"Warn: Naming convention was violated for {result.Identifier.RawName}");
+            // throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
+        }
 
-        // if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
-        //     throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
-        // }
+        if (result is PulsedOutPropertyOrPort && (!result.IsTriggerPort || !result.IsOutPort)) {
+            Console.WriteLine($"Warn: Naming convention was violated for {result.Identifier.RawName}");
+            // throw new ModelException($"Naming convention was violated for {result.Identifier.RawName}");
+        }
 
         return result;
     }

@@ -8,11 +8,6 @@ set(sources
   ./GenericRequirementsForSci/SSciAdjPrim.c
   ./GenericRequirementsForSci/SSciEfesPrim.c
   ./GenericRequirementsForSubsystems/FEstEfes.c
-  ./SubsystemIo/FControlSafeStateOfAllPhysicalOutputChannel.c
-  ./SubsystemIo/FDetectInputChannelState.c
-  ./SubsystemIo/FMonitorOutputChannelDisturbanceState.c
-  ./SubsystemIo/FSciIoReceive.c
-  ./SubsystemIo/SSciIoCommand.c
   ./SubsystemLevelCrossing/FControlLocalOperation.c
   ./SubsystemLevelCrossing/FObserveDetectionElement.c
   ./SubsystemLevelCrossing/FObserveLcpf.c
@@ -44,11 +39,6 @@ set(headers
   ./GenericRequirementsForSci/SSciAdjPrim.h
   ./GenericRequirementsForSci/SSciEfesPrim.h
   ./GenericRequirementsForSubsystems/FEstEfes.h
-  ./SubsystemIo/FControlSafeStateOfAllPhysicalOutputChannel.h
-  ./SubsystemIo/FDetectInputChannelState.h
-  ./SubsystemIo/FMonitorOutputChannelDisturbanceState.h
-  ./SubsystemIo/FSciIoReceive.h
-  ./SubsystemIo/SSciIoCommand.h
   ./SubsystemLevelCrossing/FControlLocalOperation.h
   ./SubsystemLevelCrossing/FObserveDetectionElement.h
   ./SubsystemLevelCrossing/FObserveLcpf.h

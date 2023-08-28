@@ -31,6 +31,9 @@ public enum TokenType {
 
     // Message sending
     SendMessageToPort,
+
+    // Methods
+    Return,
 }
 
 public record Token(TokenType TokenType, string Value);

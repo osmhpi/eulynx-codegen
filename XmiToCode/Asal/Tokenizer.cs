@@ -30,7 +30,7 @@ public class Tokenizer {
          => TryTokenizeCharacter(TokenType.ParenClose, ')', input, current, out result);
 
     private int TryTokenizeName(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Name, new Regex("^[\\w_]+"), input, current, out result);
+        => TryTokenizePattern(TokenType.Name, new Regex("^[\\w_-]+"), input, current, out result);
     private int TryTokenizeAssignment(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Assignment, new Regex("^:="), input, current, out result);
 
@@ -70,13 +70,16 @@ public class Tokenizer {
         // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.If, new Regex("^If", RegexOptions.IgnoreCase), input, current, out result);
     private int TryTokenizeThen(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Then, new Regex("^Then"), input, current, out result);
+        // Ignore case to work around some model issues
+        => TryTokenizePattern(TokenType.Then, new Regex("^Then", RegexOptions.IgnoreCase), input, current, out result);
     private int TryTokenizeElse(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Else, new Regex("^Else"), input, current, out result);
     private int TryTokenizeElseIf(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.ElseIf, new Regex("^ElseIf"), input, current, out result);
     private int TryTokenizeSendMessageToPort(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
+    private int TryTokenizeReturn(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Return, new Regex("^return"), input, current, out result);
 
     private int TryTokenizeStringLiteral(string input, int current, out Token? result) {
         if (input[current] == '"') {
@@ -109,7 +112,7 @@ public class Tokenizer {
 
     private int SkipLineComment(string input, int current, out Token? result) {
         result = null;
-        var match = Regex.Match(input.Substring(current), "^//.*^");
+        var match = Regex.Match(input.Substring(current), "^//.*$");
         if (match.Success) {
             return match.Length;
         }
@@ -159,6 +162,7 @@ public class Tokenizer {
             TryTokenizeElse,
             TryTokenizeElseIf,
             TryTokenizeSendMessageToPort,
+            TryTokenizeReturn,
             TryTokenizeStringLiteral,
             TryTokenizeName,
         };
