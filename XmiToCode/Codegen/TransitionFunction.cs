@@ -11,11 +11,11 @@ public record Condition();
 
 public interface ICodeTransition {
     public Transition Transition { get; }
-    public IAccessible? Constraint { get; }
+    public List<IAccessible> Constraint { get; }
     public IProgramContext context { get; }
 }
 
-public record CodeTransition(string stateName, IProgramContext context, List<Instruction> Activities, IAccessible? Constraint, Transition Transition) : ICodeTransition;
+public record CodeTransition(string stateName, IProgramContext context, List<Instruction> Activities, List<IAccessible> Constraint, Transition Transition) : ICodeTransition;
 
-public record JunctionTransition(IProgramContext context, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, IAccessible? Constraint, Transition Transition) : ICodeTransition;
+public record JunctionTransition(IProgramContext context, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, List<IAccessible> Constraint, Transition Transition) : ICodeTransition;
 

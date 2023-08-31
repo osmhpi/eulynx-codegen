@@ -94,14 +94,14 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
     internal bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
     {
-        UmlSubvertex? requireTransitionFromVertex = null;
+        List<UmlSubvertex> requireTransitionFromVertex = new();
         if (fromState.IsJunction) {
             // Special handling for transitions after junctions
             // we must only include such transitions that
             // change the partial state which is currently in a junction
 
-            var junctionPartialState = fromState.PartialStates.Single(x => x.IsJunction);
-            requireTransitionFromVertex = junctionPartialState.Vertex;
+            var junctionPartialState = fromState.PartialStates.Where(x => x.IsJunction);
+            requireTransitionFromVertex.AddRange(junctionPartialState.Select(x => x.Vertex));
         }
 
         bool isTransitioned = false;
@@ -111,12 +111,11 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
                     return false;
                 }
 
-                if (requireTransitionFromVertex != null && from.Vertex != requireTransitionFromVertex) {
+                if (requireTransitionFromVertex != null && !requireTransitionFromVertex.Contains(from.Vertex)) {
                     return false;
                 }
 
-                if (transition.Source != from.Vertex.Id
-                        && transition.Target != to.Vertex.Id) {
+                if (transition.Source != from.Vertex.Id && transition.Target != to.Vertex.Id) {
                     return false;
                 }
 

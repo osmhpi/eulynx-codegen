@@ -23,6 +23,17 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
     // Enums
     public IAccessible ResolveIdentifier(Identifier identifier)
     {
+        if (identifier.RawName.Contains(".")) {
+            // Fully qualified identifier
+            var nameParts = identifier.RawName.Split(".");
+            if (nameParts.Length == 2) {
+                var result = Enumerations.Values.SingleOrDefault(x => x.Name.RawName == nameParts.First());
+                if (result != null) {
+                    return new EnumerationMember(result.Name, result.Members.Single(x => x.RawName == nameParts.Last()));
+                }
+            }
+        }
+
         var matchingEnumerations = Enumerations.Values
             .Where(x => x.Members.Any(x => x.RawName == identifier.RawName))
             .ToList();
@@ -35,6 +46,7 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
 
             return new EnumerationMember(result.Name, result.Members.Single(x => x.RawName == identifier.RawName));
         }
+
 
         throw new ModelException($"Could not resolve accessible identifier {identifier.Name}");
     }

@@ -246,14 +246,16 @@ void transition({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteIfOrElse(IAccessible expression, IProgramContext context) {
-        return expression switch {
-            BooleanExpression.Else => "else",
-            _ => $"if ({expression.Accessor(context, TargetLanguage.C)})"
-        };
+    private string WriteIfOrElse(List<IAccessible> expression, IProgramContext context) {
+        if (expression.SingleOrDefault() is BooleanExpression.Else) {
+            return "else";
+        }
+
+        var conditionsInParens = expression.Select(x => $"({x.Accessor(context, TargetLanguage.C)})");
+        return $"if ({string.Join(" && ", conditionsInParens)})";
     }
 
-    protected string WrapWithGuard(Transition transition, IAccessible? c, IProgramContext context, string instructions) {
+    protected string WrapWithGuard(Transition transition, List<IAccessible> c, IProgramContext context, string instructions) {
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
@@ -262,7 +264,7 @@ void transition({klass.Info.ClassName} *self) {{
             _ => throw new NotImplementedException()
         };
 
-        var constraint = c != null ? WriteIfOrElse(c, context) : null;
+        var constraint = c.Count > 0 ? WriteIfOrElse(c, context) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -275,7 +277,8 @@ void transition({klass.Info.ClassName} *self) {{
     private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
     {
         // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
-        var sortedTransitions = junctionTransition.CodeTransitions.OrderBy(x => x.Constraint is BooleanExpression.Else);
+        var sortedTransitions = junctionTransition.CodeTransitions
+            .OrderBy(x => x.Constraint.SingleOrDefault() is BooleanExpression.Else);
 
         return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint, junctionTransition.context,
             $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}

@@ -102,8 +102,6 @@ public class UmlClass
             }).ToList()).ToList();
 
         var flattenedStates = FlattenStates(states)
-            // States with more than one junction component are invalid (we can ignore them)
-            .Where(x => x.PartialStates.Count(partialState => partialState.IsJunction) <= 1)
             .ToList();
 
         // Combine initial transitions into one

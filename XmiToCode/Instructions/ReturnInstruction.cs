@@ -7,7 +7,7 @@ record ReturnInstruction(IAccessible Value) : Instruction
 {
     internal override string ToC(IProgramContext context)
     {
-        throw new NotImplementedException();
+        return @$"return {Value.Accessor(context, TargetLanguage.C)};";
     }
 
     internal override string ToCSharp(IProgramContext context)

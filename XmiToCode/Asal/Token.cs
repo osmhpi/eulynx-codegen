@@ -28,6 +28,7 @@ public enum TokenType {
     Then,
     ElseIf,
     Else,
+    EndIf,
 
     // Message sending
     SendMessageToPort,

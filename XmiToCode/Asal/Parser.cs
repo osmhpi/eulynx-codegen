@@ -116,6 +116,9 @@ public class Parser
         // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
 
         while (_current_token.Current.TokenType == TokenType.If ||
+        _current_token.Current.TokenType == TokenType.Else ||
+        _current_token.Current.TokenType == TokenType.ElseIf ||
+        _current_token.Current.TokenType == TokenType.EndIf ||
         _current_token.Current.TokenType == TokenType.Name ||
         _current_token.Current.TokenType == TokenType.SendMessageToPort ||
         _current_token.Current.TokenType == TokenType.Return) {
@@ -124,7 +127,18 @@ public class Parser
                 Eat(_current_token, TokenType.If);
                 var condition = Expr(_current_token, context);
                 Eat(_current_token, TokenType.Then);
-                return new IfThenElseInstruction(condition);
+                return new IfThenInstruction(condition);
+            } else if (token.TokenType == TokenType.Else) {
+                Eat(_current_token, TokenType.Else);
+                return new ElseInstruction();
+            } else if (token.TokenType == TokenType.ElseIf) {
+                Eat(_current_token, TokenType.ElseIf);
+                var condition = Expr(_current_token, context);
+                Eat(_current_token, TokenType.Then);
+                return new ElseIfThenInstruction(condition);
+            } else if (token.TokenType == TokenType.EndIf) {
+                Eat(_current_token, TokenType.EndIf);
+                return new EndIfInstruction();
             } else if (token.TokenType == TokenType.Name) {
                 var identifier = new Identifier(token.Value);
                 Eat(_current_token, TokenType.Name);

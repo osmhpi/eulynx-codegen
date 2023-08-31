@@ -23,35 +23,32 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         IProgramContext context,
         ClassInfo classInfo) {
 
-        if (Transitions.Count > 1 && fromState.IsInitialState) {
-            // TODO: Temporary workaround: If there are transition constraints and more
-            // than 1 transition, all constraints have to be fulfilled. Do that later.
-            return new CodeTransition(stateName, context,
-                ParseActivities(fromState, (this, state, stateName), dataTypes, context),
-                null, this);
+        IProgramContext blockContext = context;
+
+        if (Transitions.Count > 1) {
+            if (!fromState.IsInitialState) {
+                throw new Exception("Expected from state to be the initial state");
+            }
+        } else {
+            if (SingleTransition.Trigger != null &&
+                SingleTransition.Trigger.Event != null &&
+                dataTypes.PackageEvents.ContainsKey(SingleTransition.Trigger.Event)
+            ) {
+                // The transition is triggered by an incoming message that has additional attributes
+                var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
+                var signal = theEvent.Signal;
+                var messageSchema = context.ResolveSignal(signal);
+                blockContext = new BlockContext(context, messageSchema);
+            }
         }
-
-        MessageSchema? messageSchema = null;
-
-        if (SingleTransition.Trigger != null &&
-            SingleTransition.Trigger.Event != null &&
-            dataTypes.PackageEvents.ContainsKey(SingleTransition.Trigger.Event)
-        ) {
-            // The transition is triggered by an incoming message that has additional attributes
-            var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
-            var signal = theEvent.Signal;
-            messageSchema = context.ResolveSignal(signal);
-        }
-
-        var blockContext = new BlockContext(context, messageSchema);
 
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return new CodeTransition(stateName, blockContext,
-                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(blockContext), this);
             } else {
                 return new CodeTransition(stateName, blockContext,
-                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(dataTypes, blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(blockContext), this);
             }
         }
 
@@ -59,7 +56,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
             return new JunctionTransition(blockContext,
                 ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext),
                 stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, classInfo, true),
-                GetTransitionConstraints(dataTypes, blockContext),
+                GetTransitionConstraints(blockContext),
                 this
             );
         }
@@ -78,18 +75,29 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public IAccessible? GetTransitionConstraints(DataTypeHelper dataTypes, IProgramContext context) {
-        if (SingleTransition.OwnedRule != null && SingleTransition.OwnedRule.Specification != null) {
-            var specification = SingleTransition.OwnedRule.Specification.Body;
+    public List<IAccessible> GetTransitionConstraints(IProgramContext context) {
+        var result = new List<IAccessible>();
 
-            if (specification == "else") {
-                return new BooleanExpression.Else();
+        foreach (var transition in Transitions) {
+            if (transition.OwnedRule != null && transition.OwnedRule.Specification != null) {
+                var specification = transition.OwnedRule.Specification.Body;
+
+                if (specification == "else") {
+                    if (Transitions.Count > 1) {
+                        throw new Exception("Need to think more about this edge case");
+                    }
+
+                    return new List<IAccessible>() { new BooleanExpression.Else() };
+                }
+
+                var condition = ParseExpression(transition.OwnedRule.Specification.Body.Trim(), context);
+                if (condition != null) {
+                    result.Add(condition);
+                }
             }
-
-            return ParseExpression(SingleTransition.OwnedRule.Specification.Body.Trim(), context);
         }
 
-        return null;
+        return result;
     }
 
     public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, IProgramContext context) {
