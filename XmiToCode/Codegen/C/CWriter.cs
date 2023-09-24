@@ -156,7 +156,7 @@ typedef struct TimeoutEvent
 
 {WriteBehaviorRecord(klass.Behavior, states)}
 
-void new({klass.Info.ClassName} *x) {{
+void new_{klass.Info.ClassName}({klass.Info.ClassName} *x) {{
     x->state = make_state_{klass.Info.BehaviorName}(x);
 }}
 
@@ -174,7 +174,7 @@ void resetTriggers({klass.Info.ClassName} *self) {{
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
 }}
 
-void transition({klass.Info.ClassName} *self) {{
+void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
   evaluateChangeEvents(self);
 
   switch (self->state)
@@ -312,7 +312,10 @@ typedef struct {klass.Info.ClassName} {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
-        _ => $"{x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};"
+        _ => $@"// {x.Key.RawName}
+        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+        "
         }))}
 
     // Messages -- Incoming
@@ -327,6 +330,9 @@ typedef struct {klass.Info.ClassName} {{
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}
 
 }} {klass.Info.ClassName};
+
+void new_{klass.Info.ClassName}({klass.Info.ClassName} *x);
+void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
 
 {WriteBehaviorFunctionSignatures(klass.Behavior)}
 ";

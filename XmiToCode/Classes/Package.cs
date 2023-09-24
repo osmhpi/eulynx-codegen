@@ -46,6 +46,11 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
                 }
             }).Where(x => x != null).Select(x => x!).ToList();
 
+    public List<(PackagedElement, List<PackagedElement>)> Subsystems { get; }
+        = GetElements(UmlPackage, "uml:Class")
+            .Where(x => x.Element.OwnedConnector.Any())
+            .ToList();
+
     private static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> GetElements(PackagedElement package, string umlType) {
         var elements = package.PackagedElements
             .Where(x => x.Type == umlType)

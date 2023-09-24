@@ -23,6 +23,17 @@ public class Tokenizer {
         return 0;
     }
 
+    private int TryTokenizePatternWithWarning(TokenType type, Regex pattern, string input, int current, out Token? result) {
+        var match = pattern.Match(input[current..]);
+        if (match.Success) {
+            Console.WriteLine($"Warning: matching \"{match.Value}\" to {type}");
+            result = new Token(type, match.Value);
+            return match.Value.Length;
+        }
+        result = null;
+        return 0;
+    }
+
     private int TryTokenizeParenOpen(string input, int current, out Token? result)
          => TryTokenizeCharacter(TokenType.ParenOpen, '(', input, current, out result);
 
@@ -57,30 +68,58 @@ public class Tokenizer {
 
     private int TryTokenizeDisjunction(string input, int current, out Token? result)
         // Ignore case to work around some model issues
+        => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR "), input, current, out result);
+
+    private int TryTokenizeDisjunctionIgnoreCase(string input, int current, out Token? result)
+        // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR ", RegexOptions.IgnoreCase), input, current, out result);
 
     private int TryTokenizeNegation(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Negation, new Regex("^NOT ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePattern(TokenType.Negation, new Regex("^NOT "), input, current, out result);
+
+    private int TryTokenizeNegationIgnoreCase(string input, int current, out Token? result)
+        // Ignore case to work around some model issues
+        => TryTokenizePatternWithWarning(TokenType.Negation, new Regex("^NOT ", RegexOptions.IgnoreCase), input, current, out result);
 
     private int TryTokenizeExclusiveDisjunction(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.ExclusiveDisjunction, new Regex("XOR "), input, current, out result);
 
     private int TryTokenizeIf(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.If, new Regex("^if "), input, current, out result);
+
+    private int TryTokenizeIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.If, new Regex("^If ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.If, new Regex("^If ", RegexOptions.IgnoreCase), input, current, out result);
+
     private int TryTokenizeThen(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Then, new Regex("^then$"), input, current, out result);
+
+    private int TryTokenizeThenIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Then, new Regex("^Then$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.Then, new Regex("^Then$", RegexOptions.IgnoreCase), input, current, out result);
+
     private int TryTokenizeElse(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.Else, new Regex("^else$"), input, current, out result);
+
+    private int TryTokenizeElseIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Else, new Regex("^Else$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.Else, new Regex("^Else$", RegexOptions.IgnoreCase), input, current, out result);
+
     private int TryTokenizeElseIf(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.ElseIf, new Regex("^elseif "), input, current, out result);
+
+    private int TryTokenizeElseIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.ElseIf, new Regex("^ElseIf ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.ElseIf, new Regex("^ElseIf ", RegexOptions.IgnoreCase), input, current, out result);
+
     private int TryTokenizeEndIf(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.EndIf, new Regex("^end if$"), input, current, out result);
+
+    private int TryTokenizeEndIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.EndIf, new Regex("^End If$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.EndIf, new Regex("^End If$", RegexOptions.IgnoreCase), input, current, out result);
+
     private int TryTokenizeSendMessageToPort(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
     private int TryTokenizeReturn(string input, int current, out Token? result)
@@ -160,13 +199,20 @@ public class Tokenizer {
             TryTokenizeEqual,
             TryTokenizeConjunction,
             TryTokenizeDisjunction,
+            TryTokenizeDisjunctionIgnoreCase,
             TryTokenizeNegation,
+            TryTokenizeNegationIgnoreCase,
             TryTokenizeExclusiveDisjunction,
             TryTokenizeIf,
+            TryTokenizeIfIgnoreCase,
             TryTokenizeThen,
+            TryTokenizeThenIgnoreCase,
             TryTokenizeElse,
+            TryTokenizeElseIgnoreCase,
             TryTokenizeElseIf,
+            TryTokenizeElseIfIgnoreCase,
             TryTokenizeEndIf,
+            TryTokenizeEndIfIgnoreCase,
             TryTokenizeSendMessageToPort,
             TryTokenizeReturn,
             TryTokenizeStringLiteral,
