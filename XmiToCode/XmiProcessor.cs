@@ -56,8 +56,7 @@ public class XmiProcessor {
             "Generic requirements for SCI",
             "Generic requirements for subsystems",
             "Subsystem Point",
-            // Too many weird state machines, skip this:
-            // "Subsystem IO",
+            "Subsystem IO",
             "Subsystem Light Signal",
             "Subsystem Level Crossing",
             "Subsystem Train Detection System",
