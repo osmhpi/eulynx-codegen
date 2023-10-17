@@ -2,28 +2,62 @@ stages:
   # - build
   - validate
 
-# build-dotnet:
-#   stage: build
-#   image: mcr.microsoft.com/dotnet/sdk:7.0
-#   script:
-#     - cd XmiToCode
-#     - dotnet build
-
-# validate-xmi:
-#   stage: validate
-#   image: mcr.microsoft.com/dotnet/sdk:7.0
-#   script:
-#     - cd XmiToCode
-#     - dotnet run validate
-
-test-xmi:
+parse-classes:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=parse-classes"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+generate-c:
+  stage: validate
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+generate-rust:
+  stage: validate
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+generate-csharp:
+  stage: validate
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
   artifacts:
     when: always
     paths:

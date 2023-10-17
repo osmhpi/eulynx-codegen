@@ -21,7 +21,7 @@ public class ClassParsing
         }
     }
 
-    [TestMethod]
+    [TestMethod, TestCategory("parse-classes")]
     [DynamicData(nameof(UmlClasses))]
     public void ParseClass(string package, string className)
     {

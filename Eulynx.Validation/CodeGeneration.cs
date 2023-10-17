@@ -24,7 +24,7 @@ public class CodeGeneration
         }
     }
 
-    [TestMethod]
+    [TestMethod, TestCategory("generate-c")]
     [DynamicData(nameof(UmlClasses))]
     public async Task GenerateC(string package, string className)
     {
@@ -48,7 +48,7 @@ public class CodeGeneration
         await c.WriteClassFilesAsync(klass, packageDir);
     }
 
-    [TestMethod]
+    [TestMethod, TestCategory("generate-rust")]
     [DynamicData(nameof(UmlClasses))]
     public async Task GenerateRust(string package, string className)
     {
@@ -74,7 +74,7 @@ public class CodeGeneration
         await rust.WriteClassFilesAsync(klass);
     }
 
-    [TestMethod]
+    [TestMethod, TestCategory("generate-csharp")]
     [DynamicData(nameof(UmlClasses))]
     public async Task GenerateCSharp(string package, string className)
     {
