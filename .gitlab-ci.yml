@@ -1,0 +1,9 @@
+stages:
+  - build
+
+build-dotnet:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - cd XmiToCode
+    - dotnet build
