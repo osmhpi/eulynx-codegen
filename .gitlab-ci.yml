@@ -15,3 +15,18 @@ validate-xmi:
   script:
     - cd XmiToCode
     - dotnet run validate
+
+test-xmi:
+  stage: validate
+  variables:
+   XMI_PATH: ${CI_PROJECT_PATH}/XmiToCode/cleaned_23.xmi
+  script:
+    - cd Eulynx.Valiation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
