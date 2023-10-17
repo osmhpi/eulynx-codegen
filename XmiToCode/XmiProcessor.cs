@@ -10,7 +10,6 @@ public class XmiProcessor {
 
     public XmiProcessor(string filename)
     {
-
         using var inFile = File.OpenRead(filename);
 
         var xmlSerializer = new XmlSerializer(typeof(XMI), "");
@@ -51,7 +50,6 @@ public class XmiProcessor {
             // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
             .ToDictionary(x => x.Id);
 
-
         var packageWhitelist = new string[] { };
         packageWhitelist = new[] {
             "Generic requirements for SCI",
@@ -63,7 +61,8 @@ public class XmiProcessor {
             "Subsystem Level Crossing",
             "Subsystem Train Detection System",
         };
-                var packageBlacklist = new string[] {
+
+        var packageBlacklist = new string[] {
             "Generic recycle bin",
         };
 
@@ -80,14 +79,14 @@ public class XmiProcessor {
             .ToDictionary(x => x.Name);
 
         var classWhitelist = new string[] {};
-        classWhitelist = new [] {
-            // "F_Control_Point_Machine_Position",
-            // "S_SCI_P_Command_And_Recieve",
-            // "S_SCI_EfeS_Prim",
-            // "S_SCI_Adj_Prim"
-            // "F_EST_EfeS",
-            "F_SCI_EfeS_Sec"
-        };
+        // classWhitelist = new [] {
+        //     // "F_Control_Point_Machine_Position",
+        //     // "S_SCI_P_Command_And_Recieve",
+        //     // "S_SCI_EfeS_Prim",
+        //     // "S_SCI_Adj_Prim"
+        //     // "F_EST_EfeS",
+        //     "F_SCI_EfeS_Sec"
+        // };
 
         var classBlacklist = new string[] {
             // Demo data
@@ -125,5 +124,4 @@ public class XmiProcessor {
         var subpackages = package.PackagedElements.Where(x => x.Type == "uml:Package");
         return elements.Concat(subpackages.SelectMany(x => FindAllElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
-
 }

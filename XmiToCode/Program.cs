@@ -4,35 +4,33 @@ using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
 using XmiToCode.Codegen.Rust;
 
-// Test if input arguments were supplied.
-if (args.Length == 0 || !Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
-{
-    Console.WriteLine("Please enter the programming language to generate: CSharp, C or Rust.");
-    Console.WriteLine("Usage: XmiToCode <language>");
-    return 1;
-}
-
 var processor = new XmiProcessor("../cleaned_23.xmi");
 
-var typeAliases = new Dictionary<(string, string), (string, string)>() {
-    { ("D50inPdiConnectionStateValue", ""), ("SSciEfesPrim.D50outPdiConnectionStateValue", "") }
-};
+// Test if input arguments were supplied.
+if (args.Length == 1 && args[0] == "validate")
+{
+    return 0;
+}
+else if (args.Length == 0 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
+{
+    ICodeWriter writer = targetLanguage switch {
+        TargetLanguage.CSharp => new CSharpWriter(),
+        TargetLanguage.C => new CWriter(),
+        TargetLanguage.Rust => new RustWriter(),
+        _ => throw new NotImplementedException()
+    };
 
-var csharp = new CSharpWriter();
-var rust = new RustWriter();
-var c = new CWriter();
+    await writer.WriteCommonFilesAsync(processor.Global);
 
-ICodeWriter writer = targetLanguage switch {
-    TargetLanguage.CSharp => csharp,
-    TargetLanguage.C => c,
-    TargetLanguage.Rust => rust,
-    _ => throw new NotImplementedException()
-};
-
-await writer.WriteCommonFilesAsync(processor.Global);
-
-foreach (var package in processor.ParsedPackages) {
-    await writer.WritePackageFilesAsync(package);
+    foreach (var package in processor.ParsedPackages) {
+        await writer.WritePackageFilesAsync(package);
+    }
+}
+else
+{
+    Console.WriteLine("Please provide the validate argument or enter the programming language to generate: CSharp, C or Rust.");
+    Console.WriteLine("Usage: XmiToCode (validate | <language>)");
+    return 1;
 }
 
 return 0;
