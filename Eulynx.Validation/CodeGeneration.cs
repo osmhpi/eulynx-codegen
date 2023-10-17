@@ -1,4 +1,3 @@
-using System.Reflection;
 using XmiToCode;
 using XmiToCode.Classes;
 using XmiToCode.Codegen.C;

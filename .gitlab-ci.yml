@@ -1,6 +1,7 @@
 stages:
-  # - build
   - validate
+  - generate
+  - compile
 
 parse-classes:
   stage: validate
@@ -19,7 +20,7 @@ parse-classes:
         - ./**/*test-result.xml
 
 generate-c:
-  stage: validate
+  stage: generate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
@@ -35,7 +36,7 @@ generate-c:
         - ./**/*test-result.xml
 
 generate-rust:
-  stage: validate
+  stage: generate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
@@ -51,13 +52,29 @@ generate-rust:
         - ./**/*test-result.xml
 
 generate-csharp:
-  stage: validate
+  stage: generate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+compile-c:
+  stage: compile
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
   artifacts:
     when: always
     paths:
