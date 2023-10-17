@@ -26,7 +26,7 @@ public class CodeGeneration
     }
 
     [TestMethod, TestCategory("generate-c")]
-    public async Task GenerateCommonFilesC(string package)
+    public async Task GenerateCommonFilesC()
     {
         XmiProcessor? processor;
         try {
@@ -67,7 +67,7 @@ public class CodeGeneration
     }
 
     [TestMethod, TestCategory("generate-rust")]
-    public async Task GenerateCommonFilesRust(string package)
+    public async Task GenerateCommonFilesRust()
     {
         XmiProcessor? processor;
         try {
@@ -110,7 +110,7 @@ public class CodeGeneration
     }
 
     [TestMethod, TestCategory("generate-csharp")]
-    public async Task GenerateCommonFilesCSharp(string package)
+    public async Task GenerateCommonFilesCSharp()
     {
         XmiProcessor? processor;
         try {
