@@ -1,3 +1,4 @@
+using System.Reflection;
 using XmiToCode;
 using XmiToCode.Classes;
 using XmiToCode.Codegen.C;
@@ -18,10 +19,27 @@ public class CodeGeneration
             var processor = new XmiProcessor(xmiPath);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassNames(package);
-                foreach (var theClass in classes)
-                    yield return new object[] { package.Name, theClass.Element.Name };
+                foreach (var (Element, _) in classes)
+                    yield return new object[] { package.Name, Element.Name };
             }
         }
+    }
+
+    [TestMethod, TestCategory("generate-c")]
+    public async Task GenerateCommonFilesC(string package)
+    {
+        XmiProcessor? processor;
+        try {
+            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+            processor = new XmiProcessor(xmiPath);
+        } catch (Exception) {
+            // Parsing is tested elsewhere
+            Assert.Inconclusive();
+            return;
+        }
+
+        var c = new CWriter();
+        await c.WriteCommonFilesAsync(processor.Global);
     }
 
     [TestMethod, TestCategory("generate-c")]
@@ -49,6 +67,23 @@ public class CodeGeneration
     }
 
     [TestMethod, TestCategory("generate-rust")]
+    public async Task GenerateCommonFilesRust(string package)
+    {
+        XmiProcessor? processor;
+        try {
+            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+            processor = new XmiProcessor(xmiPath);
+        } catch (Exception) {
+            // Parsing is tested elsewhere
+            Assert.Inconclusive();
+            return;
+        }
+
+        var rust = new RustWriter();
+        await rust.WriteCommonFilesAsync(processor.Global);
+    }
+
+    [TestMethod, TestCategory("generate-rust")]
     [DynamicData(nameof(UmlClasses))]
     public async Task GenerateRust(string package, string className)
     {
@@ -72,6 +107,23 @@ public class CodeGeneration
 
         var rust = new RustWriter();
         await rust.WriteClassFilesAsync(klass);
+    }
+
+    [TestMethod, TestCategory("generate-csharp")]
+    public async Task GenerateCommonFilesCSharp(string package)
+    {
+        XmiProcessor? processor;
+        try {
+            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+            processor = new XmiProcessor(xmiPath);
+        } catch (Exception) {
+            // Parsing is tested elsewhere
+            Assert.Inconclusive();
+            return;
+        }
+
+        var csharp = new CSharpWriter();
+        await csharp.WriteCommonFilesAsync(processor.Global);
     }
 
     [TestMethod, TestCategory("generate-csharp")]

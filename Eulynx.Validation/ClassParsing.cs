@@ -15,8 +15,8 @@ public class ClassParsing
             var processor = new XmiProcessor(xmiPath);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassNames(package);
-                foreach (var theClass in classes)
-                    yield return new object[] { package.Name, theClass.Element.Name };
+                foreach (var (Element, _) in classes)
+                    yield return new object[] { package.Name, Element.Name };
             }
         }
     }
