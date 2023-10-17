@@ -6,7 +6,7 @@ using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode.Codegen.Rust;
 
-internal class RustWriter : ICodeWriter
+public class RustWriter : ICodeWriter
 {
     public string DefaultInstanceReference => "self";
 

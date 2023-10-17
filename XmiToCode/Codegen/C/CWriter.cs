@@ -6,7 +6,7 @@ using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode.Codegen.C;
 
-internal class CWriter : ICodeWriter
+public class CWriter : ICodeWriter
 {
     public async Task WriteCommonFilesAsync(GlobalContext global) {
         var filename = $"../Eulynx/C/eulynx_common.h";
