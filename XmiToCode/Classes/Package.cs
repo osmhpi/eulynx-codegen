@@ -21,11 +21,13 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
 
     public TypeIdentifier Name { get; } = new TypeIdentifier(UmlPackage.Name);
 
-    public List<Class> Classes { get; }
-         = GetElements(UmlPackage, "uml:Class")
+    public static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassNames(PackagedElement package) => GetElements(package, "uml:Class")
             .Where(x => x.Element.StateMachine != null)
             .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Element.Name))
-            .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name))
+            .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name));
+
+    public List<Class> Classes
+         => ClassNames(UmlPackage)
             .Select(x => {
                 Console.Write($"Parsing {x.Element.Name}...");
                 try {
@@ -61,7 +63,7 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
         return elements.Concat(subpackages.SelectMany(x => GetElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
 
-    private static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy) {
+    public static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy) {
         // TODO: Clean up this method
 
         var properties = klass.OwnedAttribute

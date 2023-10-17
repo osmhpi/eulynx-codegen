@@ -7,6 +7,7 @@ namespace XmiToCode;
 public class XmiProcessor {
     public GlobalContext Global { get; }
     public List<Package> ParsedPackages { get; }
+    public List<PackagedElement> InterestingPackages { get; }
 
     public XmiProcessor(string filename)
     {
@@ -66,7 +67,7 @@ public class XmiProcessor {
             "Generic recycle bin",
         };
 
-        var interestingPackages = eulynxSystem.PackagedElements
+        InterestingPackages = eulynxSystem.PackagedElements
             .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
             .Where(x => !packageBlacklist.Contains(x.Name))
             .ToList();
@@ -78,23 +79,8 @@ public class XmiProcessor {
             .Select(x => new GlobalEnumeration(x.Value))
             .ToDictionary(x => x.Name);
 
-        var classWhitelist = new string[] {};
-        // classWhitelist = new [] {
-        //     // "F_Control_Point_Machine_Position",
-        //     // "S_SCI_P_Command_And_Recieve",
-        //     // "S_SCI_EfeS_Prim",
-        //     // "S_SCI_Adj_Prim"
-        //     // "F_EST_EfeS",
-        //     "F_SCI_EfeS_Sec"
-        // };
-
-        var classBlacklist = new string[] {
-            // Demo data
-            // "Block1"
-        };
-
         Global = new GlobalContext(enumerations, signals, dataTypes, changeEvents, timeEvents, genericEvents);
-        ParsedPackages = interestingPackages.Select(x => Package.CreateFromUml(x, Global)).ToList();
+        ParsedPackages = InterestingPackages.Select(x => Package.CreateFromUml(x, Global)).ToList();
     }
 
     public static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {
