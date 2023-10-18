@@ -68,6 +68,22 @@ generate-csharp:
       junit:
         - ./**/*test-result.xml
 
+generate-klee:
+  stage: validate
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
 compile-c:
   stage: validate
   needs:
@@ -80,6 +96,26 @@ compile-c:
     - apt-get update && apt-get install --no-install-recommends -y build-essential
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+compile-klee:
+  stage: validate
+  needs:
+    - job: generate-c
+      artifacts: true
+  image: klee/klee:3.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+  script:
+    - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'
   artifacts:
     when: always
     paths:

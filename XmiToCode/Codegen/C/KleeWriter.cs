@@ -4,7 +4,7 @@ using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode.Codegen.C;
 
-internal class KleeWriter : CWriter {
+public class KleeWriter : CWriter {
     public override async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
         using var file = File.Create($"../Klee/{umlClass.GetName()}.c");

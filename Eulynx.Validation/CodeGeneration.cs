@@ -68,6 +68,50 @@ public class CodeGeneration
         await c.WriteClassFilesAsync(klass, packageDir);
     }
 
+    [TestMethod, TestCategory("generate-klee")]
+    public async Task GenerateCommonFilesKlee()
+    {
+        XmiProcessor? processor;
+        try {
+            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+            processor = new XmiProcessor(xmiPath);
+        } catch (Exception) {
+            // Parsing is tested elsewhere
+            Assert.Inconclusive();
+            return;
+        }
+
+        var outDir = new DirectoryInfo("../Klee");
+        if (!outDir.Exists) outDir.Create();
+
+        var c = new KleeWriter();
+        await c.WriteCommonFilesAsync(processor.Global);
+    }
+
+    [TestMethod, TestCategory("generate-klee")]
+    [DynamicData(nameof(UmlClasses))]
+    public async Task GenerateKlee(string package, string className)
+    {
+        Package? pkg = null;
+        Class? klass = null;
+        try {
+            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+            var processor = new XmiProcessor(xmiPath);
+            var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
+            pkg = Package.CreateFromUml(umlPackage, processor.Global);
+            var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
+            klass = Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+        } catch (Exception) {
+            // Parsing is tested elsewhere
+            Assert.Inconclusive();
+            return;
+        }
+
+        var c = new KleeWriter();
+        var packageDir = Path.Combine("../Klee", pkg.Name.Name);
+        await c.WriteClassFilesAsync(klass, packageDir);
+    }
+
     [TestMethod, TestCategory("generate-rust")]
     public async Task GenerateCommonFilesRust()
     {
