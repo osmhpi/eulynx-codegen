@@ -30,14 +30,15 @@ public class Compilation
         using var process = new Process();
 
         var workingDir = $"{Environment.CurrentDirectory}/../Eulynx/C/{new TypeIdentifier(package).Name}";
-        var file = $"{new TypeIdentifier(className).Name}.o";
+        var inFile = $"{new TypeIdentifier(className).Name}.c";
+        var outFile = $"{new TypeIdentifier(className).Name}.o";
 
-        var info = new FileInfo($"{workingDir}/{file}");
+        var info = new FileInfo($"{workingDir}/{inFile}");
         if (!info.Exists)
             Assert.Inconclusive();
 
         process.StartInfo.FileName = "make";
-        process.StartInfo.Arguments = $"-C {workingDir} {file}";
+        process.StartInfo.Arguments = $"-C {workingDir} {outFile}";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
