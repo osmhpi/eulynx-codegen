@@ -37,6 +37,9 @@ public class CodeGeneration
             return;
         }
 
+        var outDir = new DirectoryInfo("../Eulynx/C");
+        if (!outDir.Exists) outDir.Create();
+
         var c = new CWriter();
         await c.WriteCommonFilesAsync(processor.Global);
     }

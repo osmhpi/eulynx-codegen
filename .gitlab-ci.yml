@@ -70,8 +70,9 @@ generate-csharp:
 
 compile-c:
   stage: validate
-  dependencies:
-    - generate-c
+  needs:
+    - job: generate-c
+      artifacts: true
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
