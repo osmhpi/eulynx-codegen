@@ -1,7 +1,7 @@
 stages:
   - validate
-  - generate
-  - compile
+  # - generate
+  # - compile
 
 parse-classes:
   stage: validate
@@ -20,7 +20,7 @@ parse-classes:
         - ./**/*test-result.xml
 
 generate-c:
-  stage: generate
+  stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
@@ -31,12 +31,13 @@ generate-c:
     when: always
     paths:
       - ./**/*test-result.xml
+      - ./Eulynx.Validation/bin/Debug/Eulynx/C
     reports:
       junit:
         - ./**/*test-result.xml
 
 generate-rust:
-  stage: generate
+  stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
@@ -52,7 +53,7 @@ generate-rust:
         - ./**/*test-result.xml
 
 generate-csharp:
-  stage: generate
+  stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
@@ -68,7 +69,9 @@ generate-csharp:
         - ./**/*test-result.xml
 
 compile-c:
-  stage: compile
+  stage: validate
+  dependencies:
+    - generate-c
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
