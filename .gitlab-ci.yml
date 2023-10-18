@@ -107,7 +107,7 @@ compile-c:
 compile-klee:
   stage: validate
   needs:
-    - job: generate-c
+    - job: generate-klee
       artifacts: true
   image: klee/klee:3.0
   variables:
