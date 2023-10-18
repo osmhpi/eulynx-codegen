@@ -78,7 +78,7 @@ compile-c:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c"'
   artifacts:
     when: always
     paths:
