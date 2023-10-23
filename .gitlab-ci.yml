@@ -2,6 +2,7 @@ stages:
   - validate
   # - generate
   # - compile
+  - report
 
 parse-classes:
   stage: validate
@@ -127,3 +128,11 @@ compile-klee:
     reports:
       junit:
         - ./**/*test-result.xml
+
+test-report:
+  stage: report
+  image: node:18
+  script:
+   - cd testreport
+   - npm i
+   - npm run build
