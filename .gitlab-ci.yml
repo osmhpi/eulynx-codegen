@@ -10,7 +10,7 @@ parse-classes:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=parse-classes"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-parse-classes-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=parse-classes"'
   artifacts:
     when: always
     paths:
@@ -27,7 +27,7 @@ generate-c:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
   artifacts:
     when: always
     paths:
@@ -45,7 +45,7 @@ generate-rust:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-rust-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
   artifacts:
     when: always
     paths:
@@ -62,7 +62,7 @@ generate-csharp:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
   artifacts:
     when: always
     paths:
@@ -79,7 +79,7 @@ generate-klee:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee"'
   artifacts:
     when: always
     paths:
@@ -99,7 +99,7 @@ compile-c:
   script:
     - apt-get update && apt-get install --no-install-recommends -y build-essential
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c"'
   artifacts:
     when: always
     paths:
@@ -119,7 +119,7 @@ compile-klee:
   script:
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'
   artifacts:
     when: always
     paths:
