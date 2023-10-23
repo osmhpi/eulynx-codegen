@@ -1,0 +1,67 @@
+export const metadata = {
+  title: 'Customers - Mosaic',
+  description: 'Page description',
+}
+
+import { SelectedItemsProvider } from '@/app/selected-items-context'
+import CustomersTable from './customers-table'
+
+import data from './Eulynx.Validation-test-result.xml'
+import data2 from './Eulynx.Validation-test-result-generate-c.xml'
+
+function CustomersContent() {
+  function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
+   const map = new Map<K, Array<V>>();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
+  }
+
+  const testcases = data.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure})))
+  const testcases2 = data2.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure})))
+  const re = /(.*) \((.*),(.*)\)/;
+  const parsed = [...testcases, ...testcases2]
+    .map(x => ({match: x.name.match(re), ...x}))
+    .filter(x => x.match)
+    .map(x => ({ test: { testname: x.match![1], ...x}, package: x.match![2], class: x.match![3] }))
+  const grouped = groupBy(parsed, x => `${x.package}/${x.class}`);
+  const result = Array.from(grouped);
+  const customers = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
+
+  return (
+    <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
+      {/* Page header */}
+      <div className="sm:flex sm:justify-between sm:items-center mb-8">
+
+        {/* Left: Title */}
+        <div className="mb-4 sm:mb-0">
+          <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Customers ✨</h1>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+
+        </div>
+
+      </div>
+
+      {/* Table */}
+      <CustomersTable customers={customers} />
+    </div>
+  )
+}
+
+export default function Customers() {
+  return (
+    <SelectedItemsProvider>
+      <CustomersContent />
+    </SelectedItemsProvider>
+  )
+}

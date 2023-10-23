@@ -1,0 +1,84 @@
+import Image from 'next/image'
+import { Customer as Order } from './customers-table'
+import { OrdersProperties } from './orders-properties'
+
+interface OrdersTableItemProps {
+  order: Order
+  onCheckboxChange: (id: number, checked: boolean) => void
+  isSelected: boolean
+}
+
+export default function OrdersTableItem({ order, onCheckboxChange, isSelected }: OrdersTableItemProps) {
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // onCheckboxChange(order.id, e.target.checked)
+  }
+
+  const {
+    descriptionOpen,
+    setDescriptionOpen,
+    statusColor,
+    typeIcon,
+  } = OrdersProperties()
+
+  return (
+    <tbody className="text-sm">
+      {/* Row */}
+      <tr>
+        <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
+          <div className="flex items-center">
+            <label className="inline-flex">
+              <span className="sr-only">Select</span>
+              <input className="form-checkbox" type="checkbox" onChange={handleCheckboxChange} checked={isSelected} />
+            </label>
+          </div>
+        </td>
+        <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+          <div>{order.package}</div>
+        </td>
+        <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+          <div className="font-medium text-slate-800 dark:text-slate-100">{order.class}</div>
+        </td>
+        <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
+          <div className="flex items-center">
+            <button
+              className={`text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 ${descriptionOpen && 'rotate-180'}`}
+              aria-expanded={descriptionOpen}
+              onClick={() => setDescriptionOpen(!descriptionOpen)}
+              aria-controls={`description-${order.package}-${order.class}`}
+            >
+              <span className="sr-only">Menu</span>
+              <svg className="w-8 h-8 fill-current" viewBox="0 0 32 32">
+                <path d="M16 20l-5.4-5.4 1.4-1.4 4 4 4-4 1.4 1.4z" />
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {/*
+      Example of content revealing when clicking the button on the right side:
+      Note that you must set a "colSpan" attribute on the <td> element,
+      and it should match the number of columns in your table
+      */}
+      <tr id={`description-${order.package}-${order.class}`} role="region" className={`${!descriptionOpen && 'hidden'}`}>
+        <td colSpan={4} className="px-2 first:pl-5 last:pr-5 py-3">
+          {order.tests.map(x =>
+          <>
+            <div className="flex items-center bg-slate-50 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3">
+              <svg className="w-4 h-4 shrink-0 fill-current text-slate-400 dark:text-slate-500 mr-2">
+                <path d="M1 16h3c.3 0 .5-.1.7-.3l11-11c.4-.4.4-1 0-1.4l-3-3c-.4-.4-1-.4-1.4 0l-11 11c-.2.2-.3.4-.3.7v3c0 .6.4 1 1 1zm1-3.6l10-10L13.6 4l-10 10H2v-1.6z" />
+              </svg>
+              <div className="italic">{x.testname}</div>
+            </div>
+            {x.failure && Array.from(x.failure).map(failure =>
+              <div className="flex items-center bg-orange-500 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3 whitespace-pre-line">
+                {failure._}
+              </div>
+            )}
+          </>
+          )}
+        </td>
+      </tr>
+    </tbody>
+  )
+}

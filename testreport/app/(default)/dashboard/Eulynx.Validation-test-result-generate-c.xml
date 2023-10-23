@@ -1,0 +1,891 @@
+<testsuites>
+  <testsuite name="Eulynx.Validation.dll" tests="61" skipped="11" failures="0" errors="0" time="7.761948100000001" timestamp="2023-10-23T05:33:57" hostname="runner-ns46nmmj-project-51299473-concurrent-0" id="0" package="Eulynx.Validation.dll">
+    <properties />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateCommonFilesC" time="0.1725954" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.3151576" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.0986584" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.0789852" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.1056222" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for subsystems,F_EST_EfeS)" time="0.1069473" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Output_Channel_State)" time="0.1670761" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.0719978" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.0927978" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0939929" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Receive)" time="0.1202965" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Report)" time="0.1293530">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Command)" time="0.1135216" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Receive)" time="0.1250001" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.1310277" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_Timing_Conditions)" time="0.0704756" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0900196" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.1065188" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.1538229" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.1354177" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Report)" time="2.1694070" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0698176" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0810897">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0727600" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Luminosity)" time="0.0690982" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0948811" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0650164" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.0683869" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.1058652" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0713425">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.1019284" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0762823" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0768539" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Non4W_PM)" time="0.0882655" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Point)" time="0.0944076" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0690455" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0883979" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Movement_Failed)" time="0.0753473" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0701833" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Receive)" time="0.0876709" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Report)" time="0.0739113" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Command)" time="0.0674276" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Receive)" time="0.0921688" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Control_Timer)" time="0.0676336" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Commands)" time="0.0769025">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0811391" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0685784">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0874241" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0865839">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_TDP)" time="0.0680497" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0739310" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0929928" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0664236" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0666865" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0874505">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0693939">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0672573">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0869205" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0675147">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0720180" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0662089">
+      <skipped />
+    </testcase>
+    <system-out>Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Naming convention was violated for T5_Signal_Aspect
+Warn: Naming convention was violated for T6_Luminosity
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warning: matching "NOt " to Negation
+Warning: matching "NOt " to Negation
+Warning: matching "NOt " to Negation
+Warning: matching "NOt " to Negation
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property d12out_Required_PM_Position has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property D20in_Con_tmax_PM_Operation has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+</system-out>
+    <system-err></system-err>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,551 @@
+<testsuites>
+  <testsuite name="Eulynx.Validation.dll" tests="60" skipped="11" failures="3" errors="0" time="1.9954672999999998" timestamp="2023-10-21T06:42:59" hostname="runner-jhcjxvh-project-51299473-concurrent-0" id="0" package="Eulynx.Validation.dll">
+    <properties />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.0478841" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.0286709">
+      <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
+Stack Trace:
+   at Eulynx.Validation.Compilation.CompileC(String package, String className) in /builds/eulynx-live/model-validation/Eulynx.Validation/Compilation.cs:line 51
+   at InvokeStub_Compilation.CompileC(Object, Object, IntPtr*)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+
+Standard Output:
+    make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+    cc    -c -o SSciAdjSec.o SSciAdjSec.c
+    make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+    SSciAdjSec.c: In function 'make_state_SSciAdjsSecBehaviour__Active__Establishing':
+    SSciAdjSec.c:30:52: error: 'ResultValue__Match' undeclared (first use in this function)
+    30 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__Match;
+    |                                                    ^~~~~~~~~~~~~~~~~~
+    SSciAdjSec.c:30:52: note: each undeclared identifier is reported only once for each function it appears in
+    SSciAdjSec.c:39:52: error: 'ResultValue__NotMatch' undeclared (first use in this function)
+    39 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__NotMatch;
+    |                                                    ^~~~~~~~~~~~~~~~~~~~~
+    make: *** [&lt;builtin&gt;: SSciAdjSec.o] Error 1</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.0189865">
+      <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
+Stack Trace:
+   at Eulynx.Validation.Compilation.CompileC(String package, String className) in /builds/eulynx-live/model-validation/Eulynx.Validation/Compilation.cs:line 51
+   at InvokeStub_Compilation.CompileC(Object, Object, IntPtr*)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+
+Standard Output:
+    make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+    cc    -c -o FSciEfesSec.o FSciEfesSec.c
+    make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+    FSciEfesSec.c: In function 'make_state_FSciEfesSecBehaviour__Active__Establishing':
+    FSciEfesSec.c:32:52: error: 'ResultValue__Match' undeclared (first use in this function)
+    32 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__Match;
+    |                                                    ^~~~~~~~~~~~~~~~~~
+    FSciEfesSec.c:32:52: note: each undeclared identifier is reported only once for each function it appears in
+    FSciEfesSec.c:41:52: error: 'ResultValue__NotMatch' undeclared (first use in this function)
+    41 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__NotMatch;
+    |                                                    ^~~~~~~~~~~~~~~~~~~~~
+    make: *** [&lt;builtin&gt;: FSciEfesSec.o] Error 1</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.0436155" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for subsystems,F_EST_EfeS)" time="0.0339338" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Output_Channel_State)" time="0.1055572" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.0754776" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.1029172" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0286098" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Receive)" time="0.0593824" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Report)" time="0.0007575">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Command)" time="0.0495827" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Receive)" time="0.0315127" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.0502302" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_Timing_Conditions)" time="0.0363760" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0737564" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.0539616">
+      <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
+Stack Trace:
+   at Eulynx.Validation.Compilation.CompileC(String package, String className) in /builds/eulynx-live/model-validation/Eulynx.Validation/Compilation.cs:line 51
+   at InvokeStub_Compilation.CompileC(Object, Object, IntPtr*)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+
+Standard Output:
+    make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+    cc    -c -o FObserveFailureState.o FObserveFailureState.c
+    make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+    FObserveFailureState.c: In function 'make_state_FObserveFailureStateBehaviour__ObserveFailureStates':
+    FObserveFailureState.c:172:1: error: 'else' without a previous 'if'
+    172 | else {
+    | ^~~~
+    make: *** [&lt;builtin&gt;: FObserveFailureState.o] Error 1</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.0856400" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.0478715" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.0432983" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0385009" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0004435">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0488354" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Luminosity)" time="0.0449918" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0580651" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0714695" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.0252742" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0333747" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0005447">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.0276296" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0238797" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0339827" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Non4W_PM)" time="0.0294907" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Point)" time="0.0290713" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0299624" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0289686" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Movement_Failed)" time="0.0319573" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0366320" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Receive)" time="0.0271189" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Report)" time="0.0346307" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Command)" time="0.0262018" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Receive)" time="0.0298716" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Control_Timer)" time="0.0369728" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Commands)" time="0.0003699">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0226289" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0004189">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0278937" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0003126">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_TDP)" time="0.0280324" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0263149" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0237471" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0317139" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0227304" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0003318">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0002492">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0038257">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0235774" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0002878">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0167822" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0003587">
+      <skipped />
+    </testcase>
+    <system-out>make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+cc    -c -o SSciAdjPrim.o SSciAdjPrim.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+cc    -c -o SSciAdjSec.o SSciAdjSec.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+
+SSciAdjSec.c: In function 'make_state_SSciAdjsSecBehaviour__Active__Establishing':
+SSciAdjSec.c:30:52: error: 'ResultValue__Match' undeclared (first use in this function)
+   30 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__Match;
+      |                                                    ^~~~~~~~~~~~~~~~~~
+SSciAdjSec.c:30:52: note: each undeclared identifier is reported only once for each function it appears in
+SSciAdjSec.c:39:52: error: 'ResultValue__NotMatch' undeclared (first use in this function)
+   39 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__NotMatch;
+      |                                                    ^~~~~~~~~~~~~~~~~~~~~
+make: *** [&lt;builtin&gt;: SSciAdjSec.o] Error 1
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+cc    -c -o FSciEfesSec.o FSciEfesSec.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+
+FSciEfesSec.c: In function 'make_state_FSciEfesSecBehaviour__Active__Establishing':
+FSciEfesSec.c:32:52: error: 'ResultValue__Match' undeclared (first use in this function)
+   32 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__Match;
+      |                                                    ^~~~~~~~~~~~~~~~~~
+FSciEfesSec.c:32:52: note: each undeclared identifier is reported only once for each function it appears in
+FSciEfesSec.c:41:52: error: 'ResultValue__NotMatch' undeclared (first use in this function)
+   41 |   self-&gt;OutMsgPdiVersionCheck__9827.Value.Result = ResultValue__NotMatch;
+      |                                                    ^~~~~~~~~~~~~~~~~~~~~
+make: *** [&lt;builtin&gt;: FSciEfesSec.o] Error 1
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+cc    -c -o SSciEfesPrim.o SSciEfesPrim.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSci'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSubsystems'
+cc    -c -o FEstEfes.o FEstEfes.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/GenericRequirementsForSubsystems'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o FControlOutputChannelState.o FControlOutputChannelState.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o FControlSafeStateOfAllPhysicalOutputChannel.o FControlSafeStateOfAllPhysicalOutputChannel.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o FDetectInputChannelState.o FDetectInputChannelState.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o FMonitorOutputChannelDisturbanceState.o FMonitorOutputChannelDisturbanceState.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o FSciIoReceive.o FSciIoReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o SSciIoCommand.o SSciIoCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+cc    -c -o SSciIoReceive.o SSciIoReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemIo'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FControlLocalOperation.o FControlLocalOperation.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FControlTimingConditions.o FControlTimingConditions.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FObserveDetectionElement.o FObserveDetectionElement.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FObserveFailureState.o FObserveFailureState.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+FObserveFailureState.c: In function 'make_state_FObserveFailureStateBehaviour__ObserveFailureStates':
+FObserveFailureState.c:172:1: error: 'else' without a previous 'if'
+  172 | else {
+      | ^~~~
+make: *** [&lt;builtin&gt;: FObserveFailureState.o] Error 1
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FObserveLcpf.o FObserveLcpf.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FSciLcReceive.o FSciLcReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o FSciLcReport.o FSciLcReport.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+FSciLcReport.c: In function 'Cop1CriticalFailure':
+FSciLcReport.c:8:8: warning: 'return' with a value, in function returning void
+    8 | return CriticalFailureStatusState__f095__NoCriticalFailureIsPresent;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:6:6: note: declared here
+    6 | void Cop1CriticalFailure(FSciLcReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:10:8: warning: 'return' with a value, in function returning void
+   10 | return CriticalFailureStatusState__f095__ACriticalFailureIsPresent;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:6:6: note: declared here
+    6 | void Cop1CriticalFailure(FSciLcReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~
+FSciLcReport.c: In function 'Cop2NonCriticalFailure':
+FSciLcReport.c:15:8: warning: 'return' with a value, in function returning void
+   15 | return NonCriticalFailureStatusState__b376__NoNonCriticalFailureIsPresent;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:13:6: note: declared here
+   13 | void Cop2NonCriticalFailure(FSciLcReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:17:8: warning: 'return' with a value, in function returning void
+   17 | return NonCriticalFailureStatusState__b376__ANonCriticalFailureIsPresent;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciLcReport.c:13:6: note: declared here
+   13 | void Cop2NonCriticalFailure(FSciLcReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+cc    -c -o SSciLcCommand.o SSciLcCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLevelCrossing'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o SSciLsCommandExpl.o SSciLsCommandExpl.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o FControlLuminosity.o FControlLuminosity.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o FControlSignalAspect.o FControlSignalAspect.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o FObserveLuminosity.o FObserveLuminosity.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o FObserveSignalAspect.o FObserveSignalAspect.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o FSciLsReceive.o FSciLsReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o SSciLsCommand.o SSciLsCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+cc    -c -o SSciLsReceive.o SSciLsReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemLightSignal'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FControlAndObserve4WPm.o FControlAndObserve4WPm.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FControlNon4wPm.o FControlNon4wPm.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FControlPoint.o FControlPoint.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FObserveAbilityToMove.o FObserveAbilityToMove.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FObserveDegradedPointPosition.o FObserveDegradedPointPosition.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FObserveMovementFailed.o FObserveMovementFailed.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FObserveOverallPointPosition.o FObserveOverallPointPosition.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FSciPReceive.o FSciPReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o FSciPReport.o FSciPReport.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+FSciPReport.c: In function 'Cop1PointPosition':
+FSciPReport.c:8:8: warning: 'return' with a value, in function returning void
+    8 | return PointPositionState__2e6f__Left;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:6:6: note: declared here
+    6 | void Cop1PointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+FSciPReport.c:10:8: warning: 'return' with a value, in function returning void
+   10 | return PointPositionState__2e6f__Right;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:6:6: note: declared here
+    6 | void Cop1PointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+FSciPReport.c:12:8: warning: 'return' with a value, in function returning void
+   12 | return PointPositionState__2e6f__NoEndPosition;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:6:6: note: declared here
+    6 | void Cop1PointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+FSciPReport.c:14:8: warning: 'return' with a value, in function returning void
+   14 | return PointPositionState__2e6f__UnintendedPosition;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:6:6: note: declared here
+    6 | void Cop1PointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+FSciPReport.c: In function 'Cop2DegradedPointPosition':
+FSciPReport.c:19:8: warning: 'return' with a value, in function returning void
+   19 | return PointPositionDegradedState__422e__DegradedLeft;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:17:6: note: declared here
+   17 | void Cop2DegradedPointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:21:8: warning: 'return' with a value, in function returning void
+   21 | return PointPositionDegradedState__422e__DegradedRight;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:17:6: note: declared here
+   17 | void Cop2DegradedPointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:23:8: warning: 'return' with a value, in function returning void
+   23 | return PointPositionDegradedState__422e__NotApplicable;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:17:6: note: declared here
+   17 | void Cop2DegradedPointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:25:8: warning: 'return' with a value, in function returning void
+   25 | return PointPositionDegradedState__422e__NotDegraded;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:17:6: note: declared here
+   17 | void Cop2DegradedPointPosition(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c: In function 'Cop3AbilityToMove':
+FSciPReport.c:30:8: warning: 'return' with a value, in function returning void
+   30 | return AbilityToMoveState__ed0f__AbleToMove;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:28:6: note: declared here
+   28 | void Cop3AbilityToMove(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+FSciPReport.c:32:8: warning: 'return' with a value, in function returning void
+   32 | return AbilityToMoveState__ed0f__UnableToMove;
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciPReport.c:28:6: note: declared here
+   28 | void Cop3AbilityToMove(FSciPReport *self) {
+      |      ^~~~~~~~~~~~~~~~~
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o SSciPCommand.o SSciPCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+cc    -c -o SSciPReceive.o SSciPReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemPoint'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FControlTimer.o FControlTimer.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FHandleInternalFcUCommand.o FHandleInternalFcUCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FObserveAbilityToBeForcedToClear.o FObserveAbilityToBeForcedToClear.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FObserveTdp.o FObserveTdp.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FObserveTrackCircuits.o FObserveTrackCircuits.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FPerformFcPOrFcPA.o FPerformFcPOrFcPA.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FTds6MaintainerCommandsAndMessages.o FTds6MaintainerCommandsAndMessages.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o FSciTdsReceive.o FSciTdsReceive.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o SSciTdsCommand.o SSciTdsCommand.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+make: Entering directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+cc    -c -o SSciTdsReceiveTrackCircuit.o SSciTdsReceiveTrackCircuit.c
+make: Leaving directory '/builds/eulynx-live/model-validation/Eulynx.Validation/bin/Debug/Eulynx/C/SubsystemTrainDetectionSystem'
+
+
+
+</system-out>
+    <system-err></system-err>
+  </testsuite>
+</testsuites>
