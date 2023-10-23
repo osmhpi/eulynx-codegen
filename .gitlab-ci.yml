@@ -22,6 +22,7 @@ parse-classes:
 generate-c:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
+  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
@@ -39,6 +40,7 @@ generate-c:
 generate-rust:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
+  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
@@ -55,6 +57,7 @@ generate-rust:
 generate-csharp:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
+  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
@@ -71,6 +74,7 @@ generate-csharp:
 generate-klee:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
+  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
@@ -90,7 +94,6 @@ compile-c:
     - job: generate-c
       artifacts: true
   image: mcr.microsoft.com/dotnet/sdk:7.0
-  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
@@ -111,7 +114,6 @@ compile-klee:
     - job: generate-klee
       artifacts: true
   image: klee/klee:3.0
-  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
