@@ -132,6 +132,8 @@ compile-klee:
 test-report:
   stage: report
   image: node:18
+  rules:
+    - when: always
   script:
    - cd testreport
    - npm i
