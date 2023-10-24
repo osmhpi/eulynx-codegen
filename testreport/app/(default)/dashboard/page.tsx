@@ -6,13 +6,13 @@ export const metadata = {
 import { SelectedItemsProvider } from '@/app/selected-items-context'
 import CustomersTable from './customers-table'
 
-import data_parse_classes from './Eulynx.Validation-test-result-parse-classes.xml'
-import data_generate_c from './Eulynx.Validation-test-result-generate-c.xml'
-import data_generate_rust from './Eulynx.Validation-test-result-generate-rust.xml'
-import data_generate_csharp from './Eulynx.Validation-test-result-generate-csharp.xml'
-import data_generate_klee from './Eulynx.Validation-test-result-generate-klee.xml'
-import data_compile_c from './Eulynx.Validation-test-result-compile-c.xml'
-import data_compile_klee from './Eulynx.Validation-test-result-compile-klee.xml'
+import data_parse_classes from './Eulynx.Validation-parse-classes-test-result.xml'
+import data_generate_c from './Eulynx.Validation-generate-c-test-result.xml'
+import data_generate_rust from './Eulynx.Validation-generate-rust-test-result.xml'
+import data_generate_csharp from './Eulynx.Validation-generate-csharp-test-result.xml'
+import data_generate_klee from './Eulynx.Validation-generate-klee-test-result.xml'
+import data_compile_c from './Eulynx.Validation-compile-c-test-result.xml'
+import data_compile_klee from './Eulynx.Validation-compile-klee-test-result.xml'
 
 function CustomersContent() {
   function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
