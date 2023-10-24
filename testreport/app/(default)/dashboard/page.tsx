@@ -6,8 +6,13 @@ export const metadata = {
 import { SelectedItemsProvider } from '@/app/selected-items-context'
 import CustomersTable from './customers-table'
 
-import data from './Eulynx.Validation-test-result.xml'
-import data2 from './Eulynx.Validation-test-result-generate-c.xml'
+import data_parse_classes from './Eulynx.Validation-test-result-parse-classes.xml'
+import data_generate_c from './Eulynx.Validation-test-result-generate-c.xml'
+import data_generate_rust from './Eulynx.Validation-test-result-generate-rust.xml'
+import data_generate_csharp from './Eulynx.Validation-test-result-generate-csharp.xml'
+import data_generate_klee from './Eulynx.Validation-test-result-generate-klee.xml'
+import data_compile_c from './Eulynx.Validation-test-result-compile-c.xml'
+import data_compile_klee from './Eulynx.Validation-test-result-compile-klee.xml'
 
 function CustomersContent() {
   function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
@@ -24,10 +29,23 @@ function CustomersContent() {
     return map;
   }
 
+  const data = {
+    testsuites: {
+      testsuite: [
+        ...data_parse_classes.testsuites.testsuite,
+        ...data_generate_c.testsuites.testsuite,
+        ...data_generate_rust.testsuites.testsuite,
+        ...data_generate_csharp.testsuites.testsuite,
+        ...data_generate_klee.testsuites.testsuite,
+        ...data_compile_c.testsuites.testsuite,
+        ...data_compile_klee.testsuites.testsuite,
+      ]
+    }
+  }
+
   const testcases = data.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure})))
-  const testcases2 = data2.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure})))
   const re = /(.*) \((.*),(.*)\)/;
-  const parsed = [...testcases, ...testcases2]
+  const parsed = testcases
     .map(x => ({match: x.name.match(re), ...x}))
     .filter(x => x.match)
     .map(x => ({ test: { testname: x.match![1], ...x}, package: x.match![2], class: x.match![3] }))

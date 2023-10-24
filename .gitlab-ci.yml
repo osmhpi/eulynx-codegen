@@ -135,6 +135,7 @@ test-report:
   rules:
     - when: always
   script:
+   - cp artifacts/*.xml testreport/app/(default)/dashboard/
    - cd testreport
    - npm i
    - npm run build
