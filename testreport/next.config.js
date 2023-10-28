@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
   webpack: (config, { defaultLoaders }) => {
     config.module.rules.push({
       test: /\.xml$/,

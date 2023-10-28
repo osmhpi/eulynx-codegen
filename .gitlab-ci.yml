@@ -139,3 +139,6 @@ test-report:
    - cd testreport
    - npm i
    - npm run build
+  artifacts:
+    paths:
+      - ./testreport/out
