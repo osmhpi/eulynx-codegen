@@ -39,7 +39,7 @@ generate-c:
   script:
     - set +e
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c" || EXIT_CODE=$?'
     - cd bin/Eulynx/C
     - apt update && apt install -y --no-install-recommends clang-format
     - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
@@ -78,7 +78,7 @@ generate-csharp:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp" || EXIT_CODE=$?'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
   artifacts:
     when: always
     paths:
@@ -94,8 +94,13 @@ generate-klee:
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
+    - set +e
     - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee"'
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee" || EXIT_CODE=$?'
+    - cd bin/Eulynx/Klee
+    - apt update && apt install -y --no-install-recommends clang-format
+    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
+    - exit $EXIT_CODE
   artifacts:
     when: always
     paths:
