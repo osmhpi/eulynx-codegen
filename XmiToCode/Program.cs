@@ -11,7 +11,7 @@ if (args.Length == 1 && args[0] == "validate")
 {
     return 0;
 }
-else if (args.Length == 0 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
+else if (args.Length == 1 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
 {
     ICodeWriter writer = targetLanguage switch {
         TargetLanguage.CSharp => new CSharpWriter(),
