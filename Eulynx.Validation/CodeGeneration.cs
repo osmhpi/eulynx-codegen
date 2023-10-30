@@ -168,6 +168,9 @@ public class CodeGeneration
             return;
         }
 
+        var outDir = new DirectoryInfo("../Eulynx");
+        if (!outDir.Exists) outDir.Create();
+
         var csharp = new CSharpWriter();
         await csharp.WriteCommonFilesAsync(processor.Global);
     }
