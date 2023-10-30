@@ -4,7 +4,7 @@ using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
 using XmiToCode.Codegen.Rust;
 
-var processor = new XmiProcessor("../cleaned_23.xmi");
+var processor = new XmiProcessor(Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set"));
 
 // Test if input arguments were supplied.
 if (args.Length == 1 && args[0] == "validate")

@@ -9,7 +9,7 @@ build-and-test:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd XmiToCode.Test
     - dotnet test
@@ -18,7 +18,7 @@ parse-classes:
   stage: validate
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-parse-classes-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=parse-classes"'
@@ -35,7 +35,7 @@ generate-c:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   allow_failure: true
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - set +e
     - cd Eulynx.Validation
@@ -58,7 +58,7 @@ generate-rust:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   allow_failure: true
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-rust-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
@@ -75,7 +75,7 @@ generate-csharp:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   allow_failure: true
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp" || EXIT_CODE=$?'
@@ -92,7 +92,7 @@ generate-klee:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   allow_failure: true
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee"'
@@ -111,7 +111,7 @@ compile-c:
       artifacts: true
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - apt-get update && apt-get install --no-install-recommends -y build-essential
     - cd Eulynx.Validation
@@ -131,7 +131,7 @@ compile-klee:
       artifacts: true
   image: klee/klee:3.0
   variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
