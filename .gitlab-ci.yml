@@ -31,7 +31,7 @@ generate-c:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
     - cd bin/Eulynx/C
-    - apt update && apt install --no-install-recommends clang-format
+    - apt update && apt install -y --no-install-recommends clang-format
     - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
     - exit $EXIT_CODE
   artifacts:
