@@ -104,6 +104,7 @@ generate-klee:
   artifacts:
     when: always
     paths:
+      - ./Eulynx.Validation/bin/Debug/Klee
       - ./**/*test-result.xml
     reports:
       junit:
