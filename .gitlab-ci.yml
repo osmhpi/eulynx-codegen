@@ -118,6 +118,7 @@ compile-c:
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
+    - rm ./artifacts/*.xml
     - apt-get update && apt-get install --no-install-recommends -y build-essential
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c"'
@@ -138,6 +139,7 @@ compile-klee:
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
+    - rm ./artifacts/*.xml
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'

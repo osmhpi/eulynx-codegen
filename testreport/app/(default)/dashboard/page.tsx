@@ -4,7 +4,7 @@ export const metadata = {
 }
 
 import { SelectedItemsProvider } from '@/app/selected-items-context'
-import TestcaseTable from './testcase-table'
+import TestcaseTable, { Testcase } from './testcase-table'
 
 import data_parse_classes from './Eulynx.Validation-parse-classes-test-result.xml'
 import data_generate_c from './Eulynx.Validation-generate-c-test-result.xml'
