@@ -53,6 +53,20 @@ function CustomersContent() {
   const result = Array.from(grouped);
   const t = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
 
+  const allClasses = t.length;
+
+  const stage1Name = 'ClassParsing.ParseClass';
+  const stage1Success = t.map(x => x.tests.find(x => x.testname === stage1Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
+
+  const stage2Name = 'CodeGeneration.GenerateC';
+  const stage2Success = t.map(x => x.tests.find(x => x.testname === stage2Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
+
+  const stage3Name = 'Compilation.CompileC';
+  const stage3Success = t.map(x => x.tests.find(x => x.testname === stage3Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
+
+  const stage4Name = 'Compilation.CompileKlee';
+  const stage4Success = t.map(x => x.tests.find(x => x.testname === stage4Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
       {/* Page header */}
@@ -61,11 +75,28 @@ function CustomersContent() {
         {/* Left: Title */}
         <div className="mb-4 sm:mb-0">
           <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">UML Classes</h1>
+
+
         </div>
 
         {/* Right: Actions */}
         <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
 
+          <div>
+            All Classes: {allClasses}
+          </div>
+          <div>
+            Parsed: {stage1Success}
+          </div>
+          <div>
+            C Generated: {stage2Success}
+          </div>
+          <div>
+            C Compiled: {stage3Success}
+          </div>
+          <div>
+            Symbolic Execution Checked: {stage4Success}
+          </div>
         </div>
 
       </div>
