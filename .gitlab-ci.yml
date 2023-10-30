@@ -8,6 +8,8 @@ stages:
 build-and-test:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:7.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
     - cd XmiToCode.Test
     - dotnet test
