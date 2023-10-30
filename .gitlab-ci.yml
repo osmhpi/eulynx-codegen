@@ -1,8 +1,16 @@
 stages:
+  - test
   - validate
   # - generate
   # - compile
   - report
+
+build-and-test:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - cd XmiToCode.Test
+    - dotnet test
 
 parse-classes:
   stage: validate

@@ -1,8 +1,9 @@
-using XmiToCode;
 using XmiToCode.Classes;
 using XmiToCode.Codegen;
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
+
+namespace XmiToCode;
 
 public record StateName(IState Subvertex, string Name);
 
@@ -58,7 +59,7 @@ public class StateMachine
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, string behaviorName, DataTypeHelper dataTypes, IProgramContext context)
+    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, DataTypeHelper dataTypes, IProgramContext context)
     {
         return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context, theRootBehaviorName));
     }
@@ -87,7 +88,7 @@ public class StateMachine
         }
     }
 
-    private IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, IProgramContext context) {
+    private static IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, IProgramContext context) {
         if (x.InternalStateMachine != null) {
             return x.InternalStateMachine.ParseStateRecord(x, x.Name, recordName, className, dataTypes, context);
         } else {
@@ -127,6 +128,6 @@ public class StateMachine
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);
-        return states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, behaviorName, dataTypes, context));
+        return states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, dataTypes, context));
     }
 }

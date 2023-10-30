@@ -3,9 +3,10 @@ using XmiToCode.Identifiers;
 
 namespace XmiToCode.Classes;
 
-public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events) {
+public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events)
+{
     public static readonly string[] CLASS_WHITELIST =
-        new string [] {
+        new string[] {
             // "F_Control_Point_Machine_Position",
             // "S_SCI_P_Command_And_Recieve",
             // "S_SCI_EfeS_Prim",
@@ -21,26 +22,32 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
 
     public TypeIdentifier Name { get; } = new TypeIdentifier(UmlPackage.Name);
 
-    public static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassNames(PackagedElement package) => GetElements(package, "uml:Class")
+    public static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassNames(PackagedElement package)
+        => GetElements(package, "uml:Class")
             .Where(x => x.Element.StateMachine != null)
             .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Element.Name))
             .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name));
 
     public List<Class> Classes
-         => ClassNames(UmlPackage)
-            .Select(x => {
+         => ClassNames(UmlPackage).Select(x =>
+            {
                 Console.Write($"Parsing {x.Element.Name}...");
-                try {
+                try
+                {
                     var result = ParseClass(x.Element, Global, Context, Events, UmlPackage, x.Hierarchy);
                     Console.WriteLine($" done.");
                     Console.WriteLine();
                     return result;
-                } catch (ModelException ex) {
+                }
+                catch (ModelException ex)
+                {
                     Console.WriteLine($" failed due to model issue: ({ex.Message})");
                     Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
                     Console.WriteLine();
                     return null;
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Console.WriteLine($" failed: ({ex.Message})");
                     Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
                     Console.WriteLine();
@@ -53,17 +60,22 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
             .Where(x => x.Element.OwnedConnector.Any())
             .ToList();
 
-    private static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> GetElements(PackagedElement package, string umlType) {
+    private static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> GetElements(PackagedElement package, string umlType)
+    {
         var elements = package.PackagedElements
             .Where(x => x.Type == umlType)
             .Select(x => (x, new List<PackagedElement> { package }));
         var subpackages = package.PackagedElements
             .Where(x => x.Type == "uml:Package")
             .Where(x => x.Name != "Recycle bin" && x.Name != "Recycle Bin" && x.Name != "Not synchronized model elements");
-        return elements.Concat(subpackages.SelectMany(x => GetElements(x, umlType).Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
+        return elements.Concat(
+            subpackages.SelectMany(
+                    x => GetElements(x, umlType)
+                            .Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
 
-    public static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy) {
+    public static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy)
+    {
         // TODO: Clean up this method
 
         var properties = klass.OwnedAttribute
@@ -108,7 +120,8 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
         return result;
     }
 
-    public static Package CreateFromUml(PackagedElement package, GlobalContext global) {
+    public static Package CreateFromUml(PackagedElement package, GlobalContext global)
+    {
         var context = new PackageContext(global, package);
         var events = GetElements(package, "uml:SignalEvent").Select(x => x.Element)
             .Concat(global.genericEvents).ToDictionary(x => x.Id);

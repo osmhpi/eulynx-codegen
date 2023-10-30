@@ -13,7 +13,7 @@ public class TokenizerTest
 
         var result = t.Tokenize(input).ToList();
         Assert.Equal(new List<Token> {
-            new Token(TokenType.Name, "Hello"), new Token(TokenType.Name, "World")
+            new(TokenType.Name, "Hello"), new(TokenType.Name, "World")
         }, result);
     }
 
@@ -23,9 +23,9 @@ public class TokenizerTest
         var input = "D27in_4W_Pattern = \"0101\"";
         var result = t.Tokenize(input).ToList();
         Assert.Equal(new List<Token> {
-            new Token(TokenType.Name, "D27in_4W_Pattern"),
-            new Token(TokenType.Equal, "="),
-            new Token(TokenType.StringLiteral, "0101")
+            new(TokenType.Name, "D27in_4W_Pattern"),
+            new(TokenType.Equal, "="),
+            new(TokenType.StringLiteral, "0101")
         }, result);
     }
 
@@ -35,9 +35,17 @@ public class TokenizerTest
         var input = "D27in_4W_Pattern = \"0101\" OR (NOT d22in_Move_Right_PM AND NOT d21in_Move_Left_PM)";
         var result = t.Tokenize(input).ToList();
         Assert.Equal(new List<Token> {
-            new Token(TokenType.Name, "D27in_4W_Pattern"),
-            new Token(TokenType.Equal, "="),
-            new Token(TokenType.StringLiteral, "0101")
+            new(TokenType.Name, "D27in_4W_Pattern"),
+            new(TokenType.Equal, "="),
+            new(TokenType.StringLiteral, "0101"),
+            new(TokenType.Disjunction, "OR "),
+            new(TokenType.ParenOpen, "("),
+            new(TokenType.Negation, "NOT "),
+            new(TokenType.Name, "d22in_Move_Right_PM"),
+            new(TokenType.Conjunction, "AND "),
+            new(TokenType.Negation, "NOT "),
+            new(TokenType.Name, "d21in_Move_Left_PM"),
+            new(TokenType.ParenClose, ")")
         }, result);
     }
 }
