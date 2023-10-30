@@ -89,7 +89,7 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
             .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
             .ToList();
 
-        var umlClass = new UmlClass(klass, global.changeEvents, global.timeEvents, events, new(), dth, classContext, umlPackage);
+        var umlClass = new UmlClass(klass, dth, classContext, umlPackage);
 
         var behaviorName = umlClass._stateMachine.GetName();
 

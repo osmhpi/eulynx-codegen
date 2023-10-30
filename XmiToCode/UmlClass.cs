@@ -6,29 +6,17 @@ namespace XmiToCode;
 public class UmlClass
 {
     private readonly PackagedElement _class;
-    private readonly Dictionary<string, PackagedElement> _changeEvents;
-    private readonly Dictionary<string, PackagedElement> _timeEvents;
-    private readonly Dictionary<string, PackagedElement> _packageEvents;
-    private readonly Dictionary<string, PackagedElement> _signals;
     public readonly StateMachine _stateMachine;
     private readonly DataTypeHelper _dataTypes;
 
     public PackagedElement ParentPackage { get; }
 
     public UmlClass(PackagedElement classPackage,
-        Dictionary<string, PackagedElement> changeEvents,
-        Dictionary<string, PackagedElement> timeEvents,
-        Dictionary<string, PackagedElement> packageEvents,
-        Dictionary<string, PackagedElement> signals,
         DataTypeHelper dataTypes,
         IProgramContext context,
         PackagedElement parentPackage)
     {
         _class = classPackage;
-        _changeEvents = changeEvents;
-        _timeEvents = timeEvents;
-        _packageEvents = packageEvents;
-        _signals = signals;
         _dataTypes = dataTypes;
         ParentPackage = parentPackage;
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
