@@ -5,7 +5,8 @@ public class PackageTest
     [Fact]
     public void ReadsXmiFile()
     {
-        var proc = new XmiProcessor("/Users/robert/dkw/XmiToCode/cleaned_23.xmi");
+        var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
+        var proc = new XmiProcessor(xmiPath);
         var point = proc.ParsedPackages.Single(x => x.Name.RawName == "Subsystem Point");
         var fscipreport = point.Classes.Single(x => x.Info.ClassName == "FSciPReport");
 
