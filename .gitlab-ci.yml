@@ -95,7 +95,6 @@ generate-klee:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - set +e
-    - sudo chown -R klee:klee Eulynx.Validation/bin/Eulynx/Klee
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee" || EXIT_CODE=$?'
     - cd bin/Eulynx/Klee
@@ -142,6 +141,7 @@ compile-klee:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
   script:
     - rm ./artifacts/*.xml
+    - sudo chown -R klee:klee Eulynx.Validation/bin/Eulynx/Klee
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'
