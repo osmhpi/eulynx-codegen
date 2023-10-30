@@ -26,7 +26,8 @@ declare module "*.xml" {
               type: string,
               message: string
             }
-          }[]
+          }[],
+          skipped?: {}[]
         }[]
       }[]
     }

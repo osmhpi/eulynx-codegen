@@ -1,9 +1,9 @@
 'use client'
 
 import { useItemSelection } from '@/components/utils/use-item-selection'
-import OrdersTableItem from './orders-table-item'
+import TestcaseTableItem from './testcase-table-item'
 
-export interface Customer {
+export interface Testcase {
   class: string,
   package: string,
   tests: {
@@ -14,17 +14,18 @@ export interface Customer {
         type: string,
         message: string
       }
-    }[]
+    }[],
+    skipped?: {}[]
   }[],
 }
 
-export default function CustomersTable({ customers }: { customers: Customer[]}) {
+export default function TestcaseTable({ testcases }: { testcases: Testcase[]}) {
   const {
     selectedItems,
     isAllSelected,
     handleCheckboxChange,
     handleSelectAllChange,
-  } = useItemSelection(customers)
+  } = useItemSelection(testcases)
 
   return (
     <div className="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 relative">
@@ -60,10 +61,10 @@ export default function CustomersTable({ customers }: { customers: Customer[]}) 
             </thead>
             {/* Table body */}
             <tbody className="text-sm divide-y divide-slate-200 dark:divide-slate-700">
-              {customers.map(testcase => (
-                <OrdersTableItem
+              {testcases.map(testcase => (
+                <TestcaseTableItem
                   key={`${testcase.package}-${testcase.class}`}
-                  order={testcase}
+                  testcase={testcase}
                   onCheckboxChange={handleCheckboxChange}
                   isSelected={false} />
               ))}

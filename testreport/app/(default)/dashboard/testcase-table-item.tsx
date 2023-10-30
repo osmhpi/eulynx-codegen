@@ -1,14 +1,14 @@
 import Image from 'next/image'
-import { Customer as Order } from './customers-table'
+import { Testcase } from './testcase-table'
 import { OrdersProperties } from './orders-properties'
 
 interface OrdersTableItemProps {
-  order: Order
+  testcase: Testcase
   onCheckboxChange: (id: number, checked: boolean) => void
   isSelected: boolean
 }
 
-export default function OrdersTableItem({ order, onCheckboxChange, isSelected }: OrdersTableItemProps) {
+export default function TestcaseTableItem({ testcase, onCheckboxChange, isSelected }: OrdersTableItemProps) {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // onCheckboxChange(order.id, e.target.checked)
@@ -34,10 +34,10 @@ export default function OrdersTableItem({ order, onCheckboxChange, isSelected }:
           </div>
         </td>
         <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-          <div>{order.package}</div>
+          <div>{testcase.package}</div>
         </td>
         <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-          <div className="font-medium text-slate-800 dark:text-slate-100">{order.class}</div>
+          <div className="font-medium text-slate-800 dark:text-slate-100">{testcase.class}</div>
         </td>
         <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
           <div className="flex items-center">
@@ -45,7 +45,7 @@ export default function OrdersTableItem({ order, onCheckboxChange, isSelected }:
               className={`text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 ${descriptionOpen && 'rotate-180'}`}
               aria-expanded={descriptionOpen}
               onClick={() => setDescriptionOpen(!descriptionOpen)}
-              aria-controls={`description-${order.package}-${order.class}`}
+              aria-controls={`description-${testcase.package}-${testcase.class}`}
             >
               <span className="sr-only">Menu</span>
               <svg className="w-8 h-8 fill-current" viewBox="0 0 32 32">
@@ -60,9 +60,9 @@ export default function OrdersTableItem({ order, onCheckboxChange, isSelected }:
       Note that you must set a "colSpan" attribute on the <td> element,
       and it should match the number of columns in your table
       */}
-      <tr id={`description-${order.package}-${order.class}`} role="region" className={`${!descriptionOpen && 'hidden'}`}>
+      <tr id={`description-${testcase.package}-${testcase.class}`} role="region" className={`${!descriptionOpen && 'hidden'}`}>
         <td colSpan={4} className="px-2 first:pl-5 last:pr-5 py-3">
-          {order.tests.map(x =>
+          {testcase.tests.map(x =>
           <>
             <div className="flex items-center bg-slate-50 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3">
               <svg className="w-4 h-4 shrink-0 fill-current text-slate-400 dark:text-slate-500 mr-2">
@@ -75,6 +75,11 @@ export default function OrdersTableItem({ order, onCheckboxChange, isSelected }:
                 {failure._}
               </div>
             )}
+            {x.skipped && Array.from(x.skipped).length > 0 &&
+              <div className="flex items-center bg-orange-500 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3 whitespace-pre-line">
+                Skipped
+              </div>
+            }
           </>
           )}
         </td>

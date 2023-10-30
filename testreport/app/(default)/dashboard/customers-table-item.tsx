@@ -1,8 +1,8 @@
 import Image from 'next/image'
-import { Customer } from './customers-table'
+import { Testcase } from './testcase-table'
 
 interface CustomersTableItemProps {
-  customer: Customer
+  customer: Testcase
   onCheckboxChange: (id: number, checked: boolean) => void
   isSelected: boolean
 }

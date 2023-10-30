@@ -1,10 +1,10 @@
 export const metadata = {
-  title: 'Customers - Mosaic',
+  title: 'Test Results',
   description: 'Page description',
 }
 
 import { SelectedItemsProvider } from '@/app/selected-items-context'
-import CustomersTable from './customers-table'
+import TestcaseTable from './testcase-table'
 
 import data_parse_classes from './Eulynx.Validation-parse-classes-test-result.xml'
 import data_generate_c from './Eulynx.Validation-generate-c-test-result.xml'
@@ -43,7 +43,7 @@ function CustomersContent() {
     }
   }
 
-  const testcases = data.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure})))
+  const testcases = data.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure, skipped: t.skipped})))
   const re = /(.*) \((.*),(.*)\)/;
   const parsed = testcases
     .map(x => ({match: x.name.match(re), ...x}))
@@ -51,7 +51,7 @@ function CustomersContent() {
     .map(x => ({ test: { testname: x.match![1], ...x}, package: x.match![2], class: x.match![3] }))
   const grouped = groupBy(parsed, x => `${x.package}/${x.class}`);
   const result = Array.from(grouped);
-  const customers = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
+  const t = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
@@ -71,7 +71,7 @@ function CustomersContent() {
       </div>
 
       {/* Table */}
-      <CustomersTable customers={customers} />
+      <TestcaseTable testcases={t} />
     </div>
   )
 }
