@@ -84,7 +84,7 @@ export default function TestcaseTableItem({ testcase, onCheckboxChange, isSelect
               <div>{x.testname} - <span className="italic">{testcaseStatus(x)}</span></div>
             </div>
             {x.failure && Array.from(x.failure).map(failure =>
-              <div className="flex items-center bg-orange-500 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3 whitespace-pre-line">
+              <div className="flex items-center bg-blue-950 text-white p-3 -mt-3 whitespace-pre-line font-mono">
                 {failure._}
               </div>
             )}
