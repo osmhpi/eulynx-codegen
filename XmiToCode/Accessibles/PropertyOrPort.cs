@@ -50,7 +50,7 @@ Eu.ModSt.7519
     Trigger in ports are mainly used as arguments of Boolean expressions in change events.
 ***/
 
-public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
 
     public Identifier Identifier { get; } = new Identifier(Property.Name);
     public IAccessor TheAccessor { get; } = new ClassAccessor();
@@ -58,8 +58,8 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
     public bool IsExternalInterface => Identifier.RawName.StartsWith("T") || Identifier.RawName.StartsWith("D");
     public bool IsDataPort => Identifier.RawName.StartsWith("d") || Identifier.RawName.StartsWith("D");
     public bool IsTriggerPort => Identifier.RawName.StartsWith("t") || Identifier.RawName.StartsWith("T");
-    public bool IsInPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)in_([\\w_]+)$");
-    public bool IsOutPort => Regex.IsMatch(Identifier.RawName, "^[dDtT](\\d+)out_([\\w_]+)$");
+    public bool IsInPort => IsInPortRegex().IsMatch(Identifier.RawName);
+    public bool IsOutPort => IsOutPortRegex().IsMatch(Identifier.RawName);
 
     public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, PropertyOrPort? ProxyFor = null)
     {
@@ -423,4 +423,9 @@ public abstract record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, 
             };
         }
     }
+
+    [GeneratedRegex("^[dDtT](\\d+)in_([\\w_]+)$")]
+    private static partial Regex IsInPortRegex();
+    [GeneratedRegex("^[dDtT](\\d+)out_([\\w_]+)$")]
+    private static partial Regex IsOutPortRegex();
 }
