@@ -16,7 +16,7 @@ public class CSharpWriter : ICodeWriter {
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
             Class klass => WriteClass(klass),
-            _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
+            _ => throw new NotImplementedException($"Writing not implemented for {typeof(T).Name}")
         };
     }
 
