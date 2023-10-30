@@ -52,6 +52,9 @@ function CustomersContent() {
   const grouped = groupBy(parsed, x => `${x.package}/${x.class}`);
   const result = Array.from(grouped);
   const t = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
+  const classStatus = (testcase: Testcase) =>
+    testcase.tests.filter(x => x.failure || x.skipped).length > 0 ? 'Failed' : 'Success';
+  t.sort((x, y) => classStatus(x).localeCompare(classStatus(y)) || x.package.localeCompare(y.package) || x.class.localeCompare(y.class));
 
   const allClasses = t.length;
 
