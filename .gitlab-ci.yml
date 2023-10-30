@@ -27,8 +27,13 @@ generate-c:
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
+    - set +e
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"'
+    - cd bin/Eulynx/C
+    - apt update && apt install --no-install-recommends clang-format
+    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
+    - exit $EXIT_CODE
   artifacts:
     when: always
     paths:
@@ -62,13 +67,8 @@ generate-csharp:
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_23.xmi
   script:
-    - set +e
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp" || EXIT_CODE=$?'
-    - cd bin/Eulynx/C
-    - apt update && apt install --no-install-recommends clang-format
-    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
-    - exit $EXIT_CODE
   artifacts:
     when: always
     paths:
