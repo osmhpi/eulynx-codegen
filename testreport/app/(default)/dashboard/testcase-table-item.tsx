@@ -21,6 +21,9 @@ export default function TestcaseTableItem({ testcase, onCheckboxChange, isSelect
     typeIcon,
   } = OrdersProperties()
 
+  const testcaseStatus = (testcase: Testcase) =>
+    testcase.tests.filter(x => x.failure || x.skipped).length > 0 ? 'Failed' : 'Success';
+
   return (
     <tbody className="text-sm">
       {/* Row */}
@@ -38,6 +41,9 @@ export default function TestcaseTableItem({ testcase, onCheckboxChange, isSelect
         </td>
         <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
           <div className="font-medium text-slate-800 dark:text-slate-100">{testcase.class}</div>
+        </td>
+        <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+          <div className="font-medium text-slate-800 dark:text-slate-100">{testcaseStatus(testcase)}</div>
         </td>
         <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
           <div className="flex items-center">
@@ -61,7 +67,7 @@ export default function TestcaseTableItem({ testcase, onCheckboxChange, isSelect
       and it should match the number of columns in your table
       */}
       <tr id={`description-${testcase.package}-${testcase.class}`} role="region" className={`${!descriptionOpen && 'hidden'}`}>
-        <td colSpan={4} className="px-2 first:pl-5 last:pr-5 py-3">
+        <td colSpan={5} className="px-2 first:pl-5 last:pr-5 py-3">
           {testcase.tests.map(x =>
           <>
             <div className="flex items-center bg-slate-50 dark:bg-slate-900/30 dark:text-slate-400 p-3 -mt-3">

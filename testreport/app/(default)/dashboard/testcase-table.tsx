@@ -30,7 +30,7 @@ export default function TestcaseTable({ testcases }: { testcases: Testcase[]}) {
   return (
     <div className="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 relative">
       <header className="px-5 py-4">
-        <h2 className="font-semibold text-slate-800 dark:text-slate-100">All Customers <span className="text-slate-400 dark:text-slate-500 font-medium">248</span></h2>
+        <h2 className="font-semibold text-slate-800 dark:text-slate-100">All UML Classes <span className="text-slate-400 dark:text-slate-500 font-medium">{testcases.length}</span></h2>
       </header>
       <div>
 
@@ -55,20 +55,21 @@ export default function TestcaseTable({ testcases }: { testcases: Testcase[]}) {
                   <div className="font-semibold text-left">Class</div>
                 </th>
                 <th className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                  <div className="font-semibold text-left">Status</div>
+                </th>
+                <th className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                   <span className="sr-only">Menu</span>
                 </th>
               </tr>
             </thead>
             {/* Table body */}
-            <tbody className="text-sm divide-y divide-slate-200 dark:divide-slate-700">
-              {testcases.map(testcase => (
-                <TestcaseTableItem
-                  key={`${testcase.package}-${testcase.class}`}
-                  testcase={testcase}
-                  onCheckboxChange={handleCheckboxChange}
-                  isSelected={false} />
-              ))}
-            </tbody>
+            {testcases.map(testcase => (
+              <TestcaseTableItem
+                key={`${testcase.package}-${testcase.class}`}
+                testcase={testcase}
+                onCheckboxChange={handleCheckboxChange}
+                isSelected={false} />
+            ))}
           </table>
 
         </div>
