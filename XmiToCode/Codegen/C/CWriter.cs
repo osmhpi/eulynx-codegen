@@ -8,8 +8,15 @@ namespace XmiToCode.Codegen.C;
 
 public class CWriter : ICodeWriter
 {
+    protected readonly string _outputDir;
+
+    public CWriter(string outputDir)
+    {
+        _outputDir = outputDir;
+    }
+
     public async Task WriteCommonFilesAsync(GlobalContext global) {
-        var filename = $"../Eulynx/C/eulynx_common.h";
+        var filename = $"{_outputDir}/eulynx_common.h";
 
         using var file = File.Create(filename);
         using var writer = new StreamWriter(file);
@@ -18,7 +25,7 @@ public class CWriter : ICodeWriter
     }
 
     public async Task WritePackageFilesAsync(Package pkg) {
-        var packageDir = Path.Combine("../Eulynx/C/", pkg.Name.Name);
+        var packageDir = Path.Combine(_outputDir, pkg.Name.Name);
 
         foreach (var klass in pkg.Classes) {
             await WriteClassFilesAsync(klass, packageDir);
@@ -70,7 +77,7 @@ typedef struct TimeoutEvent
 
     public virtual async Task WriteClassFilesAsync(Class klass, string? prefix)
     {
-        var cFilename = $"../Eulynx/C/{klass.Info.ClassName}.c";
+        var cFilename = $"{_outputDir}/{klass.Info.ClassName}.c";
         if (prefix != null) {
             cFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.c");
         }
@@ -83,7 +90,7 @@ typedef struct TimeoutEvent
 
         await writer.WriteAsync(Write(klass));
 
-        var headerFilename = $"../Eulynx/C/{klass.Info.ClassName}.h";
+        var headerFilename = $"{_outputDir}/{klass.Info.ClassName}.h";
         if (prefix != null) {
             headerFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.h");
         }

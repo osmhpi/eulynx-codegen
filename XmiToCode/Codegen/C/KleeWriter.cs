@@ -5,9 +5,13 @@ using static XmiToCode.Codegen.CodeGenerationHelper;
 namespace XmiToCode.Codegen.C;
 
 public class KleeWriter : CWriter {
+    public KleeWriter(string outputDir) : base(outputDir)
+    {
+    }
+
     public override async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
     {
-        using var file = File.Create($"../Klee/{umlClass.GetName()}.c");
+        using var file = File.Create($"{_outputDir}/{umlClass.GetName()}.c");
         using var writer = new StreamWriter(file);
 
         await writer.WriteAsync(Write(klass));

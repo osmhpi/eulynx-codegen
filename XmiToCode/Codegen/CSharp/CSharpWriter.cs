@@ -4,9 +4,14 @@ using XmiToCode.Context;
 namespace XmiToCode.Codegen.CSharp;
 
 public class CSharpWriter : ICodeWriter {
-    public string DefaultInstanceReference => "this";
+    private readonly string _outputDir;
 
-    public string GenerateFileName(Class klass) => $"../Eulynx/{klass.Info.ClassName}.cs";
+    public CSharpWriter(string outputDir)
+    {
+        _outputDir = outputDir;
+    }
+
+    public string GenerateFileName(Class klass) => $"{_outputDir}/{klass.Info.ClassName}.cs";
 
     public string Write<T>(T element) {
         return element switch {
@@ -143,7 +148,7 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     //         }}"))}
     //     ";
 
-    //     using var file = File.Create($"../Eulynx/DataTypes.cs");
+    //     using var file = File.Create($"{_outputDir}/DataTypes.cs");
     //     using var writer = new StreamWriter(file);
     //     await writer.WriteAsync(result);
     // }

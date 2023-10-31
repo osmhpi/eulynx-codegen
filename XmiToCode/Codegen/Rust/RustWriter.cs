@@ -8,9 +8,15 @@ namespace XmiToCode.Codegen.Rust;
 
 public class RustWriter : ICodeWriter
 {
+    private readonly string _outputDir;
+
     public string DefaultInstanceReference => "self";
 
-    public string GenerateFileName(Class uml) => $"../Eulynx/rust/src/{uml.Info.ClassName}.rs";
+    public string GenerateFileName(Class uml) => $"{_outputDir}/src/{uml.Info.ClassName}.rs";
+    public RustWriter(string outputDir)
+    {
+        _outputDir = outputDir;
+    }
 
     public async Task WriteClassFilesAsync(Class klass)
     {
@@ -18,11 +24,11 @@ public class RustWriter : ICodeWriter
         using var writer = new StreamWriter(file);
         await writer.WriteAsync(Write(klass));
 
-        using var portsFile = File.Create($"../Eulynx/rust/src/{klass.Info.ClassName}_Ports.rs");
+        using var portsFile = File.Create($"{_outputDir}/src/{klass.Info.ClassName}_Ports.rs");
         using var portsFileWriter = new StreamWriter(portsFile);
         await portsFileWriter.WriteAsync(WriteClassPorts(klass));
 
-        using var constantsFile = File.Create($"../Eulynx/rust/src/constants.rs");
+        using var constantsFile = File.Create($"{_outputDir}/src/constants.rs");
         using var constantsFileWriter = new StreamWriter(constantsFile);
         await constantsFileWriter.WriteAsync(WriteClassConstants(klass));
     }

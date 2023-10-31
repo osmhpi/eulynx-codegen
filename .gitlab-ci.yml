@@ -36,19 +36,20 @@ generate-c:
   allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/c
   script:
     - set +e
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c" || EXIT_CODE=$?'
-    - cd bin/Eulynx/C
     - apt update && apt install -y --no-install-recommends clang-format
+    - cd $CODEGEN_OUTPUT_DIR
     - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
     - exit $EXIT_CODE
   artifacts:
     when: always
     paths:
       - ./**/*test-result.xml
-      - ./Eulynx.Validation/bin/Debug/Eulynx/C
+      - ./generated
     reports:
       junit:
         - ./**/*test-result.xml
@@ -59,6 +60,7 @@ generate-rust:
   allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/rust
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-rust-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
@@ -66,6 +68,7 @@ generate-rust:
     when: always
     paths:
       - ./**/*test-result.xml
+      - ./generated
     reports:
       junit:
         - ./**/*test-result.xml
@@ -76,6 +79,7 @@ generate-csharp:
   allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/csharp
   script:
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
@@ -83,6 +87,7 @@ generate-csharp:
     when: always
     paths:
       - ./**/*test-result.xml
+      - ./generated
     reports:
       junit:
         - ./**/*test-result.xml
@@ -93,19 +98,20 @@ generate-klee:
   allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/klee
   script:
     - set +e
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee" || EXIT_CODE=$?'
-    - cd bin/Eulynx/Klee
     - apt update && apt install -y --no-install-recommends clang-format
+    - cd $CODEGEN_OUTPUT_DIR
     - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
     - exit $EXIT_CODE
   artifacts:
     when: always
     paths:
-      - ./Eulynx.Validation/bin/Debug/Klee
       - ./**/*test-result.xml
+      - ./generated
     reports:
       junit:
         - ./**/*test-result.xml
@@ -118,6 +124,7 @@ compile-c:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/c
   script:
     - rm ./artifacts/*.xml
     - apt-get update && apt-get install --no-install-recommends -y build-essential
@@ -139,6 +146,7 @@ compile-klee:
   image: klee/klee:3.0
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/klee
   script:
     - rm ./artifacts/*.xml
     - sudo chown -R klee:klee Eulynx.Validation/bin/Debug/Klee

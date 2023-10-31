@@ -11,12 +11,12 @@ if (args.Length == 1 && args[0] == "validate")
 {
     return 0;
 }
-else if (args.Length == 1 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
+else if (args.Length == 2 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
 {
     ICodeWriter writer = targetLanguage switch {
-        TargetLanguage.CSharp => new CSharpWriter(),
-        TargetLanguage.C => new CWriter(),
-        TargetLanguage.Rust => new RustWriter(),
+        TargetLanguage.CSharp => new CSharpWriter(args[1]),
+        TargetLanguage.C => new CWriter(args[1]),
+        TargetLanguage.Rust => new RustWriter(args[1]),
         _ => throw new NotImplementedException()
     };
 
@@ -29,7 +29,7 @@ else if (args.Length == 1 && Enum.TryParse<TargetLanguage>(args[0], out var targ
 else
 {
     Console.WriteLine("Please provide the validate argument or enter the programming language to generate: CSharp, C or Rust.");
-    Console.WriteLine("Usage: XmiToCode (validate | <language>)");
+    Console.WriteLine("Usage: XmiToCode (validate | <language> <outputDirectory>)");
     return 1;
 }
 

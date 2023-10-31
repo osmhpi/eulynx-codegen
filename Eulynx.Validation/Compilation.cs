@@ -29,7 +29,8 @@ public class Compilation
     {
         using var process = new Process();
 
-        var workingDir = $"{Environment.CurrentDirectory}/../Eulynx/C/{new TypeIdentifier(package).Name}";
+        var output = Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set");
+        var workingDir = $"{output}/{new TypeIdentifier(package).Name}";
         var inFile = $"{new TypeIdentifier(className).Name}.c";
         var outFile = $"{new TypeIdentifier(className).Name}.o";
 
@@ -51,14 +52,14 @@ public class Compilation
         Assert.AreEqual(0, process.ExitCode);
     }
 
-
     [TestMethod, TestCategory("compile-klee")]
     [DynamicData(nameof(UmlClasses))]
     public void CompileKlee(string package, string className)
     {
         using var process = new Process();
 
-        var workingDir = $"{Environment.CurrentDirectory}/../Klee/{new TypeIdentifier(package).Name}";
+        var output = Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set");
+        var workingDir = $"{output}/{new TypeIdentifier(package).Name}";
         var inFile = $"{new TypeIdentifier(className).Name}.c";
         var outFile = $"{new TypeIdentifier(className).Name}.bc";
 
