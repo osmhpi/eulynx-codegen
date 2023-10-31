@@ -157,6 +157,30 @@ compile-klee:
     when: always
     paths:
       - ./**/*test-result.xml
+      - ./generated
+    reports:
+      junit:
+        - ./**/*test-result.xml
+
+execute-klee:
+  stage: validate
+  needs:
+    - job: compile-klee
+      artifacts: true
+  image: klee/klee:3.0
+  variables:
+   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/klee
+  script:
+    - rm ./artifacts/*.xml
+    - sudo chown -R klee:klee $CODEGEN_OUTPUT_DIR
+    - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
+    - cd Eulynx.Validation
+    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-execute-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=execute-klee"'
+  artifacts:
+    when: always
+    paths:
+      - ./**/*test-result.xml
     reports:
       junit:
         - ./**/*test-result.xml
