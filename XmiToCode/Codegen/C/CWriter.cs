@@ -13,6 +13,9 @@ public class CWriter : ICodeWriter
     public CWriter(string outputDir)
     {
         _outputDir = outputDir;
+
+        var outDir = new DirectoryInfo(_outputDir);
+        if (!outDir.Exists) outDir.Create();
     }
 
     public async Task WriteCommonFilesAsync(GlobalContext global) {

@@ -149,7 +149,7 @@ compile-klee:
    CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/klee
   script:
     - rm ./artifacts/*.xml
-    - sudo chown -R klee:klee Eulynx.Validation/bin/Debug/Klee
+    - sudo chown -R klee:klee $CODEGEN_OUTPUT_DIR
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'

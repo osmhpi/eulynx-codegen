@@ -16,6 +16,9 @@ public class RustWriter : ICodeWriter
     public RustWriter(string outputDir)
     {
         _outputDir = outputDir;
+
+        var outDir = new DirectoryInfo($"{_outputDir}/src");
+        if (!outDir.Exists) outDir.Create();
     }
 
     public async Task WriteClassFilesAsync(Class klass)

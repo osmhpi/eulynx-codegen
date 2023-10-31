@@ -37,9 +37,6 @@ public class CodeGeneration
             return;
         }
 
-        var outDir = new DirectoryInfo("../Eulynx/C");
-        if (!outDir.Exists) outDir.Create();
-
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await c.WriteCommonFilesAsync(processor.Global);
     }
@@ -80,9 +77,6 @@ public class CodeGeneration
             Assert.Inconclusive();
             return;
         }
-
-        var outDir = new DirectoryInfo("../Klee");
-        if (!outDir.Exists) outDir.Create();
 
         var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await c.WriteCommonFilesAsync(processor.Global);
@@ -148,9 +142,6 @@ public class CodeGeneration
             return;
         }
 
-        var outDir = new DirectoryInfo("../Eulynx/rust/src");
-        if (!outDir.Exists) outDir.Create();
-
         var rust = new RustWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await rust.WriteClassFilesAsync(klass);
     }
@@ -167,9 +158,6 @@ public class CodeGeneration
             Assert.Inconclusive();
             return;
         }
-
-        var outDir = new DirectoryInfo("../Eulynx");
-        if (!outDir.Exists) outDir.Create();
 
         var csharp = new CSharpWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await csharp.WriteCommonFilesAsync(processor.Global);

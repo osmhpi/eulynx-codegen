@@ -9,6 +9,9 @@ public class CSharpWriter : ICodeWriter {
     public CSharpWriter(string outputDir)
     {
         _outputDir = outputDir;
+
+        var outDir = new DirectoryInfo(_outputDir);
+        if (!outDir.Exists) outDir.Create();
     }
 
     public string GenerateFileName(Class klass) => $"{_outputDir}/{klass.Info.ClassName}.cs";
