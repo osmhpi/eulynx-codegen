@@ -88,7 +88,7 @@ typedef struct TimeoutEvent
 
         await writer.WriteAsync(Write(klass));
 
-        var headerFilename = $"{_outputDir}/{klass.Info.ClassName}.h";
+        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.Info.ClassName}.h";
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
