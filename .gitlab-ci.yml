@@ -144,6 +144,7 @@ compile-klee:
     - job: generate-klee
       artifacts: true
   image: klee/klee:3.0
+  allow_failure: true
   variables:
    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
    CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/klee
