@@ -28,10 +28,8 @@ public class CWriter : ICodeWriter
     }
 
     public async Task WritePackageFilesAsync(Package pkg) {
-        var packageDir = Path.Combine(_outputDir, pkg.Name.Name);
-
         foreach (var klass in pkg.Classes) {
-            await WriteClassFilesAsync(klass, packageDir);
+            await WriteClassFilesAsync(klass, pkg);
         }
 
         if (pkg.Classes.Count > 0) {
@@ -78,12 +76,9 @@ typedef struct TimeoutEvent
 ";
     }
 
-    public virtual async Task WriteClassFilesAsync(Class klass, string? prefix)
+    public virtual async Task WriteClassFilesAsync(Class klass, Package pkg)
     {
-        var cFilename = $"{_outputDir}/{klass.Info.ClassName}.c";
-        if (prefix != null) {
-            cFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.c");
-        }
+        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.Info.ClassName}.c";
 
         var fileinfo = new FileInfo(cFilename);
         if (fileinfo.Directory != null && !fileinfo.Directory.Exists) fileinfo.Directory.Create();
@@ -94,9 +89,6 @@ typedef struct TimeoutEvent
         await writer.WriteAsync(Write(klass));
 
         var headerFilename = $"{_outputDir}/{klass.Info.ClassName}.h";
-        if (prefix != null) {
-            headerFilename = Path.Combine(prefix, $"{klass.Info.ClassName}.h");
-        }
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 

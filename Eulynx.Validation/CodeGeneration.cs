@@ -61,8 +61,7 @@ public class CodeGeneration
         }
 
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        var packageDir = Path.Combine("../Eulynx/C/", pkg.Name.Name);
-        await c.WriteClassFilesAsync(klass, packageDir);
+        await c.WriteClassFilesAsync(klass, pkg);
     }
 
     [TestMethod, TestCategory("generate-klee")]
@@ -102,8 +101,7 @@ public class CodeGeneration
         }
 
         var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        var packageDir = Path.Combine("../Klee", pkg.Name.Name);
-        await c.WriteClassFilesAsync(klass, packageDir);
+        await c.WriteClassFilesAsync(klass, pkg);
     }
 
     [TestMethod, TestCategory("generate-rust")]
