@@ -13,6 +13,7 @@ import data_generate_csharp from './Eulynx.Validation-generate-csharp-test-resul
 import data_generate_klee from './Eulynx.Validation-generate-klee-test-result.xml'
 import data_compile_c from './Eulynx.Validation-compile-c-test-result.xml'
 import data_compile_klee from './Eulynx.Validation-compile-klee-test-result.xml'
+import data_execute_klee from './Eulynx.Validation-execute-klee-test-result.xml'
 
 function CustomersContent() {
   function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
@@ -39,6 +40,7 @@ function CustomersContent() {
         ...data_generate_klee.testsuites.testsuite,
         ...data_compile_c.testsuites.testsuite,
         ...data_compile_klee.testsuites.testsuite,
+        ...data_execute_klee.testsuites.testsuite,
       ]
     }
   }
