@@ -7,5 +7,5 @@ all: $(BCS)
 	clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone $<
 
 %.klee: %.bc
-	klee -search=dfs -use-merge --emit-all-errors $< > $@
+	klee -search=dfs -use-merge --emit-all-errors $< | tee $@
 	grep FAIL $@ && exit 1
