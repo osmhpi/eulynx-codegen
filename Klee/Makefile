@@ -8,4 +8,4 @@ all: $(BCS)
 
 %.klee: %.bc
 	klee -search=dfs -use-merge --emit-all-errors $< | tee $@
-	grep FAIL $@ && exit 1
+	grep FAIL $@ && exit 1 || echo success.
