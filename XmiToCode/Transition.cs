@@ -5,14 +5,13 @@ using XmiToCode.Codegen;
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
-using XmiToCode.Messages;
 
 namespace XmiToCode;
 
 public abstract record Transition(IState From, IState To, List<UmlTransition> Transitions) {
     public UmlTransition SingleTransition => Transitions.Single();
 
-    public ICodeTransition GenerateTransition(
+    public ICodeTransition ParseTransition(
         string thisName,
         IState fromState,
         IState state,
@@ -55,7 +54,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (state.IsJunction) {
             return new JunctionTransition(blockContext,
                 ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext),
-                stateMachine.GenerateConditions(thisName, state, dataTypes, blockContext, classInfo, true),
+                stateMachine.ParseTransitions(thisName, state, dataTypes, blockContext, classInfo, true),
                 GetTransitionConstraints(blockContext),
                 this
             );

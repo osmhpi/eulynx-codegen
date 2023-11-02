@@ -59,19 +59,19 @@ public class StateMachine
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public TransitionFunction GenerateTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, DataTypeHelper dataTypes, IProgramContext context)
+    public TransitionFunction ParseTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, DataTypeHelper dataTypes, IProgramContext context)
     {
-        return new TransitionFunction(theRootBehaviorName, name, GenerateConditions(thisName, fromState, dataTypes, context, theRootBehaviorName));
+        return new TransitionFunction(theRootBehaviorName, name, ParseTransitions(thisName, fromState, dataTypes, context, theRootBehaviorName));
     }
 
-    public List<ICodeTransition> GenerateConditions(string thisName, IState fromState, DataTypeHelper dataTypes, IProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
+    public List<ICodeTransition> ParseTransitions(string thisName, IState fromState, DataTypeHelper dataTypes, IProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return transitions.Select(x => x.transition.GenerateTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, context, classInfo)).ToList();
+        return transitions.Select(x => x.transition.ParseTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, context, classInfo)).ToList();
     }
 
     public string GetName() {
@@ -100,9 +100,9 @@ public class StateMachine
         var newContext = new BlockContext(context);
 
         var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
-        var initialTransition = GetTransitionsFromState((parentBehaviorName != null ? parentBehaviorName + "." : "") + name, _initialState).Single();
-        var initializer = initialTransition.transition.GenerateTransition(name,
-            _initialState, initialTransition.state, initialTransition.stateName,
+        var (transition, state, stateName) = GetTransitionsFromState((parentBehaviorName != null ? parentBehaviorName + "." : "") + name, _initialState).Single();
+        var initializer = transition.ParseTransition(name,
+            _initialState, state, stateName,
             dataTypes, false, this, newContext, className);
 
         return new BehaviorRecord(x, this, name, parentBehaviorName, className, initializer, subrecords);
@@ -128,6 +128,6 @@ public class StateMachine
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);
-        return states.Select(fromState => GenerateTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, dataTypes, context));
+        return states.Select(fromState => ParseTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, dataTypes, context));
     }
 }
