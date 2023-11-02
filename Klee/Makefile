@@ -8,5 +8,4 @@ all: $(BCS)
 
 %.klee: %.bc
 	klee -search=dfs -use-merge --emit-all-errors $< | tee $@
-	bash -c "! grep FAIL $@"
   (! grep FAIL $@)
