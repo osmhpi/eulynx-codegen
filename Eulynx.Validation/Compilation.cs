@@ -43,6 +43,7 @@ public class Compilation
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.EnvironmentVariables["CFLAGS"] = "-Werror";
         process.Start();
 
         Console.WriteLine(process.StandardOutput.ReadToEnd());
@@ -72,6 +73,7 @@ public class Compilation
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.EnvironmentVariables["CFLAGS"] = "-Werror";
         process.Start();
 
         Console.WriteLine(process.StandardOutput.ReadToEnd());
