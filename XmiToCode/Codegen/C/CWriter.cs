@@ -106,7 +106,7 @@ typedef struct TimeoutEvent
         };
     }
 
-    private string WriteOperation(Operation operation, Class klass)
+    private static string WriteOperation(Operation operation, Class klass)
     {
         return @$"void {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
@@ -125,14 +125,14 @@ typedef struct TimeoutEvent
         }} Message__{messageSchema.Identifier.Name};";
     }
 
-    private string WriteValueType(Classes.ValueType valueType)
+    private static string WriteValueType(Classes.ValueType valueType)
     {
         return @$"typedef enum {valueType.Identifier.Name}Value {{
             {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
         }} {valueType.Identifier.Name}Value;";
     }
 
-    private string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
+    private static string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
     {
         return @$"/// {globalEnumeration.Name.RawName}
         /// UML Identifier: {globalEnumeration.Enumeration.Id}
@@ -248,16 +248,20 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
 ";
     }
 
-    private string WriteIfOrElse(List<IAccessible> expression, IProgramContext context) {
+    private static string WriteIfOrElse(List<IAccessible> expression, IProgramContext context) {
         if (expression.SingleOrDefault() is BooleanExpression.Else) {
             return "else";
+        }
+
+        if (expression.Count == 1) {
+            return $"if ({expression.Single().Accessor(context, TargetLanguage.C)})";
         }
 
         var conditionsInParens = expression.Select(x => $"({x.Accessor(context, TargetLanguage.C)})");
         return $"if ({string.Join(" && ", conditionsInParens)})";
     }
 
-    protected string WrapWithGuard(Transition transition, List<IAccessible> c, IProgramContext context, string instructions) {
+    protected static string WrapWithGuard(Transition transition, List<IAccessible> c, IProgramContext context, string instructions) {
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
@@ -288,7 +292,7 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
         );
     }
 
-    private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
+    private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
         return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint, codeTransition.context,
             $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
@@ -340,14 +344,14 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
 ";
     }
 
-    private string WriteBehaviorEnum(BehaviorRecord behaviorRecord)
+    private static string WriteBehaviorEnum(BehaviorRecord behaviorRecord)
     {
         return @$"typedef enum {behaviorRecord.Name} {{
         {string.Join(",\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord)).Select(x => x.Name))}
 }} {behaviorRecord.Name};";
     }
 
-    private string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
+    private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
         return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
     }
 

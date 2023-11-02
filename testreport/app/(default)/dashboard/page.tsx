@@ -56,7 +56,7 @@ function CustomersContent() {
   const t = result.map(([_, value]) => ({ package: value[0].package, class: value[0].class, tests: value.map(x => x.test)}));
   const classStatus = (testcase: Testcase) =>
     testcase.tests.filter(x => x.failure || x.skipped).length > 0 ? 'Failed' : 'Success';
-  t.sort((x, y) => classStatus(x).localeCompare(classStatus(y)) || x.package.localeCompare(y.package) || x.class.localeCompare(y.class));
+  t.sort((x, y) => x.package.localeCompare(y.package) || classStatus(x).localeCompare(classStatus(y)) || x.class.localeCompare(y.class));
 
   const allClasses = t.length;
 
@@ -69,7 +69,7 @@ function CustomersContent() {
   const stage3Name = 'Compilation.CompileC';
   const stage3Success = t.map(x => x.tests.find(x => x.testname === stage3Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
 
-  const stage4Name = 'Compilation.CompileKlee';
+  const stage4Name = 'SymbolicExecution.ExecuteKlee';
   const stage4Success = t.map(x => x.tests.find(x => x.testname === stage4Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
 
   return (
