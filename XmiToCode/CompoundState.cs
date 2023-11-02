@@ -94,7 +94,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
     internal bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
     {
-        List<UmlSubvertex> requireTransitionFromVertex = new();
+        var requireTransitionFromVertex = new List<UmlSubvertex>();
         if (fromState.IsJunction) {
             // Special handling for transitions after junctions
             // we must only include such transitions that
@@ -111,7 +111,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
                     return false;
                 }
 
-                if (requireTransitionFromVertex != null && !requireTransitionFromVertex.Contains(from.Vertex)) {
+                if (requireTransitionFromVertex.Count > 0 && !requireTransitionFromVertex.Contains(from.Vertex)) {
                     return false;
                 }
 
