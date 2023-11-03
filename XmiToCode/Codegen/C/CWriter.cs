@@ -46,7 +46,7 @@ public class CWriter : ICodeWriter
 #include <stdbool.h>
 #include <string.h>
 
-#define Option(X) struct {{ bool Some; X Value; }}
+#define MessagePort(X) struct {{ bool HasMessage; X Value; }}
 
 typedef struct PulsedIn
 {{
@@ -169,7 +169,7 @@ void evaluateChangeEvents({klass.Info.ClassName} *self) {{
 }}
 
 void resetTriggers({klass.Info.ClassName} *self) {{
-    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.Some = false;"))}
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PropertyOrPort.PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
 
@@ -265,7 +265,7 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
-            MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.Some)",
+            MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.HasMessage)",
             InitialTransition => "", // TODO
             _ => throw new NotImplementedException()
         };
@@ -325,9 +325,9 @@ typedef struct {klass.Info.ClassName} {{
         }))}
 
     // Messages -- Incoming
-    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) In{x.Identifier.Name};"))}
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"MessagePort(Message__{x.Identifier.Name}) In{x.Identifier.Name};"))}
     // Messages -- Outgoing
-    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"Option(Message__{x.Identifier.Name}) Out{x.Identifier.Name};"))}
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"MessagePort(Message__{x.Identifier.Name}) Out{x.Identifier.Name};"))}
 
     // Change Events
     {string.Join("\n", klass.GetChangeEvents().Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body.ReplaceLineEndings("")}"))}
