@@ -1,5 +1,6 @@
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Classes;
 
@@ -12,7 +13,7 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
             // "S_SCI_EfeS_Prim",
             // "S_SCI_Adj_Prim"
             // "F_EST_EfeS",
-            // "F_SCI_EfeS_Sec"
+            "F_SCI_EfeS_Sec"
     };
 
     public static readonly string[] CLASS_BLACKLIST = new string[] {

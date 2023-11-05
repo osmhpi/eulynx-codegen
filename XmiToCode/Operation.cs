@@ -1,6 +1,7 @@
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode;
 

@@ -1,6 +1,7 @@
 using System.Xml.Serialization;
 using XmiToCode.Classes;
 using XmiToCode.Context;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode;
 

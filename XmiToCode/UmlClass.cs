@@ -1,4 +1,5 @@
 using XmiToCode.Context;
+using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode;
@@ -89,8 +90,7 @@ public class UmlClass
                     subregion != null ? new StateMachine(subregion, x.Name) : null);
             }).ToList()).ToList();
 
-        var flattenedStates = FlattenStates(states)
-            .ToList();
+        var flattenedStates = FlattenStates(states).ToList();
 
         // Combine initial transitions into one
         var initialTransitions = regions.SelectMany(region => region.Transitions

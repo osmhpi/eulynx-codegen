@@ -2,6 +2,7 @@ using XmiToCode.Classes;
 using XmiToCode.Codegen;
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode;
 

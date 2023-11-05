@@ -3,6 +3,7 @@ using XmiToCode.Codegen;
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Classes;
 

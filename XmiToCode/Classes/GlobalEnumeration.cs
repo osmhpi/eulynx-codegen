@@ -1,4 +1,5 @@
 using XmiToCode.Identifiers;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Classes;
 

@@ -5,6 +5,7 @@ using XmiToCode.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode;

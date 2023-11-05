@@ -5,6 +5,7 @@ using XmiToCode.Codegen;
 using XmiToCode.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode;
 
@@ -63,7 +64,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new NotImplementedException();
     }
 
-    public List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, IProgramContext context)
+    public static List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, IProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
