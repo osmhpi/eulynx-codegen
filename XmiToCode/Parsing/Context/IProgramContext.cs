@@ -2,7 +2,7 @@ using XmiToCode.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 
-namespace XmiToCode.Context;
+namespace XmiToCode.Parsing.Context;
 
 public interface IProgramContext {
     public IAccessible ResolveIdentifier(Identifier identifier);

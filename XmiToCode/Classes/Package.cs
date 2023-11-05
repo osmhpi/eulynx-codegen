@@ -1,63 +1,67 @@
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Classes;
 
-public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events)
+public record Package(GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events, string[]? ClassWhitelist, string[]? ClassBlacklist)
 {
-    public static readonly string[] CLASS_WHITELIST =
-        new string[] {
-            // "F_Control_Point_Machine_Position",
-            // "S_SCI_P_Command_And_Recieve",
-            // "S_SCI_EfeS_Prim",
-            // "S_SCI_Adj_Prim"
-            // "F_EST_EfeS",
-            "F_SCI_EfeS_Sec"
-    };
+    public TypeIdentifier Name { get; } = new TypeIdentifier(Context.UmlPackage.Name);
 
-    public static readonly string[] CLASS_BLACKLIST = new string[] {
-        // Demo data
-        // "Block1"
-    };
-
-    public TypeIdentifier Name { get; } = new TypeIdentifier(UmlPackage.Name);
-
-    public static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassNames(PackagedElement package)
+    public IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassElements(string[]? classWhitelist = null, string[]? classBlacklist = null)
+        => ClassElements(Context.UmlPackage, classWhitelist, classBlacklist);
+    public static IEnumerable<(PackagedElement Element, List<PackagedElement> Hierarchy)> ClassElements(PackagedElement package, string[]? classWhitelist = null, string[]? classBlacklist = null)
         => GetElements(package, "uml:Class")
             .Where(x => x.Element.StateMachine != null)
-            .Where(x => !CLASS_WHITELIST.Any() || CLASS_WHITELIST.Contains(x.Element.Name))
-            .Where(x => !CLASS_BLACKLIST.Contains(x.Element.Name));
+            .Where(x => classWhitelist?.Contains(x.Element.Name) ?? true)
+            .Where(x => classBlacklist?.Contains(x.Element.Name) ?? true);
 
-    public List<Class> Classes
-         => ClassNames(UmlPackage).Select(x =>
-            {
-                Console.Write($"Parsing {x.Element.Name}...");
-                try
-                {
-                    var result = ParseClass(x.Element, Global, Context, Events, UmlPackage, x.Hierarchy);
-                    Console.WriteLine($" done.");
-                    Console.WriteLine();
-                    return result;
-                }
-                catch (ModelException ex)
-                {
-                    Console.WriteLine($" failed due to model issue: ({ex.Message})");
-                    Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
-                    Console.WriteLine();
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($" failed: ({ex.Message})");
-                    Console.WriteLine($"Contained in package {string.Join(" | ", x.Hierarchy.Select(p => p.Name))}");
-                    Console.WriteLine();
-                    return null;
-                }
-            }).Where(x => x != null).Select(x => x!).ToList();
+    public List<Class> ParseAllClasses()
+         => ClassElements(ClassWhitelist, ClassBlacklist)
+            .Select(x => {
+                var success = TryParseClass(x, out var result);
+                return (success, result);
+            }).Where(x => x.success).Select(x => x.result).ToList();
+
+    public bool TryParseClass(string className, out Class result) {
+        var classElement = ClassElements(ClassWhitelist, ClassBlacklist)
+            .SingleOrDefault(x => x.Element.Name == className);
+        if (classElement == default) {
+            result = null!;
+            return false;
+        }
+        return TryParseClass(classElement, out result);
+    }
+
+    public bool TryParseClass((PackagedElement Element, List<PackagedElement> Hierarchy) classElement, out Class result) {
+        result = null!;
+
+        Console.Write($"Parsing {classElement.Element.Name}...");
+        try
+        {
+            result = ParseClass(classElement.Element, Global, Context, Events, Context.UmlPackage, classElement.Hierarchy);
+            Console.WriteLine($" done.");
+            Console.WriteLine();
+            return true;
+        }
+        catch (ModelException ex)
+        {
+            Console.WriteLine($" failed due to model issue: ({ex.Message})");
+            Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
+            Console.WriteLine();
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($" failed: ({ex.Message})");
+            Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
+            Console.WriteLine();
+            return false;
+        }
+    }
 
     public List<(PackagedElement, List<PackagedElement>)> Subsystems { get; }
-        = GetElements(UmlPackage, "uml:Class")
+        = GetElements(Context.UmlPackage, "uml:Class")
             .Where(x => x.Element.OwnedConnector.Any())
             .ToList();
 
@@ -93,7 +97,7 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
         var className = new TypeIdentifier(klass.Name);
         // HACK
         var classInfo = new ClassInfo(className.Name, "");
-        var dth = new DataTypeHelper(properties, ports, operationNames, global.changeEvents, global.timeEvents, events, global.DataTypes, classInfo);
+        var dth = new DataTypeHelper(properties, ports, operationNames, global.ChangeEvents, global.TimeEvents, events, global.DataTypes, classInfo);
         var classContext = new ClassContext(context, dth);
 
         var operations = klass.OwnedOperation
@@ -121,11 +125,17 @@ public record Package(PackagedElement UmlPackage, GlobalContext Global, PackageC
         return result;
     }
 
-    public static Package CreateFromUml(PackagedElement package, GlobalContext global)
+    public static Package CreateFromUml(
+        PackagedElement package,
+        GlobalContext global,
+        string[]? classWhitelist = null,
+        string[]? classBlacklist = null)
     {
         var context = new PackageContext(global, package);
-        var events = GetElements(package, "uml:SignalEvent").Select(x => x.Element)
-            .Concat(global.genericEvents).ToDictionary(x => x.Id);
-        return new Package(package, global, context, events);
+        var events =
+            GetElements(package, "uml:SignalEvent").Select(x => x.Element)
+                .Concat(global.GenericEvents)
+                .ToDictionary(x => x.Id);
+        return new Package(global, context, events, classWhitelist, classBlacklist);
     }
 }

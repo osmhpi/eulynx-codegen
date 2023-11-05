@@ -1,6 +1,6 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Instructions;
 
 namespace XmiToCode.Codegen;

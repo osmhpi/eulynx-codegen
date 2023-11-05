@@ -2,6 +2,7 @@ using System.Diagnostics;
 using XmiToCode;
 using XmiToCode.Classes;
 using XmiToCode.Identifiers;
+using XmiToCode.Parsing;
 
 namespace Eulynx.Validation;
 
@@ -14,9 +15,9 @@ public class SymbolicExecution
         {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
 
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             foreach (var package in processor.InterestingPackages) {
-                var classes = Package.ClassNames(package);
+                var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
                     yield return new object[] { package.Name, Element.Name };
             }

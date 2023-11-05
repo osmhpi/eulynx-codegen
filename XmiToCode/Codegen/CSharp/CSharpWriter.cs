@@ -1,5 +1,5 @@
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Codegen.CSharp;
 
@@ -128,7 +128,7 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
 
     public async Task WritePackageFilesAsync(Package pkg)
     {
-        foreach (var klass in pkg.Classes) {
+        foreach (var klass in pkg.ParseAllClasses()) {
             await WriteClassFilesAsync(klass);
         }
     }

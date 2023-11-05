@@ -1,5 +1,6 @@
 using XmiToCode;
 using XmiToCode.Classes;
+using XmiToCode.Parsing;
 
 namespace Eulynx.Validation;
 
@@ -12,9 +13,9 @@ public class ClassParsing
         {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
 
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             foreach (var package in processor.InterestingPackages) {
-                var classes = Package.ClassNames(package);
+                var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
                     yield return new object[] { package.Name, Element.Name };
             }
@@ -26,11 +27,11 @@ public class ClassParsing
     public void ParseClass(string package, string className)
     {
         var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-        var processor = new XmiProcessor(xmiPath);
+        var processor = new EulynxV22XmiParser(xmiPath);
         var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
-        var pkg = Package.CreateFromUml(umlPackage, processor.Global);
-        var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
+        var pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
+        var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
         // Assert that this doesn't throw
-        Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+        Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
     }
 }

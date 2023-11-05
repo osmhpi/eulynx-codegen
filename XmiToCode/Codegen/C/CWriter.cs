@@ -1,6 +1,6 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
@@ -28,13 +28,15 @@ public class CWriter : ICodeWriter
     }
 
     public async Task WritePackageFilesAsync(Package pkg) {
-        foreach (var klass in pkg.Classes) {
+        foreach (var klass in pkg.ParseAllClasses()) {
             await WriteClassFilesAsync(klass, pkg);
         }
 
-        if (pkg.Classes.Count > 0) {
-            Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {pkg.Classes.Count} classes:");
-            foreach (var success in pkg.Classes.Select(x => x.Info.ClassName))
+        var classes = pkg.ParseAllClasses();
+
+        if (classes.Count > 0) {
+            Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {classes.Count} classes:");
+            foreach (var success in classes.Select(x => x.Info.ClassName))
                 Console.WriteLine($"   - {success}");
             Console.WriteLine();
         }

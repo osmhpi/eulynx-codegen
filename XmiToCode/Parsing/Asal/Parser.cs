@@ -2,12 +2,12 @@
 
 using System.Text.RegularExpressions;
 using XmiToCode.Accessibles;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
-namespace XmiToCode.Asal;
+namespace XmiToCode.Parsing.Asal;
 
 public partial class Parser
 {

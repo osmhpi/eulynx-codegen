@@ -1,8 +1,8 @@
 using XmiToCode.Accessibles;
-using XmiToCode.Asal;
+using XmiToCode.Parsing.Asal;
 using XmiToCode.Classes;
 using XmiToCode.Codegen;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using XmiToCode.Parsing.XmiModel;

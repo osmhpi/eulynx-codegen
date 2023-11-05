@@ -1,6 +1,6 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
@@ -43,7 +43,7 @@ public class RustWriter : ICodeWriter
 
     public async Task WritePackageFilesAsync(Package pkg)
     {
-        foreach (var klass in pkg.Classes) {
+        foreach (var klass in pkg.ParseAllClasses()) {
             await WriteClassFilesAsync(klass);
         }
     }

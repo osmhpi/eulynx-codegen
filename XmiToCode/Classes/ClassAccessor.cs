@@ -1,5 +1,5 @@
 using XmiToCode.Accessibles;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Classes;
 

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace XmiToCode.Asal;
+namespace XmiToCode.Parsing.Asal;
 
 public class Tokenizer {
     private int TryTokenizeCharacter(TokenType type, char value, string input, int current, out Token? result) {

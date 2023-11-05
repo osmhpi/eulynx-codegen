@@ -1,4 +1,4 @@
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 
 namespace XmiToCode.Accessibles;

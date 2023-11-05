@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using XmiToCode.Accessibles;
-using XmiToCode.Asal;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Asal;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using XmiToCode.Messages;

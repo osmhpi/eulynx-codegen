@@ -1,16 +1,33 @@
 using System.Xml.Serialization;
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Parsing.XmiModel;
 
-namespace XmiToCode;
+namespace XmiToCode.Parsing;
 
-public class XmiProcessor {
-    public GlobalContext Global { get; }
-    public List<Package> ParsedPackages { get; }
+public abstract class XmiParser {
+    private readonly string[]? _classWhitelist;
+    private readonly string[]? _classBlacklist;
+
+    public GlobalContext GlobalContext { get; }
     public List<PackagedElement> InterestingPackages { get; }
+    public string[] PackageWhitelist { get; } = new[] {
+        "Generic requirements for SCI",
+        "Generic requirements for subsystems",
+        "Subsystem Point",
+        "Subsystem IO",
+        "Subsystem Light Signal",
+        "Subsystem Level Crossing",
+        "Subsystem Train Detection System",
+    };
 
-    public XmiProcessor(string filename)
+    public string[] PackageBlacklist { get; } = new string[] {
+        "Generic recycle bin",
+    };
+
+    public abstract List<PackagedElement> ResolveGenericEvents(List<PackagedElement> packages);
+
+    public XmiParser(string filename, string[]? classWhitelist, string[]? classBlacklist)
     {
         using var inFile = File.OpenRead(filename);
 
@@ -27,23 +44,7 @@ public class XmiProcessor {
 
         var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
 
-        var genericEvents = new List<PackagedElement>();
-
-        // v19
-        var genericFunctions = packages.SingleOrDefault(x => x.Name == "Generic Functions");
-        if (genericFunctions != null)
-        {
-            genericEvents = FindAllEvents(genericFunctions).ToList();
-        }
-
-        // v23
-        var collectionOfSignalEvents = packages.SingleOrDefault(x => x.Name == "Collection of signal events");
-        if (collectionOfSignalEvents != null)
-        {
-            // Collection of signal events
-            // Internal subsystem events
-            genericEvents = FindAllEvents(collectionOfSignalEvents).ToList();
-        }
+        var genericEvents = ResolveGenericEvents(packages);
 
         var dataTypes = FindAllDataTypes(sysimProfile)
             .Concat(FindAllDataTypes(eulynxProfile))
@@ -52,24 +53,9 @@ public class XmiProcessor {
             // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
             .ToDictionary(x => x.Id);
 
-        var packageWhitelist = new string[] { };
-        packageWhitelist = new[] {
-            "Generic requirements for SCI",
-            "Generic requirements for subsystems",
-            "Subsystem Point",
-            "Subsystem IO",
-            "Subsystem Light Signal",
-            "Subsystem Level Crossing",
-            "Subsystem Train Detection System",
-        };
-
-        var packageBlacklist = new string[] {
-            "Generic recycle bin",
-        };
-
         InterestingPackages = eulynxSystem.PackagedElements
-            .Where(x => !packageWhitelist.Any() || packageWhitelist.Contains(x.Name))
-            .Where(x => !packageBlacklist.Contains(x.Name))
+            .Where(x => !PackageWhitelist.Any() || PackageWhitelist.Contains(x.Name))
+            .Where(x => !PackageBlacklist.Contains(x.Name))
             .ToList();
 
         var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
@@ -79,8 +65,15 @@ public class XmiProcessor {
             .Select(x => new GlobalEnumeration(x.Value))
             .ToDictionary(x => x.Name);
 
-        Global = new GlobalContext(enumerations, signals, dataTypes, changeEvents, timeEvents, genericEvents);
-        ParsedPackages = InterestingPackages.Select(x => Package.CreateFromUml(x, Global)).ToList();
+        GlobalContext = new GlobalContext(enumerations, signals, dataTypes, changeEvents, timeEvents, genericEvents);
+        _classWhitelist = classWhitelist;
+        _classBlacklist = classBlacklist;
+    }
+
+    public List<Package> ParsePackages() {
+        return InterestingPackages
+            .Select(x => Package.CreateFromUml(x, GlobalContext, _classWhitelist, _classBlacklist))
+            .ToList();
     }
 
     public static IEnumerable<PackagedElement> FindAllClasses(PackagedElement package) {

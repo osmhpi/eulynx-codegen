@@ -3,7 +3,7 @@ using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using static XmiToCode.Accessibles.PropertyOrPort;
 
-namespace XmiToCode.Context;
+namespace XmiToCode.Parsing.Context;
 
 public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IProgramContext
 {

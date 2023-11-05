@@ -3,6 +3,7 @@ using XmiToCode.Classes;
 using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
 using XmiToCode.Codegen.Rust;
+using XmiToCode.Parsing;
 
 namespace Eulynx.Validation;
 
@@ -15,9 +16,9 @@ public class CodeGeneration
         {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
 
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             foreach (var package in processor.InterestingPackages) {
-                var classes = Package.ClassNames(package);
+                var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
                     yield return new object[] { package.Name, Element.Name };
             }
@@ -27,10 +28,10 @@ public class CodeGeneration
     [TestMethod, TestCategory("generate-c")]
     public async Task GenerateCommonFilesC()
     {
-        XmiProcessor? processor;
+        XmiParser? processor;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new XmiProcessor(xmiPath);
+            processor = new EulynxV22XmiParser(xmiPath);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -38,7 +39,7 @@ public class CodeGeneration
         }
 
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteCommonFilesAsync(processor.Global);
+        await c.WriteCommonFilesAsync(processor.GlobalContext);
     }
 
     [TestMethod, TestCategory("generate-c")]
@@ -49,11 +50,11 @@ public class CodeGeneration
         Class? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
-            pkg = Package.CreateFromUml(umlPackage, processor.Global);
-            var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+            pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
+            var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
+            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -67,10 +68,10 @@ public class CodeGeneration
     [TestMethod, TestCategory("generate-klee")]
     public async Task GenerateCommonFilesKlee()
     {
-        XmiProcessor? processor;
+        XmiParser? processor;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new XmiProcessor(xmiPath);
+            processor = new EulynxV22XmiParser(xmiPath);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -78,7 +79,7 @@ public class CodeGeneration
         }
 
         var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteCommonFilesAsync(processor.Global);
+        await c.WriteCommonFilesAsync(processor.GlobalContext);
     }
 
     [TestMethod, TestCategory("generate-klee")]
@@ -89,11 +90,11 @@ public class CodeGeneration
         Class? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
-            pkg = Package.CreateFromUml(umlPackage, processor.Global);
-            var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+            pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
+            var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
+            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -107,10 +108,10 @@ public class CodeGeneration
     [TestMethod, TestCategory("generate-rust")]
     public async Task GenerateCommonFilesRust()
     {
-        XmiProcessor? processor;
+        XmiParser? processor;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new XmiProcessor(xmiPath);
+            processor = new EulynxV22XmiParser(xmiPath);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -118,7 +119,7 @@ public class CodeGeneration
         }
 
         var rust = new RustWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await rust.WriteCommonFilesAsync(processor.Global);
+        await rust.WriteCommonFilesAsync(processor.GlobalContext);
     }
 
     [TestMethod, TestCategory("generate-rust")]
@@ -129,11 +130,11 @@ public class CodeGeneration
         Class? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
-            pkg = Package.CreateFromUml(umlPackage, processor.Global);
-            var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+            pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
+            var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
+            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -147,10 +148,10 @@ public class CodeGeneration
     [TestMethod, TestCategory("generate-csharp")]
     public async Task GenerateCommonFilesCSharp()
     {
-        XmiProcessor? processor;
+        XmiParser? processor;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new XmiProcessor(xmiPath);
+            processor = new EulynxV22XmiParser(xmiPath);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -158,7 +159,7 @@ public class CodeGeneration
         }
 
         var csharp = new CSharpWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await csharp.WriteCommonFilesAsync(processor.Global);
+        await csharp.WriteCommonFilesAsync(processor.GlobalContext);
     }
 
     [TestMethod, TestCategory("generate-csharp")]
@@ -169,11 +170,11 @@ public class CodeGeneration
         Class? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new XmiProcessor(xmiPath);
+            var processor = new EulynxV22XmiParser(xmiPath);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
-            pkg = Package.CreateFromUml(umlPackage, processor.Global);
-            var (Element, Hierarchy) = Package.ClassNames(pkg.UmlPackage).Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.Global, pkg.Context, pkg.Events, pkg.UmlPackage, Hierarchy);
+            pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
+            var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
+            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();

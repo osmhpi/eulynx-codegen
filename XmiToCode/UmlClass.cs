@@ -1,4 +1,4 @@
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 

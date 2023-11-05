@@ -3,7 +3,7 @@ using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
 
-namespace XmiToCode.Context;
+namespace XmiToCode.Parsing.Context;
 
 public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage) : IProgramContext
 {

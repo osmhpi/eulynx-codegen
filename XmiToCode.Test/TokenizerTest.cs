@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using XmiToCode.Asal;
+using XmiToCode.Parsing.Asal;
 
 namespace XmiToCode.Test;
 

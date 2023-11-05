@@ -1,5 +1,5 @@
 using XmiToCode.Classes;
-using XmiToCode.Context;
+using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Codegen;
 

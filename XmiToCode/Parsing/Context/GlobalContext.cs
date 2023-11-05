@@ -4,14 +4,14 @@ using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
 
-namespace XmiToCode.Context;
+namespace XmiToCode.Parsing.Context;
 
-public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> signals, Dictionary<string, PackagedElement> DataTypes, Dictionary<string, PackagedElement> changeEvents, Dictionary<string, PackagedElement> timeEvents, List<PackagedElement> genericEvents) : IProgramContext
+public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumerations, Dictionary<string, (PackagedElement, PackagedElement Signal)> Signals, Dictionary<string, PackagedElement> DataTypes, Dictionary<string, PackagedElement> ChangeEvents, Dictionary<string, PackagedElement> TimeEvents, List<PackagedElement> GenericEvents) : IProgramContext
 {
     public bool IsLocalVariable(IAccessible accessible) => false;
 
     public Dictionary<TypeIdentifier, MessageSchema> Messages { get; } =
-        signals.Values
+        Signals.Values
             .Select(x => new MessageSchema(x.Signal, DataTypes))
             .ToDictionary(x => x.Identifier);
 
