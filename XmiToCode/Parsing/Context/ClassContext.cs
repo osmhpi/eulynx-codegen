@@ -1,27 +1,29 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Accessibles.PropertyOrPort;
 
 namespace XmiToCode.Parsing.Context;
 
-public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IProgramContext
+public record ClassContext(PackageContext Package, List<OwnedAttribute> properties, List<OwnedAttribute> ports, List<Identifier> OperationNames) : IInstructionContext
 {
+    public Dictionary<string, PackagedElement> PackageEvents => Package.PackageEvents;
     public Dictionary<TypeIdentifier, MessageSchema> IncomingMessages { get; }
-        = DataTypes.Ports.Values.OfType<ComplexPropertyOrPort>()
+        = ports.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values.OfType<ComplexPropertyOrPort>()
             .SelectMany(x => x.UmlType.OwnedReception)
-            .Select(x => Global.ResolveSignal(x.Signal))
+            .Select(x => Package.ResolveSignal(x.Signal))
             .ToDictionary(x => x.Identifier);
 
     public Dictionary<TypeIdentifier, MessageSchema> OutgoingMessages { get; } = new();
 
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
-        = DataTypes.Ports.Values
+        = ports.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
             .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
     public Dictionary<Identifier, PropertyOrPort> Properties { get; }
-        = DataTypes.Properties.Values
+        = properties.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
             .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
@@ -39,7 +41,7 @@ public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IP
             return property;
         }
 
-        return Global.ResolveAssignableIdentifier(identifier);
+        return Package.ResolveAssignableIdentifier(identifier);
     }
 
     public IAccessible ResolveIdentifier(Identifier identifier)
@@ -54,16 +56,16 @@ public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IP
             return property;
         }
 
-        return Global.ResolveIdentifier(identifier);
+        return Package.ResolveIdentifier(identifier);
     }
 
     public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
-        if (DataTypes.Operations.Contains(identifier)) {
+        if (OperationNames.Contains(identifier)) {
             return new MethodCall(identifier);
         }
 
-        return Global.ResolveCallableIdentifier(identifier);
+        return Package.ResolveCallableIdentifier(identifier);
     }
 
     public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier portIdentifier, TypeIdentifier messageTypeIdentifier)
@@ -99,6 +101,6 @@ public record ClassContext(PackageContext Global, DataTypeHelper DataTypes) : IP
 
     public MessageSchema ResolveSignal(string signalId)
     {
-        return Global.ResolveSignal(signalId);
+        return Package.ResolveSignal(signalId);
     }
 }

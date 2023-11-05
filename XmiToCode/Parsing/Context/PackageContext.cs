@@ -5,7 +5,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Context;
 
-public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage) : IProgramContext
+public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage, Dictionary<string, PackagedElement> PackageEvents) : IProgramContext
 {
     // public Dictionary<string, PackagedElement> Signals { get; } =
     //     GetElements(UmlPackage, "uml:Signal")

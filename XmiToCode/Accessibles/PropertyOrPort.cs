@@ -51,7 +51,7 @@ Eu.ModSt.7519
     Trigger in ports are mainly used as arguments of Boolean expressions in change events.
 ***/
 
-public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
 
     public Identifier Identifier { get; } = new Identifier(Property.Name);
     public IAccessor TheAccessor { get; } = new ClassAccessor();
@@ -62,29 +62,29 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
     public bool IsInPort => IsInPortRegex().IsMatch(Identifier.RawName);
     public bool IsOutPort => IsOutPortRegex().IsMatch(Identifier.RawName);
 
-    public static PropertyOrPort Create(OwnedAttribute property, Dictionary<string, PackagedElement> types, ClassInfo Class, PropertyOrPort? ProxyFor = null)
+    public static PropertyOrPort CreatePropertyOrPort(OwnedAttribute property, Dictionary<string, PackagedElement> types, PropertyOrPort? ProxyFor = null)
     {
         if (property.Type == null) {
             Console.WriteLine($"Warn: Property {property.Name} has no type, assuming string.");
-            return new StringPropertyOrPort(property, Class, ProxyFor);
+            return new StringPropertyOrPort(property, ProxyFor);
 
-            // return new UntypedPropertyOrPort(property, Class, ProxyFor);
+            // return new UntypedPropertyOrPort(property, ProxyFor);
         }
 
         var umlType = types[property.Type];
         PropertyOrPort result = umlType.Name switch {
-            "Boolean" => new BoolPropertyOrPort(property, Class, ProxyFor),
+            "Boolean" => new BoolPropertyOrPort(property, ProxyFor),
             // "DateTime",
             // "Decimal",
             // "Double",
             // "Integer",
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, Class, ProxyFor),
-            "PulsedIn" => new PulsedInPropertyOrPort(property, Class, ProxyFor),
-            "PulsedOut" => new PulsedOutPropertyOrPort(property, Class, ProxyFor),
+            "String" => new StringPropertyOrPort(property, ProxyFor),
+            "PulsedIn" => new PulsedInPropertyOrPort(property, ProxyFor),
+            "PulsedOut" => new PulsedOutPropertyOrPort(property, ProxyFor),
             // "Timespan",
-            _ => new ComplexPropertyOrPort(property, umlType, Class, ProxyFor)
+            _ => new ComplexPropertyOrPort(property, umlType, ProxyFor)
         };
 
         // Extra validation of naming conventions
@@ -141,7 +141,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         return context.ResolveIdentifier(identifier);
     }
 
-    public record StringPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
             var result = new HashSet<StringPropertyOrPort>();
@@ -177,7 +177,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
         {
             AllowedValues.Add(literal);
-            return new ImplicitEnumMember($"{Name}Value", literal, Class);
+            return new ImplicitEnumMember($"{Name}Value", literal);
         }
 
         public static string GenerateEnumMemberName(LiteralIdentifier literal) {
@@ -222,7 +222,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         }
     }
 
-    public record UntypedPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record UntypedPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language)
         {
@@ -240,7 +240,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         }
     }
 
-    public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         // TODO: We re-implement three times an implemention detail of GlobalEnumeration:
         // new UniqueTypeIdentifier(UmlType.Name, UmlType.Id)
@@ -287,7 +287,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         }
     }
 
-    public record BoolPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record BoolPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 
@@ -335,7 +335,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         data at sender side typed with "PulsedOut".
     ***/
 
-    public record PulsedInPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record PulsedInPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {
@@ -377,7 +377,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, ClassInfo
         }
     }
 
-    public record PulsedOutPropertyOrPort(OwnedAttribute Property, ClassInfo Class, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, Class, ProxyFor)
+    public record PulsedOutPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
     {
         public override (string, string) DataType(TargetLanguage language) => language switch
         {

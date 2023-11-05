@@ -34,7 +34,7 @@ public class PackageTest
     [Fact]
     public void PopulatesEvents() {
         var pointPackage = _packages.Single(x => x.Name.RawName == SubsystemPointPackageName);
-        Assert.NotEmpty(pointPackage.Events);
+        Assert.NotEmpty(pointPackage.Context.PackageEvents);
     }
 
     [Fact]

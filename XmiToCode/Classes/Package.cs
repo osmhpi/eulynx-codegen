@@ -4,7 +4,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Classes;
 
-public record Package(GlobalContext Global, PackageContext Context, Dictionary<string, PackagedElement> Events, string[]? ClassWhitelist, string[]? ClassBlacklist)
+public record Package(GlobalContext Global, PackageContext Context, string[]? ClassWhitelist, string[]? ClassBlacklist)
 {
     public TypeIdentifier Name { get; } = new TypeIdentifier(Context.UmlPackage.Name);
 
@@ -39,7 +39,7 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
         Console.Write($"Parsing {classElement.Element.Name}...");
         try
         {
-            result = ParseClass(classElement.Element, Global, Context, Events, Context.UmlPackage, classElement.Hierarchy);
+            result = ParseClass(classElement.Element, Context, classElement.Hierarchy);
             Console.WriteLine($" done.");
             Console.WriteLine();
             return true;
@@ -79,7 +79,7 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
                             .Select(x => (x.Element, new List<PackagedElement> { package }.Concat(x.Hierarchy).ToList()))));
     }
 
-    public static Class ParseClass(PackagedElement klass, GlobalContext global, PackageContext context, Dictionary<string, PackagedElement> events, PackagedElement umlPackage, List<PackagedElement> hierarchy)
+    public static Class ParseClass(PackagedElement klass, PackageContext context, List<PackagedElement> hierarchy)
     {
         // TODO: Clean up this method
 
@@ -97,8 +97,7 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
         var className = new TypeIdentifier(klass.Name);
         // HACK
         var classInfo = new ClassInfo(className.Name, "");
-        var dth = new DataTypeHelper(properties, ports, operationNames, global.ChangeEvents, global.TimeEvents, events, global.DataTypes, classInfo);
-        var classContext = new ClassContext(context, dth);
+        var classContext = new ClassContext(context, properties, ports, operationNames);
 
         var operations = klass.OwnedOperation
             .Where(x => x.XmiType == "uml:Operation")
@@ -106,7 +105,7 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
             .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
             .ToList();
 
-        var umlClass = new UmlClass(klass, dth, classContext, umlPackage);
+        var umlClass = new UmlClass(klass, classContext, context.UmlPackage);
 
         var behaviorName = umlClass._stateMachine.GetName();
 
@@ -115,8 +114,8 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
         var result = new Class(
             new ClassInfo(className.Name, behaviorName),
             classContext,
-            umlClass._stateMachine.Parse(info, dth, classContext),
-            umlClass._stateMachine.ParseTransitionFunctions(info, dth, classContext).ToList(),
+            umlClass._stateMachine.Parse(info, classContext),
+            umlClass._stateMachine.ParseTransitionFunctions(info, classContext).ToList(),
             umlClass._stateMachine.GetStates(behaviorName).ToList(),
             operations,
             hierarchy
@@ -131,11 +130,11 @@ public record Package(GlobalContext Global, PackageContext Context, Dictionary<s
         string[]? classWhitelist = null,
         string[]? classBlacklist = null)
     {
-        var context = new PackageContext(global, package);
         var events =
             GetElements(package, "uml:SignalEvent").Select(x => x.Element)
                 .Concat(global.GenericEvents)
                 .ToDictionary(x => x.Id);
-        return new Package(global, context, events, classWhitelist, classBlacklist);
+        var context = new PackageContext(global, package, events);
+        return new Package(global, context, classWhitelist, classBlacklist);
     }
 }

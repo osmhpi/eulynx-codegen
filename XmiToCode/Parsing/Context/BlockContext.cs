@@ -1,17 +1,21 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Context;
 
-public record BlockContext : IProgramContext
+public record BlockContext : IInstructionContext
 {
-    public IProgramContext Parent { get; }
+    public IInstructionContext Parent { get; }
     private readonly MessageSchema? _locals;
 
     public MessageSchema? Locals => _locals;
+    public Dictionary<string, PackagedElement> PackageEvents => Parent.PackageEvents;
 
-    public BlockContext(IProgramContext parent, MessageSchema? locals = null)
+    public PackageContext Package => Parent.Package;
+
+    public BlockContext(IInstructionContext parent, MessageSchema? locals = null)
     {
         Parent = parent;
         _locals = locals;

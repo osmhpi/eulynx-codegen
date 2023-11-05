@@ -17,13 +17,12 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         IState fromState,
         IState state,
         string stateName,
-        DataTypeHelper dataTypes,
         bool noTriggerConditions,
         StateMachine stateMachine,
-        IProgramContext context,
+        IInstructionContext context,
         ClassInfo classInfo) {
 
-        IProgramContext blockContext = context;
+        IInstructionContext blockContext = context;
 
         if (Transitions.Count > 1) {
             if (!fromState.IsInitialState) {
@@ -32,10 +31,10 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         } else {
             if (SingleTransition.Trigger != null &&
                 SingleTransition.Trigger.Event != null &&
-                dataTypes.PackageEvents.ContainsKey(SingleTransition.Trigger.Event)
+                context.PackageEvents.ContainsKey(SingleTransition.Trigger.Event)
             ) {
                 // The transition is triggered by an incoming message that has additional attributes
-                var theEvent = dataTypes.PackageEvents[SingleTransition.Trigger.Event];
+                var theEvent = context.PackageEvents[SingleTransition.Trigger.Event];
                 var signal = theEvent.Signal;
                 var messageSchema = context.ResolveSignal(signal);
                 blockContext = new BlockContext(context, messageSchema);
@@ -45,17 +44,17 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         if (state.IsRegularState) {
             if (noTriggerConditions) {
                 return new CodeTransition(stateName, blockContext,
-                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), blockContext), GetTransitionConstraints(blockContext), this);
             } else {
                 return new CodeTransition(stateName, blockContext,
-                    ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext), GetTransitionConstraints(blockContext), this);
+                    ParseActivities(fromState, (this, state, stateName), blockContext), GetTransitionConstraints(blockContext), this);
             }
         }
 
         if (state.IsJunction) {
             return new JunctionTransition(blockContext,
-                ParseActivities(fromState, (this, state, stateName), dataTypes, blockContext),
-                stateMachine.ParseTransitions(thisName, state, dataTypes, blockContext, classInfo, true),
+                ParseActivities(fromState, (this, state, stateName), blockContext),
+                stateMachine.ParseTransitions(thisName, state, blockContext, classInfo, true),
                 GetTransitionConstraints(blockContext),
                 this
             );
@@ -64,13 +63,13 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         throw new NotImplementedException();
     }
 
-    public static List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, DataTypeHelper dataTypes, IProgramContext context)
+    public static List<Instruction> ParseActivities(IState fromState, (Transition transition, IState state, string stateName) x, IProgramContext context)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions for compound states
-        var exit = x.state.ParseExit(x.state, x.transition, context, dataTypes);
-        var transitionEffect = x.state.ParseTransition(x.state, x.transition, context, dataTypes);
-        var entry = x.state.GenerateEntry(fromState, x.transition, context, dataTypes);
+        var exit = x.state.ParseExit(x.state, x.transition, context);
+        var transitionEffect = x.state.ParseTransition(x.state, x.transition, context);
+        var entry = x.state.GenerateEntry(fromState, x.transition, context);
 
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
@@ -100,20 +99,20 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         return result;
     }
 
-    public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, DataTypeHelper dataTypes, IProgramContext context) {
+    public static Transition Parse(IState from, IState to, List<UmlTransition> transitions, IInstructionContext context) {
         var transition = transitions.SingleOrDefault();
 
         if (transition != null) {
             if (transition.Trigger != null && transition.Trigger.Event != null) {
                 var evt = transition.Trigger.Event;
-                if (dataTypes.TimeEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.TimeEvents[evt];
+                if (context.Package.Parent.TimeEvents.ContainsKey(evt)) {
+                    var theEvent = context.Package.Parent.TimeEvents[evt];
                     return new TimeEventTransition(from, to, transitions, theEvent);
-                } else if (dataTypes.ChangeEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.ChangeEvents[evt];
+                } else if (context.Package.Parent.ChangeEvents.ContainsKey(evt)) {
+                    var theEvent = context.Package.Parent.ChangeEvents[evt];
                     return new ChangeEventTransition(from, to, transitions, theEvent, ParseExpression(theEvent.ChangeExpression.Body, context) ?? throw new Exception("Change event must have condition."));
-                } else if (dataTypes.PackageEvents.ContainsKey(evt)) {
-                    var theEvent = dataTypes.PackageEvents[evt];
+                } else if (context.Package.PackageEvents.ContainsKey(evt)) {
+                    var theEvent = context.Package.PackageEvents[evt];
                     var messageSchema = context.ResolveSignal(theEvent.Signal);
                     return new MessageEventTransition(from, to, transitions, theEvent, messageSchema.Identifier);
                 }

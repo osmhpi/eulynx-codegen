@@ -54,7 +54,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
+            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -94,7 +94,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
+            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -134,7 +134,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
+            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -174,7 +174,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
+            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();

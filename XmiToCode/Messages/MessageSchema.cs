@@ -10,8 +10,7 @@ public record MessageSchema(PackagedElement Signal, Dictionary<string, PackagedE
     public TypeIdentifier Identifier { get; } = new UniqueTypeIdentifier(Signal.Name, Signal.Id);
 
     public virtual List<PropertyOrPort> Members { get; } = Signal.OwnedAttribute
-        .Select(x =>
-            PropertyOrPort.Create(x, DataTypes, new ClassInfo("Message", "")))
+        .Select(x => PropertyOrPort.CreatePropertyOrPort(x, DataTypes))
         .ToList();
 
     public IEnumerable<Classes.ValueType> GetValueTypes() {

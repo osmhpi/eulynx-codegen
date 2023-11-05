@@ -60,19 +60,19 @@ public class StateMachine
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public TransitionFunction ParseTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, DataTypeHelper dataTypes, IProgramContext context)
+    public TransitionFunction ParseTransitionFunction(string thisName, IState fromState, ClassInfo theRootBehaviorName, string name, IInstructionContext context)
     {
-        return new TransitionFunction(theRootBehaviorName, name, ParseTransitions(thisName, fromState, dataTypes, context, theRootBehaviorName));
+        return new TransitionFunction(theRootBehaviorName, name, ParseTransitions(thisName, fromState, context, theRootBehaviorName));
     }
 
-    public List<ICodeTransition> ParseTransitions(string thisName, IState fromState, DataTypeHelper dataTypes, IProgramContext context, ClassInfo classInfo, bool skipParentTransitions=false)
+    public List<ICodeTransition> ParseTransitions(string thisName, IState fromState, IInstructionContext context, ClassInfo classInfo, bool skipParentTransitions=false)
     {
         var transitions = GetTransitionsFromState(thisName, fromState, skipParentTransitions);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
 
-        return transitions.Select(x => x.transition.ParseTransition(thisName, fromState, x.state, x.stateName, dataTypes, noTriggerConditions, this, context, classInfo)).ToList();
+        return transitions.Select(x => x.transition.ParseTransition(thisName, fromState, x.state, x.stateName, noTriggerConditions, this, context, classInfo)).ToList();
     }
 
     public string GetName() {
@@ -89,28 +89,28 @@ public class StateMachine
         }
     }
 
-    private static IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, DataTypeHelper dataTypes, IProgramContext context) {
+    private static IBehaviorRecord MakeSubrecord(string recordName, ClassInfo className, IState x, IInstructionContext context) {
         if (x.InternalStateMachine != null) {
-            return x.InternalStateMachine.ParseStateRecord(x, x.Name, recordName, className, dataTypes, context);
+            return x.InternalStateMachine.ParseStateRecord(x, x.Name, recordName, className, context);
         } else {
             return new SimpleBehaviorRecord(x, x.Name, recordName, className);
         }
     }
 
-    private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, DataTypeHelper dataTypes, IProgramContext context) {
+    private BehaviorRecord ParseStateRecord(IState? x, string name, string? parentBehaviorName, ClassInfo className, IInstructionContext context) {
         var newContext = new BlockContext(context);
 
-        var subrecords = _states.Select(x => MakeSubrecord(name, className, x, dataTypes, context)).ToList();
+        var subrecords = _states.Select(x => MakeSubrecord(name, className, x, context)).ToList();
         var (transition, state, stateName) = GetTransitionsFromState((parentBehaviorName != null ? parentBehaviorName + "." : "") + name, _initialState).Single();
         var initializer = transition.ParseTransition(name,
             _initialState, state, stateName,
-            dataTypes, false, this, newContext, className);
+            false, this, newContext, className);
 
         return new BehaviorRecord(x, this, name, parentBehaviorName, className, initializer, subrecords);
     }
 
-    public BehaviorRecord Parse(ClassInfo className, DataTypeHelper dataTypes, ClassContext context) {
-        return ParseStateRecord(null, GetName(), null, className, dataTypes, context);
+    public BehaviorRecord Parse(ClassInfo className, ClassContext context) {
+        return ParseStateRecord(null, GetName(), null, className, context);
     }
 
     public IEnumerable<(CompoundState FromState, UmlTransition Transition)> GetTransitionsOriginatingFromAnyState() {
@@ -125,10 +125,10 @@ public class StateMachine
             );
     }
 
-    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(ClassInfo theRootBehaviorName, DataTypeHelper dataTypes, IProgramContext context)
+    internal IEnumerable<TransitionFunction> ParseTransitionFunctions(ClassInfo theRootBehaviorName, IInstructionContext context)
     {
         var behaviorName = GetName();
         var states = GetStates(behaviorName);
-        return states.Select(fromState => ParseTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, dataTypes, context));
+        return states.Select(fromState => ParseTransitionFunction(behaviorName, fromState.Subvertex, theRootBehaviorName, fromState.Name, context));
     }
 }

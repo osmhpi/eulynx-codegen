@@ -32,6 +32,6 @@ public class ClassParsing
         var pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
         var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
         // Assert that this doesn't throw
-        Package.ParseClass(Element, processor.GlobalContext, pkg.Context, pkg.Events, pkg.Context.UmlPackage, Hierarchy);
+        Package.ParseClass(Element, pkg.Context, Hierarchy);
     }
 }

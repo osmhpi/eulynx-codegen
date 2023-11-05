@@ -8,22 +8,19 @@ public class UmlClass
 {
     private readonly PackagedElement _class;
     public readonly StateMachine _stateMachine;
-    private readonly DataTypeHelper _dataTypes;
 
     public PackagedElement ParentPackage { get; }
 
     public UmlClass(PackagedElement classPackage,
-        DataTypeHelper dataTypes,
-        IProgramContext context,
+        ClassContext context,
         PackagedElement parentPackage)
     {
         _class = classPackage;
-        _dataTypes = dataTypes;
         ParentPackage = parentPackage;
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
     }
 
-    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, IProgramContext context) {
+    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, ClassContext context) {
         var states = region.Subvertices.Select(x => {
             var subRegion = FlattenRegions(x.Regions, context);
             return new CompoundState(
@@ -37,14 +34,13 @@ public class UmlClass
             states.OfType<CompoundState>()
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes, context))).ToList();
+                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, context))).ToList();
 
         var transitions = region.Transitions
             .Select(transition => Transition.Parse(
                 states.Single(x => x.IsSourceOfTransition(transition)),
                 states.Single(x => x.IsTargetOfTransition(transition)),
                 new List<UmlTransition> { transition },
-                _dataTypes,
                 context
             ))
             .Concat(substateTransitionsToStates)
@@ -77,7 +73,7 @@ public class UmlClass
         }
     }
 
-    private Region? FlattenRegions(List<UmlRegion> regions, IProgramContext context) {
+    private Region? FlattenRegions(List<UmlRegion> regions, IInstructionContext context) {
         if (regions.Count == 0) {
             return null;
         }
@@ -112,7 +108,7 @@ public class UmlClass
             flattenedStates
                 .Where(x => x.IsTargetOfTransition(t.Transition))
                 .Where(x => x.IsNextStateAfterTransition(t.FromState, t.Transition))
-                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, _dataTypes, context))).ToList();
+                .Select(to => Transition.Parse(t.FromState, to, new List<UmlTransition> { t.Transition }, context))).ToList();
 
         var transitions = regions.SelectMany(region => region.Transitions
             .SelectMany(transition => flattenedStates
@@ -120,7 +116,7 @@ public class UmlClass
                 .SelectMany(from => flattenedStates
                     .Where(x => x.IsTargetOfTransition(transition))
                     .Where(x => x.IsNextStateAfterTransition(from, transition))
-                    .Select(to => Transition.Parse(from, to, new List<UmlTransition> { transition }, _dataTypes, context))
+                    .Select(to => Transition.Parse(from, to, new List<UmlTransition> { transition }, context))
                 )
             )).Concat(substateTransitionsToFlattenedStates).Append(initialTransition).ToList();
 
