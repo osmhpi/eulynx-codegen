@@ -1,5 +1,6 @@
 using XmiToCode.Accessibles;
 using XmiToCode.Classes;
+using XmiToCode.Transformation;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode.Codegen.C;
@@ -9,7 +10,7 @@ public class KleeWriter : CWriter {
     {
     }
 
-    public override async Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    public override async Task WriteClassFilesAsync(RegionFlattener umlClass, ClassFile klass)
     {
         using var file = File.Create($"{_outputDir}/{umlClass.GetName()}.c");
         using var writer = new StreamWriter(file);
@@ -29,7 +30,7 @@ public class KleeWriter : CWriter {
         {base.WriteTransitionFunction(transitionFunction, states)}";
     }
 
-    private string WriteEventEnum(Class klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteEventEnum(ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
         var theList =
             inputTriggers.Select(x => $"Event_{x.Identifier.Name}").Concat(
                 klass.GetTimeoutEvents().Select(x => $"Event_{x}")
@@ -47,7 +48,7 @@ public class KleeWriter : CWriter {
         }} Event;";
     }
 
-    private string WriteDispatchEvent(string name, Class klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteDispatchEvent(string name, ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && klass.GetTimeoutEvents().Count() == 0 && klass.GetIncomingMessageTypes().Count() == 0)
             return "";
 
@@ -70,7 +71,7 @@ return $@"
     }}";
     }
 
-    private string WriteMakeEvent(string name, Class klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteMakeEvent(string name, ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && klass.GetTimeoutEvents().Count() == 0 && klass.GetIncomingMessageTypes().Count() == 0)
             return "";
 
@@ -79,7 +80,7 @@ return $@"
     klee_make_symbolic(&{name}, sizeof(Event), ""{name}"");";
     }
 
-    protected override string WriteClass(Class klass)
+    protected override string WriteClass(ClassFile klass)
     {
         var inputTriggers = klass.GetPropertiesAndPorts().Values
             .OfType<PropertyOrPort.PulsedInPropertyOrPort>()
@@ -194,7 +195,7 @@ int main()
 }}";
     }
 
-    protected override string WriteHeader(Class klass)
+    protected override string WriteHeader(ClassFile klass)
     {
         return @$"
 #include ""klee/klee.h""

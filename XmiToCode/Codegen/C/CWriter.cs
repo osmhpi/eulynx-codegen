@@ -3,6 +3,7 @@ using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
+using XmiToCode.Transformation;
 
 namespace XmiToCode.Codegen.C;
 
@@ -28,11 +29,11 @@ public class CWriter : ICodeWriter
     }
 
     public async Task WritePackageFilesAsync(Package pkg) {
-        foreach (var klass in pkg.ParseAllClasses()) {
-            await WriteClassFilesAsync(klass, pkg);
+        foreach (var klass in pkg.TryParseAllClasses()) {
+            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass), pkg);
         }
 
-        var classes = pkg.ParseAllClasses();
+        var classes = pkg.TryParseAllClasses().Select(klass => new ClassTransformer().TransformClassIntoFile(klass)).ToList();
 
         if (classes.Count > 0) {
             Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {classes.Count} classes:");
@@ -78,7 +79,7 @@ typedef struct TimeoutEvent
 ";
     }
 
-    public virtual async Task WriteClassFilesAsync(Class klass, Package pkg)
+    public virtual async Task WriteClassFilesAsync(ClassFile klass, Package pkg)
     {
         var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.Info.ClassName}.c";
 
@@ -102,13 +103,13 @@ typedef struct TimeoutEvent
         return element switch
         {
             Classes.ValueType valueType => WriteValueType(valueType),
-            Class klass => WriteClass(klass),
+            ClassFile klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
     }
 
-    private static string WriteOperation(Operation operation, Class klass)
+    private static string WriteOperation(Operation operation, ClassFile klass)
     {
         return @$"void {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
@@ -145,7 +146,7 @@ typedef struct TimeoutEvent
         ";
     }
 
-    protected virtual string WriteClass(Class klass)
+    protected virtual string WriteClass(ClassFile klass)
     {
         var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
             .Where(x => x.record.State != null)
@@ -199,12 +200,12 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
                 .Append((behaviorRecord.Name, behaviorRecord))
                 .Select(x => x.record switch {
                     SimpleBehaviorRecord simple => $@"
-                        {behaviorRecord.Name} make_state_{x.Name} ({simple.className.ClassName} *self) {{
+                        {behaviorRecord.Name} make_state_{x.Name} ({simple.ClassName.ClassName} *self) {{
                             return {x.Name};
                         }}",
                     BehaviorRecord record => $@"
-                        {behaviorRecord.Name} make_state_{x.Name}({record.className.ClassName} *self) {{
-                            {WriteICodeTransition(record.initializer, states)}
+                        {behaviorRecord.Name} make_state_{x.Name}({record.ClassName.ClassName} *self) {{
+                            {WriteICodeTransition(record.Initializer, states)}
                         }}",
                     _ => throw new NotImplementedException()
                 }));
@@ -228,7 +229,7 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
 
     protected static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
     {
-        foreach (var s in record.subrecords)
+        foreach (var s in record.Subrecords)
         {
             yield return (s.Name, s);
             foreach (var subsubrecord in EnumerateSubrecords(s))
@@ -302,7 +303,7 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
         );
     }
 
-    protected virtual string WriteHeader(Class klass)
+    protected virtual string WriteHeader(ClassFile klass)
     {
         return @$"
 #include ""../eulynx_common.h""
@@ -354,10 +355,10 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
     }
 
     private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
-        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.className.ClassName} *self);"));
+        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.ClassName.ClassName} *self);"));
     }
 
-    public virtual Task WriteClassFilesAsync(UmlClass umlClass, Class klass)
+    public virtual Task WriteClassFilesAsync(RegionFlattener umlClass, ClassFile klass)
     {
         return WriteClassFilesAsync(klass, null);
     }

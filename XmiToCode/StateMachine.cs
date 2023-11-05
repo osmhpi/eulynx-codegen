@@ -10,15 +10,15 @@ public record StateName(IState Subvertex, string Name);
 
 public class StateMachine
 {
-    public Region Region { get { return _region; } }
+    public IRegion Region { get { return _region; } }
     public IState InitialState { get { return _initialState; } }
-    private readonly Region _region;
+    private readonly IRegion _region;
     private readonly string _name;
     private readonly IState _initialState;
     private readonly List<IState> _states;
     private readonly List<(IState State, StateMachine StateMachine)> _childStateMachines;
 
-    public StateMachine(Region region, string name)
+    public StateMachine(IRegion region, string name)
     {
         _region = region;
         _name = name;
@@ -55,8 +55,8 @@ public class StateMachine
 
             // Prepend the transitions from the enclosing state of the child state machine
             return _region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
-                    .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
-                    .Concat(result);
+                .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
+                .Concat(result);
         }).Concat(transitionsOnCurrentLevel);
     }
 

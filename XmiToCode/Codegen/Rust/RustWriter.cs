@@ -3,6 +3,7 @@ using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
+using XmiToCode.Transformation;
 
 namespace XmiToCode.Codegen.Rust;
 
@@ -12,7 +13,7 @@ public class RustWriter : ICodeWriter
 
     public string DefaultInstanceReference => "self";
 
-    public string GenerateFileName(Class uml) => $"{_outputDir}/src/{uml.Info.ClassName}.rs";
+    public string GenerateFileName(ClassFile uml) => $"{_outputDir}/src/{uml.Info.ClassName}.rs";
     public RustWriter(string outputDir)
     {
         _outputDir = outputDir;
@@ -21,7 +22,7 @@ public class RustWriter : ICodeWriter
         if (!outDir.Exists) outDir.Create();
     }
 
-    public async Task WriteClassFilesAsync(Class klass)
+    public async Task WriteClassFilesAsync(ClassFile klass)
     {
         using var file = File.Create(GenerateFileName(klass));
         using var writer = new StreamWriter(file);
@@ -43,8 +44,8 @@ public class RustWriter : ICodeWriter
 
     public async Task WritePackageFilesAsync(Package pkg)
     {
-        foreach (var klass in pkg.ParseAllClasses()) {
-            await WriteClassFilesAsync(klass);
+        foreach (var klass in pkg.TryParseAllClasses()) {
+            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass));
         }
     }
 
@@ -55,13 +56,13 @@ public class RustWriter : ICodeWriter
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
             Classes.ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
-            Class klass => WriteClass(klass),
+            ClassFile klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
         };
     }
 
-    private string WriteClassConstants(Class klass)
+    private string WriteClassConstants(ClassFile klass)
     {
         return @$"
             #![allow(non_camel_case_types)]
@@ -69,7 +70,7 @@ public class RustWriter : ICodeWriter
         ";
     }
 
-    private string WriteClassPorts(Class klass)
+    private string WriteClassPorts(ClassFile klass)
     {
         return @$"
 #![allow(non_camel_case_types, non_snake_case)]
@@ -107,7 +108,7 @@ impl {klass.Info.ClassName}_Ports {{
         ";
     }
 
-    private string WriteOperation(Operation operation, Class klass)
+    private string WriteOperation(Operation operation, ClassFile klass)
     {
         return @$"fn {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
@@ -139,7 +140,7 @@ impl {klass.Info.ClassName}_Ports {{
         ";
     }
 
-    private string WriteClass(Class klass)
+    private string WriteClass(ClassFile klass)
     {
 
         var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
@@ -257,7 +258,7 @@ impl {klass.Info.ClassName} {{
 
     protected static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
     {
-        foreach (var s in record.subrecords)
+        foreach (var s in record.Subrecords)
         {
             yield return (s.Name, s);
             foreach (var subsubrecord in EnumerateSubrecords(s))

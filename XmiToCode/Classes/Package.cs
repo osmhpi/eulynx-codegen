@@ -1,6 +1,7 @@
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
+using System.Data;
 
 namespace XmiToCode.Classes;
 
@@ -16,7 +17,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             .Where(x => classWhitelist?.Contains(x.Element.Name) ?? true)
             .Where(x => classBlacklist?.Contains(x.Element.Name) ?? true);
 
-    public List<Class> ParseAllClasses()
+    public List<Class> TryParseAllClasses()
          => ClassElements(ClassWhitelist, ClassBlacklist)
             .Select(x => {
                 var success = TryParseClass(x, out var result);
@@ -49,14 +50,16 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             Console.WriteLine($" failed due to model issue: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
-            return false;
+            // return false;
+            throw;
         }
         catch (Exception ex)
         {
             Console.WriteLine($" failed: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
-            return false;
+            // return false;
+            throw;
         }
     }
 
@@ -81,8 +84,6 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
 
     public static Class ParseClass(PackagedElement klass, PackageContext context, List<PackagedElement> hierarchy)
     {
-        // TODO: Clean up this method
-
         var properties = klass.OwnedAttribute
             .Where(x => x.XmiType == "uml:Property")
             .ToList();
@@ -94,9 +95,6 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             .Select(x => new Identifier(x.Name))
             .ToList();
 
-        var className = new TypeIdentifier(klass.Name);
-        // HACK
-        var classInfo = new ClassInfo(className.Name, "");
         var classContext = new ClassContext(context, properties, ports, operationNames);
 
         var operations = klass.OwnedOperation
@@ -105,23 +103,26 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
             .ToList();
 
-        var umlClass = new UmlClass(klass, classContext, context.UmlPackage);
+        var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 
-        var behaviorName = umlClass._stateMachine.GetName();
+        return new Class(new TypeIdentifier(klass.Name), classContext, operations, region);
 
-        var info = new ClassInfo(className.Name, behaviorName);
+        // var umlClass = new RegionFlattener(klass, classContext, context.UmlPackage);
 
-        var result = new Class(
-            new ClassInfo(className.Name, behaviorName),
-            classContext,
-            umlClass._stateMachine.Parse(info, classContext),
-            umlClass._stateMachine.ParseTransitionFunctions(info, classContext).ToList(),
-            umlClass._stateMachine.GetStates(behaviorName).ToList(),
-            operations,
-            hierarchy
-        );
+        // var stateMachine = new StateMachine(new Region(klass.StateMachine.Region), klass.StateMachine.Name);
 
-        return result;
+        // var behaviorName = stateMachine.GetName();
+        // var info = new ClassInfo(className.Name, behaviorName);
+
+        // var result = new ClassFile(
+        //     new ClassInfo(className.Name, behaviorName),
+        //     classContext,
+        //     stateMachine.Parse(info, classContext),
+        //     stateMachine.ParseTransitionFunctions(info, classContext).ToList(),
+        //     stateMachine.GetStates(behaviorName).ToList(),
+        //     operations,
+        //     hierarchy
+        // );
     }
 
     public static Package CreateFromUml(

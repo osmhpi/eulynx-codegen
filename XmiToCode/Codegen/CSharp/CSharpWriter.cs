@@ -1,5 +1,6 @@
 using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
+using XmiToCode.Transformation;
 
 namespace XmiToCode.Codegen.CSharp;
 
@@ -14,7 +15,7 @@ public class CSharpWriter : ICodeWriter {
         if (!outDir.Exists) outDir.Create();
     }
 
-    public string GenerateFileName(Class klass) => $"{_outputDir}/{klass.Info.ClassName}.cs";
+    public string GenerateFileName(ClassFile klass) => $"{_outputDir}/{klass.Info.ClassName}.cs";
 
     public string Write<T>(T element) {
         return element switch {
@@ -23,19 +24,19 @@ public class CSharpWriter : ICodeWriter {
             SimpleBehaviorRecord simpleBehaviorRecord => WriteSimpleBehaviorRecord(simpleBehaviorRecord),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
-            Class klass => WriteClass(klass),
+            ClassFile klass => WriteClass(klass),
             _ => throw new NotImplementedException($"Writing not implemented for {typeof(T).Name}")
         };
     }
 
     private string WriteSimpleBehaviorRecord(SimpleBehaviorRecord simpleBehaviorRecord)
     {
-        return $@"public record {simpleBehaviorRecord.Name}() : {simpleBehaviorRecord.recordName}() {{
-            public static new {simpleBehaviorRecord.Name} New({simpleBehaviorRecord.className} This) => new {simpleBehaviorRecord.Name}();
+        return $@"public record {simpleBehaviorRecord.Name}() : {simpleBehaviorRecord.RecordName}() {{
+            public static new {simpleBehaviorRecord.Name} New({simpleBehaviorRecord.ClassName} This) => new {simpleBehaviorRecord.Name}();
         }}";
     }
 
-    private string WriteClass(Class klass)
+    private string WriteClass(ClassFile klass)
     {
         return @$"using System.Threading.Channels;
 using EulynxMessages = EulynxLive.Messages.Baseline4R1;
@@ -72,11 +73,11 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord)
     {
         return @$"public record {behaviorRecord.Name} : {behaviorRecord.parentBehaviorName} {{
-        {string.Join("\n", behaviorRecord.subrecords.Select(x => Write(x)))}
+        {string.Join("\n", behaviorRecord.Subrecords.Select(x => Write(x)))}
 
 
-    public static new {behaviorRecord.Name} New({behaviorRecord.className} This) {{
-        {Write(behaviorRecord.initializer)}
+    public static new {behaviorRecord.Name} New({behaviorRecord.ClassName} This) {{
+        {Write(behaviorRecord.Initializer)}
     }}
 
     private {behaviorRecord.Name}() {{}}
@@ -113,7 +114,7 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
         }}";
     }
 
-    public async Task WriteClassFilesAsync(Class klass)
+    public async Task WriteClassFilesAsync(ClassFile klass)
     {
         using var file = File.Create(GenerateFileName(klass));
         using var writer = new StreamWriter(file);
@@ -128,8 +129,8 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
 
     public async Task WritePackageFilesAsync(Package pkg)
     {
-        foreach (var klass in pkg.ParseAllClasses()) {
-            await WriteClassFilesAsync(klass);
+        foreach (var klass in pkg.TryParseAllClasses()) {
+            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass));
         }
     }
 

@@ -7,7 +7,7 @@ public record BehaviorRecord(
     StateMachine StateMachine,
     string Name,
     string? parentBehaviorName,
-    ClassInfo className,
-    ICodeTransition initializer,
-    List<IBehaviorRecord> subrecords
+    ClassInfo ClassName,
+    ICodeTransition Initializer,
+    List<IBehaviorRecord> Subrecords
 ) : IBehaviorRecord;

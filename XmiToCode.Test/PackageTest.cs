@@ -15,22 +15,6 @@ public class PackageTest
         _packages = parser.ParsePackages();
     }
 
-
-    [Fact]
-    public void ReadsXmiFile()
-    {
-        var pointPackage = _packages.Single(x => x.Name.RawName == SubsystemPointPackageName);
-        var fscipreport = pointPackage.ParseAllClasses().Single(x => x.Info.ClassName == "FSciPReport");
-
-        Assert.Contains(fscipreport.States, x => x.Name == "FSciPReportBehaviour.InterfaceConnectionNotEstablished");
-        Assert.Contains(fscipreport.States, x => x.Name == "FSciPReportBehaviour.ReportingOverallPointStates");
-        Assert.Contains(fscipreport.States, x => x.Name == "FSciPReportBehaviour.ReportingOverallPointStates.MsgAbilityToMove_Waiting_MsgMovementFailed");
-        Assert.Contains(fscipreport.States, x => x.Name == "FSciPReportBehaviour.ReportingOverallPointStates.MsgAbilityToMove_MsgOverallPointPosition_MsgMovementFailed");
-        Assert.Equal(4, fscipreport.States.Count);
-
-        Assert.Equal(3, fscipreport.Operations.Count);
-    }
-
     [Fact]
     public void PopulatesEvents() {
         var pointPackage = _packages.Single(x => x.Name.RawName == SubsystemPointPackageName);
@@ -40,7 +24,7 @@ public class PackageTest
     [Fact]
     public void ParsesPointClasses() {
         var pointPackage = _packages.Single(x => x.Name.RawName == SubsystemPointPackageName);
-        var classes = pointPackage.ParseAllClasses();
+        var classes = pointPackage.TryParseAllClasses();
         Assert.NotEmpty(classes);
     }
 

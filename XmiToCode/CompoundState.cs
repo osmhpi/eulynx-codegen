@@ -20,6 +20,8 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
     public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
 
+    public TypeIdentifier StateName => throw new NotImplementedException();
+
     public static bool TryParseLiteral(string input, out LiteralIdentifier? identifier) {
         var match = Regex.Match(input, "^\"(.*)\"$");
         if (match.Success) {
@@ -78,7 +80,7 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
         return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
     }
 
-    public List<Instruction> GenerateEntry(IState previous, Transition transition, IProgramContext context)
+    public List<Instruction> ParseEntry(IState previous, Transition transition, IProgramContext context)
     {
         return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Entry?.Name ?? "", context)).ToList();
     }

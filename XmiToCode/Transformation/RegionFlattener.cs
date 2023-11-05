@@ -2,16 +2,16 @@ using XmiToCode.Parsing.Context;
 using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
-namespace XmiToCode;
+namespace XmiToCode.Transformation;
 
-public class UmlClass
+public class RegionFlattener
 {
     private readonly PackagedElement _class;
     public readonly StateMachine _stateMachine;
 
     public PackagedElement ParentPackage { get; }
 
-    public UmlClass(PackagedElement classPackage,
+    public RegionFlattener(PackagedElement classPackage,
         ClassContext context,
         PackagedElement parentPackage)
     {
@@ -20,7 +20,7 @@ public class UmlClass
         _stateMachine = new StateMachine(TransformSubverticesIntoCompoundStates(classPackage.StateMachine.Region, context), classPackage.StateMachine.Name);
     }
 
-    public Region TransformSubverticesIntoCompoundStates(UmlRegion region, ClassContext context) {
+    public FlatRegion TransformSubverticesIntoCompoundStates(UmlRegion region, ClassContext context) {
         var states = region.Subvertices.Select(x => {
             var subRegion = FlattenRegions(x.Regions, context);
             return new CompoundState(
@@ -46,7 +46,7 @@ public class UmlClass
             .Concat(substateTransitionsToStates)
             .ToList();
 
-        return new Region(states, transitions);
+        return new FlatRegion(states, transitions);
     }
 
     private static IEnumerable<CompoundState> FlattenStates(List<List<CompoundState>> regionStates) {
@@ -73,7 +73,7 @@ public class UmlClass
         }
     }
 
-    private Region? FlattenRegions(List<UmlRegion> regions, IInstructionContext context) {
+    private FlatRegion? FlattenRegions(List<UmlRegion> regions, IInstructionContext context) {
         if (regions.Count == 0) {
             return null;
         }
@@ -120,7 +120,7 @@ public class UmlClass
                 )
             )).Concat(substateTransitionsToFlattenedStates).Append(initialTransition).ToList();
 
-        return new Region(flattenedStates.OfType<IState>().ToList(), transitions);
+        return new FlatRegion(flattenedStates.OfType<IState>().ToList(), transitions);
     }
 
     public string GetName() {

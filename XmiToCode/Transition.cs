@@ -69,7 +69,7 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
         // TODO: Partial transitions for compound states
         var exit = x.state.ParseExit(x.state, x.transition, context);
         var transitionEffect = x.state.ParseTransition(x.state, x.transition, context);
-        var entry = x.state.GenerateEntry(fromState, x.transition, context);
+        var entry = x.state.ParseEntry(fromState, x.transition, context);
 
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }

@@ -1,6 +1,6 @@
 namespace XmiToCode.Classes;
 
-public record SimpleBehaviorRecord(IState? State, string Name, string recordName, ClassInfo className) : IBehaviorRecord
+public record SimpleBehaviorRecord(IState? State, string Name, string RecordName, ClassInfo ClassName) : IBehaviorRecord
 {
-    public List<IBehaviorRecord> subrecords { get; } = new();
+    public List<IBehaviorRecord> Subrecords { get; } = new();
 }

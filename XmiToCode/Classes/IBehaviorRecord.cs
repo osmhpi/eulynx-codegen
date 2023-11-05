@@ -4,6 +4,6 @@ public interface IBehaviorRecord
 {
     IState? State { get; }
     string Name { get; }
-    List<IBehaviorRecord> subrecords { get; }
-    ClassInfo className { get; }
+    List<IBehaviorRecord> Subrecords { get; }
+    ClassInfo ClassName { get; }
 }

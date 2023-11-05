@@ -47,7 +47,7 @@ public class CodeGeneration
     public async Task GenerateC(string package, string className)
     {
         Package? pkg = null;
-        Class? klass = null;
+        ClassFile? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
             var processor = new EulynxV22XmiParser(xmiPath);
@@ -87,7 +87,7 @@ public class CodeGeneration
     public async Task GenerateKlee(string package, string className)
     {
         Package? pkg = null;
-        Class? klass = null;
+        ClassFile? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
             var processor = new EulynxV22XmiParser(xmiPath);
@@ -127,7 +127,7 @@ public class CodeGeneration
     public async Task GenerateRust(string package, string className)
     {
         Package? pkg = null;
-        Class? klass = null;
+        ClassFile? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
             var processor = new EulynxV22XmiParser(xmiPath);
@@ -167,7 +167,7 @@ public class CodeGeneration
     public async Task GenerateCSharp(string package, string className)
     {
         Package? pkg = null;
-        Class? klass = null;
+        ClassFile? klass = null;
         try {
             var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
             var processor = new EulynxV22XmiParser(xmiPath);
