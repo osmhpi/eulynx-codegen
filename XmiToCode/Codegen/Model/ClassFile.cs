@@ -3,17 +3,18 @@ using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
-using XmiToCode.Classes;
 using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Codegen.Model;
 
 public record ClassFile(
-    ClassInfo Info,
+    TypeIdentifier ClassName,
+    TypeIdentifier BehaviorName,
     ClassContext ClassContext,
+    CompoundRegion FlatRegion,
     BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
-    List<StateName> States,
+    List<TypeIdentifier> States,
     List<Operation> Operations,
     List<PackagedElement> PackageHierarchy)
 {
@@ -22,7 +23,7 @@ public record ClassFile(
             .Concat(ClassContext.Properties)
             .Where(x => x.Value is PropertyOrPort.StringPropertyOrPort)
             .Select(x => new ValueType(
-                Info,
+                ClassName,
                 x.Key,
                 ((PropertyOrPort.StringPropertyOrPort)x.Value).GetAllowedValues()))
             .Where(x => x.AllowedValues.Count > 0);
@@ -72,4 +73,4 @@ public record ClassFile(
     }
 }
 
-public record ValueType(ClassInfo Class, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);
+public record ValueType(TypeIdentifier ClassName, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);

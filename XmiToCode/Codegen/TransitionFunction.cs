@@ -1,11 +1,11 @@
 using XmiToCode.Parsing.Accessibles;
-using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Instructions;
+using XmiToCode.Identifiers;
 
 namespace XmiToCode.Codegen;
 
-public record TransitionFunction(ClassInfo TheRootBehaviorName, string Name, List<ICodeTransition> Transitions);
+public record TransitionFunction(TypeIdentifier TheRootBehaviorName, TypeIdentifier ClassName, string Name, List<ICodeTransition> Transitions);
 
 public record Condition();
 

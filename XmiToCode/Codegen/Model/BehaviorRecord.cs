@@ -1,14 +1,14 @@
-using XmiToCode.Classes;
+using XmiToCode.Identifiers;
 using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Codegen.Model;
 
 public record BehaviorRecord(
     IState? State,
-    StateMachine StateMachine,
+    IRegion Region,
     string Name,
     string? parentBehaviorName,
-    ClassInfo ClassName,
+    TypeIdentifier ClassName,
     ICodeTransition Initializer,
     List<IBehaviorRecord> Subrecords
 ) : IBehaviorRecord;

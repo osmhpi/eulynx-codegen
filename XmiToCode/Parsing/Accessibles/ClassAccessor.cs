@@ -1,7 +1,6 @@
-using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Context;
 
-namespace XmiToCode.Classes;
+namespace XmiToCode.Parsing.Accessibles;
 
 public class ClassAccessor : IAccessor {
     public string Accessor(PropertyOrPort propertyOrPort, IProgramContext context, TargetLanguage targetLanguage) {

@@ -38,7 +38,7 @@ public class CWriter : ICodeWriter
 
         if (classes.Count > 0) {
             Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {classes.Count} classes:");
-            foreach (var success in classes.Select(x => x.Info.ClassName))
+            foreach (var success in classes.Select(x => x.ClassName.Name))
                 Console.WriteLine($"   - {success}");
             Console.WriteLine();
         }
@@ -82,7 +82,7 @@ typedef struct TimeoutEvent
 
     public virtual async Task WriteClassFilesAsync(ClassFile klass, Package pkg)
     {
-        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.Info.ClassName}.c";
+        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.c";
 
         var fileinfo = new FileInfo(cFilename);
         if (fileinfo.Directory != null && !fileinfo.Directory.Exists) fileinfo.Directory.Create();
@@ -92,7 +92,7 @@ typedef struct TimeoutEvent
 
         await writer.WriteAsync(Write(klass));
 
-        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.Info.ClassName}.h";
+        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.h";
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
@@ -112,7 +112,7 @@ typedef struct TimeoutEvent
 
     private static string WriteOperation(Operation operation, ClassFile klass)
     {
-        return @$"void {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
+        return @$"void {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
         }}";
     }
@@ -154,7 +154,7 @@ typedef struct TimeoutEvent
             .ToDictionary(x => x.record.State!, x => x.Name);
 
         return @$"
-#include ""{klass.Info.ClassName}.h""
+#include ""{klass.ClassName.Name}.h""
 
 // Operations
 
@@ -162,17 +162,17 @@ typedef struct TimeoutEvent
 
 {WriteBehaviorRecord(klass.Behavior, states)}
 
-void new_{klass.Info.ClassName}({klass.Info.ClassName} *x) {{
-    x->state = make_state_{klass.Info.BehaviorName}(x);
+void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
+    x->state = make_state_{klass.BehaviorName.Name}(x);
 }}
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
-void evaluateChangeEvents({klass.Info.ClassName} *self) {{
+void evaluateChangeEvents({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({x.Condition.Accessor(klass.ClassContext, TargetLanguage.C)});"))}
 }}
 
-void resetTriggers({klass.Info.ClassName} *self) {{
+void resetTriggers({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PropertyOrPort.PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
@@ -180,7 +180,7 @@ void resetTriggers({klass.Info.ClassName} *self) {{
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
 }}
 
-void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
+void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
   evaluateChangeEvents(self);
 
   switch (self->state)
@@ -201,11 +201,11 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
                 .Append((behaviorRecord.Name, behaviorRecord))
                 .Select(x => x.record switch {
                     SimpleBehaviorRecord simple => $@"
-                        {behaviorRecord.Name} make_state_{x.Name} ({simple.ClassName.ClassName} *self) {{
+                        {behaviorRecord.Name} make_state_{x.Name} ({simple.ClassName.Name} *self) {{
                             return {x.Name};
                         }}",
                     BehaviorRecord record => $@"
-                        {behaviorRecord.Name} make_state_{x.Name}({record.ClassName.ClassName} *self) {{
+                        {behaviorRecord.Name} make_state_{x.Name}({record.ClassName.Name} *self) {{
                             {WriteICodeTransition(record.Initializer, states)}
                         }}",
                     _ => throw new NotImplementedException()
@@ -242,7 +242,7 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
 
     protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"{transitionFunction.TheRootBehaviorName.BehaviorName} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
+        return $@"{transitionFunction.TheRootBehaviorName.Name} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.ClassName.Name} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
 
@@ -317,8 +317,8 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self) {{
 
 /// Contained in:
 {JoinLines(klass.PackageHierarchy.Select(x => $"/// {x.Name}"))}
-typedef struct {klass.Info.ClassName} {{
-    {klass.Info.BehaviorName} state;
+typedef struct {klass.ClassName.Name} {{
+    {klass.BehaviorName.Name} state;
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex => null,
@@ -339,10 +339,10 @@ typedef struct {klass.Info.ClassName} {{
     // Timeout Events
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"TimeoutEvent {x};"))}
 
-}} {klass.Info.ClassName};
+}} {klass.ClassName.Name};
 
-void new_{klass.Info.ClassName}({klass.Info.ClassName} *x);
-void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
+void new_{klass.ClassName.Name}({klass.ClassName.Name} *x);
+void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
 
 {WriteBehaviorFunctionSignatures(klass.Behavior)}
 ";
@@ -356,6 +356,6 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
     }
 
     private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
-        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.ClassName.ClassName} *self);"));
+        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.ClassName.Name} *self);"));
     }
 }

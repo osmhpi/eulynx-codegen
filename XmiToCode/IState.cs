@@ -1,8 +1,5 @@
-using XmiToCode.Parsing.Context;
 using XmiToCode.Instructions;
 using XmiToCode.Parsing.XmiModel;
-using XmiToCode.Identifiers;
-using XmiToCode.Transformation.Model;
 
 namespace XmiToCode;
 

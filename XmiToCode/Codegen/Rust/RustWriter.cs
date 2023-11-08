@@ -1,11 +1,11 @@
 using XmiToCode.Parsing.Accessibles;
-using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Transformation;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Codegen.Model;
+using XmiToCode.Identifiers;
 
 namespace XmiToCode.Codegen.Rust;
 
@@ -15,7 +15,7 @@ public class RustWriter : ICodeWriter
 
     public string DefaultInstanceReference => "self";
 
-    public string GenerateFileName(ClassFile uml) => $"{_outputDir}/src/{uml.Info.ClassName}.rs";
+    public string GenerateFileName(ClassFile uml) => $"{_outputDir}/src/{uml.ClassName.Name}.rs";
     public RustWriter(string outputDir)
     {
         _outputDir = outputDir;
@@ -30,7 +30,7 @@ public class RustWriter : ICodeWriter
         using var writer = new StreamWriter(file);
         await writer.WriteAsync(Write(klass));
 
-        using var portsFile = File.Create($"{_outputDir}/src/{klass.Info.ClassName}_Ports.rs");
+        using var portsFile = File.Create($"{_outputDir}/src/{klass.ClassName.Name}_Ports.rs");
         using var portsFileWriter = new StreamWriter(portsFile);
         await portsFileWriter.WriteAsync(WriteClassPorts(klass));
 
@@ -81,7 +81,7 @@ use crate::constants::{{
     {string.Join(",\n", klass.GetValueTypes().Select(x => $"{x.Identifier.Name}Value"))}
 }};
 
-pub struct {klass.Info.ClassName}_Ports {{
+pub struct {klass.ClassName.Name}_Ports {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         PropertyOrPort.ComplexPropertyOrPort complex =>
@@ -93,9 +93,9 @@ pub struct {klass.Info.ClassName}_Ports {{
         }))}
 }}
 
-impl {klass.Info.ClassName}_Ports {{
+impl {klass.ClassName.Name}_Ports {{
     pub fn new() -> Self {{
-        {klass.Info.ClassName}_Ports {{
+        {klass.ClassName.Name}_Ports {{
             {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
                 PropertyOrPort.ComplexPropertyOrPort complex => null,
                 PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
@@ -112,7 +112,7 @@ impl {klass.Info.ClassName}_Ports {{
 
     private string WriteOperation(Operation operation, ClassFile klass)
     {
-        return @$"fn {operation.Identifier.Name}({klass.Info.ClassName} *self) {{
+        return @$"fn {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
         }}";
     }
@@ -152,7 +152,7 @@ impl {klass.Info.ClassName}_Ports {{
         return @$"
 #![allow(non_camel_case_types, non_snake_case)]
 
-use crate::{klass.Info.ClassName}_Ports::*;
+use crate::{klass.ClassName.Name}_Ports::*;
 use crate::constants::{{
     {string.Join(",\n", klass.GetValueTypes().Select(x => $"{x.Identifier.Name}Value"))}
 }};
@@ -175,8 +175,8 @@ impl ChangeEvent {{
 
 {WriteBehaviorEnum(klass.Behavior)}
 
-pub struct {klass.Info.ClassName} {{
-    state: {klass.Info.BehaviorName},
+pub struct {klass.ClassName.Name} {{
+    state: {klass.BehaviorName.Name},
     // Messages -- Incoming
     {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Message__{x.Identifier.Name}: Option<Message>,"))}
     // Messages -- Outgoing
@@ -185,12 +185,12 @@ pub struct {klass.Info.ClassName} {{
     {string.Join("\n", klass.GetChangeEvents().Select(x => $"{x.Event.Name}: ChangeEvent, \t// {x.Event.ChangeExpression.Body.ReplaceLineEndings("")}"))}
 }}
 
-{WriteStates((BehaviorRecord)klass.Behavior, states, klass.Info)}
+{WriteStates(klass.Behavior, states, klass.ClassName)}
 
-impl {klass.Info.ClassName} {{
-    fn new(ports: &mut {klass.Info.ClassName}_Ports) -> {klass.Info.ClassName} {{
-        let new{klass.Info.ClassName} = {klass.Info.ClassName}{{
-            state: make_state_{klass.Info.BehaviorName}__{klass.Info.BehaviorName}(ports),
+impl {klass.ClassName.Name} {{
+    fn new(ports: &mut {klass.ClassName.Name}_Ports) -> {klass.ClassName.Name} {{
+        let new{klass.ClassName.Name} = {klass.ClassName.Name}{{
+            state: make_state_{klass.BehaviorName.Name}__{klass.BehaviorName.Name}(ports),
             // Messages -- Incoming
             {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"Message__{x.Identifier.Name}: None,"))}
             // Messages -- Outgoing
@@ -199,13 +199,13 @@ impl {klass.Info.ClassName} {{
             {string.Join("\n", klass.GetChangeEvents().Select(x => $"{x.Event.Name}: ChangeEvent::new(),"))}
         }};
 
-        new{klass.Info.ClassName}
+        new{klass.ClassName.Name}
     }}
 
-    fn transition(&mut self, ports: &mut {klass.Info.ClassName}_Ports) -> () {{
+    fn transition(&mut self, ports: &mut {klass.ClassName.Name}_Ports) -> () {{
         match self.state {{
             {string.Join("\n", klass.States.Select(t =>
-        string.Join("\n", $"\t\t\t{klass.Info.BehaviorName}::{t.Name.Replace(".", "__")} => \n\t\t\tself.state = self.transition_from_{t.Name.Replace(".", "__")}(ports),")))}
+        string.Join("\n", $"\t\t\t{klass.BehaviorName.Name}::{t.Name.Replace(".", "__")} => \n\t\t\tself.state = self.transition_from_{t.Name.Replace(".", "__")}(ports),")))}
             }}
         }}
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
@@ -216,18 +216,18 @@ impl {klass.Info.ClassName} {{
 
     //{klass.Info.BehaviorName}::{klass.Info.BehaviorName}__{klass.Behavior.subrecords[0].Name},
 
-    private string WriteStates(BehaviorRecord behaviorRecord, Dictionary<IState, string> states, ClassInfo classInfo)
+    private string WriteStates(BehaviorRecord behaviorRecord, Dictionary<IState, string> states, TypeIdentifier className)
     {
         return
             string.Join("\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord))
                 .Append((behaviorRecord.Name, behaviorRecord))
                 .Select(x => x.record switch {
                     SimpleBehaviorRecord simple => $@"
-                        fn make_state_{behaviorRecord.Name}__{x.Name}(ports: &mut {classInfo.ClassName}_Ports) -> {behaviorRecord.Name}{{
+                        fn make_state_{behaviorRecord.Name}__{x.Name}(ports: &mut {className.Name}_Ports) -> {behaviorRecord.Name}{{
                             return {behaviorRecord.Name}::{x.Name};
                         }}",
                     BehaviorRecord record => $@"
-                        fn make_state_{behaviorRecord.Name}__{x.Name}(ports: &mut {classInfo.ClassName}_Ports) -> {behaviorRecord.Name} {{
+                        fn make_state_{behaviorRecord.Name}__{x.Name}(ports: &mut {className.Name}_Ports) -> {behaviorRecord.Name} {{
                             // TODO complex properties
                         }}",
                             //{WriteICodeTransition(record.initializer, states)}
@@ -272,7 +272,7 @@ impl {klass.Info.ClassName} {{
 
     protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"fn transition_from_{transitionFunction.Name.Replace(".", "__")}(&mut self, ports: &mut {transitionFunction.TheRootBehaviorName.ClassName}_Ports) -> {transitionFunction.TheRootBehaviorName.BehaviorName}{{
+        return $@"fn transition_from_{transitionFunction.Name.Replace(".", "__")}(&mut self, ports: &mut {transitionFunction.ClassName.Name}_Ports) -> {transitionFunction.TheRootBehaviorName.Name}{{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
 

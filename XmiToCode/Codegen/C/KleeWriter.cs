@@ -1,5 +1,4 @@
 using XmiToCode.Parsing.Accessibles;
-using XmiToCode.Transformation;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Codegen.Model;
 
@@ -12,7 +11,7 @@ public class KleeWriter : CWriter {
 
     protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.TheRootBehaviorName.ClassName} *self) {{
+        return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.ClassName.Name} *self) {{
             int result = 0;
             {string.Join("\n", transitionFunction.Transitions
                 .Select(x => WrapWithGuard(x.Transition, x.Constraint, x.context, "result++;")))}
@@ -88,7 +87,7 @@ return $@"
 
 {WriteEventEnum(klass, inputTriggers)}
 
-int count_firing_transitions({klass.Info.ClassName} *self) {{
+int count_firing_transitions({klass.ClassName.Name} *self) {{
     int result = 0;
     evaluateChangeEvents(self);
 
@@ -101,7 +100,7 @@ int count_firing_transitions({klass.Info.ClassName} *self) {{
     return result;
 }}
 /*
-void process_events({klass.Info.ClassName} *self, Event *event, size_t len)
+void process_events({klass.ClassName.Name} *self, Event *event, size_t len)
 {{
   resetTriggers(self);
   for (int i = 0; i < len; ++i)
@@ -120,7 +119,7 @@ void process_events({klass.Info.ClassName} *self, Event *event, size_t len)
   }}
 }}
 
-int new_symbolic({klass.Info.ClassName} *self) {{
+int new_symbolic({klass.ClassName.Name} *self) {{
     klee_make_symbolic(&self->state, sizeof(self->state), ""state"");
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
@@ -141,16 +140,16 @@ int new_symbolic({klass.Info.ClassName} *self) {{
 }}*/
 
 int experiment_deterministic_transitions() {{
-    {klass.Info.ClassName} x;
+    {klass.ClassName.Name} x;
 
     // Experiment: Deterministic transitions
-    klee_make_symbolic(&x, sizeof(x), ""{klass.Info.ClassName}"");
+    klee_make_symbolic(&x, sizeof(x), ""{klass.ClassName.Name}"");
 
     resetTriggers(&x);
 
     {WriteMakeEvent("event", klass, inputTriggers)}
 
-    {klass.Info.ClassName} *self = &x;
+    {klass.ClassName.Name} *self = &x;
     {WriteDispatchEvent("event", klass, inputTriggers)}
 
     klee_assert(count_firing_transitions(&x) <= 1);
@@ -159,7 +158,7 @@ int experiment_deterministic_transitions() {{
 
 /*
 int experiment_transition_sequence() {{
-    {klass.Info.ClassName} x;
+    {klass.ClassName.Name} x;
 
     new (&x);
 

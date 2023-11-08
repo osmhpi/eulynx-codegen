@@ -16,7 +16,7 @@ public class CSharpWriter : ICodeWriter {
         if (!outDir.Exists) outDir.Create();
     }
 
-    public string GenerateFileName(ClassFile klass) => $"{_outputDir}/{klass.Info.ClassName}.cs";
+    public string GenerateFileName(ClassFile klass) => $"{_outputDir}/{klass.ClassName.Name}.cs";
 
     public string Write<T>(T element) {
         return element switch {
@@ -44,18 +44,18 @@ using EulynxMessages = EulynxLive.Messages.Baseline4R1;
 
 namespace Eulynx;
 
-public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klass.Info.BehaviorName}> {{
+public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klass.BehaviorName.Name}> {{
     {Write(klass.Behavior)}
 
     private readonly IMessageFactory _messageConverter;
-    private {klass.Info.BehaviorName} _state;
-    public {klass.Info.BehaviorName} State => _state;
+    private {klass.BehaviorName.Name} _state;
+    public {klass.BehaviorName.Name} State => _state;
 
     public void Init() {{
-        _state = {klass.Info.BehaviorName}.New(this);
+        _state = {klass.BehaviorName.Name}.New(this);
     }}
 
-    public {klass.Info.ClassName}(IMessageFactory messageConverter) {{
+    public {klass.ClassName.Name}(IMessageFactory messageConverter) {{
         _messageConverter = messageConverter;
     }}
 

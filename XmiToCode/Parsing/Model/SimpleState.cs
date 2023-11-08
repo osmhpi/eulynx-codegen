@@ -27,8 +27,6 @@ public class SimpleState : IState
     public string Name => StateName.Name;
     public TypeIdentifier StateName { get; }
 
-    public StateMachine? InternalStateMachine => throw new NotImplementedException();
-
     public UmlSubvertex State { get; }
     public List<Instruction> Entry { get; }
     public List<Instruction> Exit { get; }

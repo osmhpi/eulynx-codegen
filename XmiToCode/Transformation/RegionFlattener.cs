@@ -1,8 +1,3 @@
-using XmiToCode.Parsing.Context;
-using XmiToCode.Parsing.XmiModel;
-using XmiToCode.Transformation.Model;
-using static XmiToCode.Codegen.CodeGenerationHelper;
-
 namespace XmiToCode.Transformation;
 /*
 public class RegionFlattener
