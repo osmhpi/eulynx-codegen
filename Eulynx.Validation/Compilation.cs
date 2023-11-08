@@ -1,8 +1,7 @@
 using System.Diagnostics;
-using XmiToCode;
-using XmiToCode.Classes;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
 
 namespace Eulynx.Validation;
 

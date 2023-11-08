@@ -1,11 +1,12 @@
-using XmiToCode.Accessibles;
-using XmiToCode.Codegen;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Classes;
+using XmiToCode.Transformation.Model;
 
-namespace XmiToCode.Classes;
+namespace XmiToCode.Codegen.Model;
 
 public record ClassFile(
     ClassInfo Info,

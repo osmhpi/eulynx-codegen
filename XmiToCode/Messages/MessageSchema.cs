@@ -1,4 +1,4 @@
-using XmiToCode.Accessibles;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Classes;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
@@ -13,10 +13,10 @@ public record MessageSchema(PackagedElement Signal, Dictionary<string, PackagedE
         .Select(x => PropertyOrPort.CreatePropertyOrPort(x, DataTypes))
         .ToList();
 
-    public IEnumerable<Classes.ValueType> GetValueTypes() {
+    public IEnumerable<Codegen.Model.ValueType> GetValueTypes() {
         return Members
             .Where(x => x is PropertyOrPort.StringPropertyOrPort)
-            .Select(x => new Classes.ValueType(
+            .Select(x => new Codegen.Model.ValueType(
                 new ClassInfo(Identifier.Name, ""),
                 x.Identifier,
                 // x.MemberName,

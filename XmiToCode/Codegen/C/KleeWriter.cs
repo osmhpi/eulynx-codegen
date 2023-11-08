@@ -1,21 +1,13 @@
-using XmiToCode.Accessibles;
-using XmiToCode.Classes;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Transformation;
 using static XmiToCode.Codegen.CodeGenerationHelper;
+using XmiToCode.Codegen.Model;
 
 namespace XmiToCode.Codegen.C;
 
 public class KleeWriter : CWriter {
     public KleeWriter(string outputDir) : base(outputDir)
     {
-    }
-
-    public override async Task WriteClassFilesAsync(RegionFlattener umlClass, ClassFile klass)
-    {
-        using var file = File.Create($"{_outputDir}/{umlClass.GetName()}.c");
-        using var writer = new StreamWriter(file);
-
-        await writer.WriteAsync(Write(klass));
     }
 
     protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)

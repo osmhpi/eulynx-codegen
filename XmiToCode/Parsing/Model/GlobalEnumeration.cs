@@ -1,7 +1,7 @@
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
 
-namespace XmiToCode.Classes;
+namespace XmiToCode.Parsing.Model;
 
 public record GlobalEnumeration(PackagedElement Enumeration) {
 

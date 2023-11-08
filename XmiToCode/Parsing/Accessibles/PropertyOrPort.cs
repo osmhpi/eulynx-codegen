@@ -6,7 +6,7 @@ using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
 /***
 Eu.ModSt.7510

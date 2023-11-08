@@ -1,4 +1,4 @@
-using XmiToCode.Accessibles;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Instructions;
@@ -15,7 +15,18 @@ public interface ICodeTransition {
     public IProgramContext context { get; }
 }
 
-public record CodeTransition(string stateName, IProgramContext context, List<Instruction> Activities, List<IAccessible> Constraint, Transition Transition) : ICodeTransition;
+public record CodeTransition(
+    string stateName,
+    IProgramContext context,
+    List<Instruction> Activities,
+    List<IAccessible> Constraint,
+    Transition Transition
+) : ICodeTransition;
 
-public record JunctionTransition(IProgramContext context, List<Instruction> Activities, List<ICodeTransition> CodeTransitions, List<IAccessible> Constraint, Transition Transition) : ICodeTransition;
-
+public record JunctionTransition(
+    IProgramContext context,
+    List<Instruction> Activities,
+    List<ICodeTransition> CodeTransitions,
+    List<IAccessible> Constraint,
+    Transition Transition
+) : ICodeTransition;

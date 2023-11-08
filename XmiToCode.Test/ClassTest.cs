@@ -1,11 +1,10 @@
-using XmiToCode.Classes;
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
 
 namespace XmiToCode.Test;
 
 public class ClassTest
 {
-    public const string FSciEfesSecClassName = "F_SCI_EfeS_Sec";
     private readonly Class _parsedClass;
 
     public ClassTest()
@@ -13,7 +12,7 @@ public class ClassTest
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
         var packages = parser.ParsePackages();
         var genericSciPackage = packages.Single(x => x.Name.RawName == PackageTest.GenericSciPackageName);
-        _ = genericSciPackage.TryParseClass(FSciEfesSecClassName, out _parsedClass);
+        _ = genericSciPackage.TryParseClass(PackageTest.FSciEfesSecClassName, out _parsedClass);
     }
 
     [Fact]

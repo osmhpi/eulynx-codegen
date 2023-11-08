@@ -1,12 +1,10 @@
 using XmiToCode.Parsing.Context;
-using XmiToCode.Identifiers;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
-public record EnumerationMember(TypeIdentifier EnumerationType, GlobalEnumIdentifier Member) : IAccessible {
-
-    public string Accessor(IProgramContext context, TargetLanguage targetLanguage)
-        => $"{EnumerationType.Name}__{Member.Name}";
+public record BoolLiteral(bool Value) : IAccessible
+{
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => Value ? "true" : "false";
 
     public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";

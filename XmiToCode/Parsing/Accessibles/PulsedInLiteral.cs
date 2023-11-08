@@ -1,10 +1,13 @@
 using XmiToCode.Parsing.Context;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
-public record BoolLiteral(bool Value) : IAccessible
+public record PulsedInLiteral() : IAccessible
 {
-    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => Value ? "true" : "false";
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch {
+        TargetLanguage.C => "true",
+        _ => "1"
+    };
 
     public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";

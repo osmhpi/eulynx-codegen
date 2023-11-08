@@ -1,6 +1,7 @@
-using XmiToCode.Codegen;
+using XmiToCode.Classes;
+using XmiToCode.Transformation.Model;
 
-namespace XmiToCode.Classes;
+namespace XmiToCode.Codegen.Model;
 
 public record BehaviorRecord(
     IState? State,

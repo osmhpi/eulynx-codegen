@@ -1,4 +1,6 @@
-namespace XmiToCode.Classes;
+using XmiToCode.Classes;
+
+namespace XmiToCode.Codegen.Model;
 
 public interface IBehaviorRecord
 {

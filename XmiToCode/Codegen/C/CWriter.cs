@@ -1,9 +1,10 @@
-using XmiToCode.Accessibles;
-using XmiToCode.Classes;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Transformation;
+using XmiToCode.Parsing.Model;
+using XmiToCode.Codegen.Model;
 
 namespace XmiToCode.Codegen.C;
 
@@ -30,10 +31,10 @@ public class CWriter : ICodeWriter
 
     public async Task WritePackageFilesAsync(Package pkg) {
         foreach (var klass in pkg.TryParseAllClasses()) {
-            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass), pkg);
+            await WriteClassFilesAsync(new ClassTransformer(klass).TransformClassIntoFile(), pkg);
         }
 
-        var classes = pkg.TryParseAllClasses().Select(klass => new ClassTransformer().TransformClassIntoFile(klass)).ToList();
+        var classes = pkg.TryParseAllClasses().Select(klass => new ClassTransformer(klass).TransformClassIntoFile()).ToList();
 
         if (classes.Count > 0) {
             Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {classes.Count} classes:");
@@ -102,7 +103,7 @@ typedef struct TimeoutEvent
     {
         return element switch
         {
-            Classes.ValueType valueType => WriteValueType(valueType),
+            Model.ValueType valueType => WriteValueType(valueType),
             ClassFile klass => WriteClass(klass),
             null => "",
             _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
@@ -128,7 +129,7 @@ typedef struct TimeoutEvent
         }} Message__{messageSchema.Identifier.Name};";
     }
 
-    private static string WriteValueType(Classes.ValueType valueType)
+    private static string WriteValueType(Model.ValueType valueType)
     {
         return @$"typedef enum {valueType.Identifier.Name}Value {{
             {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
@@ -356,10 +357,5 @@ void transition_{klass.Info.ClassName}({klass.Info.ClassName} *self);
 
     private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
         return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.ClassName.ClassName} *self);"));
-    }
-
-    public virtual Task WriteClassFilesAsync(RegionFlattener umlClass, ClassFile klass)
-    {
-        return WriteClassFilesAsync(klass, null);
     }
 }

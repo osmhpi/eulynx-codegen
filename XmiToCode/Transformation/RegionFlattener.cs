@@ -1,9 +1,10 @@
 using XmiToCode.Parsing.Context;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Transformation.Model;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 
 namespace XmiToCode.Transformation;
-
+/*
 public class RegionFlattener
 {
     private readonly PackagedElement _class;
@@ -127,3 +128,4 @@ public class RegionFlattener
         return InPascalCase(_class.Name);
     }
 }
+*/

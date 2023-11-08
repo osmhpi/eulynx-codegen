@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using XmiToCode.Parsing.Asal;
 
 namespace XmiToCode.Test;

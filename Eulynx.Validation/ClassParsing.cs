@@ -1,6 +1,5 @@
-using XmiToCode;
-using XmiToCode.Classes;
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
 
 namespace Eulynx.Validation;
 

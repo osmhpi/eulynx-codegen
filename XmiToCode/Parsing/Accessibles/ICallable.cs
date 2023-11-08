@@ -1,6 +1,6 @@
 using XmiToCode.Parsing.Context;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
 public interface ICallable {
     public string Call(IProgramContext context, TargetLanguage targetLanguage);

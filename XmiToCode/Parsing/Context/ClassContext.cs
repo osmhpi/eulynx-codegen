@@ -1,8 +1,8 @@
-using XmiToCode.Accessibles;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
-using static XmiToCode.Accessibles.PropertyOrPort;
+using static XmiToCode.Parsing.Accessibles.PropertyOrPort;
 
 namespace XmiToCode.Parsing.Context;
 

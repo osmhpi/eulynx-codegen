@@ -2,6 +2,7 @@ using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Transformation.Model;
 
 namespace XmiToCode;
 

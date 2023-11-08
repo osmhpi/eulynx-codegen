@@ -1,13 +1,10 @@
 using XmiToCode.Parsing.Context;
+using XmiToCode.Identifiers;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
-public record PulsedInLiteral() : IAccessible
-{
-    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => targetLanguage switch {
-        TargetLanguage.C => "true",
-        _ => "1"
-    };
+public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal) : IAccessible {
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => $"{EnumType}__{Literal.Name}";
 
     public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";

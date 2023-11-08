@@ -3,7 +3,7 @@ using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
 using System.Data;
 
-namespace XmiToCode.Classes;
+namespace XmiToCode.Parsing.Model;
 
 public record Package(GlobalContext Global, PackageContext Context, string[]? ClassWhitelist, string[]? ClassBlacklist)
 {
@@ -50,16 +50,16 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             Console.WriteLine($" failed due to model issue: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
-            // return false;
-            throw;
+            throw ex;
+            return false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($" failed: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
-            // return false;
-            throw;
+            throw ex;
+            return false;
         }
     }
 
@@ -105,7 +105,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
 
         var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 
-        return new Class(new TypeIdentifier(klass.Name), classContext, operations, region);
+        return new Class(klass, classContext, operations, region);
 
         // var umlClass = new RegionFlattener(klass, classContext, context.UmlPackage);
 

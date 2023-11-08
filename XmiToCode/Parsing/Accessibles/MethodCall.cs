@@ -1,7 +1,7 @@
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
 public record MethodCall(Identifier Identifier) : ICallable
 {

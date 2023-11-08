@@ -1,29 +1,37 @@
 using System.Text.RegularExpressions;
-using XmiToCode.Accessibles;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Asal;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
-using static XmiToCode.Codegen.CodeGenerationHelper;
+using XmiToCode.Parsing.Model;
 
-namespace XmiToCode;
+namespace XmiToCode.Transformation.Model;
 
-public record CompoundState(List<PartialState> PartialStates, StateMachine? InternalStateMachine) : IState
+public partial class CompoundState : IState
 {
-    public bool IsInitialState => PartialStates.All(x => x.Vertex.Name.Contains("Initial") && x.Vertex.Type == "uml:Pseudostate");
+    public CompoundState(List<IState> partialStates, IRegion? region)
+    {
+        PartialStates = partialStates;
+        Regions = region != null ? new List<IRegion> { region } : new List<IRegion>();
+    }
+
+    public bool IsInitialState => PartialStates.All(x => x.IsInitialState);
 
     public bool IsJunction => PartialStates.Any(x => x.IsJunction);
 
-    public bool IsRegularState => PartialStates.All(x => x.Vertex.Type == "uml:State");
+    public bool IsRegularState => PartialStates.All(x => x.IsRegularState);
 
-    public string Name => string.Join("_", PartialStates.Select(x => InPascalCase(x.Vertex.Name)));
+    public string Name => string.Join("_", PartialStates.Select(x => x.Name));
 
-    public TypeIdentifier StateName => throw new NotImplementedException();
+    public List<IRegion> Regions { get; }
+    public CompoundRegion? Region => Regions.Cast<CompoundRegion>().SingleOrDefault();
+    public List<IState> PartialStates { get; }
 
     public static bool TryParseLiteral(string input, out LiteralIdentifier? identifier) {
-        var match = Regex.Match(input, "^\"(.*)\"$");
+        var match = LiteralRegex().Match(input);
         if (match.Success) {
             identifier = new LiteralIdentifier(match.Groups[1].Value);
             return true;
@@ -70,29 +78,25 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             .ToList();
     }
 
-    public List<Instruction> ParseExit(IState next, Transition transition, IProgramContext context)
-    {
-        return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Exit?.Name ?? "", context)).ToList();
-    }
+    public List<Instruction> Entry =>
+        PartialStates.SelectMany(x => x.Entry).ToList();
 
-    public List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context)
-    {
-        return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
-    }
+    public List<Instruction> Exit =>
+        PartialStates.SelectMany(x => x.Exit).ToList();
 
-    public List<Instruction> ParseEntry(IState previous, Transition transition, IProgramContext context)
-    {
-        return PartialStates.SelectMany(x => ParseInstructions(x.Vertex.Entry?.Name ?? "", context)).ToList();
-    }
+    // public List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context)
+    // {
+    //     return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
+    // }
 
     public bool IsSourceOfTransition(UmlTransition transition)
     {
-        return PartialStates.Any(x => x.Vertex.Id == transition.Source);
+        return PartialStates.Any(x => x.IsSourceOfTransition(transition));
     }
 
     public bool IsTargetOfTransition(UmlTransition transition)
     {
-        return PartialStates.Any(x => x.Vertex.Id == transition.Target);
+        return PartialStates.Any(x => x.IsTargetOfTransition(transition));
     }
 
     internal bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
@@ -103,22 +107,22 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
             // we must only include such transitions that
             // change the partial state which is currently in a junction
 
-            var junctionPartialState = fromState.PartialStates.Where(x => x.IsJunction);
-            requireTransitionFromVertex.AddRange(junctionPartialState.Select(x => x.Vertex));
+            var junctionPartialState = fromState.PartialStates.Cast<SimpleState>().Where(x => x.IsJunction);
+            requireTransitionFromVertex.AddRange(junctionPartialState.Select(x => x.State));
         }
 
         bool isTransitioned = false;
-        foreach (var (from, to) in fromState.PartialStates.Zip(PartialStates)) {
-            if (from.Vertex != to.Vertex) {
+        foreach (var (from, to) in fromState.PartialStates.Cast<SimpleState>().Zip(PartialStates.Cast<SimpleState>())) {
+            if (from.State != to.State) {
                 if (isTransitioned) {
                     return false;
                 }
 
-                if (requireTransitionFromVertex.Count > 0 && !requireTransitionFromVertex.Contains(from.Vertex)) {
+                if (requireTransitionFromVertex.Count > 0 && !requireTransitionFromVertex.Contains(from.State)) {
                     return false;
                 }
 
-                if (transition.Source != from.Vertex.Id && transition.Target != to.Vertex.Id) {
+                if (transition.Source != from.State.Id && transition.Target != to.State.Id) {
                     return false;
                 }
 
@@ -128,8 +132,13 @@ public record CompoundState(List<PartialState> PartialStates, StateMachine? Inte
 
         return true;
     }
-}
 
-public record PartialState(UmlSubvertex Vertex, UmlRegion EnclosingRegion) {
-    public bool IsJunction => Vertex.Name.Contains("Junction") && Vertex.Type == "uml:Pseudostate";
+    [GeneratedRegex("^\"(.*)\"$")]
+    private static partial Regex LiteralRegex();
+
+    public IState WithRegion(IRegion? region)
+    {
+        // throw new NotImplementedException();
+        return new CompoundState(PartialStates, region);
+    }
 }

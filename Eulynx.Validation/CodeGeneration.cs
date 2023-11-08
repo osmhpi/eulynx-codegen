@@ -1,9 +1,10 @@
-using XmiToCode;
-using XmiToCode.Classes;
 using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
+using XmiToCode.Codegen.Model;
 using XmiToCode.Codegen.Rust;
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
+using XmiToCode.Transformation;
 
 namespace Eulynx.Validation;
 
@@ -54,7 +55,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
+            klass = new ClassTransformer(Package.ParseClass(Element, pkg.Context, Hierarchy)).TransformClassIntoFile();
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -94,7 +95,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
+            klass = new ClassTransformer(Package.ParseClass(Element, pkg.Context, Hierarchy)).TransformClassIntoFile();
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -134,7 +135,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
+            klass = new ClassTransformer(Package.ParseClass(Element, pkg.Context, Hierarchy)).TransformClassIntoFile();
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -174,7 +175,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
+            klass = new ClassTransformer(Package.ParseClass(Element, pkg.Context, Hierarchy)).TransformClassIntoFile();
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();

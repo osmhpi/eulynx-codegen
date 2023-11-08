@@ -1,6 +1,6 @@
 using XmiToCode.Parsing.Context;
 
-namespace XmiToCode.Accessibles;
+namespace XmiToCode.Parsing.Accessibles;
 
 public interface IAccessible {
     public string Accessor(IProgramContext context, TargetLanguage targetLanguage);

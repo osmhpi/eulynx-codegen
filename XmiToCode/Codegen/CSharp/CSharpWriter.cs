@@ -1,5 +1,6 @@
-using XmiToCode.Classes;
+using XmiToCode.Codegen.Model;
 using XmiToCode.Parsing.Context;
+using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
 
 namespace XmiToCode.Codegen.CSharp;
@@ -130,7 +131,7 @@ public class {klass.Info.ClassName} : IStateMachine<{klass.Info.ClassName}.{klas
     public async Task WritePackageFilesAsync(Package pkg)
     {
         foreach (var klass in pkg.TryParseAllClasses()) {
-            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass));
+            await WriteClassFilesAsync(new ClassTransformer(klass).TransformClassIntoFile());
         }
     }
 

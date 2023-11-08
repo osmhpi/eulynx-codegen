@@ -1,5 +1,5 @@
-using XmiToCode.Classes;
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
 
 namespace XmiToCode.Test;
 
@@ -7,6 +7,7 @@ public class PackageTest
 {
     public const string GenericSciPackageName = "Generic requirements for SCI";
     public const string SubsystemPointPackageName = "Subsystem Point";
+    public const string FSciEfesSecClassName = "F_SCI_EfeS_Sec";
     private readonly List<Package> _packages;
 
     public PackageTest()
@@ -31,7 +32,7 @@ public class PackageTest
     [Fact]
     public void ParsesFSciEfesSec() {
         var genericSciPackage = _packages.Single(x => x.Name.RawName == GenericSciPackageName);
-        var success = genericSciPackage.TryParseClass("F_SCI_EfeS_Sec", out var parsedClass);
+        var success = genericSciPackage.TryParseClass(FSciEfesSecClassName, out var parsedClass);
         Assert.True(success);
         Assert.NotNull(parsedClass);
     }

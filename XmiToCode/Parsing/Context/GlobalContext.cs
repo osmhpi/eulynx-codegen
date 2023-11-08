@@ -1,7 +1,7 @@
-using XmiToCode.Accessibles;
-using XmiToCode.Classes;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.Model;
 using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Context;

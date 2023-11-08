@@ -1,9 +1,11 @@
-using XmiToCode.Accessibles;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Classes;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Transformation;
+using XmiToCode.Parsing.Model;
+using XmiToCode.Codegen.Model;
 
 namespace XmiToCode.Codegen.Rust;
 
@@ -45,7 +47,7 @@ public class RustWriter : ICodeWriter
     public async Task WritePackageFilesAsync(Package pkg)
     {
         foreach (var klass in pkg.TryParseAllClasses()) {
-            await WriteClassFilesAsync(new ClassTransformer().TransformClassIntoFile(klass));
+            await WriteClassFilesAsync(new ClassTransformer(klass).TransformClassIntoFile());
         }
     }
 
@@ -54,7 +56,7 @@ public class RustWriter : ICodeWriter
         return element switch
         {
             GlobalEnumeration globalEnumeration => WriteGlobalEnumeration(globalEnumeration),
-            Classes.ValueType valueType => WriteValueType(valueType),
+            Model.ValueType valueType => WriteValueType(valueType),
             MessageSchema messageSchema => WriteMessageSchema(messageSchema),
             ClassFile klass => WriteClass(klass),
             null => "",
@@ -124,7 +126,7 @@ impl {klass.Info.ClassName}_Ports {{
         }} Message__{messageSchema.Identifier.Name};";
     }
 
-    private string WriteValueType(Classes.ValueType valueType)
+    private string WriteValueType(Model.ValueType valueType)
     {
         return @$"
         pub enum {valueType.Identifier.Name}Value {{
