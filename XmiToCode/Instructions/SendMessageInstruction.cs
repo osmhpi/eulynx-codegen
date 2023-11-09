@@ -3,24 +3,24 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-record SendMessageInstruction(MessageInitializer Initializer, IAccessible port) : Instruction
+record SendMessageInstruction(MessageInitializer Initializer, IAccessible port, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
-        return $"this.SendMessage({Initializer.ToCSharp(context)}, {port.Accessor(context, TargetLanguage.CSharp)});";
+        return $"this.SendMessage({Initializer.ToCSharp(Context)}, {port.Accessor(Context, TargetLanguage.CSharp)});";
     }
 
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
         return $@"
-  {Initializer.ToC(context)}
+  {Initializer.ToC(Context)}
   self->Out{Initializer.Message.Name}.HasMessage = 1;";
     }
 
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
         return $@"
-        {port.Accessor(context, TargetLanguage.Rust)} = {Initializer.Message.Name};
+        {port.Accessor(Context, TargetLanguage.Rust)} = {Initializer.Message.Name};
         ";
     }
 }

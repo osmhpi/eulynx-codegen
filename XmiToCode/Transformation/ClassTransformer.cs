@@ -1,3 +1,4 @@
+using XmiToCode.Codegen;
 using XmiToCode.Codegen.Model;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.Model;
@@ -47,14 +48,15 @@ public class ClassTransformer {
 
     public ClassFile TransformClassIntoFile() {
         var flatRegion = FlattenRegions(new List<IRegion> { _parsedClass.Region })!;
+        var behaviorName = new TypeIdentifier(_parsedClass.UmlClass.StateMachine.Name);
 
         return new ClassFile(
             _parsedClass.ClassName,
-            new TypeIdentifier(_parsedClass.UmlClass.StateMachine.Name),
+            behaviorName,
             _parsedClass.ClassContext,
             flatRegion,
             null, // TODO
-            null, // TODO
+            flatRegion.States.Select(x => TransitionFunction.Parse(_parsedClass.ClassName, behaviorName, x, flatRegion)).ToList(), // TODO
             null, // TODO flatRegion.States.Select(x => new StateName())
             _parsedClass.Operations,
             null

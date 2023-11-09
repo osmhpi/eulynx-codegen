@@ -7,6 +7,7 @@ using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Transformation.Model;
+using XmiToCode.Parsing.Model;
 
 namespace XmiToCode.Parsing.Asal;
 
@@ -128,18 +129,18 @@ public partial class Parser
                 Eat(current_token, TokenType.If);
                 var condition = Expr(current_token, context);
                 Eat(current_token, TokenType.Then);
-                return new IfThenInstruction(condition);
+                return new IfThenInstruction(condition, context);
             } else if (token.TokenType == TokenType.Else) {
                 Eat(current_token, TokenType.Else);
-                return new ElseInstruction();
+                return new ElseInstruction(context);
             } else if (token.TokenType == TokenType.ElseIf) {
                 Eat(current_token, TokenType.ElseIf);
                 var condition = Expr(current_token, context);
                 Eat(current_token, TokenType.Then);
-                return new ElseIfThenInstruction(condition);
+                return new ElseIfThenInstruction(condition, context);
             } else if (token.TokenType == TokenType.EndIf) {
                 Eat(current_token, TokenType.EndIf);
-                return new EndIfInstruction();
+                return new EndIfInstruction(context);
             } else if (token.TokenType == TokenType.Name) {
                 var identifier = new Identifier(token.Value);
                 Eat(current_token, TokenType.Name);
@@ -148,13 +149,13 @@ public partial class Parser
                     var callable = context.ResolveCallableIdentifier(identifier);
                     Eat(current_token, TokenType.ParenOpen);
                     Eat(current_token, TokenType.ParenClose);
-                    return new MethodCallInstruction(callable);
+                    return new MethodCallInstruction(callable, context);
                 } else if (current_token.Current.TokenType == TokenType.Assignment) {
                     // Assignment
                     var assignable = context.ResolveAssignableIdentifier(identifier);
                     Eat(current_token, TokenType.Assignment);
                     var otherFactor = Factor(current_token, context, assignable);
-                    return new AssignmentInstruction(assignable, otherFactor);
+                    return new AssignmentInstruction(assignable, otherFactor, context);
                 } else {
                     throw new ArgumentException(current_token.Current.TokenType.ToString());
                 }
@@ -195,15 +196,15 @@ public partial class Parser
                     }
 
                     var ins = new MessageInitializer(messageSchema.MessageIdentifier, messageSchema.Members, fields);
-                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier), context);
                 } else {
                     var ins = new MessageInitializer(messageSchema.MessageIdentifier, messageSchema.Members, new());
-                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier));
+                    return new SendMessageInstruction(ins, context.ResolveIdentifier(portIdentifier), context);
                 }
             } else if (token.TokenType == TokenType.Return) {
                 Eat(current_token, TokenType.Return);
                 var value = Expr(current_token, context);
-                return new ReturnInstruction(value);
+                return new ReturnInstruction(value, context);
             }
         }
 

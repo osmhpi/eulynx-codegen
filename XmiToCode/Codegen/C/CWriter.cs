@@ -113,7 +113,7 @@ typedef struct TimeoutEvent
     private static string WriteOperation(Operation operation, ClassFile klass)
     {
         return @$"void {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
-            {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
+            {JoinLines(operation.Instructions.Select(x => x.ToC()))}
         }}";
     }
 
@@ -252,20 +252,20 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 ";
     }
 
-    private static string WriteIfOrElse(List<IAccessible> expression, IProgramContext context) {
-        if (expression.SingleOrDefault() is BooleanExpression.Else) {
+    private static string WriteIfOrElse(List<Constraint> expression) {
+        if (expression.SingleOrDefault()?.Condition is BooleanExpression.Else) {
             return "else";
         }
 
         if (expression.Count == 1) {
-            return $"if ({expression.Single().Accessor(context, TargetLanguage.C)})";
+            return $"if ({expression.Single().Accessor(TargetLanguage.C)})";
         }
 
-        var conditionsInParens = expression.Select(x => $"({x.Accessor(context, TargetLanguage.C)})");
+        var conditionsInParens = expression.Select(x => $"({x.Accessor(TargetLanguage.C)})");
         return $"if ({string.Join(" && ", conditionsInParens)})";
     }
 
-    protected static string WrapWithGuard(Transition transition, List<IAccessible> c, IProgramContext context, string instructions) {
+    protected static string WrapWithGuard(Transition transition, List<Constraint> c, string instructions) {
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self->{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
@@ -274,7 +274,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             _ => throw new NotImplementedException()
         };
 
-        var constraint = c.Count > 0 ? WriteIfOrElse(c, context) : null;
+        var constraint = c.Count > 0 ? WriteIfOrElse(c) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -288,18 +288,18 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     {
         // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
         var sortedTransitions = junctionTransition.CodeTransitions
-            .OrderBy(x => x.Constraint.SingleOrDefault() is BooleanExpression.Else);
+            .OrderBy(x => x.Constraint.SingleOrDefault()?.Condition is BooleanExpression.Else);
 
-        return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint, junctionTransition.context,
-            $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC(junctionTransition.context)))}
+        return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint,
+            $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC()))}
                     {string.Join("\n", sortedTransitions.Select(x => WriteICodeTransition(x, states)))}"
         );
     }
 
     private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
-        return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint, codeTransition.context,
-            $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC(codeTransition.context)))}
+        return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
+            $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
                 return make_state_{states[codeTransition.Transition.To]}(self);"
         );
     }

@@ -113,9 +113,10 @@ impl {klass.ClassName.Name}_Ports {{
     private string WriteOperation(Operation operation, ClassFile klass)
     {
         return @$"fn {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
-            {JoinLines(operation.Instructions.Select(x => x.ToC(klass.ClassContext)))}
+            {JoinLines(operation.Instructions.Select(x => x.ToC()))}
         }}";
     }
+
     private string WriteMessageSchema(MessageSchema messageSchema)
     {
         return @$"
@@ -282,16 +283,16 @@ impl {klass.ClassName.Name} {{
 ";
     }
 
-    private string WriteIfOrElse(List<IAccessible> expression, IProgramContext context) {
-        if (expression.SingleOrDefault() is BooleanExpression.Else) {
+    private string WriteIfOrElse(List<Constraint> expression) {
+        if (expression.SingleOrDefault()?.Condition is BooleanExpression.Else) {
             return "else";
         }
 
-        var conditionsInParens = expression.Select(x => $"({x.Accessor(context, TargetLanguage.Rust)})");
+        var conditionsInParens = expression.Select(x => $"({x.Accessor(TargetLanguage.Rust)})");
         return $"if ({string.Join(" && ", conditionsInParens)})";
     }
 
-    protected string WrapWithGuard(Transition transition, List<IAccessible> c, IProgramContext context, string instructions) {
+    protected string WrapWithGuard(Transition transition, List<Constraint> c, string instructions) {
         var condition = transition switch {
             ChangeEventTransition changeEvent => $"if (self.{changeEvent.theEvent.Name}.IsTriggered)",
             TimeEventTransition timeEvent => $"if (self.{timeEvent.theEvent.Name}.IsTimeoutExpired)",
@@ -300,7 +301,7 @@ impl {klass.ClassName.Name} {{
             _ => throw new NotImplementedException()
         };
 
-        var constraint = c.Count > 0 ? WriteIfOrElse(c, context) : null;
+        var constraint = c.Count > 0 ? WriteIfOrElse(c) : null;
 
         var wrapWithIfElseExpression = (string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
@@ -312,16 +313,16 @@ impl {klass.ClassName.Name} {{
 
     private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
     {
-        return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint, junctionTransition.context,
-            $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToRust(junctionTransition.context)))}
+        return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint,
+            $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToRust()))}
                     {string.Join("\n", junctionTransition.CodeTransitions.Select(x => WriteICodeTransition(x, states)))}"
         );
     }
 
     private string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
-        return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint, codeTransition.context,
-            $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToRust(codeTransition.context)))}
+        return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
+            $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToRust()))}
                 return make_state_{states[codeTransition.Transition.To]}(ports);"
         );
     }

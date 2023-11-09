@@ -1,3 +1,5 @@
+using XmiToCode.Parsing.Model;
+
 namespace XmiToCode.Transformation.Model;
 
 public record CompoundRegion(List<IState> States, List<Transition> Transitions) : IRegion {

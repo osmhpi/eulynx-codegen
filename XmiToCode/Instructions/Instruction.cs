@@ -2,8 +2,8 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-public abstract record Instruction {
-    internal abstract string ToCSharp(IProgramContext context);
-    internal abstract string ToC(IProgramContext context);
-    internal abstract string ToRust(IProgramContext context);
+public abstract record Instruction(IProgramContext Context) {
+    internal abstract string ToCSharp();
+    internal abstract string ToC();
+    internal abstract string ToRust();
 }

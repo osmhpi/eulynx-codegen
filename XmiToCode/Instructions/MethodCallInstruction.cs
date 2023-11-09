@@ -3,18 +3,18 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-record MethodCallInstruction(ICallable Callable) : Instruction
+record MethodCallInstruction(ICallable Callable, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
-        return $"{Callable.Call(context, TargetLanguage.CSharp)};";
+        return $"{Callable.Call(Context, TargetLanguage.CSharp)};";
     }
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
-        return $"{Callable.Call(context, TargetLanguage.C)};";
+        return $"{Callable.Call(Context, TargetLanguage.C)};";
     }
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
-        return $"{Callable.Call(context, TargetLanguage.Rust)};";
+        return $"{Callable.Call(Context, TargetLanguage.Rust)};";
     }
 }

@@ -3,73 +3,73 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-record IfThenInstruction(IAccessible Condition) : Instruction
+record IfThenInstruction(IAccessible Condition, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
-        return @$"if ({Condition.Accessor(context, TargetLanguage.C)}) {{";
+        return @$"if ({Condition.Accessor(Context, TargetLanguage.C)}) {{";
     }
 
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
         throw new NotImplementedException();
     }
 }
 
-record ElseInstruction() : Instruction
+record ElseInstruction(IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
         return "} else {";
     }
 
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToRust(IProgramContext context)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-record ElseIfThenInstruction(IAccessible Condition) : Instruction
-{
-    internal override string ToC(IProgramContext context)
-    {
-        return @$"}} else if ({Condition.Accessor(context, TargetLanguage.C)}) {{";
-    }
-
-    internal override string ToCSharp(IProgramContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
         throw new NotImplementedException();
     }
 }
 
-record EndIfInstruction() : Instruction
+record ElseIfThenInstruction(IAccessible Condition, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
+    {
+        return @$"}} else if ({Condition.Accessor(Context, TargetLanguage.C)}) {{";
+    }
+
+    internal override string ToCSharp()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal override string ToRust()
+    {
+        throw new NotImplementedException();
+    }
+}
+
+record EndIfInstruction(IProgramContext Context) : Instruction(Context)
+{
+    internal override string ToC()
     {
         return "}";
     }
 
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
         throw new NotImplementedException();
     }

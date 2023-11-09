@@ -1,4 +1,6 @@
 
+using XmiToCode.Parsing.Model;
+
 namespace XmiToCode;
 
 public interface IRegion

@@ -14,7 +14,7 @@ public class KleeWriter : CWriter {
         return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.ClassName.Name} *self) {{
             int result = 0;
             {string.Join("\n", transitionFunction.Transitions
-                .Select(x => WrapWithGuard(x.Transition, x.Constraint, x.context, "result++;")))}
+                .Select(x => WrapWithGuard(x.Transition, x.Constraint, "result++;")))}
             return result;
         }}
 

@@ -4,6 +4,7 @@ using XmiToCode.Identifiers;
 using XmiToCode.Messages;
 using XmiToCode.Parsing.XmiModel;
 using XmiToCode.Transformation.Model;
+using XmiToCode.Parsing.Model;
 
 namespace XmiToCode.Codegen.Model;
 

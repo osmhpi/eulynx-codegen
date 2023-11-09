@@ -3,19 +3,19 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-record ReturnInstruction(IAccessible Value) : Instruction
+record ReturnInstruction(IAccessible Value, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
-        return @$"return {Value.Accessor(context, TargetLanguage.C)};";
+        return @$"return {Value.Accessor(Context, TargetLanguage.C)};";
     }
 
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
         throw new NotImplementedException();
     }

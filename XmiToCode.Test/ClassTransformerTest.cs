@@ -52,4 +52,16 @@ public class ClassTransformerTest
             region.States.SelectMany(state => state.Regions).All(RegionHasAtLeastOneTransition);
         Assert.True(RegionHasAtLeastOneTransition(region));
     }
+
+    [Fact]
+    public void AssemblesTransitionFunctions() {
+        var classFile = _transformer.TransformClassIntoFile();
+        Assert.True(classFile.TransitionFunctions.Any());
+    }
+
+    [Fact]
+    public void TransitionFunctionsShouldHaveTransitions() {
+        var classFile = _transformer.TransformClassIntoFile();
+        Assert.True(classFile.TransitionFunctions.All(x => x.Transitions.Any()));
+    }
 }

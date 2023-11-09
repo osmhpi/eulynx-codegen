@@ -102,7 +102,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
     private string WriteJunctionTransition(JunctionTransition junctionTransition)
     {
         return $@"{{
-            {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp(junctionTransition.context)))}
+            {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp()))}
             {string.Join("\n", junctionTransition.CodeTransitions.Select(x => Write(x)))}
         }}";
     }
@@ -110,7 +110,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
     private string WriteCodeTransition(CodeTransition codeTransition)
     {
         return $@"{{
-            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp(codeTransition.context)))}
+            {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp()))}
             return {codeTransition.stateName}.New(this);
         }}";
     }

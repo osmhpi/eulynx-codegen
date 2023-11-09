@@ -3,18 +3,18 @@ using XmiToCode.Parsing.Context;
 
 namespace XmiToCode.Instructions;
 
-record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs) : Instruction
+record AssignmentInstruction(IAssignable Lhs, IAccessible Rhs, IProgramContext Context) : Instruction(Context)
 {
-    internal override string ToCSharp(IProgramContext context)
+    internal override string ToCSharp()
     {
-        return Lhs.Assign(context, Rhs, TargetLanguage.CSharp);
+        return Lhs.Assign(Context, Rhs, TargetLanguage.CSharp);
     }
-    internal override string ToC(IProgramContext context)
+    internal override string ToC()
     {
-        return Lhs.Assign(context, Rhs, TargetLanguage.C);
+        return Lhs.Assign(Context, Rhs, TargetLanguage.C);
     }
-    internal override string ToRust(IProgramContext context)
+    internal override string ToRust()
     {
-        return Lhs.Assign(context, Rhs, TargetLanguage.Rust);
+        return Lhs.Assign(Context, Rhs, TargetLanguage.Rust);
     }
 }
