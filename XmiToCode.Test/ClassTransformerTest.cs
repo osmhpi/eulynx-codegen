@@ -64,4 +64,10 @@ public class ClassTransformerTest
         var classFile = _transformer.TransformClassIntoFile();
         Assert.True(classFile.TransitionFunctions.All(x => x.Transitions.Any()));
     }
+
+    [Fact]
+    public void AssemblesNestedBehaviorRecord() {
+        var classFile = _transformer.TransformClassIntoFile();
+        Assert.True(classFile.Behavior.Subrecords.Any());
+    }
 }

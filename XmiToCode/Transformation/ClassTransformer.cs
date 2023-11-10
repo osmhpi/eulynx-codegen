@@ -46,6 +46,26 @@ public class ClassTransformer {
         return TransformRegionRecursively(result, UpdateTransitions);
     }
 
+
+    private IBehaviorRecord MakeSubrecord(string recordName, TypeIdentifier className, IState x) {
+        var region = x.Regions.SingleOrDefault();
+        if (region != null) {
+            return ParseStateRecord(x, region, x.Name, recordName, className);
+        } else {
+            return new SimpleBehaviorRecord(x, x.Name, recordName, className);
+        }
+    }
+
+    private BehaviorRecord ParseStateRecord(IState? x, IRegion region, string name, string? parentBehaviorName, TypeIdentifier className) {
+        var subrecords = region.States.Select(x => MakeSubrecord(name, className, x)).ToList();
+        var initialTransition = TransitionFunction.GetAllTransitionsFromState(region, (parentBehaviorName != null ? parentBehaviorName + "." : "") + name, region.InitialState).Single();
+        var initializer = TransitionFunction.ParseTransition(initialTransition.transition, region,
+            region.InitialState.Name, region.InitialState, initialTransition.state, initialTransition.stateName,
+            false, className);
+
+        return new BehaviorRecord(x, region, name, parentBehaviorName, className, initializer, subrecords);
+    }
+
     public ClassFile TransformClassIntoFile() {
         var flatRegion = FlattenRegions(new List<IRegion> { _parsedClass.Region })!;
         var behaviorName = new TypeIdentifier(_parsedClass.UmlClass.StateMachine.Name);
@@ -55,8 +75,8 @@ public class ClassTransformer {
             behaviorName,
             _parsedClass.ClassContext,
             flatRegion,
-            null, // TODO
-            flatRegion.States.Select(x => TransitionFunction.Parse(_parsedClass.ClassName, behaviorName, x, flatRegion)).ToList(), // TODO
+            ParseStateRecord(null, _parsedClass.Region, _parsedClass.ClassName.Name, null, _parsedClass.ClassName),
+            flatRegion.States.Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x, flatRegion)).ToList(),
             null, // TODO flatRegion.States.Select(x => new StateName())
             _parsedClass.Operations,
             null

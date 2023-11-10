@@ -247,7 +247,7 @@ impl {klass.ClassName.Name} {{
     {
         return initializer switch
         {
-            JunctionTransition j => WriteJunctionTransition(j, states),
+            JunctionCodeTransition j => WriteJunctionTransition(j, states),
             CodeTransition c => WriteCodeTransition(c, states),
             _ => throw new NotImplementedException()
         };
@@ -311,7 +311,7 @@ impl {klass.ClassName.Name} {{
         return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint, instructions));
     }
 
-    private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
+    private string WriteJunctionTransition(JunctionCodeTransition junctionTransition, Dictionary<IState, string> states)
     {
         return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint,
             $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToRust()))}

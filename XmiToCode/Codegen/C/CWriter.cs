@@ -216,7 +216,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     {
         return initializer switch
         {
-            JunctionTransition j => WriteJunctionTransition(j, states),
+            JunctionCodeTransition j => WriteJunctionTransition(j, states),
             CodeTransition c => WriteCodeTransition(c, states),
             _ => throw new NotImplementedException()
         };
@@ -284,7 +284,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
         return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint, instructions));
     }
 
-    private string WriteJunctionTransition(JunctionTransition junctionTransition, Dictionary<IState, string> states)
+    private string WriteJunctionTransition(JunctionCodeTransition junctionTransition, Dictionary<IState, string> states)
     {
         // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
         var sortedTransitions = junctionTransition.CodeTransitions

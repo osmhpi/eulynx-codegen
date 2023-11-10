@@ -21,7 +21,7 @@ public class CSharpWriter : ICodeWriter {
     public string Write<T>(T element) {
         return element switch {
             CodeTransition codeTransition => WriteCodeTransition(codeTransition),
-            JunctionTransition junctionTransition => WriteJunctionTransition(junctionTransition),
+            JunctionCodeTransition junctionTransition => WriteJunctionTransition(junctionTransition),
             SimpleBehaviorRecord simpleBehaviorRecord => WriteSimpleBehaviorRecord(simpleBehaviorRecord),
             TransitionFunction transitionFunction => WriteTransitionFunction(transitionFunction),
             BehaviorRecord behaviorRecord => WriteBehaviorRecord(behaviorRecord),
@@ -99,7 +99,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
 ";
     }
 
-    private string WriteJunctionTransition(JunctionTransition junctionTransition)
+    private string WriteJunctionTransition(JunctionCodeTransition junctionTransition)
     {
         return $@"{{
             {string.Join("\n", junctionTransition.Activities.Select(x => x.ToCSharp()))}

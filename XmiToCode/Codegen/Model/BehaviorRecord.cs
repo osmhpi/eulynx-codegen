@@ -1,5 +1,4 @@
 using XmiToCode.Identifiers;
-using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Codegen.Model;
 

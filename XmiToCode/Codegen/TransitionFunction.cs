@@ -11,8 +11,8 @@ public record TransitionFunction(
     string Name,
     List<ICodeTransition> Transitions
 ) {
-    public static IEnumerable<(Transition transition, IState state, string stateName)> GetTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
-        var transitionsOnCurrentLevel = region.Transitions.Where(x => x.From == fromState)
+    public static IEnumerable<(Transition transition, IState state, string stateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
+        var transitionsOnCurrentLevel = region.Transitions.Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
             .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
 
         // Does fromState match one of our child state machines?
@@ -21,7 +21,7 @@ public record TransitionFunction(
             .Select(state => new {
                 FromState = state,
                 ChildStateMachine = state.Regions.Single(),
-                Transitions = GetTransitionsFromState(state.Regions.Single(), state.Name, fromState, skipParentTransitions).ToList()
+                Transitions = GetAllTransitionsFromState(state.Regions.Single(), state.Name, fromState, skipParentTransitions).ToList()
             })
             .Where(x => x.Transitions.Any())
             .ToList();
@@ -40,7 +40,7 @@ public record TransitionFunction(
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public static TransitionFunction Parse(TypeIdentifier className, TypeIdentifier behaviorName, IState fromState, IRegion region) {
+    public static TransitionFunction Create(TypeIdentifier className, TypeIdentifier behaviorName, IState fromState, IRegion region) {
         var thisName = "this";
         var transitions = GetCodeTransitions(region, thisName, fromState, className, false);
 
@@ -53,7 +53,7 @@ public record TransitionFunction(
     }
 
     public static List<ICodeTransition> GetCodeTransitions(IRegion region, string thisName, IState fromState, TypeIdentifier className, bool skipParentTransitions) {
-        var transitions = GetTransitionsFromState(region, fromState.Name, fromState, false);
+        var transitions = GetAllTransitionsFromState(region, fromState.Name, fromState, false);
 
         var regularTransitions = transitions.Where(x => x.state.IsRegularState);
         var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
@@ -93,7 +93,7 @@ public record TransitionFunction(
         }
 
         if (state.IsJunction) {
-            return new JunctionTransition(
+            return new JunctionCodeTransition(
                 ParseActivities(fromState, state, theTransition),
                 // GetTransitionsFromState(state.Regions.Single(), thisName, state, false).ToList(),
                 GetCodeTransitions(region, thisName, state, className, true),
@@ -118,7 +118,7 @@ public record CodeTransition(
     Transition Transition
 ) : ICodeTransition;
 
-public record JunctionTransition(
+public record JunctionCodeTransition(
     List<Instruction> Activities,
     List<ICodeTransition> CodeTransitions,
     List<Constraint> Constraint,
