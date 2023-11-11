@@ -12,12 +12,15 @@ public record TransitionFunction(
     List<ICodeTransition> Transitions
 ) {
     public static IEnumerable<(Transition transition, IState state, string stateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
-        var transitionsOnCurrentLevel = region.Transitions.Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
+        var transitionsOnCurrentLevel = region.Transitions
+            .Where(x => x.Transitions.Count == 1) // this will only filter out initial transitions, we won't call this method for the initial state
+            .Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
             .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
 
         // Does fromState match one of our child state machines?
         var childStateMachineTransitions = region.States
             .Where(x => x.Regions.Any())
+            .Where(x => !x.IsInitialState) // we can safely assume that the initial state does not transition out of the child sm
             .Select(state => new {
                 FromState = state,
                 ChildStateMachine = state.Regions.Single(),

@@ -1,4 +1,5 @@
 using XmiToCode.Parsing;
+using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
 
 namespace XmiToCode.Test;
@@ -51,6 +52,15 @@ public class ClassTransformerTest
             region.Transitions.Any() &&
             region.States.SelectMany(state => state.Regions).All(RegionHasAtLeastOneTransition);
         Assert.True(RegionHasAtLeastOneTransition(region));
+    }
+
+    [Fact]
+    public void FlattenedRegionsShouldHaveOneInitialTransition() {
+        var region = _transformer.FlattenRegions();
+        static bool RegionHasOneInitialTransition(IRegion region) =>
+            region.Transitions.OfType<InitialTransition>().Count() == 1 &&
+            region.States.SelectMany(state => state.Regions).All(RegionHasOneInitialTransition);
+        Assert.True(RegionHasOneInitialTransition(region));
     }
 
     [Fact]

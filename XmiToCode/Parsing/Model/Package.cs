@@ -103,7 +103,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
 
         var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 
-        return new Class(klass, classContext, operations, region);
+        return new Class(klass, classContext, operations, region, hierarchy);
 
         // var umlClass = new RegionFlattener(klass, classContext, context.UmlPackage);
 

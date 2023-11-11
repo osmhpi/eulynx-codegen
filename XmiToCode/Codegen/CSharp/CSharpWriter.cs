@@ -62,7 +62,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
     public void Transition() {{
         _state = _state switch {{
             {string.Join(",\n", klass.States.Select(t =>
-              string.Join(",\n", $"{t.Name} => TransitionFrom{t.Name.Replace(".", "__")}()")))}
+              string.Join(",\n", $"{t} => TransitionFrom{t.Replace(".", "__")}()")))}
       }};
     }}
 

@@ -206,7 +206,7 @@ impl {klass.ClassName.Name} {{
     fn transition(&mut self, ports: &mut {klass.ClassName.Name}_Ports) -> () {{
         match self.state {{
             {string.Join("\n", klass.States.Select(t =>
-        string.Join("\n", $"\t\t\t{klass.BehaviorName.Name}::{t.Name.Replace(".", "__")} => \n\t\t\tself.state = self.transition_from_{t.Name.Replace(".", "__")}(ports),")))}
+        string.Join("\n", $"\t\t\t{klass.BehaviorName.Name}::{t.Replace(".", "__")} => \n\t\t\tself.state = self.transition_from_{t.Replace(".", "__")}(ports),")))}
             }}
         }}
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}

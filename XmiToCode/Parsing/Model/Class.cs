@@ -8,7 +8,7 @@ public record Class(
     PackagedElement UmlClass,
     ClassContext ClassContext,
     List<Operation> Operations,
-    Region Region
-) {
+    Region Region,
+    List<PackagedElement> Hierarchy) {
     public TypeIdentifier ClassName { get; } = new TypeIdentifier(UmlClass.Name);
 }

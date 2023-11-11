@@ -15,7 +15,7 @@ public record ClassFile(
     CompoundRegion FlatRegion,
     BehaviorRecord Behavior,
     List<TransitionFunction> TransitionFunctions,
-    List<TypeIdentifier> States,
+    List<string> States,
     List<Operation> Operations,
     List<PackagedElement> PackageHierarchy)
 {

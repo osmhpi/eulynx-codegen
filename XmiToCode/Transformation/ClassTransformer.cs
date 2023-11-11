@@ -14,14 +14,16 @@ public class ClassTransformer {
         _parsedClass = parsedClass;
     }
 
-    public IRegion FlattenRegions() {
+    public CompoundRegion FlattenRegions() {
         var result = FlattenRegions(new List<IRegion> { _parsedClass.Region })!;
 
         CompoundRegion UpdateTransitions(CompoundRegion region) {
             var transitions = new List<Transition>();
             foreach (var transition in region.Transitions) {
                 var sourceStates = region.States.Cast<CompoundState>()
-                    .Where(x => x.IsSourceOfTransition(transition.SingleTransition));
+                    .Where(x => x.IsSourceOfTransition(transition.SingleTransition))
+                    // Initial transition receives special care below
+                    .Where(x => !x.IsInitialState);
                 var targetStates = region.States.Cast<CompoundState>()
                     .Where(x => x.IsTargetOfTransition(transition.SingleTransition));
                 transitions.AddRange(
@@ -31,6 +33,19 @@ public class ClassTransformer {
                     select transition with { From = source, To = target }
                 );
             }
+
+            // Combine initial transitions into one
+            var initialTransitions = region.Transitions.OfType<InitialTransition>().ToList();
+            var initialTransition = new InitialTransition(
+                region.States.Single(x => initialTransitions.All(transition => x.IsSourceOfTransition(transition.Transitions.Single()))),
+                region.States.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition.Transitions.Single()))),
+                initialTransitions.SelectMany(x => x.Transitions).ToList(),
+                initialTransitions.SelectMany(x => x.Instructions).ToList(),
+                initialTransitions.SelectMany(x => x.Constraints).ToList()
+            );
+
+            transitions.Add(initialTransition);
+
             return region with { Transitions = transitions };
         }
 
@@ -58,16 +73,16 @@ public class ClassTransformer {
 
     private BehaviorRecord ParseStateRecord(IState? x, IRegion region, string name, string? parentBehaviorName, TypeIdentifier className) {
         var subrecords = region.States.Select(x => MakeSubrecord(name, className, x)).ToList();
-        var initialTransition = TransitionFunction.GetAllTransitionsFromState(region, (parentBehaviorName != null ? parentBehaviorName + "." : "") + name, region.InitialState).Single();
-        var initializer = TransitionFunction.ParseTransition(initialTransition.transition, region,
-            region.InitialState.Name, region.InitialState, initialTransition.state, initialTransition.stateName,
+        var initialTransition = region.Transitions.OfType<InitialTransition>().Single();
+        var initializer = TransitionFunction.ParseTransition(initialTransition, region,
+            region.InitialState.Name, region.InitialState, initialTransition.To, initialTransition.To.Name,
             false, className);
 
         return new BehaviorRecord(x, region, name, parentBehaviorName, className, initializer, subrecords);
     }
 
     public ClassFile TransformClassIntoFile() {
-        var flatRegion = FlattenRegions(new List<IRegion> { _parsedClass.Region })!;
+        var flatRegion = FlattenRegions();
         var behaviorName = new TypeIdentifier(_parsedClass.UmlClass.StateMachine.Name);
 
         return new ClassFile(
@@ -75,11 +90,11 @@ public class ClassTransformer {
             behaviorName,
             _parsedClass.ClassContext,
             flatRegion,
-            ParseStateRecord(null, _parsedClass.Region, _parsedClass.ClassName.Name, null, _parsedClass.ClassName),
+            ParseStateRecord(null, flatRegion, _parsedClass.ClassName.Name, null, _parsedClass.ClassName),
             flatRegion.States.Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x, flatRegion)).ToList(),
-            null, // TODO flatRegion.States.Select(x => new StateName())
+            flatRegion.States.Select(x => x.Name).ToList(),
             _parsedClass.Operations,
-            null
+            _parsedClass.Hierarchy
             // hierarchy
             // stateMachine.Parse(info, classContext),
             // stateMachine.ParseTransitionFunctions(info, classContext).ToList(),

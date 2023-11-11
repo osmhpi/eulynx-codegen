@@ -135,7 +135,7 @@ public abstract record BooleanExpression() : IAccessible {
     }
 }
 
-record MessageEventTransition(IState From, IState To, UmlTransition Transition, PackagedElement evt, TypeIdentifier MessageType, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, new List<UmlTransition> { Transition }, Instructions, Constraints);
+public record MessageEventTransition(IState From, IState To, UmlTransition Transition, PackagedElement evt, TypeIdentifier MessageType, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, new List<UmlTransition> { Transition }, Instructions, Constraints);
 
-record InitialTransition(IState From, IState To, List<UmlTransition> Transitions, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, Transitions, Instructions, Constraints);
-record JunctionTransition(IState From, IState To, List<UmlTransition> Transitions, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, Transitions, Instructions, Constraints);
+public record InitialTransition(IState From, IState To, List<UmlTransition> Transitions, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, Transitions, Instructions, Constraints);
+public record JunctionTransition(IState From, IState To, List<UmlTransition> Transitions, List<Instruction> Instructions, List<Constraint> Constraints) : Transition(From, To, Transitions, Instructions, Constraints);
