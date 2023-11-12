@@ -30,15 +30,17 @@ public class CWriter : ICodeWriter
     }
 
     public async Task WritePackageFilesAsync(Package pkg) {
+        var successfulClassNames = new List<string>();
         foreach (var klass in pkg.TryParseAllClasses()) {
-            await WriteClassFilesAsync(new ClassTransformer(klass).TransformClassIntoFile(), pkg);
+            var transfomer = new ClassTransformer(klass);
+            var classFile = transfomer.TransformClassIntoFile();
+            await WriteClassFilesAsync(classFile, pkg);
+            successfulClassNames.Add(klass.ClassName.Name);
         }
 
-        var classes = pkg.TryParseAllClasses().Select(klass => new ClassTransformer(klass).TransformClassIntoFile()).ToList();
-
-        if (classes.Count > 0) {
-            Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {classes.Count} classes:");
-            foreach (var success in classes.Select(x => x.ClassName.Name))
+        if (successfulClassNames.Count > 0) {
+            Console.WriteLine($"Package {pkg.Name.Name} - successfully generated {successfulClassNames.Count} classes:");
+            foreach (var success in successfulClassNames)
                 Console.WriteLine($"   - {success}");
             Console.WriteLine();
         }
@@ -253,7 +255,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     }
 
     private static string WriteIfOrElse(List<Constraint> expression) {
-        if (expression.SingleOrDefault()?.Condition is BooleanExpression.Else) {
+        if (expression.All(c => c.Condition is BooleanExpression.Else)) {
             return "else";
         }
 
@@ -271,24 +273,25 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
             MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.HasMessage)",
             InitialTransition => "", // TODO
+            JunctionTransition => "", // no triggers necessary from transitioning from a junction state
             _ => throw new NotImplementedException()
         };
 
         var constraint = c.Count > 0 ? WriteIfOrElse(c) : null;
 
-        var wrapWithIfElseExpression = (string? expr, string block) =>
+        static string WrapWithIfElseExpression(string? expr, string block) =>
             string.IsNullOrWhiteSpace(expr) ? block : @$"{expr} {{
                 {block}
             }}";
 
-        return wrapWithIfElseExpression(condition, wrapWithIfElseExpression(constraint, instructions));
+        return WrapWithIfElseExpression(condition, WrapWithIfElseExpression(constraint, instructions));
     }
 
     private string WriteJunctionTransition(JunctionCodeTransition junctionTransition, Dictionary<IState, string> states)
     {
         // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
         var sortedTransitions = junctionTransition.CodeTransitions
-            .OrderBy(x => x.Constraint.SingleOrDefault()?.Condition is BooleanExpression.Else);
+            .OrderBy(x => x.Constraint.All(c => c.Condition is BooleanExpression.Else));
 
         return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint,
             $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC()))}

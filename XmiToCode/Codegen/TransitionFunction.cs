@@ -1,4 +1,3 @@
-using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Instructions;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.Model;
@@ -11,16 +10,19 @@ public record TransitionFunction(
     string Name,
     List<ICodeTransition> Transitions
 ) {
-    public static IEnumerable<(Transition transition, IState state, string stateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
+    public static IEnumerable<(Transition Transition, IState ToState, string ToStateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
         var transitionsOnCurrentLevel = region.Transitions
-            .Where(x => x.Transitions.Count == 1) // this will only filter out initial transitions, we won't call this method for the initial state
-            .Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
-            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"));
+            .Where(x => x is not InitialTransition)
+            .Where(x => fromState.IsSourceOfTransitions(x.Transitions.ToArray()))
+            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
+            .ToList();
 
         // Does fromState match one of our child state machines?
         var childStateMachineTransitions = region.States
             .Where(x => x.Regions.Any())
-            .Where(x => !x.IsInitialState) // we can safely assume that the initial state does not transition out of the child sm
+            // we can safely assume that the initial state does not
+            // transition out of the child state machine
+            .Where(x => !x.IsInitialState)
             .Select(state => new {
                 FromState = state,
                 ChildStateMachine = state.Regions.Single(),
@@ -30,7 +32,7 @@ public record TransitionFunction(
             .ToList();
 
         return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
-            var result = childStateMachineTransition.Transitions.Select(x => (x.transition, x.state, $"{thisName}.{x.stateName}"));
+            var result = childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState, $"{thisName}.{x.ToStateName}"));
 
             if (skipParentTransitions) {
                 return result;
@@ -52,19 +54,20 @@ public record TransitionFunction(
             className,
             fromState.Name,
             transitions);
-            // region.Transitions.Where(x => fromState.IsSourceOfTransition(x.SingleTransition)).ToList());
     }
 
     public static List<ICodeTransition> GetCodeTransitions(IRegion region, string thisName, IState fromState, TypeIdentifier className, bool skipParentTransitions) {
-        var transitions = GetAllTransitionsFromState(region, fromState.Name, fromState, false);
+        var transitions = GetAllTransitionsFromState(region, fromState.Name, fromState, skipParentTransitions).ToList();
 
-        var regularTransitions = transitions.Where(x => x.state.IsRegularState);
-        var noTriggerConditions = regularTransitions.All(x => x.transition.SingleTransition.Trigger == null);
+        // TODO
+        // var regularTransitions = transitions.Where(x => x.ToState.IsRegularState);
+        // var noTriggerConditions = regularTransitions.All(x => x.Transition.SingleTransition.Trigger == null);
+        var noTriggerConditions = false;
 
-        return transitions.Select(x => ParseTransition(x.transition, region, thisName, fromState, x.state, x.stateName, noTriggerConditions, className)).ToList();
+        return transitions.Select(x => CreateCodeTransition(x.Transition, region, thisName, fromState, x.ToState, x.ToStateName, noTriggerConditions, className)).ToList();
     }
 
-    public static List<Instruction> ParseActivities(IState fromState, IState toState, Transition transition)
+    public static List<Instruction> SelectActivities(IState fromState, IState toState, Transition transition)
     {
         // TODO: These signatures look implausible.
         // TODO: Partial transitions, exit/entry for compound states
@@ -75,31 +78,31 @@ public record TransitionFunction(
         return new [] {exit, transitionEffect, entry}.SelectMany(x => x).ToList();
     }
 
-    public static ICodeTransition ParseTransition(
+    public static ICodeTransition CreateCodeTransition(
         Transition theTransition,
         IRegion region,
         string thisName,
         IState fromState,
-        IState state,
-        string stateName,
+        IState toState,
+        string toStateName,
         bool noTriggerConditions,
         TypeIdentifier className) {
 
-        if (state.IsRegularState) {
+        if (toState.IsRegularState) {
             if (noTriggerConditions) {
-                return new CodeTransition(stateName,
-                    ParseActivities(fromState, state, theTransition), theTransition.Constraints, theTransition);
+                return new CodeTransition(toStateName,
+                    SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
             } else {
-                return new CodeTransition(stateName,
-                    ParseActivities(fromState, state, theTransition), theTransition.Constraints, theTransition);
+                return new CodeTransition(toStateName,
+                    SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
             }
         }
 
-        if (state.IsJunction) {
+        if (toState.IsJunction) {
+            var subsequentTransitions = GetCodeTransitions(region, thisName, toState, className, true);
             return new JunctionCodeTransition(
-                ParseActivities(fromState, state, theTransition),
-                // GetTransitionsFromState(state.Regions.Single(), thisName, state, false).ToList(),
-                GetCodeTransitions(region, thisName, state, className, true),
+                SelectActivities(fromState, toState, theTransition),
+                subsequentTransitions,
                 theTransition.Constraints,
                 theTransition
             );

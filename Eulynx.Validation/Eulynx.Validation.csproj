@@ -21,4 +21,10 @@
     <ProjectReference Include="..\XmiToCode\XmiToCode.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="../cleaned_19.xmi" CopyToOutputDirectory="Always" />
+    <Content Include="../cleaned_22.xmi" CopyToOutputDirectory="Always" />
+    <Content Include="../cleaned_23.xmi" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
 </Project>

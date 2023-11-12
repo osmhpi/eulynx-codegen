@@ -23,6 +23,6 @@ public interface IState
     // List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context);
     // List<Instruction> ParseEntry(IState previous, Transition transition, IProgramContext context);
 
-    bool IsSourceOfTransition(UmlTransition transition);
+    bool IsSourceOfTransitions(params UmlTransition[] transition);
     bool IsTargetOfTransition(UmlTransition transition);
 }

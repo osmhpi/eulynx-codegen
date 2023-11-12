@@ -40,9 +40,9 @@ public class SimpleState : IState
         return new SimpleState(x, entry, exit, regions);
     }
 
-    public bool IsSourceOfTransition(UmlTransition transition)
+    public bool IsSourceOfTransitions(UmlTransition[] transitions)
     {
-        return State.Id == transition.Source;
+        return State.Id == transitions.Single().Source;
     }
 
     public bool IsTargetOfTransition(UmlTransition transition)

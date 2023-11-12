@@ -12,9 +12,7 @@ public class Compilation
     {
         get
         {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)

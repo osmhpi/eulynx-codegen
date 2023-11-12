@@ -1,4 +1,5 @@
-﻿using XmiToCode;
+﻿using System.Reflection;
+using XmiToCode;
 using XmiToCode.Codegen;
 using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
@@ -20,7 +21,8 @@ var classBlacklist = new string[] {
     // "Block1"
 };
 
-var processor = new EulynxV22XmiParser(Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set"));
+var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("Could not resolve assembly directory");
+var processor = new EulynxV22XmiParser(Path.Combine(assemblyDir, "cleaned_22.xmi"));
 
 // Test if input arguments were supplied.
 if (args.Length == 1 && args[0] == "validate")

@@ -15,9 +15,7 @@ public class CodeGeneration
     {
         get
         {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
@@ -31,8 +29,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new EulynxV22XmiParser(xmiPath);
+            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -50,8 +47,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
@@ -71,8 +67,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new EulynxV22XmiParser(xmiPath);
+            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -90,8 +85,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
@@ -111,8 +105,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new EulynxV22XmiParser(xmiPath);
+            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -130,8 +123,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
@@ -151,8 +143,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            processor = new EulynxV22XmiParser(xmiPath);
+            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -170,8 +161,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);

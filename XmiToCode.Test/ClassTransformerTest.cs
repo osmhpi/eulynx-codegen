@@ -1,3 +1,4 @@
+using XmiToCode.Codegen;
 using XmiToCode.Parsing;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
@@ -12,8 +13,8 @@ public class ClassTransformerTest
     {
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
         var packages = parser.ParsePackages();
-        var genericSciPackage = packages.Single(x => x.Name.RawName == PackageTest.SubsystemPointPackageName);
-        _ = genericSciPackage.TryParseClass("F_SCI_P_Report", out var parsedClass);
+        var subsystemPointPackage = packages.Single(x => x.Name.RawName == PackageTest.SubsystemPointPackageName);
+        _ = subsystemPointPackage.TryParseClass("F_SCI_P_Report", out var parsedClass);
         _transformer = new ClassTransformer(parsedClass);
     }
 
@@ -79,5 +80,14 @@ public class ClassTransformerTest
     public void AssemblesNestedBehaviorRecord() {
         var classFile = _transformer.TransformClassIntoFile();
         Assert.True(classFile.Behavior.Subrecords.Any());
+    }
+
+    [Fact]
+    public void AssemblesJunctionCodeTransitions() {
+        var classFile = _transformer.TransformClassIntoFile();
+        var function = classFile.TransitionFunctions
+            .Single(x => x.Name == "InterfaceConnectionNotEstablished");
+        var transitions = function.Transitions.OfType<JunctionCodeTransition>().Single();
+        Assert.NotEmpty(transitions.CodeTransitions);
     }
 }

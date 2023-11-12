@@ -6,13 +6,12 @@ namespace Eulynx.Validation;
 [TestClass]
 public class ClassParsing
 {
+    public const string EULYNX_V22_FILE = "cleaned_22.xmi";
     public static IEnumerable<object[]> UmlClasses
     {
         get
         {
-            var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-
-            var processor = new EulynxV22XmiParser(xmiPath);
+            var processor = new EulynxV22XmiParser(EULYNX_V22_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
@@ -25,8 +24,7 @@ public class ClassParsing
     [DynamicData(nameof(UmlClasses))]
     public void ParseClass(string package, string className)
     {
-        var xmiPath = Environment.GetEnvironmentVariable("XMI_PATH") ?? throw new Exception("XMI_PATH not set");
-        var processor = new EulynxV22XmiParser(xmiPath);
+        var processor = new EulynxV22XmiParser(EULYNX_V22_FILE);
         var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
         var pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
         var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);

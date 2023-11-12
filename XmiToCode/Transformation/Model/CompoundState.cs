@@ -20,7 +20,7 @@ public partial class CompoundState : IState
 
     public bool IsInitialState => PartialStates.All(x => x.IsInitialState);
 
-    public bool IsJunction => PartialStates.Any(x => x.IsJunction);
+    public bool IsJunction => PartialStates.Any(x => x.IsJunction) && !PartialStates.Any(x => x.IsInitialState);
 
     public bool IsRegularState => PartialStates.All(x => x.IsRegularState);
 
@@ -89,9 +89,9 @@ public partial class CompoundState : IState
     //     return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
     // }
 
-    public bool IsSourceOfTransition(UmlTransition transition)
+    public bool IsSourceOfTransitions(UmlTransition[] transitions)
     {
-        return PartialStates.Any(x => x.IsSourceOfTransition(transition));
+        return transitions.All(transition => PartialStates.Any(x => x.IsSourceOfTransitions(transition)));
     }
 
     public bool IsTargetOfTransition(UmlTransition transition)
@@ -99,38 +99,45 @@ public partial class CompoundState : IState
         return PartialStates.Any(x => x.IsTargetOfTransition(transition));
     }
 
-    internal bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
+    internal bool IsNextStateAfterTransition(CompoundState fromState, params UmlTransition[] transitions)
     {
-        var requireTransitionFromVertex = new List<UmlSubvertex>();
         if (fromState.IsJunction) {
             // Special handling for transitions after junctions
             // we must only include such transitions that
             // change the partial state which is currently in a junction
 
-            var junctionPartialState = fromState.PartialStates.Cast<SimpleState>().Where(x => x.IsJunction);
-            requireTransitionFromVertex.AddRange(junctionPartialState.Select(x => x.State));
-        }
+            // TODO: I wish we could replace this by checking IsJunction
+            // What happens if we transition into chained junctions?
+            // This probably breaks.
 
-        bool isTransitioned = false;
-        foreach (var (from, to) in fromState.PartialStates.Cast<SimpleState>().Zip(PartialStates.Cast<SimpleState>())) {
-            if (from.State != to.State) {
-                if (isTransitioned) {
-                    return false;
-                }
-
-                if (requireTransitionFromVertex.Count > 0 && !requireTransitionFromVertex.Contains(from.State)) {
-                    return false;
-                }
-
-                if (transition.Source != from.State.Id && transition.Target != to.State.Id) {
-                    return false;
-                }
-
-                isTransitioned = true;
+            var nonTransitionedJunctionStates = fromState.PartialStates.Cast<SimpleState>()
+                .Where((x, i) => x.IsJunction && PartialStates[i] == x);
+            if (nonTransitionedJunctionStates.Any()) {
+                return false;
             }
         }
 
-        return true;
+        var doneTransitions = new HashSet<UmlTransition>();
+        foreach (var (from, to) in fromState.PartialStates.Cast<SimpleState>().Zip(PartialStates.Cast<SimpleState>())) {
+            if (from.State != to.State) {
+                var transition = transitions.SingleOrDefault(x => x.Source == from.State.Id && x.Target == to.State.Id);
+
+                if (transition == null) {
+                    // A partial state is different that has nothing to do with the current transitions
+                    return false;
+                }
+
+                if (doneTransitions.Contains(transition)) {
+                    // More than one partial state is different
+                    return false;
+                }
+
+                // Partial state changed according to transition
+                doneTransitions.Add(transition);
+            }
+        }
+
+        return transitions.All(doneTransitions.Contains);
     }
 
     [GeneratedRegex("^\"(.*)\"$")]
