@@ -89,7 +89,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
     private string WriteTransitionFunction(TransitionFunction transitionFunction)
     {
         // {GenerateConditions(thisName, fromState, dataTypes, context)}
-        return $@"private {transitionFunction.TheRootBehaviorName} TransitionFrom{transitionFunction.Name.Replace(".", "__")}() {{
+        return $@"private {transitionFunction.TheRootBehaviorName} {transitionFunction.Name(TargetLanguage.CSharp)}() {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => Write(x)))}
 

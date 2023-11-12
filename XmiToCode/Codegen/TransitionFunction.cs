@@ -1,19 +1,30 @@
 using XmiToCode.Instructions;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.Model;
+using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Codegen;
 
 public record TransitionFunction(
     TypeIdentifier TheRootBehaviorName,
     TypeIdentifier ClassName,
-    string Name,
+    string fromStateName,
+    IState State,
     List<ICodeTransition> Transitions
 ) {
+    public string Name(TargetLanguage targetLanguage) =>
+        targetLanguage switch {
+            TargetLanguage.CSharp => $"TransitionFrom{State.Name.Replace(".", "__")}",
+            TargetLanguage.C => $"transition_from_{State.Name.Replace(".", "__")}",
+            TargetLanguage.Rust => $"transition_from_{State.Name.Replace(".", "__")}",
+            _ => throw new NotImplementedException()
+        };
+
     public static IEnumerable<(Transition Transition, IState ToState, string ToStateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
         var transitionsOnCurrentLevel = region.Transitions
             .Where(x => x is not InitialTransition)
-            .Where(x => fromState.IsSourceOfTransitions(x.Transitions.ToArray()))
+            .Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
+            .Where(x => ((CompoundState)x.To).IsNextStateAfterTransition((CompoundState)fromState, x.SingleTransition))
             .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
             .ToList();
 
@@ -45,14 +56,15 @@ public record TransitionFunction(
         }).Concat(transitionsOnCurrentLevel);
     }
 
-    public static TransitionFunction Create(TypeIdentifier className, TypeIdentifier behaviorName, IState fromState, IRegion region) {
+    public static TransitionFunction Create(TypeIdentifier className, TypeIdentifier behaviorName, string fromStateName, IState fromState, IRegion region) {
         var thisName = "this";
         var transitions = GetCodeTransitions(region, thisName, fromState, className, false);
 
         return new TransitionFunction(
             behaviorName,
             className,
-            fromState.Name,
+            fromStateName,
+            fromState,
             transitions);
     }
 
@@ -111,22 +123,3 @@ public record TransitionFunction(
         throw new NotImplementedException();
     }
 }
-
-public interface ICodeTransition {
-    public Transition Transition { get; }
-    public List<Constraint> Constraint { get; }
-}
-
-public record CodeTransition(
-    string stateName,
-    List<Instruction> Activities,
-    List<Constraint> Constraint,
-    Transition Transition
-) : ICodeTransition;
-
-public record JunctionCodeTransition(
-    List<Instruction> Activities,
-    List<ICodeTransition> CodeTransitions,
-    List<Constraint> Constraint,
-    Transition Transition
-) : ICodeTransition;

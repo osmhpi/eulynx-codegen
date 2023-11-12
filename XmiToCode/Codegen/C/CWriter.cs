@@ -151,7 +151,7 @@ typedef struct TimeoutEvent
 
     protected virtual string WriteClass(ClassFile klass)
     {
-        var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
+        var states = klass.Behavior.EnumerateSubrecords(TargetLanguage.C)
             .Where(x => x.record.State != null)
             .ToDictionary(x => x.record.State!, x => x.Name);
 
@@ -187,8 +187,8 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
   switch (self->state)
   {{
-        {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
-            $"case {t.Name}: \n self->state = transition_from_{t.Name}(self);\nbreak;"))}
+        {string.Join("\n", klass.TransitionFunctions.Select(t =>
+            $"case {t.fromStateName}: \n self->state = {t.Name(TargetLanguage.C)}(self);\nbreak;"))}
   }}
 
   resetTriggers(self);
@@ -199,7 +199,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord, Dictionary<IState, string> states)
     {
         return
-            string.Join("\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord))
+            string.Join("\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C)
                 .Append((behaviorRecord.Name, behaviorRecord))
                 .Select(x => x.record switch {
                     SimpleBehaviorRecord simple => $@"
@@ -224,27 +224,9 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
         };
     }
 
-    protected static IEnumerable<(string Name, IBehaviorRecord record)> PrefixWith(BehaviorRecord behaviorRecord, IEnumerable<(string Name, IBehaviorRecord record)> records) {
-        foreach (var (Name, record) in records) {
-            yield return ($"{behaviorRecord.Name}__{Name}", record);
-        }
-    }
-
-    protected static IEnumerable<(string Name, IBehaviorRecord record)> EnumerateSubrecords(IBehaviorRecord record)
-    {
-        foreach (var s in record.Subrecords)
-        {
-            yield return (s.Name, s);
-            foreach (var subsubrecord in EnumerateSubrecords(s))
-            {
-                yield return ($"{s.Name}__{subsubrecord.Name}", subsubrecord.record);
-            }
-        }
-    }
-
     protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"{transitionFunction.TheRootBehaviorName.Name} transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.ClassName.Name} *self) {{
+        return $@"{transitionFunction.TheRootBehaviorName.Name} {transitionFunction.Name(TargetLanguage.C)}({transitionFunction.ClassName.Name} *self) {{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
 
@@ -354,11 +336,13 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
     private static string WriteBehaviorEnum(BehaviorRecord behaviorRecord)
     {
         return @$"typedef enum {behaviorRecord.Name} {{
-        {string.Join(",\n", PrefixWith(behaviorRecord, EnumerateSubrecords(behaviorRecord)).Select(x => x.Name))}
+        {string.Join(",\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C).Select(x => x.Name))}
 }} {behaviorRecord.Name};";
     }
 
     private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
-        return string.Join("\n", EnumerateSubrecords(behaviorRecord).Append((behaviorRecord.Name, behaviorRecord)).Select(x => $"{behaviorRecord.Name} make_state_{behaviorRecord.Name}__{x.Name} ({x.record.ClassName.Name} *self);"));
+        return string.Join("\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C)
+            .Append((behaviorRecord.Name, behaviorRecord))
+            .Select(x => $"{behaviorRecord.Name} {behaviorRecord.ConstructorName(TargetLanguage.C)} ({x.record.ClassName.Name} *self);"));
     }
 }

@@ -273,7 +273,7 @@ impl {klass.ClassName.Name} {{
 
     protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"fn transition_from_{transitionFunction.Name.Replace(".", "__")}(&mut self, ports: &mut {transitionFunction.ClassName.Name}_Ports) -> {transitionFunction.TheRootBehaviorName.Name}{{
+        return $@"fn {transitionFunction.Name(TargetLanguage.Rust)}(&mut self, ports: &mut {transitionFunction.ClassName.Name}_Ports) -> {transitionFunction.TheRootBehaviorName.Name}{{
 
             {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
 

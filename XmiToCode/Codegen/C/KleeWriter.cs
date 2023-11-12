@@ -11,7 +11,7 @@ public class KleeWriter : CWriter {
 
     protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
     {
-        return $@"int count_transition_from_{transitionFunction.Name.Replace(".", "__")}({transitionFunction.ClassName.Name} *self) {{
+        return $@"int count_{transitionFunction.Name(TargetLanguage.C)}({transitionFunction.ClassName.Name} *self) {{
             int result = 0;
             {string.Join("\n", transitionFunction.Transitions
                 .Select(x => WrapWithGuard(x.Transition, x.Constraint, "result++;")))}
@@ -77,7 +77,7 @@ return $@"
             .OfType<PropertyOrPort.PulsedInPropertyOrPort>()
             .ToList();
 
-        var states = PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior))
+        var states = klass.Behavior.EnumerateSubrecords(TargetLanguage.C)
             .Where(x => x.record.State != null)
             .Select(x => x.Name);
 
@@ -93,7 +93,7 @@ int count_firing_transitions({klass.ClassName.Name} *self) {{
 
     switch (self->state)
     {{
-        {string.Join("\n", PrefixWith(klass.Behavior, EnumerateSubrecords(klass.Behavior)).Select(t =>
+        {string.Join("\n", klass.Behavior.EnumerateSubrecords(TargetLanguage.C).Select(t =>
             string.Join("\n", $"case {t.Name}: \n result += count_transition_from_{t.Name}(self);\nbreak;")))}
     }}
 

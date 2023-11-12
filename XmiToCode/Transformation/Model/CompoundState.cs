@@ -84,14 +84,9 @@ public partial class CompoundState : IState
     public List<Instruction> Exit =>
         PartialStates.SelectMany(x => x.Exit).ToList();
 
-    // public List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context)
-    // {
-    //     return transition.Transitions.SelectMany(transition => ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
-    // }
-
-    public bool IsSourceOfTransitions(UmlTransition[] transitions)
+    public bool IsSourceOfTransition(UmlTransition transition)
     {
-        return transitions.All(transition => PartialStates.Any(x => x.IsSourceOfTransitions(transition)));
+        return PartialStates.Any(x => x.IsSourceOfTransition(transition));
     }
 
     public bool IsTargetOfTransition(UmlTransition transition)
@@ -101,18 +96,17 @@ public partial class CompoundState : IState
 
     internal bool IsNextStateAfterTransition(CompoundState fromState, params UmlTransition[] transitions)
     {
+        // TODO: Refactor (as it was before): transitions always contains 1 element
+
         if (fromState.IsJunction) {
             // Special handling for transitions after junctions
             // we must only include such transitions that
             // change the partial state which is currently in a junction
 
-            // TODO: I wish we could replace this by checking IsJunction
-            // What happens if we transition into chained junctions?
-            // This probably breaks.
+            var transitionsAwayFromJunction =
+                transitions.All(transition => fromState.PartialStates.Cast<SimpleState>().Any(x => x.IsJunction && x.State.Id == transition.Source));
 
-            var nonTransitionedJunctionStates = fromState.PartialStates.Cast<SimpleState>()
-                .Where((x, i) => x.IsJunction && PartialStates[i] == x);
-            if (nonTransitionedJunctionStates.Any()) {
+            if (!transitionsAwayFromJunction) {
                 return false;
             }
         }

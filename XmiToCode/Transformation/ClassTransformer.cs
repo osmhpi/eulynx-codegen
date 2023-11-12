@@ -21,9 +21,9 @@ public class ClassTransformer {
             var transitions = new List<Transition>();
             foreach (var transition in region.Transitions) {
                 var sourceStates = region.States.Cast<CompoundState>()
-                    .Where(x => x.IsSourceOfTransitions(transition.Transitions.ToArray()))
-                    // Initial and junction transitions receive special care below
-                    .Where(x => !x.IsInitialState && !x.IsJunction);
+                    .Where(x => x.IsSourceOfTransition(transition.SingleTransition))
+                    // Initial transitions receive special care below
+                    .Where(x => !x.IsInitialState);
                 var targetStates = region.States.Cast<CompoundState>()
                     .Where(x => x.IsTargetOfTransition(transition.SingleTransition));
                 transitions.AddRange(
@@ -37,51 +37,12 @@ public class ClassTransformer {
             // Combine initial transitions into one
             var initialTransitions = region.Transitions.OfType<InitialTransition>().ToList();
             var initialTransition = new InitialTransition(
-                region.States.Single(x => initialTransitions.All(transition => x.IsSourceOfTransitions(transition.Transitions.Single()))),
+                region.States.Single(x => initialTransitions.All(transition => x.IsSourceOfTransition(transition.Transitions.Single()))),
                 region.States.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition.Transitions.Single()))),
                 initialTransitions.SelectMany(x => x.Transitions).ToList(),
                 initialTransitions.SelectMany(x => x.Instructions).ToList(),
                 initialTransitions.SelectMany(x => x.Constraints).ToList()
             );
-
-            // Combine junction transitions
-            var junctionTransitions = new List<Transition>();
-            var junctionStates = region.States.Cast<CompoundState>().Where(x => x.IsJunction).ToList();
-            // For each of the junction partial states contained in each junction state,
-            // find all transitions that transition out of this junction partial state
-            foreach (var junctionState in junctionStates) {
-                var outgoingTransitions =
-                    junctionState.PartialStates.Where(x => x.IsJunction)
-                        .Select(x => region.Transitions
-                            .Where(transition => x.IsSourceOfTransitions(transition.SingleTransition))
-                            .ToList())
-                        .ToList();
-
-                IEnumerable<IEnumerable<Transition>> AllCombinationsOf(IEnumerable<List<Transition>> transitions) =>
-                    transitions.Skip(1).Any()
-                        ?   from firstTransition in transitions.First()
-                            from otherTransitions in AllCombinationsOf(transitions.Skip(1))
-                            select otherTransitions.Prepend(firstTransition)
-                        : transitions.First().Select(x => new [] { x });
-
-                foreach (var outgoingTransitionCombination in AllCombinationsOf(outgoingTransitions)) {
-                    var combination = outgoingTransitionCombination.ToList();
-                    // var dbg = region.States.Cast<CompoundState>().Where(x =>
-                    //         x.IsNextStateAfterTransition(junctionState, combination.Select(x => x.SingleTransition).ToArray())).ToList();
-                            // combination.All(transition => x.IsTargetOfTransition(transition.SingleTransition))).ToList();
-                    junctionTransitions.Add(new JunctionTransition(
-                        junctionState,
-                        region.States.Cast<CompoundState>().Single(x =>
-                            x.IsNextStateAfterTransition(junctionState, combination.Select(x => x.SingleTransition).ToArray())),
-                            // combination.All(transition => x.IsTargetOfTransition(transition.SingleTransition))),
-                        combination.SelectMany(x => x.Transitions).ToList(),
-                        combination.SelectMany(x => x.Instructions).ToList(),
-                        combination.SelectMany(x => x.Constraints).ToList()
-                    ));
-                }
-            }
-
-            transitions.AddRange(junctionTransitions);
 
             transitions.Add(initialTransition);
 
@@ -128,9 +89,16 @@ public class ClassTransformer {
         var behaviorName = new TypeIdentifier(_parsedClass.UmlClass.StateMachine.Name);
 
         var behaviorRecord = ParseStateRecord(null, flatRegion, behaviorName.Name, null, _parsedClass.ClassName);
-        var transitionFunction = flatRegion.States
-            .Where(x => x.IsRegularState)
-            .Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x, flatRegion))
+
+        // TODO: This class should only flatten the regions, move the rest to ClassFile
+        static IEnumerable<IState> NestedStates(IEnumerable<IState> states) =>
+            states.Concat(
+                states.SelectMany(x => NestedStates(x.Regions.SingleOrDefault()?.States ?? Enumerable.Empty<IState>()))
+            );
+
+        var transitionFunction = behaviorRecord.EnumerateSubrecords(TargetLanguage.C) // TODO obviously
+            .Where(x => x.record.State?.IsRegularState ?? false)
+            .Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x.Name, x.record.State!, flatRegion))
             .ToList();
 
         return new ClassFile(

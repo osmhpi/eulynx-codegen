@@ -86,7 +86,7 @@ public class ClassTransformerTest
     public void AssemblesJunctionCodeTransitions() {
         var classFile = _transformer.TransformClassIntoFile();
         var function = classFile.TransitionFunctions
-            .Single(x => x.Name == "InterfaceConnectionNotEstablished");
+            .Single(x => x.State.Name == "InterfaceConnectionNotEstablished");
         var transitions = function.Transitions.OfType<JunctionCodeTransition>().Single();
         Assert.NotEmpty(transitions.CodeTransitions);
     }
