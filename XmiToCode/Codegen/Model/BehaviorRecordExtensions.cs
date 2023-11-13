@@ -23,10 +23,4 @@ public static class BehaviorRecordExtensions {
             TargetLanguage.C => $"{record.Name}" ,
             _ => throw new NotImplementedException()
         };
-
-    public static string ConstructorName(this IBehaviorRecord record, TargetLanguage targetLanguage) =>
-        targetLanguage switch {
-            TargetLanguage.C => $"make_state_{record.Name}__{record.State?.Name}",
-            _ => throw new NotImplementedException()
-        };
 }

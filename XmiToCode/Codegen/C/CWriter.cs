@@ -214,6 +214,12 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
                 }));
     }
 
+    private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
+        return string.Join("\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C)
+            .Append((behaviorRecord.Name, behaviorRecord))
+            .Select(x => $"{behaviorRecord.Name} make_state_{x.Name}({x.record.ClassName.Name} *self);"));
+    }
+
     private string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states)
     {
         return initializer switch
@@ -338,11 +344,5 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
         return @$"typedef enum {behaviorRecord.Name} {{
         {string.Join(",\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C).Select(x => x.Name))}
 }} {behaviorRecord.Name};";
-    }
-
-    private static string WriteBehaviorFunctionSignatures(BehaviorRecord behaviorRecord) {
-        return string.Join("\n", behaviorRecord.EnumerateSubrecords(TargetLanguage.C)
-            .Append((behaviorRecord.Name, behaviorRecord))
-            .Select(x => $"{behaviorRecord.Name} {behaviorRecord.ConstructorName(TargetLanguage.C)} ({x.record.ClassName.Name} *self);"));
     }
 }
