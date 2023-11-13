@@ -8,20 +8,15 @@ namespace XmiToCode.Test;
 
 public class SpecialClassTransformerTest
 {
-    private readonly ClassTransformer _transformer;
-
-    public SpecialClassTransformerTest()
-    {
+    [Fact]
+    public void FlattenedRegionsShouldIncludeJunctionWithTransitions() {
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
         var packages = parser.ParsePackages();
         var subsystemLevelCrossingPackage = packages.Single(x => x.Name.RawName == CWriterTest.SubsystemLevelCrossingPackageName);
         _ = subsystemLevelCrossingPackage.TryParseClass(CWriterTest.FObserveFailureStateClassName, out var parsedClass);
-        _transformer = new ClassTransformer(parsedClass);
-    }
+        var transformer = new ClassTransformer(parsedClass);
 
-    [Fact]
-    public void FlattenedRegionsShouldIncludeJunctionWithTransitions() {
-        var region = _transformer.FlattenRegions();
+        var region = transformer.FlattenRegions();
         var observeFailureStates = region.States.Single(x => x.Name == "ObserveFailureStates");
         var nestedRegion = observeFailureStates.Regions.Single();
 

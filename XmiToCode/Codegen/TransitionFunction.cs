@@ -14,9 +14,9 @@ public record TransitionFunction(
 ) {
     public string Name(TargetLanguage targetLanguage) =>
         targetLanguage switch {
-            TargetLanguage.CSharp => $"TransitionFrom{State.Name.Replace(".", "__")}",
-            TargetLanguage.C => $"transition_from_{State.Name.Replace(".", "__")}",
-            TargetLanguage.Rust => $"transition_from_{State.Name.Replace(".", "__")}",
+            TargetLanguage.CSharp => $"TransitionFrom{fromStateName}",
+            TargetLanguage.C => $"transition_from_{fromStateName}",
+            TargetLanguage.Rust => $"transition_from_{fromStateName}",
             _ => throw new NotImplementedException()
         };
 
