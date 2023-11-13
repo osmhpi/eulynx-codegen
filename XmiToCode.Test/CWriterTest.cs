@@ -5,6 +5,8 @@ namespace XmiToCode.Test;
 
 public class CWriterTest
 {
+    public const string SubsystemLevelCrossingPackageName = "Subsystem Level Crossing";
+    public const string FObserveFailureStateClassName = "F_Observe_Failure_State";
     private readonly CWriter _writer;
 
     public CWriterTest()
@@ -22,9 +24,9 @@ public class CWriterTest
 
     [Fact]
     public async Task DoesNotThrowStackOverflowException() {
-        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE, classWhitelist: new [] { "F_Observe_Failure_State" });
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE, classWhitelist: new [] { FObserveFailureStateClassName });
         var packages = parser.ParsePackages();
-        var levelCrossingPackage = packages.Single(x => x.Name.RawName == "Subsystem Level Crossing");
+        var levelCrossingPackage = packages.Single(x => x.Name.RawName == SubsystemLevelCrossingPackageName);
         await _writer.WritePackageFilesAsync(levelCrossingPackage);
     }
 }

@@ -73,6 +73,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             .Select(x => (x, new List<PackagedElement> { package }));
         var subpackages = package.PackagedElements
             .Where(x => x.Type == "uml:Package")
+            // TODO: Extract to XmiParser
             .Where(x => x.Name != "Recycle bin" && x.Name != "Recycle Bin" && x.Name != "Not synchronized model elements");
         return elements.Concat(
             subpackages.SelectMany(

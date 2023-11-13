@@ -20,10 +20,12 @@ public class ClassTransformer {
         CompoundRegion UpdateTransitions(CompoundRegion region) {
             var transitions = new List<Transition>();
             foreach (var transition in region.Transitions) {
-                var sourceStates = region.States.Cast<CompoundState>()
-                    .Where(x => x.IsSourceOfTransition(transition.SingleTransition))
+                if (transition is InitialTransition)
                     // Initial transitions receive special care below
-                    .Where(x => !x.IsInitialState);
+                    continue;
+
+                var sourceStates = region.States.Cast<CompoundState>()
+                    .Where(x => x.IsSourceOfTransition(transition.SingleTransition));
                 var targetStates = region.States.Cast<CompoundState>()
                     .Where(x => x.IsTargetOfTransition(transition.SingleTransition));
                 transitions.AddRange(
@@ -91,11 +93,6 @@ public class ClassTransformer {
         var behaviorRecord = ParseStateRecord(null, flatRegion, behaviorName.Name, null, _parsedClass.ClassName);
 
         // TODO: This class should only flatten the regions, move the rest to ClassFile
-        static IEnumerable<IState> NestedStates(IEnumerable<IState> states) =>
-            states.Concat(
-                states.SelectMany(x => NestedStates(x.Regions.SingleOrDefault()?.States ?? Enumerable.Empty<IState>()))
-            );
-
         var transitionFunction = behaviorRecord.EnumerateSubrecords(TargetLanguage.C) // TODO obviously
             .Where(x => x.record.State?.IsRegularState ?? false)
             .Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x.Name, x.record.State!, flatRegion))

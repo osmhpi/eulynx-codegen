@@ -25,6 +25,11 @@ public abstract class XmiParser {
         "Generic recycle bin",
     };
 
+    // Other blacklisted packages:
+    // "Recycle bin",
+    // "Recycle Bin",
+    // "Not synchronized model elements"
+
     public abstract List<PackagedElement> ResolveGenericEvents(List<PackagedElement> packages);
 
     public XmiParser(string filename, string[]? classWhitelist, string[]? classBlacklist)

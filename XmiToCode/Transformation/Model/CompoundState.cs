@@ -79,9 +79,11 @@ public partial class CompoundState : IState
     }
 
     public List<Instruction> Entry =>
+        // TODO: Only one partial state at a time
         PartialStates.SelectMany(x => x.Entry).ToList();
 
     public List<Instruction> Exit =>
+        // TODO: Only one partial state at a time
         PartialStates.SelectMany(x => x.Exit).ToList();
 
     public bool IsSourceOfTransition(UmlTransition transition)
@@ -94,44 +96,42 @@ public partial class CompoundState : IState
         return PartialStates.Any(x => x.IsTargetOfTransition(transition));
     }
 
-    internal bool IsNextStateAfterTransition(CompoundState fromState, params UmlTransition[] transitions)
+    public bool IsNextStateAfterTransition(CompoundState fromState, UmlTransition transition)
     {
-        // TODO: Refactor (as it was before): transitions always contains 1 element
-
         if (fromState.IsJunction) {
             // Special handling for transitions after junctions
             // we must only include such transitions that
             // change the partial state which is currently in a junction
 
-            var transitionsAwayFromJunction =
-                transitions.All(transition => fromState.PartialStates.Cast<SimpleState>().Any(x => x.IsJunction && x.State.Id == transition.Source));
+            var transitionsAwayFromJunction = fromState.PartialStates.Cast<SimpleState>().Any(x => x.IsJunction && x.State.Id == transition.Source);
 
             if (!transitionsAwayFromJunction) {
                 return false;
             }
         }
 
-        var doneTransitions = new HashSet<UmlTransition>();
+        var isTransitioned = false;
         foreach (var (from, to) in fromState.PartialStates.Cast<SimpleState>().Zip(PartialStates.Cast<SimpleState>())) {
-            if (from.State != to.State) {
-                var transition = transitions.SingleOrDefault(x => x.Source == from.State.Id && x.Target == to.State.Id);
+            var match = transition.Source == from.State.Id && transition.Target == to.State.Id;
 
-                if (transition == null) {
-                    // A partial state is different that has nothing to do with the current transitions
-                    return false;
-                }
-
-                if (doneTransitions.Contains(transition)) {
-                    // More than one partial state is different
-                    return false;
-                }
-
-                // Partial state changed according to transition
-                doneTransitions.Add(transition);
+            if (!match && from.State != to.State) {
+                // A partial state is different that has nothing to do with the current transitions
+                return false;
             }
+
+            if (!match) {
+                continue;
+            }
+
+            if (isTransitioned) {
+                // More than one partial state is different
+                return false;
+            }
+
+            isTransitioned = true;
         }
 
-        return transitions.All(doneTransitions.Contains);
+        return isTransitioned;
     }
 
     [GeneratedRegex("^\"(.*)\"$")]

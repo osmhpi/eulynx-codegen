@@ -2,6 +2,7 @@ using XmiToCode.Codegen;
 using XmiToCode.Parsing;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
+using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Test;
 
@@ -65,9 +66,41 @@ public class ClassTransformerTest
     }
 
     [Fact]
+    public void FlattenedRegionShouldIncludeJunctionWithTransitions() {
+        var region = _transformer.FlattenRegions();
+        var states = region.States.Cast<CompoundState>();
+        var interfaceConnectionNotEstablished = states.Single(x => x.Name == "InterfaceConnectionNotEstablished");
+        var junction = states.Single(x => x.Name == "Junction");
+        var reportingOverallPointStates = states.Single(x => x.Name == "ReportingOverallPointStates");
+
+        var messageTransitions = region.Transitions.OfType<MessageEventTransition>();
+        var junctionTransitions = region.Transitions.OfType<JunctionTransition>();
+
+        Assert.NotNull(messageTransitions.SingleOrDefault(x =>
+            interfaceConnectionNotEstablished.IsSourceOfTransition(x.Transition) &&
+            junction.IsNextStateAfterTransition(interfaceConnectionNotEstablished, x.Transition)));
+
+        Assert.Equal(2, junctionTransitions.Count(x =>
+            junction.IsSourceOfTransition(x.SingleTransition) &&
+            reportingOverallPointStates.IsNextStateAfterTransition(junction, x.SingleTransition)));
+    }
+
+    [Fact]
+    public void FlattenedRegionShouldIncludeNestedTransition() {
+        var region = _transformer.FlattenRegions();
+        var states = region.States.Cast<CompoundState>();
+        var reportingOverallPointStates = states.Single(x => x.Name == "ReportingOverallPointStates");
+        var nestedRegion = reportingOverallPointStates.Region!;
+        var msgOverallPointPositionState = nestedRegion.States
+            .Single(x => x.Name == "MsgAbilityToMove_MsgOverallPointPosition_MsgMovementFailed");
+
+        Assert.Equal(5, nestedRegion.Transitions.Count(x => x.From == msgOverallPointPositionState));
+    }
+
+    [Fact]
     public void AssemblesTransitionFunctions() {
         var classFile = _transformer.TransformClassIntoFile();
-        Assert.True(classFile.TransitionFunctions.Any());
+        Assert.Equal(4, classFile.TransitionFunctions.Count);
     }
 
     [Fact]
