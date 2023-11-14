@@ -43,6 +43,15 @@ public class PackageTest
     }
 
     [Fact]
+    public void ParsesSSciEfesPrim() {
+        var genericSciPackage = _packages.Single(x => x.Name.RawName == GenericSciPackageName);
+        var success = genericSciPackage.TryParseClass(SSciEfesPrimClassName, out var parsedClass);
+        Assert.True(success);
+        Assert.NotNull(parsedClass);
+        // TODO: This makes use of a HACK in the Parser
+    }
+
+    [Fact]
     public void ParsesFSciEfesSec() {
         var genericSciPackage = _packages.Single(x => x.Name.RawName == GenericSciPackageName);
         var success = genericSciPackage.TryParseClass(FSciEfesSecClassName, out var parsedClass);

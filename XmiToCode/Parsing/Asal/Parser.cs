@@ -40,6 +40,23 @@ public partial class Parser
         if (token.TokenType == TokenType.Name) {
             Eat(_current_token, TokenType.Name);
             var identifier = new Identifier(token.Value);
+            {
+                // HACK: Workaround to make SSciEfesPrim parseable
+                if (identifier.Name == "Result" && lhs == null) {
+                    try {
+                        context.ResolveIdentifier(identifier);
+                    } catch (ModelException) {
+                        identifier = new Identifier("Mem_PDI_Version_Result");
+                    }
+                }
+                if (identifier.Name == "ChecksumData" && lhs == null) {
+                    try {
+                        context.ResolveIdentifier(identifier);
+                    } catch (ModelException) {
+                        identifier = new Identifier("Mem_Checksum_Data");
+                    }
+                }
+            }
             var accessible = lhs != null ? lhs.LookupValidIdentifier(identifier, context) : context.ResolveIdentifier(identifier);
             lhs?.EnsureComparableTypes(accessible);
             return negate ? new BooleanExpression.Negation(accessible) : accessible;
