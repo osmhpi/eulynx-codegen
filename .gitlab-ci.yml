@@ -43,7 +43,7 @@ generate-c:
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c" || EXIT_CODE=$?'
     - apt update && apt install -y --no-install-recommends clang-format
     - cd $CODEGEN_OUTPUT_DIR
-    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
+    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=Microsoft -i
     - exit $EXIT_CODE
   artifacts:
     when: always
@@ -105,7 +105,7 @@ generate-klee:
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee" || EXIT_CODE=$?'
     - apt update && apt install -y --no-install-recommends clang-format
     - cd $CODEGEN_OUTPUT_DIR
-    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=LLVM -i
+    - find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=Microsoft -i
     - exit $EXIT_CODE
   artifacts:
     when: always
