@@ -45,6 +45,62 @@ function CustomersContent() {
     }
   }
 
+  const components = {
+    'Subsystem TDS - EIL': [
+      'S_SCI_EfeS_Prim',
+      'S_SCI_TDS_Command',
+      'S_SCI_TDS_Receive_TVPS',
+      'S_SCI_TDS_Receive_Track_Circuit',
+      'S_SCI_TDS_Receive_TDP',
+    ],
+    'Subsystem TDS - Field Element': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_TDS_Receive',
+      'F_SCI_TDS_Report_TVPS',
+      'F_SCI_TDS_Report_Track_Circuit',
+      'F_SCI_TDS_Report_TDP'
+    ],
+    'Subsystem IO - EIL': [
+      'S_SCI_EfeS_Prim',
+      'S_SCI_IO_Command',
+      'S_SCI_IO_Receive',
+    ],
+    'Subsystem IO - Field Element': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_IO_Receive',
+      'F_SCI_IO_Report',
+    ],
+    'Subsystem Level Crossing - EIL': [
+      'S_SCI_EfeS_Prim',
+      'S_SCI_LC_Command',
+      'S_SCI_LC_Receive',
+    ],
+    'Subsystem Level Crossing - Field Element': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_LC_Receive',
+      'F_SCI_LC_Report',
+    ],
+    'Subsystem Light Signal - EIL': [
+      'S_SCI_EfeS_Prim',
+      'S_SCI_LS_Command',
+      'S_SCI_LS_Receive',
+    ],
+    'Subsystem Light Signal - Field Element': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_LS_Receive',
+      'F_SCI_LS_Report',
+    ],
+    'Subsystem Point - EIL': [
+      'S_SCI_EfeS_Prim',
+      'S_SCI_P_Command_and_Recieve',
+    ],
+    'Subsystem Point - Field Element': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_TDS_Recieve_and_Report_Timeout',
+      'F_SCI_P_Report',
+    ],
+  };
+
   const testcases = data.testsuites.testsuite.flatMap(x => x.testcase.flatMap(t => ({name: t.$.name, failure: t.failure, skipped: t.skipped})))
   const re = /(.*) \((.*),(.*)\)/;
   const parsed = testcases
@@ -72,6 +128,14 @@ function CustomersContent() {
   const stage4Name = 'SymbolicExecution.ExecuteKlee';
   const stage4Success = t.map(x => x.tests.find(x => x.testname === stage4Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
 
+  const componentsSuccesses = Object.entries(components)
+    .map(([key, value]) =>
+      ({key, value: value.map(component =>
+        ({ component, success: t.find(test => test.class === component)?.tests.every(x => !x.failure && !x.skipped) || false })
+      )}))
+
+  const allSuccessful = componentsSuccesses.map(thething => ({key: thething.key, success: thething.value.every(x => x.success)}))
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
       {/* Page header */}
@@ -81,7 +145,11 @@ function CustomersContent() {
         <div className="mb-4 sm:mb-0">
           <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">UML Classes</h1>
 
-
+          <ul>
+            {allSuccessful.map(x => (
+              <li key={x.key}>{x.key} - {x.success ? 'success' : 'failure'}</li>
+            ))}
+          </ul>
         </div>
 
         {/* Right: Actions */}
