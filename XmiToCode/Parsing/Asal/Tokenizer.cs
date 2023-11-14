@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace XmiToCode.Parsing.Asal;
 
 public class Tokenizer {
-    private int TryTokenizeCharacter(TokenType type, char value, string input, int current, out Token? result) {
+    private static int TryTokenizeCharacter(TokenType type, char value, string input, int current, out Token? result) {
         if (value == input[current]){
             result = new Token(type, value.ToString());
             return 1;
@@ -13,7 +13,7 @@ public class Tokenizer {
         return 0;
     }
 
-    private int TryTokenizePattern(TokenType type, Regex pattern, string input, int current, out Token? result) {
+    private static int TryTokenizePattern(TokenType type, Regex pattern, string input, int current, out Token? result) {
         var match = pattern.Match(input[current..]);
         if (match.Success) {
             result = new Token(type, match.Value);
@@ -23,7 +23,7 @@ public class Tokenizer {
         return 0;
     }
 
-    private int TryTokenizePatternWithWarning(TokenType type, Regex pattern, string input, int current, out Token? result) {
+    private static int TryTokenizePatternWithWarning(TokenType type, Regex pattern, string input, int current, out Token? result) {
         var match = pattern.Match(input[current..]);
         if (match.Success) {
             Console.WriteLine($"Warning: matching \"{match.Value}\" to {type}");
@@ -66,21 +66,29 @@ public class Tokenizer {
     private int TryTokenizeConjunction(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Conjunction, new Regex("^AND "), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeDisjunction(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR "), input, current, out result);
+    #endif
 
+    #if !DISABLE_HACKS
     private int TryTokenizeDisjunctionIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR ", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
+    #if !DISABLE_HACKS
     private int TryTokenizeNegation(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePattern(TokenType.Negation, new Regex("^NOT "), input, current, out result);
+    #endif
 
+    #if !DISABLE_HACKS
     private int TryTokenizeNegationIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.Negation, new Regex("^NOT ", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeExclusiveDisjunction(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.ExclusiveDisjunction, new Regex("XOR "), input, current, out result);
@@ -88,37 +96,47 @@ public class Tokenizer {
     private int TryTokenizeIf(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.If, new Regex("^if "), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.If, new Regex("^If ", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeThen(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Then, new Regex("^then$"), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeThenIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.Then, new Regex("^Then$", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeElse(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Else, new Regex("^else$"), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeElseIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.Else, new Regex("^Else$", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeElseIf(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.ElseIf, new Regex("^elseif "), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeElseIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.ElseIf, new Regex("^ElseIf ", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeEndIf(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.EndIf, new Regex("^end if$"), input, current, out result);
 
+    #if !DISABLE_HACKS
     private int TryTokenizeEndIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.EndIf, new Regex("^End If$", RegexOptions.IgnoreCase), input, current, out result);
+    #endif
 
     private int TryTokenizeSendMessageToPort(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
@@ -199,20 +217,34 @@ public class Tokenizer {
             TryTokenizeEqual,
             TryTokenizeConjunction,
             TryTokenizeDisjunction,
+            #if !DISABLE_HACKS
             TryTokenizeDisjunctionIgnoreCase,
+            #endif
             TryTokenizeNegation,
+            #if !DISABLE_HACKS
             TryTokenizeNegationIgnoreCase,
+            #endif
             TryTokenizeExclusiveDisjunction,
             TryTokenizeIf,
+            #if !DISABLE_HACKS
             TryTokenizeIfIgnoreCase,
+            #endif
             TryTokenizeThen,
+            #if !DISABLE_HACKS
             TryTokenizeThenIgnoreCase,
+            #endif
             TryTokenizeElse,
+            #if !DISABLE_HACKS
             TryTokenizeElseIgnoreCase,
+            #endif
             TryTokenizeElseIf,
+            #if !DISABLE_HACKS
             TryTokenizeElseIfIgnoreCase,
+            #endif
             TryTokenizeEndIf,
+            #if !DISABLE_HACKS
             TryTokenizeEndIfIgnoreCase,
+            #endif
             TryTokenizeSendMessageToPort,
             TryTokenizeReturn,
             TryTokenizeStringLiteral,

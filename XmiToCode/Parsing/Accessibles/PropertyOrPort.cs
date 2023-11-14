@@ -169,8 +169,16 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyO
         }
 
         public override (string, string) DataType(TargetLanguage language) {
-            // TODO: fallback should be ("void*", "") except for whitelisted PDI version etc.
-            return GetAllowedValues().Count > 0 ? ($"{Name}Value", "") : ("char", "[4]");
+            var allowedValues = GetAllowedValues();
+            #if !DISABLE_HACKS
+            if (allowedValues.Count == 0 && (Name == "PdiVersion" || Name == "PDIVersion")) {
+                return ("char", "");
+            }
+            if (allowedValues.Count == 0 && (Name == "ChecksumData" || Name == "MemChecksumData")) {
+                return ("char", "[16]");
+            }
+            #endif
+            return allowedValues.Count > 0 ? ($"{Name}Value", "") : ("void*", "");
         }
 
         public override IAccessible RecordPossibleValue(LiteralIdentifier literal)

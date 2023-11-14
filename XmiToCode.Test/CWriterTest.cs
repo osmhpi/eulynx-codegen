@@ -15,6 +15,12 @@ public class CWriterTest
     }
 
     [Fact]
+    public async Task WritesCommonFiles() {
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
+        await _writer.WriteCommonFilesAsync(parser.GlobalContext, parser.InterestingPackages);
+    }
+
+    [Fact]
     public async Task WritesClassesInPackage() {
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
         var packages = parser.ParsePackages();
