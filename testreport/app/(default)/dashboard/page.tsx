@@ -58,7 +58,16 @@ function CustomersContent() {
       'F_SCI_TDS_Receive',
       'F_SCI_TDS_Report_TVPS',
       'F_SCI_TDS_Report_Track_Circuit',
-      'F_SCI_TDS_Report_TDP'
+      'F_SCI_TDS_Report_TDP',
+      'F_EST_EfeS',
+      'F_Monitor_Report_Status',
+      'F_Handle_Commands',
+      'F_Observe_Ability_to_be_Forced_to_clear',
+      'F_Handle_Internal_FC_U_Command',
+      'F_TDS6_Maintainer_Commands_And_Messages',
+      'F_Observe_Occupancy_Status',
+      'F_Control_Timer',
+      'F_Perform_FC_P_Or_FC_P_A',
     ],
     'Subsystem IO - EIL': [
       'S_SCI_EfeS_Prim',
@@ -69,6 +78,11 @@ function CustomersContent() {
       'F_SCI_EfeS_Sec',
       'F_SCI_IO_Receive',
       'F_SCI_IO_Report',
+      'F_EST_EfeS',
+      'F_Control_Output_Channel_State',
+      'F_Monitor_Output_Channel_Disturbance_State',
+      'F_Control_Safe_State_Of_All_Physical_Output_Channel',
+      'F_Detect_Input_Channel_State',
     ],
     'Subsystem Level Crossing - EIL': [
       'S_SCI_EfeS_Prim',
@@ -79,6 +93,12 @@ function CustomersContent() {
       'F_SCI_EfeS_Sec',
       'F_SCI_LC_Receive',
       'F_SCI_LC_Report',
+      'F_EST_EfeS',
+      'F_Observe_Failure_State',
+      'F_Observe_LCPF',
+      'F_Control_LC_Timer',
+      'F_Observe_Detection_Element',
+      'F_Control_Local_Operation',
     ],
     'Subsystem Light Signal - EIL': [
       'S_SCI_EfeS_Prim',
@@ -89,15 +109,40 @@ function CustomersContent() {
       'F_SCI_EfeS_Sec',
       'F_SCI_LS_Receive',
       'F_SCI_LS_Report',
+      'F_EST_EfeS',
+      'F_Control_Signal_Aspect',
+      'F_Control_Luminosity',
+      'F_Observe_Signal_Aspect',
+      'F_Observe_Luminosity',
     ],
     'Subsystem Point - EIL': [
       'S_SCI_EfeS_Prim',
-      'S_SCI_P_Command_and_Recieve',
+      'S_SCI_P_Receive',
+      'S_SCI_P_Command',
     ],
-    'Subsystem Point - Field Element': [
+    'Subsystem Point - Field Element Non4W': [
       'F_SCI_EfeS_Sec',
-      'F_SCI_TDS_Recieve_and_Report_Timeout',
       'F_SCI_P_Report',
+      'F_SCI_P_Receive',
+      'F_EST_EfeS',
+      'F_Control_Point',
+      'F_Observe_Movement_Failed',
+      'F_Control_Non4W_PM',
+      'F_Observe_Degraded_Point_Position',
+      'F_Observe_Overall_Point_Position',
+      'F_Observe_Ability_To_Move',
+    ],
+    'Subsystem Point - Field Element 4W': [
+      'F_SCI_EfeS_Sec',
+      'F_SCI_P_Report',
+      'F_SCI_P_Receive',
+      'F_EST_EfeS',
+      'F_Control_Point',
+      'F_Observe_Movement_Failed',
+      'F_Control_And_Observe_4W_PM',
+      'F_Observe_Degraded_Point_Position',
+      'F_Observe_Overall_Point_Position',
+      'F_Observe_Ability_To_Move',
     ],
   };
 
@@ -128,13 +173,36 @@ function CustomersContent() {
   const stage4Name = 'SymbolicExecution.ExecuteKlee';
   const stage4Success = t.map(x => x.tests.find(x => x.testname === stage4Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
 
+  // const notfound = Object.entries(components)
+  //   .map(([key, value]) =>
+  //     ({key, value: value.map(component =>
+  //       ({ component, tests: t.find(test => test.class === component)?.tests || null })
+  //     )}));
+  // console.log(JSON.stringify(notfound))
+
   const componentsSuccesses = Object.entries(components)
     .map(([key, value]) =>
       ({key, value: value.map(component =>
-        ({ component, success: t.find(test => test.class === component)?.tests.every(x => !x.failure && !x.skipped) || false })
-      )}))
+        ({ component, tests: t.find(test => test.class === component)?.tests || [] })
+      ).map(({component, tests}) => {
+        const parsing = tests.find(x => x.testname === stage1Name);
+        const compilation = tests.find(x => x.testname === stage3Name);
+        const checks = tests.find(x => x.testname === stage4Name);
+        return {
+          component,
+          parsing: parsing && !parsing.failure && !parsing.skipped,
+          compilation: compilation && !compilation.failure && !compilation.skipped,
+          checks: checks && !checks.failure && !checks.skipped,
+        }
+      })}))
 
-  const allSuccessful = componentsSuccesses.map(thething => ({key: thething.key, success: thething.value.every(x => x.success)}))
+  const allSuccessful = componentsSuccesses.map(thething => ({
+    key: thething.key,
+    parsing: thething.value.filter(x => x.parsing).map(x => x.component),
+    compilation: thething.value.filter(x => x.compilation).map(x => x.component),
+    checks: thething.value.filter(x => x.checks).map(x => x.component),
+    total: thething.value.map(x => x.component),
+  }))
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
@@ -147,7 +215,11 @@ function CustomersContent() {
 
           <ul>
             {allSuccessful.map(x => (
-              <li key={x.key}>{x.key} - {x.success ? 'success' : 'failure'}</li>
+              <li key={x.key}>{x.key} -
+                (
+                  <span title={x.parsing.join(', ')}>Parsing: {x.parsing.length}</span> / <span title={x.compilation.join(', ')}>Compilation: {x.compilation.length}</span> / <span title={x.checks.join(', ')}>Checks: {x.checks.length}</span> / <span title={x.total.join(', ')}>Total: {x.total.length}</span>
+                )
+              </li>
             ))}
           </ul>
         </div>
