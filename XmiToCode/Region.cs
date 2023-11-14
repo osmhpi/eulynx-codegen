@@ -35,16 +35,27 @@ public class Region : IRegion
             .ToList();
     }
 
-    private IState LookupState(string stateId) {
+    private IState LookupState(string stateId, bool descend = true, bool ascend = true) {
         if (Subvertices.ContainsKey(stateId)) {
             return Subvertices[stateId];
         }
 
-        if (ParentRegion == null) {
-            throw new KeyNotFoundException();
+        // Descending search is a fix for F_EST_EfeS
+        if (descend) {
+            foreach (var state in States) {
+                foreach (var region in state.Regions.Cast<Region>()) {
+                    try {
+                        return region.LookupState(stateId, descend: true, ascend: false);
+                    } catch (KeyNotFoundException) {}
+                }
+            }
         }
 
-        return ParentRegion.LookupState(stateId);
+        if (ascend && ParentRegion != null) {
+            return ParentRegion.LookupState(stateId, descend: false, ascend: true);
+        }
+
+        throw new KeyNotFoundException();
     }
 
     public static Region ParseRegion(UmlRegion region, ClassContext context) {

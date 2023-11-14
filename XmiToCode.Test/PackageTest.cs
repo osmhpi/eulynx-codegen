@@ -6,7 +6,10 @@ namespace XmiToCode.Test;
 public class PackageTest
 {
     public const string GenericSciPackageName = "Generic requirements for SCI";
+    public const string GenericSubsystemsPackageName = "Generic requirements for subsystems";
+    public const string FEstEfesClassName = "F_EST_EfeS";
     public const string SubsystemPointPackageName = "Subsystem Point";
+    public const string SSciEfesPrimClassName = "S_SCI_EfeS_Prim";
     public const string FSciEfesSecClassName = "F_SCI_EfeS_Sec";
     private readonly List<Package> _packages;
 
@@ -27,6 +30,16 @@ public class PackageTest
         var pointPackage = _packages.Single(x => x.Name.RawName == SubsystemPointPackageName);
         var classes = pointPackage.TryParseAllClasses();
         Assert.NotEmpty(classes);
+    }
+
+    [Fact]
+    public void ParsesFEstEfes() {
+        var genericSciPackage = _packages.Single(x => x.Name.RawName == GenericSubsystemsPackageName);
+        var success = genericSciPackage.TryParseClass(FEstEfesClassName, out var parsedClass);
+        Assert.True(success);
+        Assert.NotNull(parsedClass);
+        // TODO: After transformation, the transitions from Operational to
+        // WaitingForNoMaintenanceTimeout and WaitingForPdiOrMaintenance are lost.
     }
 
     [Fact]

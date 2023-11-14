@@ -105,23 +105,6 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
         var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 
         return new Class(klass, classContext, operations, region, hierarchy);
-
-        // var umlClass = new RegionFlattener(klass, classContext, context.UmlPackage);
-
-        // var stateMachine = new StateMachine(new Region(klass.StateMachine.Region), klass.StateMachine.Name);
-
-        // var behaviorName = stateMachine.GetName();
-        // var info = new ClassInfo(className.Name, behaviorName);
-
-        // var result = new ClassFile(
-        //     new ClassInfo(className.Name, behaviorName),
-        //     classContext,
-        //     stateMachine.Parse(info, classContext),
-        //     stateMachine.ParseTransitionFunctions(info, classContext).ToList(),
-        //     stateMachine.GetStates(behaviorName).ToList(),
-        //     operations,
-        //     hierarchy
-        // );
     }
 
     public static Package CreateFromUml(
