@@ -39,7 +39,7 @@ public class RustWriter : ICodeWriter
         await constantsFileWriter.WriteAsync(WriteClassConstants(klass));
     }
 
-    public Task WriteCommonFilesAsync(GlobalContext global)
+    public Task WriteCommonFilesAsync(GlobalContext global, List<Parsing.XmiModel.PackagedElement> interestingPackages)
     {
         return Task.CompletedTask;
     }

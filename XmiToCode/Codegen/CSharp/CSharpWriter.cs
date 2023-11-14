@@ -123,7 +123,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
         await writer.WriteAsync(Write(klass));
     }
 
-    public Task WriteCommonFilesAsync(GlobalContext global)
+    public Task WriteCommonFilesAsync(GlobalContext global, List<Parsing.XmiModel.PackagedElement> interestingPackages)
     {
         return Task.CompletedTask;
     }

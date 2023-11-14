@@ -38,7 +38,7 @@ else if (args.Length == 2 && Enum.TryParse<TargetLanguage>(args[0], out var targ
         _ => throw new NotImplementedException()
     };
 
-    await writer.WriteCommonFilesAsync(processor.GlobalContext);
+    await writer.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
 
     foreach (var package in processor.ParsePackages()) {
         await writer.WritePackageFilesAsync(package);

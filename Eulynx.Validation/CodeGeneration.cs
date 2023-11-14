@@ -37,7 +37,7 @@ public class CodeGeneration
         }
 
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteCommonFilesAsync(processor.GlobalContext);
+        await c.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
     }
 
     [TestMethod, TestCategory("generate-c")]
@@ -75,7 +75,7 @@ public class CodeGeneration
         }
 
         var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteCommonFilesAsync(processor.GlobalContext);
+        await c.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
     }
 
     [TestMethod, TestCategory("generate-klee")]
@@ -113,7 +113,7 @@ public class CodeGeneration
         }
 
         var rust = new RustWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await rust.WriteCommonFilesAsync(processor.GlobalContext);
+        await rust.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
     }
 
     [TestMethod, TestCategory("generate-rust")]
@@ -151,7 +151,7 @@ public class CodeGeneration
         }
 
         var csharp = new CSharpWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await csharp.WriteCommonFilesAsync(processor.GlobalContext);
+        await csharp.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
     }
 
     [TestMethod, TestCategory("generate-csharp")]

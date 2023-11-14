@@ -20,8 +20,14 @@ public class CWriter : ICodeWriter
         if (!outDir.Exists) outDir.Create();
     }
 
-    public async Task WriteCommonFilesAsync(GlobalContext global) {
+    public async Task WriteCommonFilesAsync(GlobalContext global, List<Parsing.XmiModel.PackagedElement> interestingPackages) {
         var filename = $"{_outputDir}/eulynx_common.h";
+
+        foreach (var umlPackage in interestingPackages) {
+            var pkg = Package.CreateFromUml(umlPackage, global);
+            // This has side effects
+            pkg.TryParseAllClasses();
+        }
 
         using var file = File.Create(filename);
         using var writer = new StreamWriter(file);
@@ -75,7 +81,7 @@ typedef struct TimeoutEvent
 }} TimeoutEvent;
 
 // Enumerations
-{string.Join("\n", global.Enumerations.Values.Select(x => WriteGlobalEnumeration(x)))}
+{string.Join("\n", global.Enumerations.Values.Select(WriteGlobalEnumeration))}
 
 // Message Types
 {JoinLines(global.Messages.Select(x => WriteMessageSchema(x.Value)))}
@@ -92,24 +98,13 @@ typedef struct TimeoutEvent
         using var file = File.Create(cFilename);
         using var writer = new StreamWriter(file);
 
-        await writer.WriteAsync(Write(klass));
+        await writer.WriteAsync(WriteClass(klass));
 
         var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.h";
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
         await headerWriter.WriteAsync(WriteHeader(klass));
-    }
-
-    public string Write<T>(T element)
-    {
-        return element switch
-        {
-            Model.ValueType valueType => WriteValueType(valueType),
-            ClassFile klass => WriteClass(klass),
-            null => "",
-            _ => throw new NotImplementedException($"Writing not implemented for {element.GetType()}")
-        };
     }
 
     private static string WriteOperation(Operation operation, ClassFile klass)
@@ -122,7 +117,7 @@ typedef struct TimeoutEvent
     private string WriteMessageSchema(MessageSchema messageSchema)
     {
         return @$"
-        {string.Join("\n", messageSchema.GetValueTypes().Select(x => Write(x)))}
+        {string.Join("\n", messageSchema.GetValueTypes().Select(WriteValueType))}
 
         /// {messageSchema.Identifier.RawName}
         /// UML Identifier: {messageSchema.Signal.Id}
@@ -302,7 +297,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
 // Value Types
 
-{string.Join("\n", klass.GetValueTypes().Select(x => Write(x)))}
+{string.Join("\n", klass.GetValueTypes().Select(WriteValueType))}
 
 {WriteBehaviorEnum(klass.Behavior)}
 
