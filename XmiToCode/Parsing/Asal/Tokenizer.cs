@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace XmiToCode.Parsing.Asal;
 
-public class Tokenizer {
+public partial class Tokenizer {
     private static int TryTokenizeCharacter(TokenType type, char value, string input, int current, out Token? result) {
         if (value == input[current]){
             result = new Token(type, value.ToString());
@@ -40,19 +40,30 @@ public class Tokenizer {
     private int TryTokenizeParenClose(string input, int current, out Token? result)
          => TryTokenizeCharacter(TokenType.ParenClose, ')', input, current, out result);
 
+    [GeneratedRegex("^[\\w\\._-]+")]
+    private static partial Regex NameRegex();
     private int TryTokenizeName(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Name, new Regex("^[\\w\\._-]+"), input, current, out result);
+        => TryTokenizePattern(TokenType.Name, NameRegex(), input, current, out result);
+
+    [GeneratedRegex("^:=")]
+    private static partial Regex AssignmentRegex();
     private int TryTokenizeAssignment(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Assignment, new Regex("^:="), input, current, out result);
+        => TryTokenizePattern(TokenType.Assignment, AssignmentRegex(), input, current, out result);
 
+    [GeneratedRegex("^>=")]
+    private static partial Regex GreaterThanOrEqualRegex();
     private int TryTokenizeGreaterThanOrEqual(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.GreaterThanOrEqual, new Regex("^>="), input, current, out result);
+        => TryTokenizePattern(TokenType.GreaterThanOrEqual, GreaterThanOrEqualRegex(), input, current, out result);
 
+    [GeneratedRegex("^<=")]
+    private static partial Regex LessThanOrEqualRegex();
     private int TryTokenizeLessThanOrEqual(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.LessThanOrEqual, new Regex("^<="), input, current, out result);
+        => TryTokenizePattern(TokenType.LessThanOrEqual, LessThanOrEqualRegex(), input, current, out result);
 
+    [GeneratedRegex("^<>")]
+    private static partial Regex NotEqualRegex();
     private int TryTokenizeNotEqual(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.NotEqual, new Regex("^<>"), input, current, out result);
+        => TryTokenizePattern(TokenType.NotEqual, NotEqualRegex(), input, current, out result);
 
     private int TryTokenizeGreaterThan(string input, int current, out Token? result)
         => TryTokenizeCharacter(TokenType.GreaterThan, '>', input, current, out result);
@@ -63,87 +74,122 @@ public class Tokenizer {
     private int TryTokenizeEqual(string input, int current, out Token? result)
         => TryTokenizeCharacter(TokenType.Equal, '=', input, current, out result);
 
+    [GeneratedRegex("^AND ")]
+    private static partial Regex ConjunctionRegex();
     private int TryTokenizeConjunction(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Conjunction, new Regex("^AND "), input, current, out result);
+        => TryTokenizePattern(TokenType.Conjunction, ConjunctionRegex(), input, current, out result);
 
-    #if !DISABLE_HACKS
+    [GeneratedRegex("^OR ")]
+    private static partial Regex DisjunctionRegex();
     private int TryTokenizeDisjunction(string input, int current, out Token? result)
-        // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR "), input, current, out result);
-    #endif
+        => TryTokenizePattern(TokenType.Disjunction, DisjunctionRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^OR ", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex DisjunctionIgnoreCaseRegex();
     private int TryTokenizeDisjunctionIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Disjunction, new Regex("^OR ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePattern(TokenType.Disjunction, DisjunctionIgnoreCaseRegex(), input, current, out result);
     #endif
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^NOT ")]
+    private static partial Regex NegationRegex();
     private int TryTokenizeNegation(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePattern(TokenType.Negation, new Regex("^NOT "), input, current, out result);
+        => TryTokenizePattern(TokenType.Negation, NegationRegex(), input, current, out result);
     #endif
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^NOT ", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex NegationIgnoreCaseRegex();
     private int TryTokenizeNegationIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.Negation, new Regex("^NOT ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.Negation, NegationIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("XOR ")]
+    private static partial Regex ExclusiveDisjunctionRegex();
     private int TryTokenizeExclusiveDisjunction(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.ExclusiveDisjunction, new Regex("XOR "), input, current, out result);
+        => TryTokenizePattern(TokenType.ExclusiveDisjunction, ExclusiveDisjunctionRegex(), input, current, out result);
 
+    [GeneratedRegex("^if ")]
+    private static partial Regex IfRegex();
     private int TryTokenizeIf(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.If, new Regex("^if "), input, current, out result);
+        => TryTokenizePattern(TokenType.If, IfRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^If ", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex IfIgnoreCaseRegex();
     private int TryTokenizeIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.If, new Regex("^If ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.If, IfIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("^then$")]
+    private static partial Regex ThenRegex();
     private int TryTokenizeThen(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Then, new Regex("^then$"), input, current, out result);
+        => TryTokenizePattern(TokenType.Then, ThenRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^Then$", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex ThenIgnoreCaseRegex();
     private int TryTokenizeThenIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.Then, new Regex("^Then$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.Then, ThenIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("^else$")]
+    private static partial Regex ElseRegex();
     private int TryTokenizeElse(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Else, new Regex("^else$"), input, current, out result);
+        => TryTokenizePattern(TokenType.Else, ElseRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^Else$", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex ElseIgnoreCaseRegex();
     private int TryTokenizeElseIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.Else, new Regex("^Else$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.Else, ElseIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("^elseif ")]
+    private static partial Regex ElseIfRegex();
     private int TryTokenizeElseIf(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.ElseIf, new Regex("^elseif "), input, current, out result);
+        => TryTokenizePattern(TokenType.ElseIf, ElseIfRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^ElseIf ", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex ElseIfIgnoreCaseRegex();
     private int TryTokenizeElseIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.ElseIf, new Regex("^ElseIf ", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.ElseIf, ElseIfIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("^end if$")]
+    private static partial Regex EndIfRegex();
     private int TryTokenizeEndIf(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.EndIf, new Regex("^end if$"), input, current, out result);
+        => TryTokenizePattern(TokenType.EndIf, EndIfRegex(), input, current, out result);
 
     #if !DISABLE_HACKS
+    [GeneratedRegex("^End If$", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex EndIfIgnoreCaseRegex();
     private int TryTokenizeEndIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
-        => TryTokenizePatternWithWarning(TokenType.EndIf, new Regex("^End If$", RegexOptions.IgnoreCase), input, current, out result);
+        => TryTokenizePatternWithWarning(TokenType.EndIf, EndIfIgnoreCaseRegex(), input, current, out result);
     #endif
 
+    [GeneratedRegex("^send (.+)\\s?to (.+)$")]
+    private static partial Regex SendMessageToPortRegex();
     private int TryTokenizeSendMessageToPort(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
+        => TryTokenizePattern(TokenType.SendMessageToPort, SendMessageToPortRegex(), input, current, out result);
+    [GeneratedRegex("^return ")]
+    private static partial Regex ReturnRegex();
     private int TryTokenizeReturn(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.Return, new Regex("^return "), input, current, out result);
+        => TryTokenizePattern(TokenType.Return, ReturnRegex(), input, current, out result);
+    [GeneratedRegex("^\\d+")]
+    private static partial Regex NumberLiteralRegex();
     private int TryTokenizeNumberLiteral(string input, int current, out Token? result)
-        => TryTokenizePattern(TokenType.NumberLiteral, new Regex("^\\d+"), input, current, out result);
+        => TryTokenizePattern(TokenType.NumberLiteral, NumberLiteralRegex(), input, current, out result);
 
     private int TryTokenizeStringLiteral(string input, int current, out Token? result) {
         if (input[current] == '"') {
@@ -166,17 +212,21 @@ public class Tokenizer {
         return 0;
     }
 
+    [GeneratedRegex("\\s")]
+    private static partial Regex WhitespaceRegex();
     private int SkipWhitespace(string input, int current, out Token? result) {
         result = null;
-        if (Regex.IsMatch(input.Substring(current, 1), "\\s")) {
+        if (WhitespaceRegex().IsMatch(input.Substring(current, 1))) {
             return 1;
         }
         return 0;
     }
 
+    [GeneratedRegex("^//.*$")]
+    private static partial Regex LineCommentRegex();
     private int SkipLineComment(string input, int current, out Token? result) {
         result = null;
-        var match = Regex.Match(input.Substring(current), "^//.*$");
+        var match = LineCommentRegex().Match(input.Substring(current));
         if (match.Success) {
             return match.Length;
         }
