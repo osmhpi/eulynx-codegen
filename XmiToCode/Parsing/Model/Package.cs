@@ -50,6 +50,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             Console.WriteLine($" failed due to model issue: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
+            // throw;
             return false;
         }
         catch (Exception ex)
@@ -57,6 +58,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             Console.WriteLine($" failed: ({ex.Message})");
             Console.WriteLine($"Contained in package {string.Join(" | ", classElement.Hierarchy.Select(p => p.Name))}");
             Console.WriteLine();
+            // throw;
             return false;
         }
     }

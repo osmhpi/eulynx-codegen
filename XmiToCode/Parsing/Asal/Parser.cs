@@ -28,7 +28,7 @@ public partial class Parser
     }
 
     public IAccessible Factor(IEnumerator<Token> _current_token, IProgramContext context, IAssignable? lhs = null) {
-        // factor : (NOT) Name | StringLiteral | LPAREN expr RPAREN
+        // factor : (NOT) Name | StringLiteral | NumberLiteral | LPAREN expr RPAREN
         var token = _current_token.Current;
         var negate = false;
         if (token.TokenType == TokenType.Negation) {
@@ -66,6 +66,11 @@ public partial class Parser
             var accessible = lhs!.LookupValidLiteral(identifier);
             lhs?.EnsureComparableTypes(accessible);
             return negate ? new BooleanExpression.Negation(accessible) : accessible;
+        } else if (!negate && token.TokenType == TokenType.NumberLiteral) {
+            Eat(_current_token, TokenType.NumberLiteral);
+            var literal = new NumberLiteral(int.Parse(token.Value));
+            lhs?.EnsureComparableTypes(literal);
+            return literal;
         } else if (token.TokenType == TokenType.ParenOpen) {
             Eat(_current_token, TokenType.ParenOpen);
             var node = Expr(_current_token, context);
@@ -107,7 +112,7 @@ public partial class Parser
     public IAccessible Expr(IEnumerator<Token> current_token, IProgramContext context) {
         // expr   : term ((AND | OR | XOR) term)*
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
-        // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
+        // factor : (NOT) Name | StringLiteral | NumberLiteral | ParenOpen expr ParenClose
 
         var node = Term(current_token, context);
         while (current_token.Current.TokenType == TokenType.Conjunction || current_token.Current.TokenType == TokenType.Disjunction || current_token.Current.TokenType == TokenType.ExclusiveDisjunction) {
@@ -132,7 +137,7 @@ public partial class Parser
     public Instruction Instr(IEnumerator<Token> current_token, IProgramContext context) {
         // instr  : term ((AND | OR | XOR) term)*
         // term   : factor ((GreaterThan | LessThan | GreaterThanOrEqual | LessThanOrEqual | Equal | NotEqual) factor)*
-        // factor : (NOT) Name | StringLiteral | ParenOpen expr ParenClose
+        // factor : (NOT) Name | StringLiteral | NumberLiteral | ParenOpen expr ParenClose
 
         while (current_token.Current.TokenType == TokenType.If ||
             current_token.Current.TokenType == TokenType.Else ||

@@ -5,6 +5,7 @@ public enum TokenType {
     ParenClose,
     Name,
     StringLiteral,
+    NumberLiteral,
     LineComment,
     MultiLineComment,
 

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using XmiToCode;
 using XmiToCode.Codegen;
 using XmiToCode.Codegen.C;
@@ -22,7 +22,7 @@ var classBlacklist = new string[] {
 };
 
 var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("Could not resolve assembly directory");
-var processor = new EulynxV22XmiParser(Path.Combine(assemblyDir, "cleaned_22.xmi"));
+var processor = new EulynxV22XmiParser(Path.Combine(assemblyDir, "cleaned_22.xmi"), classWhitelist, classBlacklist);
 
 // Test if input arguments were supplied.
 if (args.Length == 1 && args[0] == "validate")

@@ -142,6 +142,8 @@ public class Tokenizer {
         => TryTokenizePattern(TokenType.SendMessageToPort, new Regex("^send (.+)\\s?to (.+)$"), input, current, out result);
     private int TryTokenizeReturn(string input, int current, out Token? result)
         => TryTokenizePattern(TokenType.Return, new Regex("^return "), input, current, out result);
+    private int TryTokenizeNumberLiteral(string input, int current, out Token? result)
+        => TryTokenizePattern(TokenType.NumberLiteral, new Regex("^\\d+"), input, current, out result);
 
     private int TryTokenizeStringLiteral(string input, int current, out Token? result) {
         if (input[current] == '"') {
@@ -247,6 +249,7 @@ public class Tokenizer {
             #endif
             TryTokenizeSendMessageToPort,
             TryTokenizeReturn,
+            TryTokenizeNumberLiteral,
             TryTokenizeStringLiteral,
             TryTokenizeName,
         };
