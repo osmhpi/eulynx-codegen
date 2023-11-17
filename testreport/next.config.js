@@ -2,7 +2,6 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
-  basePath: '/system-model-validation',
   webpack: (config, { defaultLoaders }) => {
     config.module.rules.push({
       test: /\.xml$/,
