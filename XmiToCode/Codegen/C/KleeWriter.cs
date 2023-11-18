@@ -63,7 +63,7 @@ return $@"
     }
 
     private string WriteMakeEvent(string name, ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
-        if (inputTriggers.Count == 0 && klass.GetTimeoutEvents().Count() == 0 && klass.GetIncomingMessageTypes().Count() == 0)
+        if (inputTriggers.Count == 0 && !klass.GetTimeoutEvents().Any() && !klass.GetIncomingMessageTypes().Any())
             return "";
 
     return $@"
