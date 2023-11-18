@@ -84,9 +84,9 @@ use crate::constants::{{
 pub struct {klass.ClassName.Name}_Ports {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-        PropertyOrPort.ComplexPropertyOrPort complex =>
+        ComplexPropertyOrPort complex =>
             $"pub {complex.Name}: {complex.UmlType.Type},",
-        PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
+        StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
              $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1}," :
              $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},",
         _ => $"pub {x.Key.Name}: {x.Value.DataType(TargetLanguage.Rust).Item1},"
@@ -97,11 +97,11 @@ impl {klass.ClassName.Name}_Ports {{
     pub fn new() -> Self {{
         {klass.ClassName.Name}_Ports {{
             {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-                PropertyOrPort.ComplexPropertyOrPort complex => null,
-                PropertyOrPort.StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
+                ComplexPropertyOrPort complex => null,
+                StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
                     $"{x.Key.Name}: {x.Key.Name}Value::{s.Name}Value__{s.AllowedValues.First().Name}," :
                     $"{x.Key.Name}: {x.Key.Name}Value::{x.Value.DataType(TargetLanguage.Rust).Item1},",
-                PropertyOrPort.BoolPropertyOrPort boolPort => $"{x.Key.Name}: false,",
+                BoolPropertyOrPort boolPort => $"{x.Key.Name}: false,",
                  _ => $"{x.Key.Name}: false,"
             }))}
         }}

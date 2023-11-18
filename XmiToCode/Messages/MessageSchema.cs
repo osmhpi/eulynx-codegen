@@ -14,12 +14,12 @@ public record MessageSchema(PackagedElement Signal, Dictionary<string, PackagedE
 
     public IEnumerable<Codegen.Model.ValueType> GetValueTypes() {
         return Members
-            .Where(x => x is PropertyOrPort.StringPropertyOrPort)
+            .Where(x => x is StringPropertyOrPort)
             .Select(x => new Codegen.Model.ValueType(
                 Identifier,
                 x.Identifier,
                 // x.MemberName,
-                ((PropertyOrPort.StringPropertyOrPort)x).AllowedValues))
+                ((StringPropertyOrPort)x).AllowedValues))
             .Where(x => x.AllowedValues.Count > 0);
     }
 

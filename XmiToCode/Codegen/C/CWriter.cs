@@ -59,6 +59,7 @@ public class CWriter : ICodeWriter
 #include <string.h>
 
 #define MessagePort(X) struct {{ bool HasMessage; X Value; }}
+#define DataPort(X) struct {{ bool IsSignalled; X Value; }}
 
 typedef struct PulsedIn
 {{
@@ -114,7 +115,7 @@ typedef struct TimeoutEvent
         }}";
     }
 
-    private string WriteMessageSchema(MessageSchema messageSchema)
+    private static string WriteMessageSchema(MessageSchema messageSchema)
     {
         return @$"
         {string.Join("\n", messageSchema.GetValueTypes().Select(WriteValueType))}
@@ -172,7 +173,7 @@ void evaluateChangeEvents({klass.ClassName.Name} *self) {{
 void resetTriggers({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
 
-    {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PropertyOrPort.PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
 
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
 }}
@@ -219,8 +220,8 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     {
         return initializer switch
         {
-            JunctionCodeTransition j => WriteJunctionTransition(j, states),
-            CodeTransition c => WriteCodeTransition(c, states),
+            JunctionCodeTransition junction => WriteJunctionTransition(junction, states),
+            CodeTransition code => WriteCodeTransition(code, states),
             _ => throw new NotImplementedException()
         };
     }
@@ -307,10 +308,18 @@ typedef struct {klass.ClassName.Name} {{
     {klass.BehaviorName.Name} state;
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-        PropertyOrPort.ComplexPropertyOrPort complex => null,
-        _ => $@"// {x.Key.RawName}
+        ComplexPropertyOrPort complex => null,
+        PulsedInPropertyOrPort pulsedIn => $@"// {x.Key.RawName}
         // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
         {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+        ",
+        PulsedOutPropertyOrPort pulsedOut => $@"// {x.Key.RawName}
+        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+        ",
+        _ => $@"// {x.Key.RawName}
+        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        DataPort({x.Value.DataType(TargetLanguage.C).Item1}{x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
         "
         }))}
 

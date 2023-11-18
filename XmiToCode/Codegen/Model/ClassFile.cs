@@ -22,11 +22,11 @@ public record ClassFile(
     public IEnumerable<ValueType> GetValueTypes() {
         return ClassContext.Ports
             .Concat(ClassContext.Properties)
-            .Where(x => x.Value is PropertyOrPort.StringPropertyOrPort)
+            .Where(x => x.Value is StringPropertyOrPort)
             .Select(x => new ValueType(
                 ClassName,
                 x.Key,
-                ((PropertyOrPort.StringPropertyOrPort)x.Value).GetAllowedValues()))
+                ((StringPropertyOrPort)x.Value).GetAllowedValues()))
             .Where(x => x.AllowedValues.Count > 0);
     }
 

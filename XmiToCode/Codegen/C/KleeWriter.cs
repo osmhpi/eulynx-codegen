@@ -21,7 +21,7 @@ public class KleeWriter : CWriter {
         {base.WriteTransitionFunction(transitionFunction, states)}";
     }
 
-    private string WriteEventEnum(ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteEventEnum(ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
         var theList =
             inputTriggers.Select(x => $"Event_{x.Identifier.Name}").Concat(
                 klass.GetTimeoutEvents().Select(x => $"Event_{x}")
@@ -39,7 +39,7 @@ public class KleeWriter : CWriter {
         }} Event;";
     }
 
-    private string WriteDispatchEvent(string name, ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteDispatchEvent(string name, ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && klass.GetTimeoutEvents().Count() == 0 && klass.GetIncomingMessageTypes().Count() == 0)
             return "";
 
@@ -62,7 +62,7 @@ return $@"
     }}";
     }
 
-    private string WriteMakeEvent(string name, ClassFile klass, List<PropertyOrPort.PulsedInPropertyOrPort> inputTriggers) {
+    private string WriteMakeEvent(string name, ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && !klass.GetTimeoutEvents().Any() && !klass.GetIncomingMessageTypes().Any())
             return "";
 
@@ -74,7 +74,7 @@ return $@"
     protected override string WriteClass(ClassFile klass)
     {
         var inputTriggers = klass.GetPropertiesAndPorts().Values
-            .OfType<PropertyOrPort.PulsedInPropertyOrPort>()
+            .OfType<PulsedInPropertyOrPort>()
             .ToList();
 
         var states = klass.Behavior.EnumerateSubrecords(TargetLanguage.C)
@@ -123,7 +123,7 @@ int new_symbolic({klass.ClassName.Name} *self) {{
     klee_make_symbolic(&self->state, sizeof(self->state), ""state"");
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
-        PropertyOrPort.ComplexPropertyOrPort complex => null,
+        ComplexPropertyOrPort complex => null,
         _ => $"klee_make_symbolic(&self->{x.Key.Name}, sizeof(self->{x.Key.Name}), \"{x.Key.Name}\");"
     }))}
 
