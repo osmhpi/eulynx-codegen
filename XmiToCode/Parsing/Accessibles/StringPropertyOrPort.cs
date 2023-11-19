@@ -37,7 +37,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
     public override (string, string) DataType(TargetLanguage language) {
         var allowedValues = GetAllowedValues();
         #if !DISABLE_HACKS
-        if (allowedValues.Count == 0 && (Name == "PdiVersion" || Name == "PDIVersion")) {
+        if (allowedValues.Count == 0 && (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion")) {
             return ("char", "");
         }
         if (allowedValues.Count == 0 && (Name == "ChecksumData" || Name == "MemChecksumData")) {
@@ -114,6 +114,14 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
     }
 
     public void RequireConversionFrom(StringPropertyOrPort other) {
+        #if !DISABLE_HACKS
+        if (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion") {
+            return;
+        }
+        if (Name == "ChecksumData" || Name == "MemChecksumData") {
+            return;
+        }
+        #endif
         RequiredConversions.Add(other);
     }
 }
