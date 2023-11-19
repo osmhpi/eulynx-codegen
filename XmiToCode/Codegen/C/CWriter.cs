@@ -202,6 +202,8 @@ void resetTriggers({klass.ClassName.Name} *self) {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
 
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.Where(x => x.IsDataPort && x.IsInPort).Select(x => $"self->{x.Identifier.Name}.IsSignalled = false;"))}
+
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
 }}
 
