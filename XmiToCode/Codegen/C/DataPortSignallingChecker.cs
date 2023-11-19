@@ -49,7 +49,11 @@ public class DataPortSignallingChecker
                 return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
             }
             if (eq.Rhs is StringPropertyOrPort stringRhs) {
-                return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {stringRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+                if (stringRhs.IsDataPort) {
+                    return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {stringRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+                }
+                // No data port, e.g. internal property or message member
+                return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
             }
         }
 
@@ -58,7 +62,11 @@ public class DataPortSignallingChecker
                 return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
             }
             if (eq.Rhs is BoolPropertyOrPort boolRhs) {
-                return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {boolRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+                if (boolRhs.IsDataPort) {
+                    return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {boolRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+                }
+                // No data port, e.g. internal property or message member
+                return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
             }
         }
 
