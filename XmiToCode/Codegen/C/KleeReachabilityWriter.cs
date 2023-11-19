@@ -4,8 +4,8 @@ using XmiToCode.Codegen.Model;
 
 namespace XmiToCode.Codegen.C;
 
-public class KleeWriter : CWriter {
-    public KleeWriter(string outputDir) : base(outputDir)
+public class KleeReachabilityWriter : CWriter {
+    public KleeReachabilityWriter(string outputDir) : base(outputDir)
     {
     }
 
@@ -21,11 +21,9 @@ public class KleeWriter : CWriter {
         {base.WriteTransitionFunction(transitionFunction, states)}";
     }
 
-    private static string WriteEventEnum(ClassFile klass, List<PropertyOrPort> inputTriggers) {
+    private string WriteEventEnum(ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
         var theList =
-            inputTriggers.Select(
-                x => $"Event_{x.Identifier.Name}"
-            ).Concat(
+            inputTriggers.Select(x => $"Event_{x.Identifier.Name}").Concat(
                 klass.GetTimeoutEvents().Select(x => $"Event_{x}")
             ).Concat(
                 klass.GetIncomingMessageTypes().Select(x => $"Event_{x.Identifier.Name}")
@@ -41,21 +39,16 @@ public class KleeWriter : CWriter {
         }} Event;";
     }
 
-    private static string WriteDispatchEvent(string name, ClassFile klass, List<PropertyOrPort> inputTriggers) {
-        if (inputTriggers.Count == 0 && !klass.GetTimeoutEvents().Any() && !klass.GetIncomingMessageTypes().Any())
+    private string WriteDispatchEvent(string name, ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
+        if (inputTriggers.Count == 0 && klass.GetTimeoutEvents().Count() == 0 && klass.GetIncomingMessageTypes().Count() == 0)
             return "";
 
 return $@"
     switch ({name})
     {{
-    {JoinLines(inputTriggers.OfType<PulsedInPropertyOrPort>().Select(x =>
+    {JoinLines(inputTriggers.Select(x =>
         @$"case Event_{x.Identifier.Name}:
         self->{x.Identifier.Name}.IsTriggered = true;
-        break;"))}
-    {JoinLines(inputTriggers.Where(x => x.IsDataPort).Select(x =>
-        @$"case Event_{x.Identifier.Name}:
-        klee_make_symbolic(&self->{x.Identifier.Name}.Value, sizeof(self->{x.Identifier.Name}.Value), ""{x.Identifier.Name}"");
-        self->{x.Identifier.Name}.IsSignalled = true;
         break;"))}
     {JoinLines(klass.GetTimeoutEvents().Select(x =>
         @$"case Event_{x}:
@@ -69,7 +62,7 @@ return $@"
     }}";
     }
 
-    private static string WriteMakeEvent(string name, ClassFile klass, List<PropertyOrPort> inputTriggers) {
+    private string WriteMakeEvent(string name, ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && !klass.GetTimeoutEvents().Any() && !klass.GetIncomingMessageTypes().Any())
             return "";
 
@@ -81,7 +74,7 @@ return $@"
     protected override string WriteClass(ClassFile klass)
     {
         var inputTriggers = klass.GetPropertiesAndPorts().Values
-            .Where(x => x is PulsedInPropertyOrPort || (x.IsDataPort && x.IsInPort))
+            .OfType<PulsedInPropertyOrPort>()
             .ToList();
 
         var states = klass.Behavior.EnumerateSubrecords(TargetLanguage.C)
@@ -106,9 +99,47 @@ int count_firing_transitions({klass.ClassName.Name} *self) {{
 
     return result;
 }}
-
-int main()
+/*
+void process_events({klass.ClassName.Name} *self, Event *event, size_t len)
 {{
+  resetTriggers(self);
+  for (int i = 0; i < len; ++i)
+  {{
+    Event e = event[i];
+    klee_open_merge();
+
+    {WriteDispatchEvent("e", klass, inputTriggers)}
+
+    transition(self);
+    klee_close_merge();
+
+    klee_assert(
+        {JoinLines(states.Select(x => $"self->state == {x}"), "||")}
+    );
+  }}
+}}
+
+int new_symbolic({klass.ClassName.Name} *self) {{
+    klee_make_symbolic(&self->state, sizeof(self->state), ""state"");
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        ComplexPropertyOrPort complex => null,
+        _ => $"klee_make_symbolic(&self->{x.Key.Name}, sizeof(self->{x.Key.Name}), \"{x.Key.Name}\");"
+    }))}
+
+    // Messages -- Incoming
+    {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"klee_make_symbolic(&self->{x.Identifier.Name}, sizeof(self->{x.Identifier.Name}), \"{x.Identifier.Name}\");"))}
+    // Messages -- Outgoing
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"klee_make_symbolic(&self->{x.Identifier.Name}, sizeof(self->{x.Identifier.Name}), \"{x.Identifier.Name}\");"))}
+
+    // Change Events
+    {string.Join("\n", klass.GetChangeEvents().Select(x => $"klee_make_symbolic(&self->{x.Event.Name}, sizeof(self->{x.Event.Name}), \"{x.Event.Name}\");"))}
+
+    // Timeout Events
+    {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"klee_make_symbolic(&self->{x}, sizeof(self->{x}), \"{x}\");"))}
+}}*/
+
+int experiment_deterministic_transitions() {{
     {klass.ClassName.Name} x;
 
     // Experiment: Deterministic transitions
@@ -123,6 +154,35 @@ int main()
 
     klee_assert(count_firing_transitions(&x) <= 1);
     return 0;
+}}
+
+/*
+int experiment_transition_sequence() {{
+    {klass.ClassName.Name} x;
+
+    new (&x);
+
+    Event one;
+    klee_make_symbolic(&one, sizeof(Event), ""one"");
+    Event two;
+    klee_make_symbolic(&two, sizeof(Event), ""two"");
+    Event three;
+    klee_make_symbolic(&three, sizeof(Event), ""three"");
+    Event four;
+    klee_make_symbolic(&four, sizeof(Event), ""four"");
+    Event five;
+    klee_make_symbolic(&five, sizeof(Event), ""five"");
+    Event six;
+    klee_make_symbolic(&six, sizeof(Event), ""six"");
+
+    Event event_sequence[6] = {{one, two, three, four, five, six}};
+    process_events(&x, event_sequence, 6);
+}}
+*/
+
+int main()
+{{
+    return experiment_deterministic_transitions();
 }}";
     }
 
