@@ -75,7 +75,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyO
             // "DateTime",
             // "Decimal",
             // "Double",
-            // "Integer",
+            "Integer" => new IntegerPropertyOrPort(property, ProxyFor),
             // "Long",
             // "Single",
             "String" => new StringPropertyOrPort(property, ProxyFor),

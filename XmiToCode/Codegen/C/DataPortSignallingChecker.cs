@@ -70,6 +70,19 @@ public class DataPortSignallingChecker
             }
         }
 
+        if (eq.Lhs is IntegerPropertyOrPort intLhs) {
+            if (eq.Rhs is NumberLiteral) {
+                return $"MakeChange({intLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+            if (eq.Rhs is IntegerPropertyOrPort intRhs) {
+                if (intRhs.IsDataPort) {
+                    return $"MakeChange({intLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {intRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+                }
+                // No data port, e.g. internal property or message member
+                return $"MakeChange({intLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+        }
+
         throw new NotImplementedException($"MakeChange({eq.Lhs.GetType().Name}, {eq.Rhs.GetType().Name})");
     }
 }
