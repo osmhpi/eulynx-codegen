@@ -30,6 +30,13 @@ public record ClassFile(
             .Where(x => x.AllowedValues.Count > 0);
     }
 
+    public IEnumerable<(StringPropertyOrPort From, StringPropertyOrPort To)> GetConversionFunctions() {
+        return ClassContext.Ports.Values
+            .Concat(ClassContext.Properties.Values)
+            .OfType<StringPropertyOrPort>()
+            .SelectMany(x => x.RequiredConversions.Select(from => (from, x)));
+    }
+
     public Dictionary<Identifier, PropertyOrPort> GetPropertiesAndPorts() {
         return ClassContext.Ports
             .Concat(ClassContext.Properties)
@@ -73,5 +80,3 @@ public record ClassFile(
             .ToList();
     }
 }
-
-public record ValueType(TypeIdentifier ClassName, Identifier Identifier, HashSet<LiteralIdentifier> AllowedValues);

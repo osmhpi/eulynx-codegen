@@ -161,6 +161,15 @@ typedef struct TimeoutEvent
         }} {valueType.Identifier.Name}Value;";
     }
 
+    private static string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
+    {
+        return $@"{to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
+            switch (value) {{
+                {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Name}: return {to.Name}Value__{x.Name};"))}
+            }}
+        }}";
+    }
+
     private static string WriteGlobalEnumeration(GlobalEnumeration globalEnumeration)
     {
         return @$"/// {globalEnumeration.Name.RawName}
@@ -334,6 +343,10 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 // Value Types
 
 {string.Join("\n", klass.GetValueTypes().Select(WriteValueType))}
+
+// Value Conversion Functions
+
+{string.Join("\n", klass.GetConversionFunctions().Select(x => WriteConversionFunction(x.From, x.To)))}
 
 {WriteBehaviorEnum(klass.Behavior)}
 

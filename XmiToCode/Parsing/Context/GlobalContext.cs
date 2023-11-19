@@ -24,7 +24,7 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
     // Enums
     public IAccessible ResolveIdentifier(Identifier identifier)
     {
-        if (identifier.RawName.Contains(".")) {
+        if (identifier.RawName.Contains('.')) {
             // Fully qualified identifier
             var nameParts = identifier.RawName.Split(".");
             if (nameParts.Length == 2) {

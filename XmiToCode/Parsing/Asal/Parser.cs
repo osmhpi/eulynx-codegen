@@ -101,8 +101,8 @@ public partial class Parser
 
             var assignable = node is IAssignable a ? a : null;
             node = token.TokenType switch {
-                TokenType.Equal => new BooleanExpression.Equality(node, Factor(current_token, context, assignable), true),
-                TokenType.NotEqual => new BooleanExpression.Equality(node, Factor(current_token, context, assignable), false),
+                TokenType.Equal => BooleanExpression.Equality.Create(node, Factor(current_token, context, assignable), true),
+                TokenType.NotEqual => BooleanExpression.Equality.Create(node, Factor(current_token, context, assignable), false),
                 _ => throw new ArgumentException(token.TokenType.ToString()),
             };
         }
@@ -177,7 +177,7 @@ public partial class Parser
                     var assignable = context.ResolveAssignableIdentifier(identifier);
                     Eat(current_token, TokenType.Assignment);
                     var otherFactor = Factor(current_token, context, assignable);
-                    return new AssignmentInstruction(assignable, otherFactor, context);
+                    return AssignmentInstruction.Create(assignable, otherFactor, context);
                 } else {
                     throw new ArgumentException(current_token.Current.TokenType.ToString());
                 }

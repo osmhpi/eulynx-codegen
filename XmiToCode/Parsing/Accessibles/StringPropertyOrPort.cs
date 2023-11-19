@@ -24,6 +24,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
 
         return result;
     }
+    public HashSet<StringPropertyOrPort> RequiredConversions { get; } = new HashSet<StringPropertyOrPort>();
     public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
     public HashSet<LiteralIdentifier> GetAllowedValues() {
         var result = new HashSet<LiteralIdentifier>();
@@ -74,12 +75,16 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
     public override string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
             $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
-            base.Comparator(context, other, targetLanguage, accessor);
+            other is StringPropertyOrPort otherString ?
+                $"{Accessor(context, targetLanguage, accessor)} == map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)})" :
+                base.Comparator(context, other, targetLanguage, accessor);
 
     public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
             $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
-            base.Assign(context, other, targetLanguage, accessor);
+            other is StringPropertyOrPort otherString ?
+                $"{Accessor(context, targetLanguage, accessor)} = map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)});" :
+                base.Assign(context, other, targetLanguage, accessor);
 
     private readonly HashSet<StringPropertyOrPort> _equalTypes = new();
     private void RecordEqualTypes(StringPropertyOrPort other) {
@@ -106,5 +111,9 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
         }
 
         ProxyFor?.EnsureComparableTypes(rhsIdentifier);
+    }
+
+    public void RequireConversionFrom(StringPropertyOrPort other) {
+        RequiredConversions.Add(other);
     }
 }

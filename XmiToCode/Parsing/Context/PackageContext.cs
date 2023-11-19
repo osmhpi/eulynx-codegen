@@ -5,18 +5,9 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Context;
 
+// From the implementations, it looks like this class is not needed.
 public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage, Dictionary<string, PackagedElement> PackageEvents) : IProgramContext
 {
-    // public Dictionary<string, PackagedElement> Signals { get; } =
-    //     GetElements(UmlPackage, "uml:Signal")
-    //         .ToDictionary(x => x.Id);
-
-    // private static List<PackagedElement> GetElements(PackagedElement package, string umlType) {
-    //     return package.PackagedElements
-    //         .Where(x => x.Type == umlType)
-    //         .ToList();
-    // }
-
     public bool IsLocalVariable(IAccessible accessible)
     {
         return Parent.IsLocalVariable(accessible);

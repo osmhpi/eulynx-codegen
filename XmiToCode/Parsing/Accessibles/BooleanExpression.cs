@@ -22,6 +22,13 @@ public abstract record BooleanExpression() : IAccessible {
 
     public record Equality(IAccessible Lhs, IAccessible Rhs, bool Positive) : BooleanExpression()
     {
+        public static Equality Create(IAccessible lhs, IAccessible rhs, bool positive) {
+            if (lhs is StringPropertyOrPort lhsString && rhs is StringPropertyOrPort rhsString) {
+                lhsString.RequireConversionFrom(rhsString);
+            }
+
+            return new Equality(lhs, rhs, positive);
+        }
         public override string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
             Positive ? Lhs.Comparator(context, Rhs, targetLanguage) : $"!({Lhs.Comparator(context, Rhs, targetLanguage)})";
     }
