@@ -60,7 +60,7 @@ public class CWriter : ICodeWriter
 #include <string.h>
 
 #define MessagePort(X) struct {{ bool HasMessage; X Value; }}
-#define DataPort(X) struct {{ bool IsSignalled; X Value; }}
+#define DataPort(X, Y) struct {{ bool IsSignalled; X Value Y; }}
 
 typedef struct PulsedIn
 {{
@@ -352,7 +352,7 @@ typedef struct {klass.ClassName.Name} {{
         ",
         _ => $@"// {x.Key.RawName}
         // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
-        DataPort({x.Value.DataType(TargetLanguage.C).Item1}{x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
+        DataPort({x.Value.DataType(TargetLanguage.C).Item1}, {x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
         "
         }))}
 
