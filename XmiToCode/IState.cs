@@ -15,14 +15,6 @@ public interface IState
 
     IState WithRegion(IRegion? region);
 
-    // public TypeIdentifier StateName { get; }
-
-    // StateMachine? InternalStateMachine { get; }
-
-    // List<Instruction> ParseExit(IState next, Transition transition, IProgramContext context);
-    // List<Instruction> ParseTransition(IState next, Transition transition, IProgramContext context);
-    // List<Instruction> ParseEntry(IState previous, Transition transition, IProgramContext context);
-
     bool IsSourceOfTransition(UmlTransition transition);
     bool IsTargetOfTransition(UmlTransition transition);
 }

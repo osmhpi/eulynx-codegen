@@ -1,13 +1,13 @@
-using XmiToCode.Codegen;
 using XmiToCode.Parsing;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
-using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Test;
 
 public class SpecialClassTransformerTest
 {
+    public const string FObserveOverallPointPositionClassName = "F_Observe_Overall_Point_Position";
+
     [Fact]
     public void FlattenedRegionsShouldIncludeJunctionWithTransitions() {
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
@@ -41,5 +41,17 @@ public class SpecialClassTransformerTest
         Assert.True(secondLevelJunction.All(x => x.IsJunction));
         Assert.True(secondLevelOutgoingTransitions.All(x => x.Count == 4));
         Assert.True(secondLevelOutgoingTransitions.All(x => x.All(transition => transition.To.IsRegularState)));
+    }
+
+    [Fact]
+    public void FObservePointPositionShouldHaveTransitions() {
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
+        var packages = parser.ParsePackages();
+        var subsystemPointPackage = packages.Single(x => x.Name.RawName == PackageTest.SubsystemPointPackageName);
+        _ = subsystemPointPackage.TryParseClass(FObserveOverallPointPositionClassName, out var parsedClass);
+        var transformer = new ClassTransformer(parsedClass);
+
+        var classFile = transformer.TransformClassIntoFile();
+        Assert.True(classFile.TransitionFunctions.All(x => x.Transitions.Any()));
     }
 }
