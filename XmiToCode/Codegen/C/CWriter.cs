@@ -72,8 +72,7 @@ typedef struct PulsedOut
     bool Trigger;
 }} PulsedOut;
 
-
-typedef struct ChangeOp {{ bool T; bool V }} ChangeOp;
+typedef struct ChangeOp {{ bool T; bool V; }} ChangeOp;
 
 ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
   ChangeOp result = {{ .T = lhs.T || rhs.T, .V = lhs.V && rhs.V }};
