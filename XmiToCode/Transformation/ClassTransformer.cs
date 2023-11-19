@@ -81,8 +81,7 @@ public class ClassTransformer {
             .Where(x => x.IsRegularState)
             .Select(x => MakeSubrecord(name, className, x)).ToList();
         var initialTransition = region.Transitions.OfType<InitialTransition>().Single();
-        var initializer = TransitionFunction.CreateCodeTransition(initialTransition, region,
-            region.InitialState.Name, region.InitialState, initialTransition.To, initialTransition.To.Name, className);
+        var initializer = TransitionFunction.CreateCodeTransition(initialTransition, region, region.InitialState, initialTransition.To, className);
 
         return new BehaviorRecord(x, region, name, parentBehaviorName, className, initializer, subrecords);
     }

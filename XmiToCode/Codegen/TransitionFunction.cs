@@ -20,12 +20,12 @@ public record TransitionFunction(
             _ => throw new NotImplementedException()
         };
 
-    public static IEnumerable<(Transition Transition, IState ToState, string ToStateName)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
+    public static IEnumerable<(Transition Transition, IState ToState)> GetAllTransitionsFromState(IRegion region, string thisName, IState fromState, bool skipParentTransitions = false) {
         var transitionsOnCurrentLevel = region.Transitions
             .Where(x => x is not InitialTransition)
             .Where(x => fromState.IsSourceOfTransition(x.SingleTransition))
             .Where(x => ((CompoundState)x.To).IsNextStateAfterTransition((CompoundState)fromState, x.SingleTransition))
-            .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
+            .Select(x => (x, x.To))
             .ToList();
 
         // Does fromState match one of our child state machines?
@@ -43,7 +43,7 @@ public record TransitionFunction(
             .ToList();
 
         return childStateMachineTransitions.SelectMany(childStateMachineTransition => {
-            var result = childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState, $"{thisName}.{x.ToStateName}"));
+            var result = childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState));
 
             if (skipParentTransitions) {
                 return result;
@@ -51,14 +51,13 @@ public record TransitionFunction(
 
             // Prepend the transitions from the enclosing state of the child state machine
             return region.Transitions.Where(x => x.From == childStateMachineTransition.FromState)
-                .Select(x => (x, x.To, $"{thisName}.{x.To.Name}"))
+                .Select(x => (x, x.To))
                 .Concat(result);
         }).Concat(transitionsOnCurrentLevel);
     }
 
     public static TransitionFunction Create(TypeIdentifier className, TypeIdentifier behaviorName, string fromStateName, IState fromState, IRegion region) {
-        var thisName = "this";
-        var transitions = GetCodeTransitions(region, thisName, fromState, className, false);
+        var transitions = GetCodeTransitions(region, fromState, className, false);
 
         return new TransitionFunction(
             behaviorName,
@@ -68,9 +67,9 @@ public record TransitionFunction(
             transitions);
     }
 
-    public static List<ICodeTransition> GetCodeTransitions(IRegion region, string thisName, IState fromState, TypeIdentifier className, bool skipParentTransitions) {
+    public static List<ICodeTransition> GetCodeTransitions(IRegion region, IState fromState, TypeIdentifier className, bool skipParentTransitions) {
         var transitions = GetAllTransitionsFromState(region, fromState.Name, fromState, skipParentTransitions).ToList();
-        return transitions.Select(x => CreateCodeTransition(x.Transition, region, thisName, fromState, x.ToState, x.ToStateName, className)).ToList();
+        return transitions.Select(x => CreateCodeTransition(x.Transition, region, fromState, x.ToState, className)).ToList();
     }
 
     public static List<Instruction> SelectActivities(IState fromState, IState toState, Transition transition)
@@ -86,19 +85,17 @@ public record TransitionFunction(
     public static ICodeTransition CreateCodeTransition(
         Transition theTransition,
         IRegion region,
-        string thisName,
         IState fromState,
         IState toState,
-        string toStateName,
         TypeIdentifier className) {
 
         if (toState.IsRegularState) {
-            return new CodeTransition(toStateName,
+            return new CodeTransition(
                 SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
         }
 
         if (toState.IsJunction) {
-            var subsequentTransitions = GetCodeTransitions(region, thisName, toState, className, true);
+            var subsequentTransitions = GetCodeTransitions(region, toState, className, true);
             return new JunctionCodeTransition(
                 SelectActivities(fromState, toState, theTransition),
                 subsequentTransitions,

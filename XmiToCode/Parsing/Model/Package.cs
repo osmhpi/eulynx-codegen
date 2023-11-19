@@ -15,7 +15,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
         => GetElements(package, "uml:Class")
             .Where(x => x.Element.StateMachine != null)
             .Where(x => classWhitelist?.Contains(x.Element.Name) ?? true)
-            .Where(x => classBlacklist?.Contains(x.Element.Name) ?? true);
+            .Where(x => !classBlacklist?.Contains(x.Element.Name) ?? true);
 
     public List<Class> TryParseAllClasses()
          => ClassElements(ClassWhitelist, ClassBlacklist)

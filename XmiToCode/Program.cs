@@ -1,11 +1,10 @@
-using System.Reflection;
+﻿using System.Reflection;
 using XmiToCode;
 using XmiToCode.Codegen;
 using XmiToCode.Codegen.C;
 using XmiToCode.Codegen.CSharp;
 using XmiToCode.Codegen.Rust;
 using XmiToCode.Parsing;
-
 
 var classWhitelist = new string[] {
     // "F_Control_Point_Machine_Position",
@@ -14,15 +13,17 @@ var classWhitelist = new string[] {
     // "S_SCI_Adj_Prim"
     // "F_EST_EfeS",
     // "F_SCI_EfeS_Sec"
+    // "FControlTimer"
 };
 
 var classBlacklist = new string[] {
     // Demo data
     // "Block1"
+    "F_Control_Timer"
 };
 
 var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("Could not resolve assembly directory");
-var processor = new EulynxV22XmiParser(Path.Combine(assemblyDir, "cleaned_22.xmi"), classWhitelist, classBlacklist);
+var processor = new EulynxV22XmiParser(Path.Combine(assemblyDir, "cleaned_22.xmi"), null, classBlacklist);
 
 // Test if input arguments were supplied.
 if (args.Length == 1 && args[0] == "validate")

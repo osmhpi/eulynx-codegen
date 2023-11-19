@@ -111,7 +111,7 @@ public class {klass.ClassName.Name} : IStateMachine<{klass.ClassName.Name}.{klas
     {
         return $@"{{
             {string.Join("\n", codeTransition.Activities.Select(x => x.ToCSharp()))}
-            return {codeTransition.stateName}.New(this);
+            return {{codeTransition.stateName}}.New(this);
         }}";
     }
 
