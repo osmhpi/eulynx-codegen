@@ -58,6 +58,8 @@ public class CWriter : ICodeWriter
         return @$"
 #include <stdbool.h>
 #include <string.h>
+// For abort()
+#include <stdlib.h>
 
 #define MessagePort(X) struct {{ bool HasMessage; X Value; }}
 #define DataPort(X, Y) struct {{ bool IsSignalled; X Value Y; }}
