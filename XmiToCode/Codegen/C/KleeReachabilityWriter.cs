@@ -156,7 +156,6 @@ int experiment_deterministic_transitions() {{
     return 0;
 }}
 
-/*
 int experiment_transition_sequence() {{
     {klass.ClassName.Name} x;
 
@@ -178,7 +177,6 @@ int experiment_transition_sequence() {{
     Event event_sequence[6] = {{one, two, three, four, five, six}};
     process_events(&x, event_sequence, 6);
 }}
-*/
 
 int main()
 {{

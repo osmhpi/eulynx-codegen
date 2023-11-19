@@ -62,7 +62,6 @@ return $@"
         break;"))}
     {JoinLines(klass.GetIncomingMessageTypes().Select(x =>
         @$"case Event_{x.Identifier.Name}:
-        self->In{x.Identifier.Name}.Value = (Message__{x.Identifier.Name}){{{(x.Members.Any() ? "0" : "")}}};
         self->In{x.Identifier.Name}.HasMessage = true;
         break;"))}
     }}";
