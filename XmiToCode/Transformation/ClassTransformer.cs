@@ -2,6 +2,7 @@ using XmiToCode.Codegen;
 using XmiToCode.Codegen.Model;
 using XmiToCode.Identifiers;
 using XmiToCode.Instructions;
+using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation.Model;
 
@@ -170,10 +171,77 @@ public class ClassTransformer {
 
 
 public static class TransitionTransformerExtensions {
-    public static IEnumerable<Instruction> SelectManyIndependentInstructions(this IEnumerable<InitialTransition> transitions) {
+    public static IEnumerable<Instruction> SelectManyIndependentInstructions(this List<InitialTransition> transitions) {
+        // Check for the independence of the instructions in the transitions
 
+        foreach (var transition in transitions) {
+            var assignedVariables = new HashSet<IAssignable>();
+            foreach (var instruction in transition.Instructions.OfType<AssignmentInstruction>()) {
+                assignedVariables.Add(instruction.Lhs);
+            }
 
-        // TODO: Check for the independence of these instructions
+            void AssertAccessibleNotPartOfSet(IAccessible accessible) {
+                if (assignedVariables.Contains(accessible)) {
+                    throw new ModelException("Combining non-independent transitions");
+                }
+                switch (accessible) {
+                    case BooleanExpression.Conjunction conjunction:
+                        if (assignedVariables.Contains(conjunction.Lhs)) {
+                            throw new ModelException("Combining non-independent transitions");
+                        }
+                        AssertAccessibleNotPartOfSet(conjunction.Rhs);
+                        break;
+                    case BooleanExpression.Disjunction disjunction:
+                        if (assignedVariables.Contains(disjunction.Lhs)) {
+                            throw new ModelException("Combining non-independent transitions");
+                        }
+                        AssertAccessibleNotPartOfSet(disjunction.Rhs);
+                        break;
+                    case BooleanExpression.Negation negation:
+                        AssertAccessibleNotPartOfSet(negation.Variable);
+                        break;
+                    case BooleanExpression.Equality equality:
+                        AssertAccessibleNotPartOfSet(equality.Lhs);
+                        AssertAccessibleNotPartOfSet(equality.Rhs);
+                        break;
+                }
+            }
+
+            foreach (var otherTransition in transitions.Where(x => x != transition)) {
+                foreach (var instruction in otherTransition.Instructions) {
+                    switch (instruction) {
+                        case AssignmentInstruction assignment:
+                            if (assignedVariables.Contains(assignment.Lhs)) {
+                                throw new ModelException("Combining non-independent transitions");
+                            }
+                            AssertAccessibleNotPartOfSet(assignment.Rhs);
+                            break;
+                        case IfThenInstruction ifThen:
+                            AssertAccessibleNotPartOfSet(ifThen.Condition);
+                            break;
+                        case ElseIfThenInstruction elseIfThen:
+                            AssertAccessibleNotPartOfSet(elseIfThen.Condition);
+                            break;
+                        case MethodCallInstruction call:
+                            if (call.Callable is MethodCall methodCall) {
+                                // Nothing to do since method parameters are not yet supported.
+                            }
+                            break;
+                        case ReturnInstruction returnInstruction:
+                            AssertAccessibleNotPartOfSet(returnInstruction.Value);
+                            break;
+                        case SendMessageInstruction sendMessage:
+                            foreach (var initializer in sendMessage.Initializer.Values) {
+                                AssertAccessibleNotPartOfSet(initializer);
+                            }
+                            break;
+                        default: break;
+                    }
+                }
+            }
+        }
+
+        // All good, concatenate instructions
         return transitions.SelectMany(x => x.Instructions);
     }
 }
