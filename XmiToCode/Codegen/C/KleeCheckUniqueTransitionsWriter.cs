@@ -4,8 +4,8 @@ using XmiToCode.Codegen.Model;
 
 namespace XmiToCode.Codegen.C;
 
-public class KleeWriter : CWriter {
-    public KleeWriter(string outputDir) : base(outputDir)
+public class KleeCheckUniqueTransitionsWriter : CWriter {
+    public KleeCheckUniqueTransitionsWriter(string outputDir) : base(outputDir)
     {
     }
 

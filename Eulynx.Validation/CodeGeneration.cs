@@ -74,7 +74,7 @@ public class CodeGeneration
             return;
         }
 
-        var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
+        var c = new KleeCheckUniqueTransitionsWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await c.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
     }
 
@@ -96,7 +96,7 @@ public class CodeGeneration
             return;
         }
 
-        var c = new KleeWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
+        var c = new KleeCheckUniqueTransitionsWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await c.WriteClassFilesAsync(klass, pkg);
     }
 
