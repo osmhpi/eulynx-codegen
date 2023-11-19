@@ -41,6 +41,19 @@ public class KleeCheckUniqueTransitionsWriter : CWriter {
         }} Event;";
     }
 
+
+    protected override string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
+    {
+        // Do not abort() here.
+        // TODO: Is there a way to signal KLEE that the current configuration
+        // is invalid, i.e. outside the bounds of the enum?
+        return $@"{to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
+            switch (value) {{
+                {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Name}: return {to.Name}Value__{x.Name};"))}
+            }}
+        }}";
+    }
+
     private static string WriteDispatchEvent(string name, ClassFile klass, List<PropertyOrPort> inputTriggers) {
         if (inputTriggers.Count == 0 && !klass.GetTimeoutEvents().Any() && !klass.GetIncomingMessageTypes().Any())
             return "";

@@ -163,7 +163,7 @@ typedef struct TimeoutEvent
         }} {valueType.Identifier.Name}Value;";
     }
 
-    private static string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
+    protected virtual string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
     {
         return $@"{to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
             switch (value) {{
