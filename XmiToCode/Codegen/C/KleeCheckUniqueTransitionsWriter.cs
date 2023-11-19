@@ -54,7 +54,6 @@ return $@"
         break;"))}
     {JoinLines(inputTriggers.Where(x => x.IsDataPort).Select(x =>
         @$"case Event_{x.Identifier.Name}:
-        klee_make_symbolic(&self->{x.Identifier.Name}.Value, sizeof(self->{x.Identifier.Name}.Value), ""{x.Identifier.Name}"");
         self->{x.Identifier.Name}.IsSignalled = true;
         break;"))}
     {JoinLines(klass.GetTimeoutEvents().Select(x =>
