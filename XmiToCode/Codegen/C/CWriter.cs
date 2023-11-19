@@ -21,7 +21,7 @@ public class CWriter : ICodeWriter
         if (!outDir.Exists) outDir.Create();
     }
 
-    public async Task WriteCommonFilesAsync(GlobalContext global, List<Parsing.XmiModel.PackagedElement> interestingPackages) {
+    public async Task WriteCommonFilesAsync(GlobalContext global, List<PackagedElement> interestingPackages) {
         var filename = $"{_outputDir}/eulynx_common.h";
 
         foreach (var umlPackage in interestingPackages) {
@@ -344,18 +344,23 @@ typedef struct {klass.ClassName.Name} {{
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
         ComplexPropertyOrPort complex => null,
-        PulsedInPropertyOrPort pulsedIn => $@"// {x.Key.RawName}
-        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        PulsedInPropertyOrPort pulsedIn => $@"/// {x.Key.RawName}
+        /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
         {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
         ",
-        PulsedOutPropertyOrPort pulsedOut => $@"// {x.Key.RawName}
-        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        PulsedOutPropertyOrPort pulsedOut => $@"/// {x.Key.RawName}
+        /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
         {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
         ",
-        _ => $@"// {x.Key.RawName}
-        // Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
-        DataPort({x.Value.DataType(TargetLanguage.C).Item1}, {x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
-        "
+        _ => x.Value.IsDataPort ?
+            $@"/// {x.Key.RawName}
+            /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+            DataPort({x.Value.DataType(TargetLanguage.C).Item1}, {x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
+            " :
+            $@"/// {x.Key.RawName}
+            /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+            {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+            ",
         }))}
 
     // Messages -- Incoming

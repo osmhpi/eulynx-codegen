@@ -70,18 +70,11 @@ public record TransitionFunction(
 
     public static List<ICodeTransition> GetCodeTransitions(IRegion region, string thisName, IState fromState, TypeIdentifier className, bool skipParentTransitions) {
         var transitions = GetAllTransitionsFromState(region, fromState.Name, fromState, skipParentTransitions).ToList();
-
-        // TODO
-        // var regularTransitions = transitions.Where(x => x.ToState.IsRegularState);
-        // var noTriggerConditions = regularTransitions.All(x => x.Transition.SingleTransition.Trigger == null);
-        var noTriggerConditions = false;
-
-        return transitions.Select(x => CreateCodeTransition(x.Transition, region, thisName, fromState, x.ToState, x.ToStateName, noTriggerConditions, className)).ToList();
+        return transitions.Select(x => CreateCodeTransition(x.Transition, region, thisName, fromState, x.ToState, x.ToStateName, className)).ToList();
     }
 
     public static List<Instruction> SelectActivities(IState fromState, IState toState, Transition transition)
     {
-        // TODO: These signatures look implausible.
         // TODO: Partial transitions, exit/entry for compound states
         var exit = fromState.Exit;
         var transitionEffect = transition.Instructions;
@@ -97,17 +90,11 @@ public record TransitionFunction(
         IState fromState,
         IState toState,
         string toStateName,
-        bool noTriggerConditions,
         TypeIdentifier className) {
 
         if (toState.IsRegularState) {
-            if (noTriggerConditions) {
-                return new CodeTransition(toStateName,
-                    SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
-            } else {
-                return new CodeTransition(toStateName,
-                    SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
-            }
+            return new CodeTransition(toStateName,
+                SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
         }
 
         if (toState.IsJunction) {

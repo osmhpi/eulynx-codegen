@@ -1,6 +1,7 @@
 using XmiToCode.Codegen;
 using XmiToCode.Codegen.Model;
 using XmiToCode.Identifiers;
+using XmiToCode.Instructions;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation.Model;
 
@@ -42,7 +43,7 @@ public class ClassTransformer {
                 region.States.Single(x => initialTransitions.All(transition => x.IsSourceOfTransition(transition.Transitions.Single()))),
                 region.States.Single(x => initialTransitions.All(transition => x.IsTargetOfTransition(transition.Transitions.Single()))),
                 initialTransitions.SelectMany(x => x.Transitions).ToList(),
-                initialTransitions.SelectMany(x => x.Instructions).ToList(),
+                initialTransitions.SelectManyIndependentInstructions().ToList(),
                 initialTransitions.SelectMany(x => x.Constraints).ToList()
             );
 
@@ -80,8 +81,7 @@ public class ClassTransformer {
             .Select(x => MakeSubrecord(name, className, x)).ToList();
         var initialTransition = region.Transitions.OfType<InitialTransition>().Single();
         var initializer = TransitionFunction.CreateCodeTransition(initialTransition, region,
-            region.InitialState.Name, region.InitialState, initialTransition.To, initialTransition.To.Name,
-            false, className);
+            region.InitialState.Name, region.InitialState, initialTransition.To, initialTransition.To.Name, className);
 
         return new BehaviorRecord(x, region, name, parentBehaviorName, className, initializer, subrecords);
     }
@@ -92,7 +92,6 @@ public class ClassTransformer {
 
         var behaviorRecord = ParseStateRecord(null, flatRegion, behaviorName.Name, null, _parsedClass.ClassName);
 
-        // TODO: This class should only flatten the regions, move the rest to ClassFile
         var transitionFunction = behaviorRecord.EnumerateSubrecords(TargetLanguage.C) // TODO obviously
             .Where(x => x.record.State?.IsRegularState ?? false)
             .Select(x => TransitionFunction.Create(_parsedClass.ClassName, behaviorName, x.Name, x.record.State!, flatRegion))
@@ -166,5 +165,15 @@ public class ClassTransformer {
                 yield return new CompoundState(regionBState.PartialStates.Concat(regionAState.PartialStates).ToList(), null);
             }
         }
+    }
+}
+
+
+public static class TransitionTransformerExtensions {
+    public static IEnumerable<Instruction> SelectManyIndependentInstructions(this IEnumerable<InitialTransition> transitions) {
+
+
+        // TODO: Check for the independence of these instructions
+        return transitions.SelectMany(x => x.Instructions);
     }
 }
