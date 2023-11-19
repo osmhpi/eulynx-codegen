@@ -56,6 +56,15 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
         return literal.Name;
     }
 
+    public override string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
+        TheAccessor.Accessor(this, context, targetLanguage) + ".Value";
+
+    public override string Accessor(IProgramContext context, TargetLanguage targetLanguage, IAccessor accessor)
+        => accessor.Accessor(this, context, targetLanguage) + ".Value";
+
+    public string IsSignalledAccessor(IProgramContext context, TargetLanguage targetLanguage)
+        => TheAccessor.Accessor(this, context, targetLanguage) + ".IsSignalled";
+
     public override string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
             $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
@@ -66,7 +75,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
             $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
             base.Assign(context, other, targetLanguage, accessor);
 
-    private HashSet<StringPropertyOrPort> _equalTypes = new();
+    private readonly HashSet<StringPropertyOrPort> _equalTypes = new();
     private void RecordEqualTypes(StringPropertyOrPort other) {
         _equalTypes.Add(other);
         other._equalTypes.Add(this);

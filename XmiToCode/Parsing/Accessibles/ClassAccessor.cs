@@ -7,17 +7,9 @@ public class ClassAccessor : IAccessor {
         return targetLanguage switch
         {
             TargetLanguage.Rust => $"ports.{propertyOrPort.Name}",
-            TargetLanguage.C => propertyOrPort switch {
-                PulsedInPropertyOrPort => context.IsLocalVariable(propertyOrPort) ?
-                    $"{propertyOrPort.Name}" :
-                    $"self->{propertyOrPort.Name}",
-                PulsedOutPropertyOrPort => context.IsLocalVariable(propertyOrPort) ?
-                    $"{propertyOrPort.Name}" :
-                    $"self->{propertyOrPort.Name}",
-                _ => context.IsLocalVariable(propertyOrPort) ?
-                    $"{propertyOrPort.Name}.Value" :
-                    $"self->{propertyOrPort.Name}.Value",
-            },
+            TargetLanguage.C => context.IsLocalVariable(propertyOrPort) ?
+                $"{propertyOrPort.Name}" :
+                $"self->{propertyOrPort.Name}",
             _ => context.IsLocalVariable(propertyOrPort) ?
                 $"{propertyOrPort.Name}" :
                 $"this.{propertyOrPort.Name}"

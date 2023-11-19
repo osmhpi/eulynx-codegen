@@ -1,0 +1,67 @@
+using System.Diagnostics;
+using System.Net.Mime;
+using XmiToCode.Codegen.Model;
+using XmiToCode.Parsing.Accessibles;
+using XmiToCode.Parsing.XmiModel;
+using static XmiToCode.Parsing.Model.BooleanExpression;
+
+namespace XmiToCode.Codegen.C;
+
+public class DataPortSignallingChecker
+{
+    private readonly PackagedElement _event;
+    private readonly IAccessible _condition;
+    private readonly ClassFile _klass;
+
+    public DataPortSignallingChecker(PackagedElement @event, IAccessible condition, Model.ClassFile klass)
+    {
+        _event = @event;
+        _condition = condition;
+        _klass = klass;
+    }
+
+    internal string? Check()
+    {
+        if (_condition is PulsedInPropertyOrPort pulse) {
+            // Always triggered
+            return $"self->{_event.Name}.IsTriggered = {pulse.Accessor(_klass.ClassContext, TargetLanguage.C)};";
+        }
+        return $"self->{_event.Name}.IsTriggered = IsTriggered({CheckCondition(_condition)});";
+    }
+
+    private string? CheckCondition(IAccessible condition)
+    {
+        return condition switch {
+            Equality eq => CheckEquality(eq),
+            Conjunction con => $"AndChange({CheckCondition(con.Lhs)}, {CheckCondition(con.Rhs)})",
+            Disjunction dis => $"OrChange({CheckCondition(dis.Lhs)}, {CheckCondition(dis.Rhs)})",
+            BoolPropertyOrPort b =>  $"MakeChange({b.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {b.Accessor(_klass.ClassContext, TargetLanguage.C)})",
+            Negation n => $"NegateChange({CheckCondition(n.Variable)})",
+            PulsedInPropertyOrPort pulse => $"MakeChange({pulse.Accessor(_klass.ClassContext, TargetLanguage.C)}, {pulse.Accessor(_klass.ClassContext, TargetLanguage.C)})",
+            _ => throw new NotImplementedException(condition.GetType().Name),
+        };
+    }
+
+    private string CheckEquality(Equality eq)
+    {
+        if (eq.Lhs is StringPropertyOrPort stringLhs) {
+            if (eq.Rhs is ImplicitEnumMember) {
+                return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+            if (eq.Rhs is StringPropertyOrPort stringRhs) {
+                return $"MakeChange({stringLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {stringRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+        }
+
+        if (eq.Lhs is BoolPropertyOrPort boolLhs) {
+            if (eq.Rhs is BoolLiteral) {
+                return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+            if (eq.Rhs is BoolPropertyOrPort boolRhs) {
+                return $"MakeChange({boolLhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)} || {boolRhs.IsSignalledAccessor(_klass.ClassContext, TargetLanguage.C)}, {eq.Accessor(_klass.ClassContext, TargetLanguage.C)})";
+            }
+        }
+
+        throw new NotImplementedException($"MakeChange({eq.Lhs.GetType().Name}, {eq.Rhs.GetType().Name})");
+    }
+}

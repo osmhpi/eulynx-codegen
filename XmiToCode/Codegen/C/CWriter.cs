@@ -5,6 +5,7 @@ using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Transformation;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Codegen.Model;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Codegen.C;
 
@@ -70,6 +71,33 @@ typedef struct PulsedOut
 {{
     bool Trigger;
 }} PulsedOut;
+
+
+typedef struct ChangeOp {{ bool T; bool V }} ChangeOp;
+
+ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
+  ChangeOp result = {{ .T = lhs.T || rhs.T, .V = lhs.V && rhs.V }};
+  return result;
+}}
+
+ChangeOp OrChange(ChangeOp lhs, ChangeOp rhs) {{
+  ChangeOp result = {{ .T = lhs.V && lhs.T || rhs.V && rhs.T, .V = lhs.V || rhs.V }};
+  return result;
+}}
+
+ChangeOp NegateChange(ChangeOp c) {{
+  ChangeOp result = {{ .T = c.T, .V = !c.V }};
+  return result;
+}}
+
+ChangeOp MakeChange(bool t, bool v) {{
+  ChangeOp result = {{ .T = t, .V = v }};
+  return result;
+}}
+
+bool IsTriggered(ChangeOp op) {{
+    return op.T && op.V;
+}}
 
 typedef struct ChangeEvent
 {{
@@ -167,7 +195,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
 void evaluateChangeEvents({klass.ClassName.Name} *self) {{
-    {string.Join("\n", klass.GetChangeEvents().Select(x => $"self->{x.Event.Name}.IsTriggered = ({x.Condition.Accessor(klass.ClassContext, TargetLanguage.C)});"))}
+    {string.Join("\n", klass.GetChangeEvents().Select(x => CheckForTriggeredDataChange(x, klass)))}
 }}
 
 void resetTriggers({klass.ClassName.Name} *self) {{
@@ -190,6 +218,12 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
   resetTriggers(self);
 }}
 ";
+    }
+
+    private static string? CheckForTriggeredDataChange((PackagedElement Event, IAccessible Condition) x, ClassFile klass)
+    {
+        var checker = new DataPortSignallingChecker(x.Event, x.Condition, klass);
+        return checker.Check();
     }
 
     private string WriteBehaviorRecord(BehaviorRecord behaviorRecord, Dictionary<IState, string> states)

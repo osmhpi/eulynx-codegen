@@ -19,6 +19,14 @@ public record BoolPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyF
         throw new ArgumentException($"Invalid bool value: {literal}");
     }
 
+    public override string Accessor(IProgramContext context, TargetLanguage targetLanguage) =>
+        TheAccessor.Accessor(this, context, targetLanguage) + ".Value";
+    public override string Accessor(IProgramContext context, TargetLanguage targetLanguage, IAccessor accessor)
+        => accessor.Accessor(this, context, targetLanguage) + ".Value";
+
+    public string IsSignalledAccessor(IProgramContext context, TargetLanguage targetLanguage)
+        => TheAccessor.Accessor(this, context, targetLanguage) + ".IsSignalled";
+
     public override IAccessible LookupValidIdentifier(Identifier identifier, IProgramContext context)
     {
         if (identifier.Name == "True")
