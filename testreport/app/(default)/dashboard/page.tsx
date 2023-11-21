@@ -5,6 +5,7 @@ export const metadata = {
 
 import { SelectedItemsProvider } from '@/app/selected-items-context'
 import TestcaseTable, { Testcase } from './testcase-table'
+import JobsItem from './jobs-item';
 
 import data_parse_classes from './Eulynx.Validation-parse-classes-test-result.xml'
 import data_generate_c from './Eulynx.Validation-generate-c-test-result.xml'
@@ -212,16 +213,6 @@ function CustomersContent() {
         {/* Left: Title */}
         <div className="mb-4 sm:mb-0">
           <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">UML Classes</h1>
-
-          <ul>
-            {allSuccessful.map(x => (
-              <li key={x.key}>{x.key} -
-                (
-                  <span title={x.parsing.join(', ')}>Parsing: {x.parsing.length}</span> / <span title={x.compilation.join(', ')}>Compilation: {x.compilation.length}</span> / <span title={x.checks.join(', ')}>Checks: {x.checks.length}</span> / <span title={x.total.join(', ')}>Total: {x.total.length}</span>
-                )
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Right: Actions */}
@@ -244,6 +235,21 @@ function CustomersContent() {
           </div>
         </div>
 
+      </div>
+
+      <div className="space-y-6 mb-6">
+        {/* Group 1 */}
+        <div>
+          <h4 className="text-slate-800 dark:text-slate-100 font-medium mb-4">Successful Classes by Subsystem</h4>
+          {/* Job list */}
+          <div className="space-y-2">
+            {allSuccessful.map(job => (
+              <JobsItem
+                key={job.key}
+                job={job} />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Table */}
