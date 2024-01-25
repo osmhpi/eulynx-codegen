@@ -40,7 +40,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
         if (allowedValues.Count == 0 && (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion")) {
             return ("char", "");
         }
-        if (allowedValues.Count == 0 && (Name == "ChecksumData" || Name == "MemChecksumData")) {
+        if (allowedValues.Count == 0 && (Name == "ChecksumData" || Name == "MemChecksumData" || Name == "D4inConChecksumData" || Name == "MemPdiVersionChecksumdata")) {
             return ("char", "[16]");
         }
         #endif
@@ -74,6 +74,9 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
 
     public override string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
+            #if !DISABLE_HACKS
+            (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion") ? $"{Accessor(context, targetLanguage, accessor)} == {other.Accessor(context, targetLanguage)}" :
+            #endif
             $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
             other is StringPropertyOrPort otherString ?
                 $"{Accessor(context, targetLanguage, accessor)} == map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)})" :
@@ -82,7 +85,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
     public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
             #if !DISABLE_HACKS
-            (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion") ? $"{Accessor(context, targetLanguage, accessor)} = {other.Accessor(context, targetLanguage)}" :
+            (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion") ? $"{Accessor(context, targetLanguage, accessor)} = {other.Accessor(context, targetLanguage)};" :
             #endif
             $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
             other is StringPropertyOrPort otherString ?
@@ -121,7 +124,7 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
         if (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion") {
             return;
         }
-        if (Name == "ChecksumData" || Name == "MemChecksumData") {
+        if (Name == "ChecksumData" || Name == "MemChecksumData" || Name == "D4inConChecksumData" || Name == "MemPdiVersionChecksumdata") {
             return;
         }
         #endif
