@@ -81,6 +81,9 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
 
     public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
+            #if !DISABLE_HACKS
+            (Name == "PdiVersion" || Name == "PDIVersion" || Name == "MemPdiVersion" || Name == "D3inConPdiVersion") ? $"{Accessor(context, targetLanguage, accessor)} = {other.Accessor(context, targetLanguage)}" :
+            #endif
             $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
             other is StringPropertyOrPort otherString ?
                 $"{Accessor(context, targetLanguage, accessor)} = map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)});" :
