@@ -152,6 +152,7 @@ compile-klee:
     - rm ./artifacts/*.xml
     - sudo chown -R klee:klee $CODEGEN_OUTPUT_DIR
     - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+    - echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main" | sudo tee /etc/apt/sources.list.d/archive_uri-https_apt_kitware_com_ubuntu_-jammy.list > /dev/null
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-compile-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-klee"'
@@ -177,6 +178,7 @@ execute-klee:
     - rm ./artifacts/*.xml
     - sudo chown -R klee:klee $CODEGEN_OUTPUT_DIR
     - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+    - echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main" | sudo tee /etc/apt/sources.list.d/archive_uri-https_apt_kitware_com_ubuntu_-jammy.list > /dev/null
     - sudo apt-get update && sudo apt-get install --no-install-recommends -y dotnet-sdk-7.0
     - cd Eulynx.Validation
     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-execute-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=execute-klee"'
