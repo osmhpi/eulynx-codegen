@@ -80,7 +80,9 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
             $"memcmp({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)})) == 0" :
             other is StringPropertyOrPort otherString ?
                 $"{Accessor(context, targetLanguage, accessor)} == map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)})" :
-                base.Comparator(context, other, targetLanguage, accessor);
+                other is MessageMember otherMessageMember && otherMessageMember.Member is StringPropertyOrPort otherMessageMemberString ?
+                    $"{Accessor(context, targetLanguage, accessor)} == map_{otherMessageMemberString.Name}_to_{Name}({otherMessageMember.Accessor(context, targetLanguage)})" :
+                    base.Comparator(context, other, targetLanguage, accessor);
 
     public override string Assign(IProgramContext context, IAccessible other, TargetLanguage targetLanguage, IAccessor accessor) =>
         GetAllowedValues().Count == 0 ?
@@ -90,7 +92,9 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
             $"memcpy({Accessor(context, targetLanguage, accessor)}, {other.Accessor(context, targetLanguage)}, sizeof({Accessor(context, targetLanguage, accessor)}));" :
             other is StringPropertyOrPort otherString ?
                 $"{Accessor(context, targetLanguage, accessor)} = map_{otherString.Name}_to_{Name}({otherString.Accessor(context, targetLanguage)});" :
-                base.Assign(context, other, targetLanguage, accessor);
+                other is MessageMember otherMessageMember && otherMessageMember.Member is StringPropertyOrPort otherMessageMemberString ?
+                    $"{Accessor(context, targetLanguage, accessor)} = map_{otherMessageMemberString.Name}_to_{Name}({otherMessageMember.Accessor(context, targetLanguage)});" :
+                    base.Assign(context, other, targetLanguage, accessor);
 
     private readonly HashSet<StringPropertyOrPort> _equalTypes = new();
     private void RecordEqualTypes(StringPropertyOrPort other) {

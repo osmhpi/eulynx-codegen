@@ -56,6 +56,7 @@ public class CWriter : ICodeWriter
 
     private string WriteCommonHeader(GlobalContext global) {
         return @$"
+#pragma once
 #include <stdbool.h>
 #include <string.h>
 // For abort()
@@ -76,27 +77,27 @@ typedef struct PulsedOut
 
 typedef struct ChangeOp {{ bool T; bool V; }} ChangeOp;
 
-ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
+inline ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
   ChangeOp result = {{ .T = lhs.T || rhs.T, .V = lhs.V && rhs.V }};
   return result;
 }}
 
-ChangeOp OrChange(ChangeOp lhs, ChangeOp rhs) {{
+inline ChangeOp OrChange(ChangeOp lhs, ChangeOp rhs) {{
   ChangeOp result = {{ .T = lhs.V && lhs.T || rhs.V && rhs.T, .V = lhs.V || rhs.V }};
   return result;
 }}
 
-ChangeOp NegateChange(ChangeOp c) {{
+inline ChangeOp NegateChange(ChangeOp c) {{
   ChangeOp result = {{ .T = c.T, .V = !c.V }};
   return result;
 }}
 
-ChangeOp MakeChange(bool t, bool v) {{
+inline ChangeOp MakeChange(bool t, bool v) {{
   ChangeOp result = {{ .T = t, .V = v }};
   return result;
 }}
 
-bool IsTriggered(ChangeOp op) {{
+inline bool IsTriggered(ChangeOp op) {{
     return op.T && op.V;
 }}
 
@@ -165,7 +166,7 @@ typedef struct TimeoutEvent
 
     protected virtual string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
     {
-        return $@"{to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
+        return $@"static {to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
             switch (value) {{
                 {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Name}: return {to.Name}Value__{x.Name};"))}
                 default: abort();
@@ -205,11 +206,13 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
 
-void evaluateChangeEvents({klass.ClassName.Name} *self) {{
+{string.Join("\n", klass.TransitionFunctions.Select(x => WriteCheckTransitionFunction(x, states)))}
+
+static void evaluateChangeEvents({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetChangeEvents().Select(x => CheckForTriggeredDataChange(x, klass)))}
 }}
 
-void resetTriggers({klass.ClassName.Name} *self) {{
+static void resetTriggers({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetIncomingMessageTypes().Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
 
     {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
@@ -219,9 +222,20 @@ void resetTriggers({klass.ClassName.Name} *self) {{
     {string.Join("\n", klass.GetTimeoutEvents().Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
 }}
 
-void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
+bool check_transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
   evaluateChangeEvents(self);
 
+  switch (self->state)
+  {{
+        {string.Join("\n", klass.TransitionFunctions.Select(t =>
+            $"case {t.fromStateName}: \n return check_{t.Name(TargetLanguage.C)}(self);"))}
+        default: abort();
+  }}
+
+  return false;
+}}
+
+void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
   switch (self->state)
   {{
         {string.Join("\n", klass.TransitionFunctions.Select(t =>
@@ -285,6 +299,22 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 ";
     }
 
+    protected virtual string WriteCheckTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
+    {
+        return $@"bool check_{transitionFunction.Name(TargetLanguage.C)}({transitionFunction.ClassName.Name} *self) {{
+
+            int result = 0;
+            {string.Join("\n", transitionFunction.Transitions
+                .Select(x => WrapWithGuard(x.Transition, x.Constraint, "result++;")))}
+
+            if (result > 1)
+                abort();
+
+            return result == 1;
+        }}
+";
+    }
+
     private static string WriteIfOrElse(List<Constraint> expression) {
         if (expression.All(c => c.Condition is BooleanExpression.Else)) {
             return "else";
@@ -341,6 +371,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     protected virtual string WriteHeader(ClassFile klass)
     {
         return @$"
+#pragma once
 #include ""../eulynx_common.h""
 
 // Value Types
@@ -393,6 +424,7 @@ typedef struct {klass.ClassName.Name} {{
 }} {klass.ClassName.Name};
 
 void new_{klass.ClassName.Name}({klass.ClassName.Name} *x);
+bool check_transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
 void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
 
 {WriteBehaviorFunctionSignatures(klass.Behavior)}
