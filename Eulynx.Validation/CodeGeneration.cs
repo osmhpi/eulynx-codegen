@@ -48,6 +48,13 @@ public class CodeGeneration
         ClassFile? klass = null;
         try {
             var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+
+            foreach (var _umlPackage in processor.InterestingPackages) {
+                var _pkg = Package.CreateFromUml(_umlPackage, processor.GlobalContext);
+                // This has side effects
+                _pkg.TryParseAllClasses();
+            }
+
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
@@ -86,6 +93,13 @@ public class CodeGeneration
         ClassFile? klass = null;
         try {
             var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+
+            foreach (var _umlPackage in processor.InterestingPackages) {
+                var _pkg = Package.CreateFromUml(_umlPackage, processor.GlobalContext);
+                // This has side effects
+                _pkg.TryParseAllClasses();
+            }
+
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
