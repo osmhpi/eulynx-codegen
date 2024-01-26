@@ -1,3 +1,4 @@
+using XmiToCode.Codegen;
 using XmiToCode.Parsing;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Transformation;
@@ -53,5 +54,20 @@ public class SpecialClassTransformerTest
 
         var classFile = transformer.TransformClassIntoFile();
         Assert.True(classFile.TransitionFunctions.All(x => x.Transitions.Any()));
+    }
+
+    [Fact]
+    public void FlattenedRegionShouldIncludeJunctionWithTransitionsWithoutParentTransitions() {
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
+        var packages = parser.ParsePackages();
+        var subsystemLevelCrossingPackage = packages.Single(x => x.Name.RawName == PackageTest.GenericSciPackageName);
+        _ = subsystemLevelCrossingPackage.TryParseClass("S_SCI_EfeS_Prim", out var parsedClass);
+        var transformer = new ClassTransformer(parsedClass);
+
+        var classFile = transformer.TransformClassIntoFile();
+        var function = classFile.TransitionFunctions
+            .Single(x => x.State.Name == "WaitingForVersionCheck");
+        var transitions = function.Transitions.OfType<JunctionCodeTransition>().Single();
+        Assert.True(transitions.CodeTransitions.All(x => x is JunctionCodeTransition));
     }
 }

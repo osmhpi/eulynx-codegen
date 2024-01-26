@@ -45,14 +45,23 @@ public record TransitionFunction(
         var transitionsOnCurrentLevel = region.Transitions
             .Where(x => x is not InitialTransition)
             .Where(x => x.From == fromState || childStateMachineTransitions.Any(child => x.From == child.FromState))
-            .Select(x => (x, x.To))
+            .Select(x => (Transition: x, ToState: x.To))
             .ToList();
 
-        return transitionsOnCurrentLevel.Concat(
+        var result = transitionsOnCurrentLevel.Concat(
             childStateMachineTransitions.SelectMany(childStateMachineTransition =>
                 childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState))
             )
         );
+
+        // Special handling for junction states
+        if (fromState.IsJunction) {
+            // We must only include transitions that are directly attached to the junction state
+            // (i.e. not to any parent state)
+            result = result.Where(x => fromState.IsSourceOfTransition(x.Transition.SingleTransition));
+        }
+
+        return result;
     }
 
     public static TransitionFunction Create(TypeIdentifier className, TypeIdentifier behaviorName, string fromStateName, IState fromState, IRegion region) {

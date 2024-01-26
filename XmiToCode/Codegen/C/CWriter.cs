@@ -334,7 +334,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             TimeEventTransition timeEvent => $"if (self->{timeEvent.theEvent.Name}.IsTimeoutExpired)",
             MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.HasMessage)",
             InitialTransition => "", // TODO
-            JunctionTransition => "", // no triggers necessary from transitioning from a junction state
+            JunctionTransition => "", // no triggers necessary for transitioning from a junction state
             _ => throw new NotImplementedException()
         };
 
