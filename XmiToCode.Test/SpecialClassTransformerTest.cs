@@ -67,7 +67,23 @@ public class SpecialClassTransformerTest
         var classFile = transformer.TransformClassIntoFile();
         var function = classFile.TransitionFunctions
             .Single(x => x.State.Name == "WaitingForVersionCheck");
-        var transitions = function.Transitions.OfType<JunctionCodeTransition>().Single();
-        Assert.True(transitions.CodeTransitions.All(x => x is JunctionCodeTransition));
+        var transition = function.Transitions.OfType<JunctionCodeTransition>().Single();
+        Assert.True(transition.CodeTransitions.All(x => x is JunctionCodeTransition));
+    }
+
+    [Fact]
+    public void FlattenedRegionShouldIncludeJunctionWithTransitionsToParentStates() {
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE);
+        var packages = parser.ParsePackages();
+        var subsystemLevelCrossingPackage = packages.Single(x => x.Name.RawName == PackageTest.GenericSciPackageName);
+        _ = subsystemLevelCrossingPackage.TryParseClass("S_SCI_EfeS_Prim", out var parsedClass);
+        var transformer = new ClassTransformer(parsedClass);
+
+        var classFile = transformer.TransformClassIntoFile();
+        var function = classFile.TransitionFunctions
+            .Single(x => x.State.Name == "WaitingForVersionCheck");
+        var transition = function.Transitions.OfType<JunctionCodeTransition>().Single();
+        Assert.All(transition.CodeTransitions.Cast<JunctionCodeTransition>(),
+            x => Assert.Equal(2, x.CodeTransitions.Count));
     }
 }

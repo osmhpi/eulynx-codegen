@@ -19,8 +19,11 @@ public class ClassTransformer {
     public CompoundRegion FlattenRegions() {
         var result = FlattenRegions(new List<IRegion> { _parsedClass.Region })!;
 
+        var openEndedTransitions = new List<(List<CompoundState>, Transition, CompoundRegion)>();
+
         CompoundRegion UpdateTransitions(CompoundRegion region) {
             var transitions = new List<Transition>();
+            var currentOpenEndedTransitions = new List<(List<CompoundState>, Transition)>();
             foreach (var transition in region.Transitions) {
                 if (transition is InitialTransition)
                     // Initial transitions receive special care below
@@ -30,6 +33,14 @@ public class ClassTransformer {
                     .Where(x => x.IsSourceOfTransition(transition.SingleTransition));
                 var targetStates = region.States.Cast<CompoundState>()
                     .Where(x => x.IsTargetOfTransition(transition.SingleTransition));
+
+                if (!sourceStates.Any()) {
+                    throw new Exception("We expect that transitions are always contained in the source state region.");
+                }
+                if (!targetStates.Any()) {
+                    currentOpenEndedTransitions.Add((sourceStates.ToList(), transition));
+                }
+
                 transitions.AddRange(
                     from source in sourceStates
                     from target in targetStates
@@ -50,21 +61,37 @@ public class ClassTransformer {
 
             transitions.Add(initialTransition);
 
-            return region with { Transitions = transitions };
+            var result = region with { Transitions = transitions };
+            openEndedTransitions.AddRange(currentOpenEndedTransitions.Select(x => (x.Item1, x.Item2, result)));
+            return result;
         }
 
-        static CompoundRegion TransformRegionRecursively(CompoundRegion region, Func<CompoundRegion, CompoundRegion> transformer) {
+        CompoundRegion TransformRegionRecursively(CompoundRegion region, Func<CompoundRegion, CompoundRegion> transformer) {
             var states = region.States.Cast<CompoundState>()
                 .Select(x =>
                     x.Region == null
                         ? x
                         : x.WithRegion(TransformRegionRecursively(x.Region, transformer)));
-            return transformer(region with { States = states.ToList() });
+
+            var result = transformer(region with { States = states.ToList() });
+
+            // Insert transitions from nested states to states on the current level
+            foreach (var (sourceStates, transition, targetTransitionCollection) in openEndedTransitions) {
+                var targetStates = result.States.Cast<CompoundState>()
+                    .Where(x => x.IsTargetOfTransition(transition.SingleTransition));
+
+                targetTransitionCollection.Transitions.AddRange(
+                    from source in sourceStates
+                    from target in targetStates
+                    where target.IsNextStateAfterTransition(source, transition.SingleTransition)
+                    select transition with { From = source, To = target });
+            }
+
+            return result;
         }
 
         return TransformRegionRecursively(result, UpdateTransitions);
     }
-
 
     private IBehaviorRecord MakeSubrecord(string recordName, TypeIdentifier className, IState x) {
         var region = x.Regions.SingleOrDefault();
