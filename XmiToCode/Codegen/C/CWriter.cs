@@ -201,6 +201,7 @@ typedef struct TimeoutEvent
 {WriteBehaviorRecord(klass.Behavior, states)}
 
 void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
+    memset(x, 0, sizeof({klass.ClassName.Name}));
     x->state = make_state_{klass.BehaviorName.Name}(x);
 }}
 
