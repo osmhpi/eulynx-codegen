@@ -58,7 +58,7 @@ D50inPdiConnectionStateValue map_D50outPdiConnectionState_to_D50inPdiConnectionS
   }
 }
 
-bool generateInput(int i, SSciEfesPrim *sSciEfesPrim)
+bool generateInput(int i, SSciEfesPrim *sSciEfesPrim, SSciPReceive *sSciPReceive, SSciPCommand *sSciPCommand)
 {
   switch (i)
   {
@@ -72,6 +72,32 @@ bool generateInput(int i, SSciEfesPrim *sSciEfesPrim)
     sSciEfesPrim->InMsgPdiVersionCheck__9827.Value.PDIVersion = (char)1;
     sSciEfesPrim->InMsgPdiVersionCheck__9827.Value.Result = ResultValue__Match;
     sSciEfesPrim->InMsgPdiVersionCheck__9827.HasMessage = true;
+    break;
+  case 3:
+    sSciEfesPrim->InMsgStartInitialisation__43d2.HasMessage = true;
+    break;
+  case 4:
+    sSciPReceive->InMsgPointPosition__27c1.Value.ReportedPointPositionState = PointPositionState__2e6f__Left;
+    sSciPReceive->InMsgPointPosition__27c1.Value.ReportedDegradedPointPosition = PointPositionDegradedState__422e__NotApplicable;
+    sSciPReceive->InMsgPointPosition__27c1.HasMessage = true;
+    break;
+  case 5:
+    sSciEfesPrim->InMsgInitialisationCompleted__75d9.HasMessage = true;
+    break;
+  case 6:
+    sSciPCommand->D2inMovePoint.Value = D2inMovePointValue__Left;
+    sSciPCommand->D2inMovePoint.IsSignalled = true;
+    break;
+  case 7:
+    sSciPCommand->T1inMovePoint.IsTriggered = true;
+    break;
+  case 8:
+    sSciPReceive->InMsgPointPosition__27c1.Value.ReportedPointPositionState = PointPositionState__2e6f__NoEndPosition;
+    sSciPReceive->InMsgPointPosition__27c1.Value.ReportedDegradedPointPosition = PointPositionDegradedState__422e__NotApplicable;
+    sSciPReceive->InMsgPointPosition__27c1.HasMessage = true;
+    break;
+  case 9:
+    sSciPReceive->InMsgMovementFailed__ff4f.HasMessage = true;
     break;
 
   default:
@@ -117,7 +143,9 @@ int main()
   {
     // Read next external event
 
-    if (!generateInput(i++, &sSciEfesPrim)) break;
+    if (!generateInput(i++, &sSciEfesPrim, &sSciPReceive, &sSciPCommand)) break;
+
+    printf("Processing loop iteration %d\n", i-1);
 
     bool transitionPossible;
     do
@@ -185,6 +213,12 @@ int main()
     {
       printf("Send message OutCdReleasePdiForMaintenance__3e43\n");
       sSciEfesPrim.OutCdReleasePdiForMaintenance__3e43.HasMessage = false;
+    }
+
+    if (sSciPCommand.OutCdMovePoint__342e.HasMessage)
+    {
+      printf("Send message OutCdMovePoint__342e\n");
+      sSciPCommand.OutCdMovePoint__342e.HasMessage = false;
     }
   }
 
