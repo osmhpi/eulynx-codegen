@@ -12,7 +12,7 @@ interface Job {
 export default function JobsItem({ job }: { job: Job }) {
   return (
     <div
-      className={`shadow-lg rounded-sm border px-5 py-4 bg-white`}
+      className={`shadow-lg rounded-sm border px-5 py-4 bg-white dark:bg-slate-800`}
     >
       <div className="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
         <div className="flex items-start space-x-3 md:space-x-4">
