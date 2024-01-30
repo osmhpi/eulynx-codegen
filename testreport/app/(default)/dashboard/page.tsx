@@ -9,8 +9,8 @@ import JobsItem from './jobs-item';
 
 import data_parse_classes from './Eulynx.Validation-parse-classes-test-result.xml'
 import data_generate_c from './Eulynx.Validation-generate-c-test-result.xml'
-import data_generate_rust from './Eulynx.Validation-generate-rust-test-result.xml'
-import data_generate_csharp from './Eulynx.Validation-generate-csharp-test-result.xml'
+// import data_generate_rust from './Eulynx.Validation-generate-rust-test-result.xml'
+// import data_generate_csharp from './Eulynx.Validation-generate-csharp-test-result.xml'
 import data_generate_klee from './Eulynx.Validation-generate-klee-test-result.xml'
 import data_compile_c from './Eulynx.Validation-compile-c-test-result.xml'
 import data_compile_klee from './Eulynx.Validation-compile-klee-test-result.xml'
@@ -36,8 +36,8 @@ function CustomersContent() {
       testsuite: [
         ...data_parse_classes.testsuites.testsuite,
         ...data_generate_c.testsuites.testsuite,
-        ...data_generate_rust.testsuites.testsuite,
-        ...data_generate_csharp.testsuites.testsuite,
+        // ...data_generate_rust.testsuites.testsuite,
+        // ...data_generate_csharp.testsuites.testsuite,
         ...data_generate_klee.testsuites.testsuite,
         ...data_compile_c.testsuites.testsuite,
         ...data_compile_klee.testsuites.testsuite,
