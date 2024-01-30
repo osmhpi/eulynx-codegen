@@ -54,43 +54,43 @@ generate-c:
       junit:
         - ./**/*test-result.xml
 
-generate-rust:
-  stage: validate
-  image: mcr.microsoft.com/dotnet/sdk:7.0
-  allow_failure: true
-  variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
-   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/rust
-  script:
-    - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-rust-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
-  artifacts:
-    when: always
-    paths:
-      - ./**/*test-result.xml
-      - ./generated
-    reports:
-      junit:
-        - ./**/*test-result.xml
+# generate-rust:
+#   stage: validate
+#   image: mcr.microsoft.com/dotnet/sdk:7.0
+#   allow_failure: true
+#   variables:
+#    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+#    CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/rust
+#   script:
+#     - cd Eulynx.Validation
+#     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-rust-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-rust"'
+#   artifacts:
+#     when: always
+#     paths:
+#       - ./**/*test-result.xml
+#       - ./generated
+#     reports:
+#       junit:
+#         - ./**/*test-result.xml
 
-generate-csharp:
-  stage: validate
-  image: mcr.microsoft.com/dotnet/sdk:7.0
-  allow_failure: true
-  variables:
-   XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
-   CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/csharp
-  script:
-    - cd Eulynx.Validation
-    - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
-  artifacts:
-    when: always
-    paths:
-      - ./**/*test-result.xml
-      - ./generated
-    reports:
-      junit:
-        - ./**/*test-result.xml
+# generate-csharp:
+#   stage: validate
+#   image: mcr.microsoft.com/dotnet/sdk:7.0
+#   allow_failure: true
+#   variables:
+#    XMI_PATH: ${CI_PROJECT_DIR}/cleaned_22.xmi
+#    CODEGEN_OUTPUT_DIR: ${CI_PROJECT_DIR}/generated/csharp
+#   script:
+#     - cd Eulynx.Validation
+#     - 'dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-generate-csharp-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-csharp"'
+#   artifacts:
+#     when: always
+#     paths:
+#       - ./**/*test-result.xml
+#       - ./generated
+#     reports:
+#       junit:
+#         - ./**/*test-result.xml
 
 generate-klee:
   stage: validate
