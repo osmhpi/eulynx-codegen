@@ -6,9 +6,9 @@ namespace XmiToCode.Parsing.Model;
 
 public abstract record BooleanExpression() : IAccessible {
     public abstract string Accessor(IProgramContext context, TargetLanguage targetLanguage);
-    public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+    public virtual string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
     {
-        throw new NotImplementedException();
+        return $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
     }
 
     public void EnsureComparableTypes(IAccessible rhsIdentifier)
@@ -45,6 +45,11 @@ public abstract record BooleanExpression() : IAccessible {
 
     public record Negation(IAccessible Variable) : BooleanExpression()
     {
+        public override string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage)
+        {
+            return $"{Variable.Accessor(context, targetLanguage)} != {other.Accessor(context, targetLanguage)}";
+        }
+
         public override string Accessor(IProgramContext context, TargetLanguage targetLanguage)
             => $"!({Variable.Accessor(context, targetLanguage)})";
     }

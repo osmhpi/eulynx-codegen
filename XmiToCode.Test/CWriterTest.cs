@@ -7,6 +7,7 @@ public class CWriterTest
 {
     public const string SubsystemLevelCrossingPackageName = "Subsystem Level Crossing";
     public const string FObserveFailureStateClassName = "F_Observe_Failure_State";
+    public const string FControlTimerClassName = "F_Control_Timer";
     private readonly CWriter _writer;
 
     public CWriterTest()
@@ -33,6 +34,14 @@ public class CWriterTest
         var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE, classWhitelist: new [] { FObserveFailureStateClassName });
         var packages = parser.ParsePackages();
         var levelCrossingPackage = packages.Single(x => x.Name.RawName == SubsystemLevelCrossingPackageName);
+        await _writer.WritePackageFilesAsync(levelCrossingPackage);
+    }
+
+    [Fact]
+    public async Task GeneratesBooleanExpressionComparators() {
+        var parser = new EulynxV22XmiParser(EulynxV22XmiParserTest.EULYNX_V22_FILE, classWhitelist: new [] { FControlTimerClassName });
+        var packages = parser.ParsePackages();
+        var levelCrossingPackage = packages.Single(x => x.Name.RawName == BehaviorRecordTest.SubsystemTrainDetectionSystemPackageName);
         await _writer.WritePackageFilesAsync(levelCrossingPackage);
     }
 }

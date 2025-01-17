@@ -11,7 +11,7 @@ public abstract class XmiParser {
 
     public GlobalContext GlobalContext { get; }
     public List<PackagedElement> InterestingPackages { get; }
-    public string[] PackageWhitelist { get; } = new[] {
+    public virtual string[] PackageWhitelist { get; } = new[] {
         "Generic requirements for SCI",
         "Generic requirements for subsystems",
         "Subsystem Point",
