@@ -9,7 +9,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Codegen.C;
 
-public class CWriter : ICodeWriter
+public partial class CWriter : ICodeWriter
 {
     protected readonly string _outputDir;
 
@@ -42,6 +42,7 @@ public class CWriter : ICodeWriter
             var transfomer = new ClassTransformer(klass);
             var classFile = transfomer.TransformClassIntoFile();
             await WriteClassFilesAsync(classFile, pkg);
+            await WriteClassFilesAsyncNew(klass, pkg);
             successfulClassNames.Add(klass.ClassName.Name);
         }
 

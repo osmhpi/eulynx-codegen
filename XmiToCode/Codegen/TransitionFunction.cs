@@ -1,7 +1,6 @@
 using XmiToCode.Instructions;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.Model;
-using XmiToCode.Transformation.Model;
 
 namespace XmiToCode.Codegen;
 

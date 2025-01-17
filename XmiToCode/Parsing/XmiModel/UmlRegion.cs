@@ -13,6 +13,8 @@ namespace XmiToCode.Parsing.XmiModel
         public string Type { get; set; }
         [XmlAttribute(AttributeName="id", Namespace="http://www.omg.org/spec/XMI/20110701")]
         public string Id { get; set; }
+        [XmlAttribute(AttributeName="name")]
+        public string Name { get; set; }
     }
 
 }

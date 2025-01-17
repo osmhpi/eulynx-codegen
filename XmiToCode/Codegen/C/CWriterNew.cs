@@ -1,0 +1,118 @@
+using XmiToCode.Parsing.Accessibles;
+using XmiToCode.Parsing.Context;
+using XmiToCode.Messages;
+using static XmiToCode.Codegen.CodeGenerationHelper;
+using XmiToCode.Transformation;
+using XmiToCode.Parsing.Model;
+using XmiToCode.Codegen.Model;
+using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Identifiers;
+using System.Reflection.Metadata.Ecma335;
+
+namespace XmiToCode.Codegen.C;
+
+public partial class CWriter : ICodeWriter
+{
+    private async Task WriteClassFilesAsyncNew(Class klass, Package pkg)
+    {
+        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.new.c";
+
+        var fileinfo = new FileInfo(cFilename);
+        if (fileinfo.Directory != null && !fileinfo.Directory.Exists) fileinfo.Directory.Create();
+
+        using var file = File.Create(cFilename);
+        using var writer = new StreamWriter(file);
+
+        await writer.WriteAsync(WriteClassNew(klass));
+
+        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.new.h";
+        using var headerFile = File.Create(headerFilename);
+        using var headerWriter = new StreamWriter(headerFile);
+
+        await headerWriter.WriteAsync(WriteHeaderNew(klass));
+    }
+
+    private string WriteClassNew(Class klass)
+    {
+        return @$"
+#include ""{klass.ClassName.Name}.new.h""
+
+// Operations
+{string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
+";
+    }
+
+    private static string WriteStateStruct(Region region, string regionName, TypeIdentifier className)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name}", Region: region))).ToList();
+
+        return @$"
+{string.Join("\n", substateRegions.Select(x => WriteStateStruct(x.Region, $"{regionName}__{x.Name}", className)))}
+
+typedef enum {className.Name}__{regionName}__state {{
+        {string.Join(",\n", regularStates.Select(x => x.Name))}
+}} {className.Name}__{regionName}__state;
+
+{string.Join(",\n", substatesWithRegions.Select(state => @$"
+typedef struct {className.Name}__{regionName}__{state.Name}__state_struct {{
+        {string.Join(";\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name}__state_struct {x.Name?.Name}"))}
+}} {className.Name}__{regionName}__{state.Name}__state_struct;
+"))}
+
+typedef struct {className.Name}__{regionName}__state_struct {{
+    {className.Name}__{regionName}__state state;
+    union {{
+        {string.Join("\n", substatesWithRegions.Select(x => $@"{className.Name}__{regionName}__{x.Name}__state_struct {x.Name};"))}
+    }};
+}} {className.Name}__{regionName}__state_struct;
+";
+    }
+
+    private string WriteHeaderNew(Class klass)
+    {
+        return @$"
+#pragma once
+#include ""../eulynx_common.h""
+
+{WriteStateStruct(klass.Region, "root", klass.ClassName)}
+
+/// Contained in:
+{JoinLines(klass.Hierarchy.Select(x => $"/// {x.Name}"))}
+typedef struct {klass.ClassName.Name} {{
+    {klass.ClassName.Name}__root__state_struct state;
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
+        ComplexPropertyOrPort complex => null,
+        PulsedInPropertyOrPort pulsedIn => $@"/// {x.Key.RawName}
+        /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+        ",
+        PulsedOutPropertyOrPort pulsedOut => $@"/// {x.Key.RawName}
+        /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+        {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+        ",
+        _ => x.Value.IsDataPort ?
+            $@"/// {x.Key.RawName}
+            /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+            DataPort({x.Value.DataType(TargetLanguage.C).Item1}, {x.Value.DataType(TargetLanguage.C).Item2}) {x.Key.Name};
+            " :
+            $@"/// {x.Key.RawName}
+            /// Trigger: {x.Value.IsTriggerPort}, DataPort: {x.Value.IsDataPort}, In: {x.Value.IsInPort}, Out: {x.Value.IsOutPort}, External: {x.Value.IsExternalInterface}
+            {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
+            ",
+        }))}
+
+}} {klass.ClassName.Name};
+
+";
+    }
+    private static string WriteOperationNew(Operation operation, Class klass)
+    {
+        return @$"void {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
+            {JoinLines(operation.Instructions.Select(x => x.ToC()))}
+        }}";
+    }
+}

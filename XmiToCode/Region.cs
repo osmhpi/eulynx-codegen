@@ -1,3 +1,4 @@
+using XmiToCode.Identifiers;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Parsing.XmiModel;
@@ -14,6 +15,7 @@ public class Region : IRegion
 
     public List<IState> States => Subvertices.Values.OfType<IState>().ToList();
     public IState InitialState => States.Single(x => x.IsInitialState);
+    public TypeIdentifier? Name => UmlRegion.Name != null ? new TypeIdentifier(UmlRegion.Name) : null;
 
     public UmlRegion UmlRegion { get; }
     public Dictionary<string, SimpleState> Subvertices { get; }
