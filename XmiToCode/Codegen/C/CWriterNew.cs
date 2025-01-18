@@ -1,13 +1,7 @@
 using XmiToCode.Parsing.Accessibles;
-using XmiToCode.Parsing.Context;
-using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
-using XmiToCode.Transformation;
 using XmiToCode.Parsing.Model;
-using XmiToCode.Codegen.Model;
-using XmiToCode.Parsing.XmiModel;
 using XmiToCode.Identifiers;
-using System.Reflection.Metadata.Ecma335;
 
 namespace XmiToCode.Codegen.C;
 
@@ -39,6 +33,37 @@ public partial class CWriter : ICodeWriter
 
 // Operations
 {string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
+
+{WriteStateConstructors(klass.Region, "root", klass.ClassName)}
+";
+    }
+
+    private string WriteStateConstructors(Region region, string regionName, TypeIdentifier className)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+
+        var initialTransition = region.Transitions.OfType<InitialTransition>().Single();
+        var initializer = TransitionFunction.CreateCodeTransition(initialTransition, region, region.InitialState, initialTransition.To, className);
+
+        var states = region.States.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}");
+
+        return @$"
+{string.Join("\n", substateRegions.Select(x => WriteStateConstructors(x.Region, $"{regionName}__{x.Name}", className)))}
+
+{string.Join("\n", regularStates.Select(x => @$"
+void make_state_{className.Name}__{regionName}__{x.Name}({className.Name} *self, {className.Name}__{regionName}__state_struct *region) {{
+    region->state = {className.Name}__{regionName}__{x.Name};
+    {string.Join("\n", x.Regions.Cast<Region>().Select(region => $@"make_state_{className.Name}__{regionName}__{x.Name}__{region.Name?.Name ?? "root"}(self, &region->{x.Name});"))}
+}};
+"))}
+
+void make_state_{className.Name}__{regionName}({className.Name} *self, {className.Name}__{regionName}__state_struct *x) {{
+    memset(x, 0, sizeof({className.Name}__{regionName}__state_struct));
+    {WriteICodeTransition(initializer, states)}
+}}
 ";
     }
 
@@ -47,18 +72,18 @@ public partial class CWriter : ICodeWriter
         var regularStates = region.States.Where(x => x.IsRegularState);
         var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
         var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
-            .Select(region => (Name: $"{state.Name}__{region.Name?.Name}", Region: region))).ToList();
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
 
         return @$"
 {string.Join("\n", substateRegions.Select(x => WriteStateStruct(x.Region, $"{regionName}__{x.Name}", className)))}
 
 typedef enum {className.Name}__{regionName}__state {{
-        {string.Join(",\n", regularStates.Select(x => x.Name))}
+        {string.Join(",\n", regularStates.Select(x => $"{className.Name}__{regionName}__{x.Name}"))}
 }} {className.Name}__{regionName}__state;
 
 {string.Join(",\n", substatesWithRegions.Select(state => @$"
 typedef struct {className.Name}__{regionName}__{state.Name}__state_struct {{
-        {string.Join(";\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name}__state_struct {x.Name?.Name}"))}
+        {string.Join(";\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name ?? "root"}__state_struct {x.Name?.Name ?? "root"}"))}
 }} {className.Name}__{regionName}__{state.Name}__state_struct;
 "))}
 

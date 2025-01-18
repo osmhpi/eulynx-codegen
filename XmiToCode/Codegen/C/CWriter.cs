@@ -366,7 +366,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     {
         return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
             $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
-                return make_state_{states[codeTransition.Transition.To]}(self);"
+                make_state_{states[codeTransition.Transition.To]}(self, x);"
         );
     }
 
