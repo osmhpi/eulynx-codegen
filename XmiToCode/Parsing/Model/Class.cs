@@ -14,18 +14,31 @@ public record Class(
     public TypeIdentifier ClassName { get; } = new TypeIdentifier(UmlClass.Name);
 
 
+    // TODO: Move this code to Codegen:
+
     public Dictionary<Identifier, PropertyOrPort> GetPropertiesAndPorts() {
         return ClassContext.Ports
             .Concat(ClassContext.Properties)
             .ToDictionary(x => x.Key, x => x.Value);
     }
 
-    // internal IEnumerable<MessageSchema> GetOutgoingMessageTypes()
-    // {
-    //     return ClassContext.OutgoingMessages.Values;
-    // }
+    public IEnumerable<Codegen.Model.ValueType> GetValueTypes() {
+        return ClassContext.Ports
+            .Concat(ClassContext.Properties)
+            .Where(x => x.Value is StringPropertyOrPort)
+            .Select(x => new Codegen.Model.ValueType(
+                ClassName,
+                x.Key,
+                ((StringPropertyOrPort)x.Value).GetAllowedValues()))
+            .Where(x => x.AllowedValues.Count > 0);
+    }
 
-    // internal IEnumerable<MessageSchema> GetIncomingMessageTypes()
+    internal IEnumerable<Messages.MessageSchema> GetOutgoingMessageTypes()
+    {
+        return ClassContext.OutgoingMessages.Values;
+    }
+
+    // internal IEnumerable<Messages.MessageSchema> GetIncomingMessageTypes()
     // {
     //     return TransitionFunctions
     //         .SelectMany(x => x.Transitions)

@@ -35,6 +35,8 @@ public partial class CWriter : ICodeWriter
 {string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
 
 {WriteStateConstructors(klass.Region, "root", klass.ClassName)}
+
+{WriteTransitionFunctions(klass.Region, "root", klass.ClassName)}
 ";
     }
 
@@ -65,6 +67,50 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
     {WriteICodeTransition(initializer, states)}
 }}
 ";
+    }
+
+    private string WriteTransitionFunctions(Region region, string regionName, TypeIdentifier className)
+    {
+        return WriteTransitionFunctions(region, regionName, className, new Dictionary<IState, string>());
+    }
+
+    private string WriteTransitionFunctions(Region region, string regionName, TypeIdentifier className, Dictionary<IState, string> parentStates)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+
+        var fromStates = regularStates.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}");
+        var states = region.States.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}")
+            .Concat(parentStates).ToDictionary(x => x.Key, x => x.Value);
+
+        return @$"
+        {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", className, states)))}
+
+        {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self) {{
+            {string.Join("\n", TransitionFunction.GetCodeTransitions(region, x.Key, className).Select(transition => WriteICodeTransition(transition, states)))}
+        }}
+        "))}
+        ";
+    }
+
+    private List<Messages.MessageSchema> GetIncomingMessageTypes(Class klass, Region region, string regionName)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+
+        var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
+                .OfType<MessageEventTransition>()
+                .Select(x => x.MessageType)
+                .Distinct()
+                .Select(x => klass.ClassContext.IncomingMessages[x])
+                .ToList();
+
+        return [
+            .. substateRegions.SelectMany(x => GetIncomingMessageTypes(klass, x.Region, $"{regionName}__{x.Name}")),
+            .. local];
     }
 
     private static string WriteStateStruct(Region region, string regionName, TypeIdentifier className)
@@ -102,6 +148,10 @@ typedef struct {className.Name}__{regionName}__state_struct {{
 #pragma once
 #include ""../eulynx_common.h""
 
+// Value Types
+
+{string.Join("\n", klass.GetValueTypes().Select(WriteValueType))}
+
 {WriteStateStruct(klass.Region, "root", klass.ClassName)}
 
 /// Contained in:
@@ -129,6 +179,11 @@ typedef struct {klass.ClassName.Name} {{
             {x.Value.DataType(TargetLanguage.C).Item1} {x.Key.Name}{x.Value.DataType(TargetLanguage.C).Item2};
             ",
         }))}
+
+    // Messages -- Incoming
+    {string.Join("\n", GetIncomingMessageTypes(klass, klass.Region, "root").Select(x => $"MessagePort(Message__{x.Identifier.Name}) In{x.Identifier.Name};"))}
+    // Messages -- Outgoing
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"MessagePort(Message__{x.Identifier.Name}) Out{x.Identifier.Name};"))}
 
 }} {klass.ClassName.Name};
 

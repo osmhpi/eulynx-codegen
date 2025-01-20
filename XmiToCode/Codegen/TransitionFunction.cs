@@ -29,29 +29,29 @@ public record TransitionFunction(
 
     public static IEnumerable<(Transition Transition, IState ToState)> GetAllTransitionsFromState(IRegion region, IState fromState) {
         // Does fromState match one of our child state machines?
-        var childStateMachineTransitions = region.States
-            .Where(x => x.Regions.Any())
-            .Where(x => RegionContainsState(x.Regions.Single(), fromState))
-            // we can safely assume that the initial state does not
-            // transition out of the child state machine
-            .Where(x => !x.IsInitialState)
-            .Select(state => new {
-                FromState = state,
-                Transitions = GetAllTransitionsFromState(state.Regions.Single(), fromState).ToList()
-            })
-            .ToList();
+        // var childStateMachineTransitions = region.States
+        //     .Where(x => x.Regions.Any(region => RegionContainsState(region, fromState)))
+        //     // we can safely assume that the initial state does not
+        //     // transition out of the child state machine
+        //     .Where(x => !x.IsInitialState)
+        //     .SelectMany(state => state.Regions.Select(region => new {
+        //         FromState = state,
+        //         Transitions = GetAllTransitionsFromState(region, fromState).ToList()
+        //     }))
+        //     .ToList();
 
         var transitionsOnCurrentLevel = region.Transitions
             .Where(x => x is not InitialTransition)
-            .Where(x => x.From == fromState || childStateMachineTransitions.Any(child => x.From == child.FromState))
-            .Select(x => (Transition: x, ToState: x.To))
-            .ToList();
+            .Where(x => x.From == fromState) // || childStateMachineTransitions.Any(child => x.From == child.FromState))
+            .Select(x => (Transition: x, ToState: x.To));
+            // .ToList();
 
-        var result = transitionsOnCurrentLevel.Concat(
-            childStateMachineTransitions.SelectMany(childStateMachineTransition =>
-                childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState))
-            )
-        );
+        var result = transitionsOnCurrentLevel;
+        // .Concat(
+        //     childStateMachineTransitions.SelectMany(childStateMachineTransition =>
+        //         childStateMachineTransition.Transitions.Select(x => (x.Transition, x.ToState))
+        //     )
+        // );
 
         // Special handling for junction states
         if (fromState.IsJunction) {

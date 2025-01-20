@@ -364,9 +364,14 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
     private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
     {
+        if (!states.TryGetValue(codeTransition.Transition.To, out var state))
+        {
+            throw new InvalidOperationException();
+        }
+
         return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
             $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
-                make_state_{states[codeTransition.Transition.To]}(self, x);"
+                make_state_{state}(self, x); return;"
         );
     }
 
