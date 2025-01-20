@@ -113,6 +113,40 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
             .. local];
     }
 
+    private List<(Parsing.XmiModel.PackagedElement Event, IAccessible Condition)> GetChangeEvents(Class klass, Region region, string regionName)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+
+        var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
+                .OfType<ChangeEventTransition>()
+                .Select(x => (x.theEvent, x.Condition))
+                .Distinct()
+                .ToList();
+
+        return [
+            .. substateRegions.SelectMany(x => GetChangeEvents(klass, x.Region, $"{regionName}__{x.Name}")),
+            .. local];
+    }
+
+    private List<string> GetTimeoutEvents(Class klass, Region region, string regionName)
+    {
+        var regularStates = region.States.Where(x => x.IsRegularState);
+        var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+
+        var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
+                .OfType<TimeEventTransition>()
+                .Select(x => x.theEvent.Name)
+                .Distinct()
+                .ToList();
+
+        return [
+            .. substateRegions.SelectMany(x => GetTimeoutEvents(klass, x.Region, $"{regionName}__{x.Name}")),
+            .. local];
+    }
+
     private static string WriteStateStruct(Region region, string regionName, TypeIdentifier className)
     {
         var regularStates = region.States.Where(x => x.IsRegularState);
@@ -184,6 +218,12 @@ typedef struct {klass.ClassName.Name} {{
     {string.Join("\n", GetIncomingMessageTypes(klass, klass.Region, "root").Select(x => $"MessagePort(Message__{x.Identifier.Name}) In{x.Identifier.Name};"))}
     // Messages -- Outgoing
     {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"MessagePort(Message__{x.Identifier.Name}) Out{x.Identifier.Name};"))}
+
+    // Change Events
+    {string.Join("\n", GetChangeEvents(klass, klass.Region, "root").Select(x => $"ChangeEvent {x.Event.Name}; // {x.Event.ChangeExpression.Body.ReplaceLineEndings("")}"))}
+
+    // Timeout Events
+    {string.Join("\n", GetTimeoutEvents(klass, klass.Region, "root").Select(x => $"TimeoutEvent {x};"))}
 
 }} {klass.ClassName.Name};
 
