@@ -88,7 +88,7 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
         return @$"
         {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", className, states)))}
 
-        {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self) {{
+        {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self, {className.Name}__{regionName}__state_struct *x) {{
             {string.Join("\n", TransitionFunction.GetCodeTransitions(region, x.Key, className).Select(transition => WriteICodeTransition(transition, states)))}
         }}
         "))}
