@@ -34,6 +34,10 @@ public partial class CWriter : ICodeWriter
 // Operations
 {string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
 
+// Value Conversion Functions
+
+{string.Join("\n", GetConversionFunctions(klass).Select(x => WriteConversionFunction(x.From, x.To)))}
+
 {WriteStateConstructors(klass.Region, "root", klass.ClassName)}
 
 {WriteTransitionFunctions(klass.Region, "root", klass.ClassName)}
@@ -47,6 +51,14 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     make_state_{klass.ClassName.Name}__root(self, &self->state);
 }}
 ";
+    }
+
+    private IEnumerable<(StringPropertyOrPort From, StringPropertyOrPort To)> GetConversionFunctions(Class klass)
+    {
+        return klass.ClassContext.Ports.Values
+            .Concat(klass.ClassContext.Properties.Values)
+            .OfType<StringPropertyOrPort>()
+            .SelectMany(x => x.RequiredConversions.Select(from => (from, x)));
     }
 
     private string WriteStateConstructors(Region region, string regionName, TypeIdentifier className)
