@@ -51,6 +51,7 @@ public partial class CWriter : ICodeWriter
         var initializer = TransitionFunction.CreateCodeTransition(initialTransition, region, region.InitialState, initialTransition.To, className);
 
         var states = region.States.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}");
+        Dictionary<IState, IEnumerable<string>> regionAccessor = region.States.ToDictionary(x => x, x => (IEnumerable<string>)[]);
 
         return @$"
 {string.Join("\n", substateRegions.Select(x => WriteStateConstructors(x.Region, $"{regionName}__{x.Name}", className)))}
@@ -64,32 +65,35 @@ void make_state_{className.Name}__{regionName}__{x.Name}({className.Name} *self,
 
 void make_state_{className.Name}__{regionName}({className.Name} *self, {className.Name}__{regionName}__state_struct *x) {{
     memset(x, 0, sizeof({className.Name}__{regionName}__state_struct));
-    {WriteICodeTransition(initializer, states)}
+    {WriteICodeTransition(initializer, states, regionAccessor)}
 }}
 ";
     }
 
     private string WriteTransitionFunctions(Region region, string regionName, TypeIdentifier className)
     {
-        return WriteTransitionFunctions(region, regionName, className, new Dictionary<IState, string>());
+        return WriteTransitionFunctions(region, regionName, [], className, new Dictionary<IState, string>(), new Dictionary<IState, IEnumerable<string>>());
     }
 
-    private string WriteTransitionFunctions(Region region, string regionName, TypeIdentifier className, Dictionary<IState, string> parentStates)
+    private string WriteTransitionFunctions(Region region, string regionName, IEnumerable<string> thisRegionAccessor, TypeIdentifier className, Dictionary<IState, string> parentStates, Dictionary<IState, IEnumerable<string>> parentRegions)
     {
         var regularStates = region.States.Where(x => x.IsRegularState);
         var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
         var substateRegions = regularStates.SelectMany(state => state.Regions.Cast<Region>()
-            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region))).ToList();
+            .Select(region => (Name: $"{state.Name}__{region.Name?.Name ?? "root"}", Region: region, State: state))).ToList();
 
         var fromStates = regularStates.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}");
         var states = region.States.ToDictionary(x => x, x => $"{className.Name}__{regionName}__{x.Name}")
             .Concat(parentStates).ToDictionary(x => x.Key, x => x.Value);
 
-        return @$"
-        {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", className, states)))}
+        var regionAccessor = region.States.ToDictionary(x => x, x => thisRegionAccessor)
+            .Concat(parentRegions).ToDictionary(x => x.Key, x => x.Value);
 
-        {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self, {className.Name}__{regionName}__state_struct *x) {{
-            {string.Join("\n", TransitionFunction.GetCodeTransitions(region, x.Key, className).Select(transition => WriteICodeTransition(transition, states)))}
+        return @$"
+        {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", [..thisRegionAccessor, $"{x.State.Name}.{region.Name?.Name ?? "root"}"], className, states, regionAccessor)))}
+
+        {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self, {className.Name}__root__state_struct *x) {{
+            {string.Join("\n", TransitionFunction.GetCodeTransitions(region, x.Key, className).Select(transition => WriteICodeTransition(transition, states, regionAccessor)))}
         }}
         "))}
         ";

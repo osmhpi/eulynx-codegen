@@ -206,7 +206,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
     x->state = make_state_{klass.BehaviorName.Name}(x);
 }}
 
-{string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states)))}
+{string.Join("\n", klass.TransitionFunctions.Select(x => WriteTransitionFunction(x, states, null)))}
 
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteCheckTransitionFunction(x, states)))}
 
@@ -267,7 +267,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
                         }}",
                     BehaviorRecord record => $@"
                         {behaviorRecord.Name} make_state_{x.Name}({record.ClassName.Name} *self) {{
-                            {WriteICodeTransition(record.Initializer, states)}
+                            {WriteICodeTransition(record.Initializer, states, null)}
                         }}",
                     _ => throw new NotImplementedException()
                 }));
@@ -279,21 +279,21 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             .Select(x => $"{behaviorRecord.Name} make_state_{x.Name}({x.record.ClassName.Name} *self);"));
     }
 
-    private string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states)
+    private string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         return initializer switch
         {
-            JunctionCodeTransition junction => WriteJunctionTransition(junction, states),
-            CodeTransition code => WriteCodeTransition(code, states),
+            JunctionCodeTransition junction => WriteJunctionTransition(junction, states, regionAccessor),
+            CodeTransition code => WriteCodeTransition(code, states, regionAccessor),
             _ => throw new NotImplementedException()
         };
     }
 
-    protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
+    protected virtual string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         return $@"{transitionFunction.TheRootBehaviorName.Name} {transitionFunction.Name(TargetLanguage.C)}({transitionFunction.ClassName.Name} *self) {{
 
-            {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states)))}
+            {string.Join("\n", transitionFunction.Transitions.Select(x => WriteICodeTransition(x, states, regionAccessor)))}
 
             // Do not transition
             return self->state;
@@ -350,7 +350,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
         return WrapWithIfElseExpression(condition, WrapWithIfElseExpression(constraint, instructions));
     }
 
-    private string WriteJunctionTransition(JunctionCodeTransition junctionTransition, Dictionary<IState, string> states)
+    private string WriteJunctionTransition(JunctionCodeTransition junctionTransition, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         // Outgoing transitions must be sorted, so that the 'else' branch (if any) comes last
         var sortedTransitions = junctionTransition.CodeTransitions
@@ -358,20 +358,31 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
         return WrapWithGuard(junctionTransition.Transition, junctionTransition.Constraint,
             $@"{string.Join("\n", junctionTransition.Activities.Select(x => x.ToC()))}
-                    {string.Join("\n", sortedTransitions.Select(x => WriteICodeTransition(x, states)))}"
+                    {string.Join("\n", sortedTransitions.Select(x => WriteICodeTransition(x, states, regionAccessor)))}"
         );
     }
 
-    private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states)
+    private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         if (!states.TryGetValue(codeTransition.Transition.To, out var state))
         {
             throw new InvalidOperationException();
         }
 
+        if (regionAccessor == null)
+        {
+            // Workaround.
+            return "";
+        }
+        var accessor = "&x";
+        if (regionAccessor[codeTransition.Transition.To].Any())
+        {
+            accessor = $"&x->{string.Join(".", regionAccessor[codeTransition.Transition.To])}";
+        }
+
         return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
             $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
-                make_state_{state}(self, x); return;"
+                make_state_{state}(self, {accessor}); return;"
         );
     }
 

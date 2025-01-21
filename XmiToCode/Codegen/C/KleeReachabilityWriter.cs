@@ -9,7 +9,7 @@ public class KleeReachabilityWriter : CWriter {
     {
     }
 
-    protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states)
+    protected override string WriteTransitionFunction(TransitionFunction transitionFunction, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         return $@"int count_{transitionFunction.Name(TargetLanguage.C)}({transitionFunction.ClassName.Name} *self) {{
             int result = 0;
@@ -18,7 +18,7 @@ public class KleeReachabilityWriter : CWriter {
             return result;
         }}
 
-        {base.WriteTransitionFunction(transitionFunction, states)}";
+        {base.WriteTransitionFunction(transitionFunction, states, regionAccessor)}";
     }
 
     private string WriteEventEnum(ClassFile klass, List<PulsedInPropertyOrPort> inputTriggers) {
