@@ -37,6 +37,15 @@ public partial class CWriter : ICodeWriter
 {WriteStateConstructors(klass.Region, "root", klass.ClassName)}
 
 {WriteTransitionFunctions(klass.Region, "root", klass.ClassName)}
+
+void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
+    transition_from_{klass.ClassName.Name}__root(self, &self->state);
+}}
+
+void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
+    memset(self, 0, sizeof({klass.ClassName.Name}));
+    make_state_{klass.ClassName.Name}__root(self, &self->state);
+}}
 ";
     }
 
@@ -72,7 +81,7 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
 
     private string WriteTransitionFunctions(Region region, string regionName, TypeIdentifier className)
     {
-        return WriteTransitionFunctions(region, regionName, [], className, new Dictionary<IState, string>(), new Dictionary<IState, IEnumerable<string>>());
+        return WriteTransitionFunctions(region, regionName, [], className, [], []);
     }
 
     private string WriteTransitionFunctions(Region region, string regionName, IEnumerable<string> thisRegionAccessor, TypeIdentifier className, Dictionary<IState, string> parentStates, Dictionary<IState, IEnumerable<string>> parentRegions)
@@ -93,9 +102,18 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
         {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", [..thisRegionAccessor, $"{x.State.Name}.{region.Name?.Name ?? "root"}"], className, states, regionAccessor)))}
 
         {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self, {className.Name}__root__state_struct *x) {{
+            {string.Join("\n", x.Key.Regions.Cast<Region>().Select(region => $@"transition_from_{className.Name}__{regionName}__{x.Key.Name}__{region.Name?.Name ?? "root"}(self, x);"))}
             {string.Join("\n", TransitionFunction.GetCodeTransitions(region, x.Key, className).Select(transition => WriteICodeTransition(transition, states, regionAccessor)))}
         }}
         "))}
+
+        void transition_from_{className.Name}__{regionName}({className.Name} *self, {className.Name}__root__state_struct *x) {{
+            switch (x->state) {{
+                {string.Join("\n", regularStates.Select(x => $@"case {className.Name}__{regionName}__{x.Name}:
+                    transition_from_{className.Name}__{regionName}__{x.Name}(self, x);
+                    break;"))}
+            }}
+        }}
         ";
     }
 
