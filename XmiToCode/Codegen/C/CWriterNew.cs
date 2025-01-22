@@ -7,9 +7,9 @@ namespace XmiToCode.Codegen.C;
 
 public partial class CWriter : ICodeWriter
 {
-    private async Task WriteClassFilesAsyncNew(Class klass, Package pkg)
+    public async Task WriteClassFilesAsyncNew(Class klass, Package pkg)
     {
-        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.new.c";
+        var cFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.c";
 
         var fileinfo = new FileInfo(cFilename);
         if (fileinfo.Directory != null && !fileinfo.Directory.Exists) fileinfo.Directory.Create();
@@ -19,7 +19,7 @@ public partial class CWriter : ICodeWriter
 
         await writer.WriteAsync(WriteClassNew(klass));
 
-        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.new.h";
+        var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.h";
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
@@ -29,7 +29,7 @@ public partial class CWriter : ICodeWriter
     private string WriteClassNew(Class klass)
     {
         return @$"
-#include ""{klass.ClassName.Name}.new.h""
+#include ""{klass.ClassName.Name}.h""
 
 // Operations
 {string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
@@ -80,7 +80,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 {string.Join("\n", regularStates.Select(x => @$"
 void make_state_{className.Name}__{regionName}__{x.Name}({className.Name} *self, {className.Name}__{regionName}__state_struct *region) {{
     region->state = {className.Name}__{regionName}__{x.Name};
-    {string.Join("\n", x.Regions.Cast<Region>().Select(region => $@"make_state_{className.Name}__{regionName}__{x.Name}__{region.Name?.Name ?? "root"}(self, &region->{x.Name});"))}
+    {string.Join("\n", x.Regions.Cast<Region>().Select(region => $@"make_state_{className.Name}__{regionName}__{x.Name}__{region.Name?.Name ?? "root"}(self, &region->{x.Name}.{region.Name?.Name ?? "root"});"))}
 }};
 "))}
 
@@ -120,7 +120,7 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
         "))}
 
         void transition_from_{className.Name}__{regionName}({className.Name} *self, {className.Name}__root__state_struct *x) {{
-            switch (x->state) {{
+            switch (x->{string.Join(".", [..thisRegionAccessor, "state"])}) {{
                 {string.Join("\n", regularStates.Select(x => $@"case {className.Name}__{regionName}__{x.Name}:
                     transition_from_{className.Name}__{regionName}__{x.Name}(self, x);
                     break;"))}
@@ -197,7 +197,7 @@ typedef enum {className.Name}__{regionName}__state {{
 
 {string.Join(",\n", substatesWithRegions.Select(state => @$"
 typedef struct {className.Name}__{regionName}__{state.Name}__state_struct {{
-        {string.Join(";\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name ?? "root"}__state_struct {x.Name?.Name ?? "root"}"))}
+        {string.Join("\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name ?? "root"}__state_struct {x.Name?.Name ?? "root"};"))}
 }} {className.Name}__{regionName}__{state.Name}__state_struct;
 "))}
 

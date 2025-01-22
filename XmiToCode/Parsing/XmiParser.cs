@@ -11,7 +11,7 @@ public abstract class XmiParser {
 
     public GlobalContext GlobalContext { get; }
     public List<PackagedElement> InterestingPackages { get; }
-    public virtual string[] PackageWhitelist { get; } = new[] {
+    public virtual string[] PackageWhitelist { get; } = [
         "Generic requirements for SCI",
         "Generic requirements for subsystems",
         "Subsystem Point",
@@ -19,7 +19,7 @@ public abstract class XmiParser {
         "Subsystem Light Signal",
         "Subsystem Level Crossing",
         "Subsystem Train Detection System",
-    };
+    ];
 
     public string[] PackageBlacklist { get; } = new string[] {
         "Generic recycle bin",

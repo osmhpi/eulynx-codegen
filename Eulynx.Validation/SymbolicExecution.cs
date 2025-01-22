@@ -12,7 +12,7 @@ public class SymbolicExecution
     {
         get
         {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)

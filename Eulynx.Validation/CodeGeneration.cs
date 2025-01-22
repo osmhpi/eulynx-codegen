@@ -15,7 +15,7 @@ public class CodeGeneration
     {
         get
         {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
@@ -29,7 +29,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -45,9 +45,9 @@ public class CodeGeneration
     public async Task GenerateC(string package, string className)
     {
         Package? pkg = null;
-        ClassFile? klass = null;
+        Class? klass = null;
         try {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
 
             foreach (var _umlPackage in processor.InterestingPackages) {
                 var _pkg = Package.CreateFromUml(_umlPackage, processor.GlobalContext);
@@ -58,7 +58,7 @@ public class CodeGeneration
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
-            klass = new ClassTransformer(Package.ParseClass(Element, pkg.Context, Hierarchy)).TransformClassIntoFile();
+            klass = Package.ParseClass(Element, pkg.Context, Hierarchy);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -66,7 +66,7 @@ public class CodeGeneration
         }
 
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteClassFilesAsync(klass, pkg);
+        await c.WriteClassFilesAsyncNew(klass, pkg);
     }
 
     [TestMethod, TestCategory("generate-klee")]
@@ -74,7 +74,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -92,7 +92,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
 
             foreach (var _umlPackage in processor.InterestingPackages) {
                 var _pkg = Package.CreateFromUml(_umlPackage, processor.GlobalContext);
@@ -119,7 +119,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -137,7 +137,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
@@ -157,7 +157,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -175,7 +175,7 @@ public class CodeGeneration
         Package? pkg = null;
         ClassFile? klass = null;
         try {
-            var processor = new EulynxV22XmiParser(ClassParsing.EULYNX_V22_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
             var umlPackage = processor.InterestingPackages.Single(x => x.Name == package);
             pkg = Package.CreateFromUml(umlPackage, processor.GlobalContext);
             var (Element, Hierarchy) = pkg.ClassElements().Single(x => x.Element.Name == className);
