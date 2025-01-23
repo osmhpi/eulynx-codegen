@@ -31,12 +31,12 @@ public partial class CWriter : ICodeWriter
         return @$"
 #include ""{klass.ClassName.Name}.h""
 
-// Operations
-{string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
-
 // Value Conversion Functions
 
 {string.Join("\n", GetConversionFunctions(klass).Select(x => WriteConversionFunction(x.From, x.To)))}
+
+// Operations
+{string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}
 
 {WriteStateConstructors(klass.Region, "root", klass.ClassName)}
 
@@ -111,7 +111,7 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
             .Concat(parentRegions).ToDictionary(x => x.Key, x => x.Value);
 
         return @$"
-        {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", [..thisRegionAccessor, $"{x.State.Name}.{region.Name?.Name ?? "root"}"], className, states, regionAccessor)))}
+        {string.Join("\n", substateRegions.Select(x => WriteTransitionFunctions(x.Region, $"{regionName}__{x.Name}", [..thisRegionAccessor, $"{x.State.Name}.{x.Region.Name?.Name ?? "root"}"], className, states, regionAccessor)))}
 
         {string.Join("\n", fromStates.Select(x => $@"void transition_from_{x.Value}({className.Name} *self, {className.Name}__root__state_struct *x) {{
             {string.Join("\n", x.Key.Regions.Cast<Region>().Select(region => $@"transition_from_{className.Name}__{regionName}__{x.Key.Name}__{region.Name?.Name ?? "root"}(self, x);"))}

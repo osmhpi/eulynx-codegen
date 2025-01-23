@@ -375,11 +375,6 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
         if (regionAccessor[codeTransition.Transition.To].Any())
         {
             accessor = $"&x->{string.Join(".", regionAccessor[codeTransition.Transition.To])}";
-            // TODO: Investigate why we're navigating too far
-            // if (accessor.EndsWith(".root"))
-            // {
-            //     accessor = accessor.Substring(0, accessor.Length - ".root".Length);
-            // }
         }
 
         return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
