@@ -272,6 +272,8 @@ typedef struct {klass.ClassName.Name} {{
 
 }} {klass.ClassName.Name};
 
+void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self);
+void new_{klass.ClassName.Name}({klass.ClassName.Name} *x);
 ";
     }
     private static string WriteOperationNew(Operation operation, Class klass)

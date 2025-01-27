@@ -363,12 +363,44 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     {
         if (!states.TryGetValue(codeTransition.Transition.To, out var state))
         {
+            // Workaround for F_EST_EfeS, which is seriously broken.
+            if (codeTransition.Transition.To.Name == "WaitingForPdiOrMaintenance")
+            {
+                state = "FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__WaitingForPdiOrMaintenance";
+                var a = "&x->OperatingVoltageSupplied.root.Initialising.root";
+                return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
+                    $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
+                        x->OperatingVoltageSupplied.root.state = FEstEfes__root__OperatingVoltageSupplied__root__Initialising;
+                        make_state_{state}(self, {a}); return;"
+                );
+            }
+            if (codeTransition.Transition.To.Name == "WaitingForNoMaintenanceTimeout")
+            {
+                state = "FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__WaitingForNoMaintenanceTimeout";
+                var a = "&x->OperatingVoltageSupplied.root.Initialising.root";
+                return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
+                    $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
+                        x->OperatingVoltageSupplied.root.state = FEstEfes__root__OperatingVoltageSupplied__root__Initialising;
+                        make_state_{state}(self, {a}); return;"
+                );
+            }
+            if (codeTransition.Transition.To.Name == "WaitingForDataUpdate")
+            {
+                state = "FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__WaitingForDataUpdate";
+                var a = "&x->OperatingVoltageSupplied.root.Initialising.root";
+                return WrapWithGuard(codeTransition.Transition, codeTransition.Constraint,
+                    $@"{string.Join("\n", codeTransition.Activities.Select(x => x.ToC()))}
+                        x->OperatingVoltageSupplied.root.state = FEstEfes__root__OperatingVoltageSupplied__root__Initialising;
+                        make_state_{state}(self, {a}); return;"
+                );
+            }
+
             throw new InvalidOperationException();
         }
 
         if (regionAccessor == null)
         {
-            // Workaround.
+            // Workaround to make old CWriter compile.
             return "";
         }
         var accessor = "x";

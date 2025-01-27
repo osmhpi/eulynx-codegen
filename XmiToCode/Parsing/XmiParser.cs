@@ -21,9 +21,9 @@ public abstract class XmiParser {
         "Subsystem Train Detection System",
     ];
 
-    public string[] PackageBlacklist { get; } = new string[] {
+    public string[] PackageBlacklist { get; } = [
         "Generic recycle bin",
-    };
+    ];
 
     // Other blacklisted packages:
     // "Recycle bin",
@@ -63,6 +63,7 @@ public abstract class XmiParser {
         InterestingPackages = eulynxSystem.PackagedElements
             .Where(x => !PackageWhitelist.Any() || PackageWhitelist.Contains(x.Name))
             .Where(x => !PackageBlacklist.Contains(x.Name))
+            .Concat([simulation])
             .ToList();
 
         var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
