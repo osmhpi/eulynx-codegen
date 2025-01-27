@@ -2,7 +2,7 @@ namespace XmiToCode.Parsing;
 
 public class EulynxV28XmiParser : EulynxV22XmiParser
 {
-    public override string[] PackageWhitelist { get; } = new[] {
+    public override string[] PackageWhitelist { get; } = [
         "Generic requirements for SCI",
         "Generic requirements for subsystems",
         "Subsystem - Point",
@@ -10,7 +10,7 @@ public class EulynxV28XmiParser : EulynxV22XmiParser
         "Subsystem - Light Signal",
         "Subsystem - Level Crossing",
         "Subsystem - Train Detection System",
-    };
+    ];
     public EulynxV28XmiParser(string filename, string[]? classWhitelist = null, string[]? classBlacklist = null)
         : base(filename, classWhitelist, classBlacklist)
     {

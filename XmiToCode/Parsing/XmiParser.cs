@@ -54,6 +54,7 @@ public abstract class XmiParser {
 
         var dataTypes = FindAllDataTypes(sysimProfile)
             .Concat(FindAllDataTypes(eulynxProfile))
+            .Concat(FindAllClasses(simulation))
             .Concat(FindAllClasses(eulynxSystem))
             .Concat(FindAllEnumerations(eulynxSystem))
             // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
