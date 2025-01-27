@@ -42,8 +42,24 @@ public partial class CWriter : ICodeWriter
 
 {WriteTransitionFunctions(klass.Region, "root", klass.ClassName)}
 
+static void evaluateChangeEvents({klass.ClassName.Name} *self) {{
+    {string.Join("\n", GetChangeEvents(klass, klass.Region, "root").Select(x => CheckForTriggeredDataChange(x, klass.ClassContext)))}
+}}
+
+static void resetTriggers({klass.ClassName.Name} *self) {{
+    {string.Join("\n", GetIncomingMessageTypes(klass, klass.Region, "root").Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PulsedInPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.IsTriggered = false;"))}
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.Where(x => x.IsDataPort && x.IsInPort).Select(x => $"self->{x.Identifier.Name}.IsSignalled = false;"))}
+
+    {string.Join("\n", GetTimeoutEvents(klass, klass.Region, "root").Select(x => $"self->{x}.IsTimeoutExpired = false;"))}
+}}
+
 void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
+    evaluateChangeEvents(self);
     transition_from_{klass.ClassName.Name}__root(self, &self->state);
+    resetTriggers(self);
 }}
 
 void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{

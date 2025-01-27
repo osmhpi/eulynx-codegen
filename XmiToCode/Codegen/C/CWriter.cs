@@ -208,7 +208,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x) {{
 {string.Join("\n", klass.TransitionFunctions.Select(x => WriteCheckTransitionFunction(x, states)))}
 
 static void evaluateChangeEvents({klass.ClassName.Name} *self) {{
-    {string.Join("\n", klass.GetChangeEvents().Select(x => CheckForTriggeredDataChange(x, klass)))}
+    {string.Join("\n", klass.GetChangeEvents().Select(x => CheckForTriggeredDataChange(x, klass.ClassContext)))}
 }}
 
 static void resetTriggers({klass.ClassName.Name} *self) {{
@@ -246,7 +246,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 ";
     }
 
-    private static string? CheckForTriggeredDataChange((PackagedElement Event, IAccessible Condition) x, ClassFile klass)
+    private static string? CheckForTriggeredDataChange((PackagedElement Event, IAccessible Condition) x, ClassContext klass)
     {
         var checker = new DataPortSignallingChecker(x.Event, x.Condition, klass);
         return checker.Check();
