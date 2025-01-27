@@ -37,36 +37,4 @@ public record Class(
     {
         return ClassContext.OutgoingMessages.Values;
     }
-
-    // internal IEnumerable<Messages.MessageSchema> GetIncomingMessageTypes()
-    // {
-    //     return TransitionFunctions
-    //         .SelectMany(x => x.Transitions)
-    //         .Select(x => x.Transition)
-    //         .OfType<MessageEventTransition>()
-    //         .Select(x => x.MessageType)
-    //         .Distinct()
-    //         .Select(x => ClassContext.IncomingMessages[x])
-    //         .ToList();
-    // }
-
-    // internal IEnumerable<(PackagedElement Event, IAccessible Condition)> GetChangeEvents() {
-    //     return TransitionFunctions
-    //         .SelectMany(x => x.Transitions)
-    //         .Select(x => x.Transition)
-    //         .OfType<ChangeEventTransition>()
-    //         .Select(x => (x.theEvent, x.Condition))
-    //         .Distinct()
-    //         .ToList();
-    // }
-
-    // internal IEnumerable<string> GetTimeoutEvents() {
-    //     return TransitionFunctions
-    //         .SelectMany(x => x.Transitions)
-    //         .Select(x => x.Transition)
-    //         .OfType<TimeEventTransition>()
-    //         .Select(x => x.theEvent.Name)
-    //         .Distinct()
-    //         .ToList();
-    // }
 }

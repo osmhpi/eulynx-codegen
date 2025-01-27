@@ -48,6 +48,7 @@ public abstract class XmiParser {
             .Single(x => x.Type == "uml:Package" && x.Name == "EULYNX_Profile");
 
         var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
+        var simulation = packages.Single(x => x.Name == "Simulation_Package");
 
         var genericEvents = ResolveGenericEvents(packages);
 
@@ -65,7 +66,10 @@ public abstract class XmiParser {
 
         var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
         var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
-        var signals = FindAllSignals(eulynxSystem).ToDictionary(x => x.Signal.Id, x => (x.Hierarchy.Last(), x.Signal));
+        var signals = FindAllSignals(eulynxSystem)
+            .Concat(FindAllSignals(simulation))
+            .ToDictionary(x => x.Signal.Id, x => (x.Hierarchy.Last(), x.Signal));
+        var s = signals.Single(x => x.Value.Signal.Id == "_d803971d-349b-416b-954b-4a23407817d3");
         var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
             .Select(x => new GlobalEnumeration(x.Value))
             .ToDictionary(x => x.Name);

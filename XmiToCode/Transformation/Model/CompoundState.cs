@@ -49,15 +49,23 @@ public partial class CompoundState : IState
 
         // Does the initializer refer to a known variable or constant?
         var id = new Identifier(initializer);
-        var accessible = member.LookupValidIdentifier(id, context);
-        if (accessible != null) {
-            var result = accessible;
-            return result;
-        } else {
-            // It is a literal, but without quotes
-            var result = member.LookupValidLiteral(new LiteralIdentifier(initializer));
-            return result;
+
+        try {
+            return member.LookupValidIdentifier(id, context);
+        } catch (ModelException ex) when (ex.Message.Contains("Could not resolve accessible identifier")) {
+            // It is not a known identifier
         }
+
+        try {
+            var callable = context.ResolveCallableIdentifier(id);
+            return new CallableParameterless(callable);
+        } catch (ModelException ex) when (ex.Message.Contains("Could not resolve callable identifier")) {
+            // It is not a known callable
+        }
+
+        // It is a literal, but without quotes
+        // TODO: Warn about this
+        return member.LookupValidLiteral(new LiteralIdentifier(initializer));
     }
 
     public static Instruction? ParseInstruction(string instruction, IProgramContext context) {

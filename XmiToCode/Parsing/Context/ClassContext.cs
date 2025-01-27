@@ -8,6 +8,7 @@ namespace XmiToCode.Parsing.Context;
 
 public record ClassContext(PackageContext Package, List<OwnedAttribute> properties, List<OwnedAttribute> ports, List<Identifier> OperationNames) : IInstructionContext
 {
+    public List<Operation> Operations { get; set; } = null!;
     public Dictionary<string, PackagedElement> PackageEvents => Package.PackageEvents;
     public Dictionary<TypeIdentifier, MessageSchema> IncomingMessages { get; }
         = ports.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values.OfType<ComplexPropertyOrPort>()
@@ -62,7 +63,7 @@ public record ClassContext(PackageContext Package, List<OwnedAttribute> properti
     public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
         if (OperationNames.Contains(identifier)) {
-            return new MethodCall(identifier);
+            return new MethodCall(identifier, Operations.Single(x => x.Identifier == identifier));
         }
 
         return Package.ResolveCallableIdentifier(identifier);
@@ -102,5 +103,10 @@ public record ClassContext(PackageContext Package, List<OwnedAttribute> properti
     public MessageSchema ResolveSignal(string signalId)
     {
         return Package.ResolveSignal(signalId);
+    }
+
+    public void EnsureReturnType(IAccessible value)
+    {
+        throw new InvalidOperationException("Can not ensure return type in class context.");
     }
 }

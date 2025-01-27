@@ -59,7 +59,7 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
 
     public ICallable ResolveCallableIdentifier(Identifier identifier)
     {
-        throw new NotImplementedException();
+        throw new ModelException($"Could not resolve callable identifier {identifier.Name}");
     }
 
     public MessageSchema ResolveIncomingMessageSchema(TypeIdentifier signal)
@@ -70,5 +70,10 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
     public (TypeIdentifier, List<MessageMember>) ResolveOutgoingMessageSchema(Identifier port, TypeIdentifier messageTypeIdentifier)
     {
         throw new NotImplementedException();
+    }
+
+    public void EnsureReturnType(IAccessible value)
+    {
+        throw new InvalidOperationException("Can not ensure return type in global context");
     }
 }

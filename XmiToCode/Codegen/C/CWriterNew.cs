@@ -265,8 +265,10 @@ typedef struct {klass.ClassName.Name} {{
     }
     private static string WriteOperationNew(Operation operation, Class klass)
     {
-        return @$"void {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
+        var abortWhenNoReturn = operation.ReturnType != null ? "abort();" : "";
+        return @$"{operation.ReturnType?.Name ?? "void"} {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC()))}
+            {abortWhenNoReturn}
         }}";
     }
 }

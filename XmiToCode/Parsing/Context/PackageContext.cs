@@ -42,4 +42,9 @@ public record PackageContext(GlobalContext Parent, PackagedElement UmlPackage, D
     {
         return Parent.ResolveOutgoingMessageSchema(port, messageTypeIdentifier);
     }
+
+    public void EnsureReturnType(IAccessible value)
+    {
+        throw new InvalidOperationException("Can not ensure return type in package context");
+    }
 }

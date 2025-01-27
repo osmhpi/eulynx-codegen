@@ -226,7 +226,9 @@ public partial class Parser
             } else if (token.TokenType == TokenType.Return) {
                 Eat(current_token, TokenType.Return);
                 var value = Expr(current_token, context);
-                return new ReturnInstruction(value, context);
+                var ins = new ReturnInstruction(value, context);
+                context.EnsureReturnType(value);
+                return ins;
             }
         }
 
@@ -251,6 +253,6 @@ public partial class Parser
     private static partial Regex SendMessageToPortRegex();
     [GeneratedRegex("^(\\w+)\\s?\\((.*)\\)$")]
     private static partial Regex MessageConstructorRegex();
-    [GeneratedRegex("^(\\w+)\\((.+)\\)")]
+    [GeneratedRegex("^(\\w+)\\s?\\((.+)\\)")]
     private static partial Regex MessageInitializerRegex();
 }

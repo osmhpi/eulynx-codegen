@@ -25,6 +25,12 @@ public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement Uml
             return;
         }
 
+        if (rhsIdentifier is CallableParameterless callableParameterless)
+        {
+            callableParameterless.EnsureComparableTypes(this);
+            return;
+        }
+
         throw new Exception("Incomparable types");
     }
 

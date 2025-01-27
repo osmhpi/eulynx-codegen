@@ -4,4 +4,5 @@ namespace XmiToCode.Parsing.Accessibles;
 
 public interface ICallable {
     public string Call(IProgramContext context, TargetLanguage targetLanguage);
+    public void EnsureReturnTypeMatches(IAccessible accessible);
 }

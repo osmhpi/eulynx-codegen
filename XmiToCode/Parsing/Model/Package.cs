@@ -98,11 +98,14 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
 
         var classContext = new ClassContext(context, properties, ports, operationNames);
 
-        var operations = klass.OwnedOperation
-            .Where(x => x.XmiType == "uml:Operation")
-            .Select(x => (x, klass.OwnedBehavior.Single(behavior => behavior.Id == x.Method)))
-            .Select(x => new Operation(x.x, x.Item2, Operation.ParseInstructions(x.Item2, classContext)))
-            .ToList();
+        var operations = (from umlOperation in klass.OwnedOperation
+            where umlOperation.XmiType == "uml:Operation"
+            let ownedBehavior = klass.OwnedBehavior.Single(behavior => behavior.Id == umlOperation.Method)
+            let operationContext = new OperationContext(classContext)
+            let instructions = Operation.ParseInstructions(ownedBehavior, operationContext)
+            select new Operation(umlOperation, ownedBehavior, instructions, operationContext.ReturnType)).ToList();
+
+        classContext.Operations = operations;
 
         var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 

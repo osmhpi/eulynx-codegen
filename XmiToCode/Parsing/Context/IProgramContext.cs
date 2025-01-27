@@ -1,6 +1,7 @@
 using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Instructions;
 
 namespace XmiToCode.Parsing.Context;
 
@@ -11,4 +12,5 @@ public interface IProgramContext {
     public ICallable ResolveCallableIdentifier(Identifier identifier);
     public bool IsLocalVariable(IAccessible accessible);
     public MessageSchema ResolveSignal(string signalId);
+    void EnsureReturnType(IAccessible value);
 }

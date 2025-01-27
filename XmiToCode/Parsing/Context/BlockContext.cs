@@ -64,4 +64,9 @@ public record BlockContext : IInstructionContext
     {
         return Parent.ResolveSignal(signalId);
     }
+
+    public void EnsureReturnType(IAccessible value)
+    {
+        Parent.EnsureReturnType(value);
+    }
 }
