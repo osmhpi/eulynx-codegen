@@ -138,13 +138,11 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
         var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
                 .OfType<MessageEventTransition>()
                 .Select(x => x.MessageType)
-                .Distinct()
-                .Select(x => klass.ClassContext.IncomingMessages[x])
-                .ToList();
+                .Select(x => klass.ClassContext.IncomingMessages[x]);
 
-        return [
-            .. substateRegions.SelectMany(x => GetIncomingMessageTypes(klass, x.Region, $"{regionName}__{x.Name}")),
-            .. local];
+        return [.. substateRegions.SelectMany(x => GetIncomingMessageTypes(klass, x.Region, $"{regionName}__{x.Name}"))
+                .Concat(local)
+                .Distinct()];
     }
 
     private List<(Parsing.XmiModel.PackagedElement Event, IAccessible Condition)> GetChangeEvents(Class klass, Region region, string regionName)
@@ -155,13 +153,12 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
 
         var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
                 .OfType<ChangeEventTransition>()
-                .Select(x => (x.theEvent, x.Condition))
-                .Distinct()
-                .ToList();
+                .Select(x => (x.theEvent, x.Condition));
 
         return [
-            .. substateRegions.SelectMany(x => GetChangeEvents(klass, x.Region, $"{regionName}__{x.Name}")),
-            .. local];
+            .. substateRegions.SelectMany(x => GetChangeEvents(klass, x.Region, $"{regionName}__{x.Name}"))
+                .Concat(local)
+                .Distinct()];
     }
 
     private List<string> GetTimeoutEvents(Class klass, Region region, string regionName)
@@ -172,13 +169,11 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
 
         var local = regularStates.SelectMany(x => TransitionFunction.GetAllTransitionsFromState(region, x).Select(x => x.Transition))
                 .OfType<TimeEventTransition>()
-                .Select(x => x.theEvent.Name)
-                .Distinct()
-                .ToList();
+                .Select(x => x.theEvent.Name);
 
-        return [
-            .. substateRegions.SelectMany(x => GetTimeoutEvents(klass, x.Region, $"{regionName}__{x.Name}")),
-            .. local];
+        return [.. substateRegions.SelectMany(x => GetTimeoutEvents(klass, x.Region, $"{regionName}__{x.Name}"))
+                .Concat(local)
+                .Distinct()];
     }
 
     private static string WriteStateStruct(Region region, string regionName, TypeIdentifier className)
@@ -195,7 +190,7 @@ typedef enum {className.Name}__{regionName}__state {{
         {string.Join(",\n", regularStates.Select(x => $"{className.Name}__{regionName}__{x.Name}"))}
 }} {className.Name}__{regionName}__state;
 
-{string.Join(",\n", substatesWithRegions.Select(state => @$"
+{string.Join("\n", substatesWithRegions.Select(state => @$"
 typedef struct {className.Name}__{regionName}__{state.Name}__state_struct {{
         {string.Join("\n", state.Regions.Cast<Region>().Select(x => $"{className.Name}__{regionName}__{state.Name}__{x.Name?.Name ?? "root"}__state_struct {x.Name?.Name ?? "root"};"))}
 }} {className.Name}__{regionName}__{state.Name}__state_struct;
