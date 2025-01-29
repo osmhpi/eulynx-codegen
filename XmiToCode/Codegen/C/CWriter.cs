@@ -159,15 +159,19 @@ typedef struct TimeoutEvent
     private static string WriteValueType(Model.ValueType valueType)
     {
         return @$"typedef enum {valueType.ClassName.Name}_{valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName.Name}_{valueType.Identifier.Name}Value__{x.Name}"))}
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName.Name}_{valueType.Identifier.Name}Value__{x.Literal.Name}"))}
         }} {valueType.ClassName.Name}_{valueType.Identifier.Name}Value;";
     }
 
     protected virtual string WriteConversionFunction(TypeIdentifier className, StringPropertyOrPort from, StringPropertyOrPort to)
     {
-        return $@"static {className.Name}_{to.Name}Value map_{from.Name}_to_{to.Name}({className.Name}_{from.Name}Value value) {{
+        var fromType = from.DataType(TargetLanguage.C);
+        var fromTypeName = string.Join("", fromType.Item1, fromType.Item2);
+        var toType = to.DataType(TargetLanguage.C);
+        var toTypeName = string.Join("", toType.Item1, toType.Item2);
+        return $@"static {toTypeName} map_{from.Name}_to_{to.Name}({fromTypeName} value) {{
             switch (value) {{
-                {JoinLines(from.AllowedValues.Select(x => $"case {className.Name}_{from.Name}Value__{x.Name}: return {className.Name}_{to.Name}Value__{x.Name};"))}
+                {JoinLines(from.AllowedValues.Select(x => $"case {fromTypeName}__{x.Literal.Name}: return {toTypeName}__{x.Literal.Name};"))}
                 default: abort();
             }}
         }}";

@@ -99,7 +99,7 @@ impl {klass.ClassName.Name}_Ports {{
             {string.Join("\n", klass.GetPropertiesAndPorts().Select(x => x.Value switch {
                 ComplexPropertyOrPort complex => null,
                 StringPropertyOrPort s => s.AllowedValues.Count > 0 ?
-                    $"{x.Key.Name}: {x.Key.Name}Value::{s.Name}Value__{s.AllowedValues.First().Name}," :
+                    $"{x.Key.Name}: {x.Key.Name}Value::{s.Name}Value__{s.AllowedValues.First().Literal.Name}," :
                     $"{x.Key.Name}: {x.Key.Name}Value::{x.Value.DataType(TargetLanguage.Rust).Item1},",
                 BoolPropertyOrPort boolPort => $"{x.Key.Name}: false,",
                  _ => $"{x.Key.Name}: false,"
@@ -131,7 +131,7 @@ impl {klass.ClassName.Name}_Ports {{
     {
         return @$"
         pub enum {valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Literal.Name}"))}
         }}";
     }
 

@@ -25,11 +25,11 @@ public record StringPropertyOrPort(TypeIdentifier ClassName, OwnedAttribute Prop
         return result;
     }
     public HashSet<StringPropertyOrPort> RequiredConversions { get; } = new HashSet<StringPropertyOrPort>();
-    public HashSet<LiteralIdentifier> AllowedValues { get; } = new HashSet<LiteralIdentifier>();
-    public HashSet<LiteralIdentifier> GetAllowedValues() {
-        var result = new HashSet<LiteralIdentifier>();
+    public HashSet<ImplicitEnumMember> AllowedValues { get; } = new HashSet<ImplicitEnumMember>();
+    public HashSet<ImplicitEnumMember> GetAllowedValues() {
+        var result = new HashSet<ImplicitEnumMember>();
         foreach (var source in FindAllWithEqualDataTypes()) {
-            result.UnionWith(source.AllowedValues);
+            result.UnionWith(source.AllowedValues.Select(x => new ImplicitEnumMember(ClassName.Name, Name, x.Literal)));
         }
         return result;
     }
@@ -44,13 +44,14 @@ public record StringPropertyOrPort(TypeIdentifier ClassName, OwnedAttribute Prop
             return ("char", "[16]");
         }
         #endif
-        return allowedValues.Count > 0 ? ($"{ClassName.Name}_{Name}Value", "") : ("void*", "");
+        return allowedValues.Count > 0 ? (allowedValues.Select(x => x.TypeName).Distinct().Single(), "") : ("void*", "");
     }
 
     public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
     {
-        AllowedValues.Add(literal);
-        return new ImplicitEnumMember($"{ClassName.Name}_{Name}Value", literal);
+        var member = new ImplicitEnumMember(ClassName.Name, Name, literal);
+        AllowedValues.Add(member);
+        return member;
     }
 
     public static string GenerateEnumMemberName(LiteralIdentifier literal) {
@@ -114,7 +115,7 @@ public record StringPropertyOrPort(TypeIdentifier ClassName, OwnedAttribute Prop
                 break;
             case ImplicitEnumMember implicitEnumMember:
                 // most likely created from RecordPossibleValue, so probably already in set
-                AllowedValues.Add(implicitEnumMember.Literal);
+                AllowedValues.Add(implicitEnumMember);
                 break;
             default:
                 throw new Exception("Incomparable types");

@@ -50,7 +50,7 @@ public class KleeCheckUniqueTransitionsWriter : CWriter {
         // is invalid, i.e. outside the bounds of the enum?
         return $@"{to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
             switch (value) {{
-                {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Name}: return {to.Name}Value__{x.Name};"))}
+                {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Literal.Name}: return {to.Name}Value__{x.Literal.Name};"))}
             }}
         }}";
     }

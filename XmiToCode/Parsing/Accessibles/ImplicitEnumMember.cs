@@ -3,8 +3,10 @@ using XmiToCode.Identifiers;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record ImplicitEnumMember(string EnumType, LiteralIdentifier Literal) : IAccessible {
-    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => $"{EnumType}__{Literal.Name}";
+public record ImplicitEnumMember(string Scope, string EnumType, LiteralIdentifier Literal) : IAccessible {
+    public string TypeName => $"{Scope}_{EnumType}Value";
+
+    public string Accessor(IProgramContext context, TargetLanguage targetLanguage) => $"{TypeName}__{Literal.Name}";
 
     public string Comparator(IProgramContext context, IAccessible other, TargetLanguage targetLanguage) =>
         $"{Accessor(context, targetLanguage)} == {other.Accessor(context, targetLanguage)}";
