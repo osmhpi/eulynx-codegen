@@ -60,11 +60,11 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyO
     public bool IsInPort => IsInPortRegex().IsMatch(Identifier.RawName);
     public bool IsOutPort => IsOutPortRegex().IsMatch(Identifier.RawName);
 
-    public static PropertyOrPort CreatePropertyOrPort(OwnedAttribute property, Dictionary<string, PackagedElement> types, PropertyOrPort? ProxyFor = null)
+    public static PropertyOrPort CreatePropertyOrPort(TypeIdentifier className, OwnedAttribute property, Dictionary<string, PackagedElement> types, PropertyOrPort? ProxyFor = null)
     {
         if (property.Type == null) {
             Console.WriteLine($"Warn: Property {property.Name} has no type, assuming string.");
-            return new StringPropertyOrPort(property, ProxyFor);
+            return new StringPropertyOrPort(className, property, ProxyFor);
 
             // return new UntypedPropertyOrPort(property, ProxyFor);
         }
@@ -78,7 +78,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyO
             "Integer" => new IntegerPropertyOrPort(property, ProxyFor),
             // "Long",
             // "Single",
-            "String" => new StringPropertyOrPort(property, ProxyFor),
+            "String" => new StringPropertyOrPort(className, property, ProxyFor),
             "PulsedIn" => new PulsedInPropertyOrPort(property, ProxyFor),
             "PulsedOut" => new PulsedOutPropertyOrPort(property, ProxyFor),
             // "Timespan",

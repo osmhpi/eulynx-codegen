@@ -1,6 +1,7 @@
 using XmiToCode.Parsing.Accessibles;
 using static XmiToCode.Codegen.CodeGenerationHelper;
 using XmiToCode.Codegen.Model;
+using XmiToCode.Identifiers;
 
 namespace XmiToCode.Codegen.C;
 
@@ -42,7 +43,7 @@ public class KleeCheckUniqueTransitionsWriter : CWriter {
     }
 
 
-    protected override string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
+    protected override string WriteConversionFunction(TypeIdentifier className, StringPropertyOrPort from, StringPropertyOrPort to)
     {
         // Do not abort() here.
         // TODO: Is there a way to signal KLEE that the current configuration

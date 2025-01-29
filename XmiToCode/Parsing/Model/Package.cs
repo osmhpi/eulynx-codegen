@@ -96,7 +96,7 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
             .Select(x => new Identifier(x.Name))
             .ToList();
 
-        var classContext = new ClassContext(context, properties, ports, operationNames);
+        var classContext = new ClassContext(context, properties, ports, operationNames, new TypeIdentifier(klass.Name));
 
         var operations = (from umlOperation in klass.OwnedOperation
             where umlOperation.XmiType == "uml:Operation"

@@ -5,7 +5,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record StringPropertyOrPort(TypeIdentifier ClassName, OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
         var result = new HashSet<StringPropertyOrPort>();
@@ -44,13 +44,13 @@ public record StringPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Prox
             return ("char", "[16]");
         }
         #endif
-        return allowedValues.Count > 0 ? ($"{Name}Value", "") : ("void*", "");
+        return allowedValues.Count > 0 ? ($"{ClassName.Name}_{Name}Value", "") : ("void*", "");
     }
 
     public override IAccessible RecordPossibleValue(LiteralIdentifier literal)
     {
         AllowedValues.Add(literal);
-        return new ImplicitEnumMember($"{Name}Value", literal);
+        return new ImplicitEnumMember($"{ClassName.Name}_{Name}Value", literal);
     }
 
     public static string GenerateEnumMemberName(LiteralIdentifier literal) {

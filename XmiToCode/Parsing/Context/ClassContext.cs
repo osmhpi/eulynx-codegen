@@ -6,12 +6,12 @@ using static XmiToCode.Parsing.Accessibles.PropertyOrPort;
 
 namespace XmiToCode.Parsing.Context;
 
-public record ClassContext(PackageContext Package, List<OwnedAttribute> properties, List<OwnedAttribute> ports, List<Identifier> OperationNames) : IInstructionContext
+public record ClassContext(PackageContext Package, List<OwnedAttribute> properties, List<OwnedAttribute> ports, List<Identifier> OperationNames, TypeIdentifier ClassName) : IInstructionContext
 {
     public List<Operation> Operations { get; set; } = null!;
     public Dictionary<string, PackagedElement> PackageEvents => Package.PackageEvents;
     public Dictionary<TypeIdentifier, MessageSchema> IncomingMessages { get; }
-        = ports.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values.OfType<ComplexPropertyOrPort>()
+        = ports.Select(x => CreatePropertyOrPort(ClassName, x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values.OfType<ComplexPropertyOrPort>()
             .SelectMany(x => x.UmlType.OwnedReception)
             .Select(x => Package.ResolveSignal(x.Signal))
             .ToDictionary(x => x.Identifier);
@@ -19,12 +19,12 @@ public record ClassContext(PackageContext Package, List<OwnedAttribute> properti
     public Dictionary<TypeIdentifier, MessageSchema> OutgoingMessages { get; } = new();
 
     public Dictionary<Identifier, PropertyOrPort> Ports { get; }
-        = ports.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
+        = ports.Select(x => CreatePropertyOrPort(ClassName, x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
             .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 
     public Dictionary<Identifier, PropertyOrPort> Properties { get; }
-        = properties.Select(x => CreatePropertyOrPort(x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
+        = properties.Select(x => CreatePropertyOrPort(ClassName, x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values
             .Select(x => (Key: x.Identifier, Value: x))
             .ToDictionary(x => x.Key, x => x.Value);
 

@@ -33,7 +33,7 @@ public partial class CWriter : ICodeWriter
 
 // Value Conversion Functions
 
-{string.Join("\n", GetConversionFunctions(klass).Select(x => WriteConversionFunction(x.From, x.To)))}
+{string.Join("\n", GetConversionFunctions(klass).Select(x => WriteConversionFunction(klass.ClassName, x.From, x.To)))}
 
 // Operations
 {string.Join("\n", klass.Operations.Select(x => WriteOperationNew(x, klass)))}

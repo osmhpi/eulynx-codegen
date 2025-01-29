@@ -6,6 +6,7 @@ using XmiToCode.Transformation;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Codegen.Model;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Identifiers;
 
 namespace XmiToCode.Codegen.C;
 
@@ -157,16 +158,16 @@ typedef struct TimeoutEvent
 
     private static string WriteValueType(Model.ValueType valueType)
     {
-        return @$"typedef enum {valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.Identifier.Name}Value__{x.Name}"))}
-        }} {valueType.Identifier.Name}Value;";
+        return @$"typedef enum {valueType.ClassName.Name}_{valueType.Identifier.Name}Value {{
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName.Name}_{valueType.Identifier.Name}Value__{x.Name}"))}
+        }} {valueType.ClassName.Name}_{valueType.Identifier.Name}Value;";
     }
 
-    protected virtual string WriteConversionFunction(StringPropertyOrPort from, StringPropertyOrPort to)
+    protected virtual string WriteConversionFunction(TypeIdentifier className, StringPropertyOrPort from, StringPropertyOrPort to)
     {
-        return $@"static {to.Name}Value map_{from.Name}_to_{to.Name}({from.Name}Value value) {{
+        return $@"static {className.Name}_{to.Name}Value map_{from.Name}_to_{to.Name}({className.Name}_{from.Name}Value value) {{
             switch (value) {{
-                {JoinLines(from.AllowedValues.Select(x => $"case {from.Name}Value__{x.Name}: return {to.Name}Value__{x.Name};"))}
+                {JoinLines(from.AllowedValues.Select(x => $"case {className.Name}_{from.Name}Value__{x.Name}: return {className.Name}_{to.Name}Value__{x.Name};"))}
                 default: abort();
             }}
         }}";
@@ -427,7 +428,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
 // Value Conversion Functions
 
-{string.Join("\n", klass.GetConversionFunctions().Select(x => WriteConversionFunction(x.From, x.To)))}
+{string.Join("\n", klass.GetConversionFunctions().Select(x => WriteConversionFunction(klass.ClassName, x.From, x.To)))}
 
 {WriteBehaviorEnum(klass.Behavior)}
 
