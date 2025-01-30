@@ -46,6 +46,14 @@ static void evaluateChangeEvents({klass.ClassName.Name} *self) {{
     {string.Join("\n", GetChangeEvents(klass, klass.Region, "root").Select(x => CheckForTriggeredDataChange(x, klass.ClassContext)))}
 }}
 
+static void resetOutputs({klass.ClassName.Name} *self) {{
+    {string.Join("\n", klass.GetOutgoingMessageTypes().Select(x => $"self->Out{x.Identifier.Name}.HasMessage = false;"))}
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.OfType<PulsedOutPropertyOrPort>().Select(x => $"self->{x.Identifier.Name}.Trigger = false;"))}
+
+    {string.Join("\n", klass.GetPropertiesAndPorts().Values.Where(x => x is not ComplexPropertyOrPort && x.IsDataPort && x.IsOutPort).Select(x => $"self->{x.Identifier.Name}.IsSignalled = false;"))}
+}}
+
 static void resetTriggers({klass.ClassName.Name} *self) {{
     {string.Join("\n", GetIncomingMessageTypes(klass, klass.Region, "root").Select(x => $"self->In{x.Identifier.Name}.HasMessage = false;"))}
 
@@ -57,13 +65,13 @@ static void resetTriggers({klass.ClassName.Name} *self) {{
 }}
 
 void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
+    resetOutputs(self);
     evaluateChangeEvents(self);
     transition_from_{klass.ClassName.Name}__root(self, &self->state);
     resetTriggers(self);
 }}
 
 void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
-    memset(self, 0, sizeof({klass.ClassName.Name}));
     make_state_{klass.ClassName.Name}__root(self, &self->state);
 }}
 ";
@@ -95,6 +103,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 
 {string.Join("\n", regularStates.Select(x => @$"
 void make_state_{className.Name}__{regionName}__{x.Name}({className.Name} *self, {className.Name}__{regionName}__state_struct *region) {{
+    LOG(""[{className.Name}] Entering state {x.Name} in region {regionName}"");
     region->state = {className.Name}__{regionName}__{x.Name};
     {string.Join("\n", x.Regions.Cast<Region>().Select(region => $@"make_state_{className.Name}__{regionName}__{x.Name}__{region.Name?.Name ?? "root"}(self, &region->{x.Name}.{region.Name?.Name ?? "root"});"))}
 }};
@@ -279,7 +288,7 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x);
     private static string WriteOperationNew(Operation operation, Class klass)
     {
         var abortWhenNoReturn = operation.ReturnType != null ? "abort();" : "";
-        return @$"{operation.ReturnType?.Name ?? "void"} {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
+        return @$"static {operation.ReturnType?.Name ?? "void"} {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC()))}
             {abortWhenNoReturn}
         }}";

@@ -60,6 +60,8 @@ public partial class CWriter : ICodeWriter
 #include <string.h>
 // For abort()
 #include <stdlib.h>
+// For fprintf()
+#include <stdio.h>
 
 #define MessagePort(X) struct {{ bool HasMessage; X Value; }}
 #define DataPort(X, Y) struct {{ bool IsSignalled; X Value Y; }}
@@ -76,27 +78,27 @@ typedef struct PulsedOut
 
 typedef struct ChangeOp {{ bool T; bool V; }} ChangeOp;
 
-inline ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
+static inline ChangeOp AndChange(ChangeOp lhs, ChangeOp rhs) {{
   ChangeOp result = {{ .T = lhs.T || rhs.T, .V = lhs.V && rhs.V }};
   return result;
 }}
 
-inline ChangeOp OrChange(ChangeOp lhs, ChangeOp rhs) {{
+static inline ChangeOp OrChange(ChangeOp lhs, ChangeOp rhs) {{
   ChangeOp result = {{ .T = lhs.V && lhs.T || rhs.V && rhs.T, .V = lhs.V || rhs.V }};
   return result;
 }}
 
-inline ChangeOp NegateChange(ChangeOp c) {{
+static inline ChangeOp NegateChange(ChangeOp c) {{
   ChangeOp result = {{ .T = c.T, .V = !c.V }};
   return result;
 }}
 
-inline ChangeOp MakeChange(bool t, bool v) {{
+static inline ChangeOp MakeChange(bool t, bool v) {{
   ChangeOp result = {{ .T = t, .V = v }};
   return result;
 }}
 
-inline bool IsTriggered(ChangeOp op) {{
+static inline bool IsTriggered(ChangeOp op) {{
     return op.T && op.V;
 }}
 
@@ -115,6 +117,9 @@ typedef struct TimeoutEvent
 
 // Message Types
 {JoinLines(global.Messages.Select(x => WriteMessageSchema(x.Value)))}
+
+// Logging
+#define LOG(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, ""\n"")
 ";
     }
 
@@ -159,7 +164,9 @@ typedef struct TimeoutEvent
     private static string WriteValueType(Model.ValueType valueType)
     {
         return @$"typedef enum {valueType.ClassName.Name}_{valueType.Identifier.Name}Value {{
-            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName.Name}_{valueType.Identifier.Name}Value__{x.Literal.Name}"))}
+            {valueType.ClassName.Name}_{valueType.Identifier.Name}Value__NULL__,
+            {string.Join(",\n", valueType.AllowedValues.Select(x => $"{valueType.ClassName.Name}_{valueType.Identifier.Name}Value__{x.Literal.Name}"))},
+            {valueType.ClassName.Name}_{valueType.Identifier.Name}Value__UNKNOWN__
         }} {valueType.ClassName.Name}_{valueType.Identifier.Name}Value;";
     }
 
@@ -167,11 +174,15 @@ typedef struct TimeoutEvent
     {
         var fromType = from.DataType(TargetLanguage.C);
         var fromTypeName = string.Join("", fromType.Item1, fromType.Item2);
+        var allowedValuesFrom = from.GetAllowedValues().Select(x => x.Literal.Name).ToList();
         var toType = to.DataType(TargetLanguage.C);
         var toTypeName = string.Join("", toType.Item1, toType.Item2);
+        // var allowedValuesTo = to.GetAllowedValues().Select(x => x.Literal.Name).ToList();
         return $@"static {toTypeName} map_{from.Name}_to_{to.Name}({fromTypeName} value) {{
             switch (value) {{
-                {JoinLines(from.AllowedValues.Select(x => $"case {fromTypeName}__{x.Literal.Name}: return {toTypeName}__{x.Literal.Name};"))}
+                case {fromTypeName}__NULL__: return {toTypeName}__NULL__;
+                case {fromTypeName}__UNKNOWN__: return {toTypeName}__UNKNOWN__;
+                {JoinLines(allowedValuesFrom.Select(x => $"case {fromTypeName}__{x}: return {toTypeName}__{x};"))}
                 default: abort();
             }}
         }}";
