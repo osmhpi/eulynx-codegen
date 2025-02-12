@@ -13,7 +13,6 @@ public abstract class XmiParser {
     public List<PackagedElement> InterestingPackages { get; }
     public virtual string[] PackageWhitelist { get; } = [
         "Generic requirements for SCI",
-        "Generic requirements for subsystems",
         "Subsystem Point",
         "Subsystem IO",
         "Subsystem Light Signal",
@@ -60,18 +59,19 @@ public abstract class XmiParser {
             // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
             .ToDictionary(x => x.Id);
 
-        InterestingPackages = eulynxSystem.PackagedElements
-            .Where(x => !PackageWhitelist.Any() || PackageWhitelist.Contains(x.Name))
-            .Where(x => !PackageBlacklist.Contains(x.Name))
-            .Concat([simulation])
-            .ToList();
+        InterestingPackages =
+        [
+            .. eulynxSystem.PackagedElements
+                .Where(x => PackageWhitelist.Length == 0 || PackageWhitelist.Contains(x.Name))
+                .Where(x => !PackageBlacklist.Contains(x.Name)),
+            simulation,
+        ];
 
         var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
         var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
         var signals = FindAllSignals(eulynxSystem)
             .Concat(FindAllSignals(simulation))
             .ToDictionary(x => x.Signal.Id, x => (x.Hierarchy.Last(), x.Signal));
-        var s = signals.Single(x => x.Value.Signal.Id == "_d803971d-349b-416b-954b-4a23407817d3");
         var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
             .Select(x => new GlobalEnumeration(x.Value))
             .ToDictionary(x => x.Name);

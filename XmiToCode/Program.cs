@@ -19,7 +19,11 @@ var classWhitelist = new string[] {
 var classBlacklist = new string[] {
     // Demo data
     // "Block1"
-    "F_Control_Timer"
+    "F_Control_Timer",
+
+    // Simulation Package
+    "Hilfsblock",
+    "Point_Helpblock",
 };
 
 var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("Could not resolve assembly directory");
