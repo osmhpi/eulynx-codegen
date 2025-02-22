@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace XmiToCode.Parsing.XmiModel
 {
     [XmlRoot(ElementName="ownedAttribute")]
-    public class OwnedAttribute {
+    public class OwnedAttribute : IAttributeOrParameter {
         [XmlAttribute(AttributeName="type", Namespace="")]
         public string Type { get; set; }
 

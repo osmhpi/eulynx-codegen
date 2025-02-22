@@ -40,6 +40,17 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
             .ToList();
 
         if (matchingEnumerations.Count > 0) {
+            #if !DISABLE_HACKS
+            // F_SCI_TDS_Report_Track_Circuit
+            if (identifier.Name == "Technical"
+                && matchingEnumerations.Count == 2
+                && matchingEnumerations.First().Name.RawName == "DisturbanceStatus"
+                && matchingEnumerations.Skip(1).First().Name.RawName == "ReasonForRejection"
+            ) {
+                matchingEnumerations = matchingEnumerations.Take(1).ToList();
+            }
+            #endif
+
             if (matchingEnumerations.Count > 1) {
                 throw new ModelException($"Identifier {identifier} is ambiguous between global enum types");
             }

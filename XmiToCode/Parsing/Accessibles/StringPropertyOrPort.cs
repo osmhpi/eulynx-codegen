@@ -5,7 +5,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record StringPropertyOrPort(TypeIdentifier ClassName, OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record StringPropertyOrPort(TypeIdentifier ClassName, IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     private HashSet<StringPropertyOrPort> FindAllWithEqualDataTypes() {
         var result = new HashSet<StringPropertyOrPort>();

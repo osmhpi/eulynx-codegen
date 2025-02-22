@@ -14,6 +14,7 @@ public record ClassContext(PackageContext Package, List<OwnedAttribute> properti
         = ports.Select(x => CreatePropertyOrPort(ClassName, x, Package.Parent.DataTypes)).ToDictionary(x => x.Name).Values.OfType<ComplexPropertyOrPort>()
             .SelectMany(x => x.UmlType.OwnedReception)
             .Select(x => Package.ResolveSignal(x.Signal))
+            .DistinctBy(x => x.Identifier)
             .ToDictionary(x => x.Identifier);
 
     public Dictionary<TypeIdentifier, MessageSchema> OutgoingMessages { get; } = new();

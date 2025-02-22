@@ -59,6 +59,13 @@ public partial class Parser
             #endif
             var accessible = lhs != null ? lhs.LookupValidIdentifier(identifier, context) : context.ResolveIdentifier(identifier);
             lhs?.EnsureComparableTypes(accessible);
+
+            if (_current_token.Current.TokenType == TokenType.Addition) {
+                Eat(_current_token, TokenType.Addition);
+                var otherFactor = Factor(_current_token, context, lhs);
+                accessible = new Addition(accessible, otherFactor);
+            }
+
             return negate ? new BooleanExpression.Negation(accessible) : accessible;
         } else if (token.TokenType == TokenType.StringLiteral) {
             Eat(_current_token, TokenType.StringLiteral);
@@ -170,8 +177,21 @@ public partial class Parser
                     // Method call
                     var callable = context.ResolveCallableIdentifier(identifier);
                     Eat(current_token, TokenType.ParenOpen);
+
+                    // Parse arguments
+                    var arguments = new List<IAccessible>();
+                    while (current_token.Current.TokenType != TokenType.ParenClose) {
+                        var argument = Expr(current_token, context);
+                        arguments.Add(argument);
+                        if (current_token.Current.TokenType == TokenType.Comma) {
+                            Eat(current_token, TokenType.Comma);
+                        } else {
+                            break;
+                        }
+                    }
+
                     Eat(current_token, TokenType.ParenClose);
-                    return new MethodCallInstruction(callable, context);
+                    return new MethodCallInstruction(callable, context, arguments);
                 } else if (current_token.Current.TokenType == TokenType.Assignment) {
                     // Assignment
                     var assignable = context.ResolveAssignableIdentifier(identifier);
@@ -236,6 +256,36 @@ public partial class Parser
     }
 
     public IAccessible? ParseExpression(string input, IProgramContext context) {
+        #if !DISABLE_HACKS
+        // F_SCI_TDS_Report_TVPS
+        if (input == "NOT d9in_Occupancy_Status  = \"technical disturbed\"") {
+            input = "NOT (d9in_Occupancy_Status = \"technical disturbed\")";
+        }
+        // F_Monitor_Time_Values (level crossing)
+        if (input == "NOT d1in_Receive_LC_State = \"Isolated\" AND D64in_Con_Use_PDI_Con_Loss_Deactivation_Delay = TRUE") {
+            input = "NOT (d1in_Receive_LC_State = \"Isolated\") AND D64in_Con_Use_PDI_Con_Loss_Deactivation_Delay = TRUE";
+        }
+        // F_Handle_Commands
+        if (input == "D22in_Con_Use_FC_P AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT d9in_Occupancy_Status = \"vacant\" AND NOT d9in_Occupancy_Status = \"technical disturbed\" AND NOT d14in_Monitoring_Time)") {
+            input = "D22in_Con_Use_FC_P AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT (d9in_Occupancy_Status = \"vacant\") AND NOT (d9in_Occupancy_Status = \"technical disturbed\") AND NOT d14in_Monitoring_Time)";
+        }
+        if (input == "D23in_Con_Use_FC_P_A AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT d9in_Occupancy_Status = \"vacant\" AND NOT d9in_Occupancy_Status = \"technical disturbed\" AND NOT d14in_Monitoring_Time)") {
+            input = "D23in_Con_Use_FC_P_A AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT (d9in_Occupancy_Status = \"vacant\") AND NOT (d9in_Occupancy_Status = \"technical disturbed\") AND NOT d14in_Monitoring_Time)";
+        }
+        if (input == "D21in_Con_Use_FC_U AND (NOT d9in_Occupancy_Status = \"vacant\" AND NOT d9in_Occupancy_Status = \"technical disturbed\" AND NOT d14in_Monitoring_Time)") {
+            input = "D21in_Con_Use_FC_U AND (NOT (d9in_Occupancy_Status = \"vacant\") AND NOT (d9in_Occupancy_Status = \"technical disturbed\") AND NOT d14in_Monitoring_Time)";
+        }
+        if (input == "D25in_Con_Use_UFL AND (NOT d9in_Occupancy_Status = \"vacant\" AND NOT d9in_Occupancy_Status = \"technical disturbed\" AND NOT d14in_Monitoring_Time)") {
+            input = "D25in_Con_Use_UFL AND (NOT (d9in_Occupancy_Status = \"vacant\") AND NOT (d9in_Occupancy_Status = \"technical disturbed\") AND NOT d14in_Monitoring_Time)";
+        }
+        if (input == "(D22in_Con_Use_FC_P OR D23in_Con_Use_FC_P_A) AND NOT d19in_Process_State = \"Waiting for sweeping train\"") {
+            input = "(D22in_Con_Use_FC_P OR D23in_Con_Use_FC_P_A) AND NOT (d19in_Process_State = \"Waiting for sweeping train\")";
+        }
+        // F_Control_Luminosity
+        if (input == "d51in_EST_EfeS_State = \"OPERATIONAL\" AND (NOT D16in_Luminosity_Set_Unchangeable OR(D16in_Luminosity_Set_Unchangeable AND (d11in_Required_Luminosity = \"Day\" OR  D12in_Con_Luminosity)))") {
+            input = "d51in_EST_EfeS_State = \"OPERATIONAL\" AND (NOT D16in_Luminosity_Set_Unchangeable OR (D16in_Luminosity_Set_Unchangeable AND (d11in_Required_Luminosity = \"Day\" OR  D12in_Con_Luminosity)))";
+        }
+        #endif
         var _current_token = _lexer.Tokenize(input).GetEnumerator();
         if (_current_token.MoveNext())
             return Expr(_current_token, context);

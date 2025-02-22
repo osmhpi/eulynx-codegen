@@ -3,6 +3,7 @@ namespace XmiToCode.Parsing.Asal;
 public enum TokenType {
     ParenOpen,
     ParenClose,
+    Comma,
     Name,
     StringLiteral,
     NumberLiteral,
@@ -36,6 +37,9 @@ public enum TokenType {
 
     // Methods
     Return,
+
+    // Integer arithmetic
+    Addition,
 }
 
 public record Token(TokenType TokenType, string Value);

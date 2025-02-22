@@ -1,10 +1,11 @@
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Messages;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record IntegerPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record IntegerPropertyOrPort(IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     public override (string, string) DataType(TargetLanguage language) => ("int", "");
 
@@ -30,7 +31,19 @@ public record IntegerPropertyOrPort(OwnedAttribute Property, PropertyOrPort? Pro
 
     public override void EnsureComparableTypes(IAccessible rhsIdentifier)
     {
-        if (rhsIdentifier is not IntegerPropertyOrPort && rhsIdentifier is not NumberLiteral)
+        var theRhs = rhsIdentifier;
+        if (rhsIdentifier is MessageMember messageMember)
+        {
+            theRhs = messageMember.Member;
+        }
+
+        if (rhsIdentifier is CallableParameterless callableParameterless)
+        {
+            callableParameterless.Callable.Operation.EnsureReturnTypeMatches(this);
+            return;
+        }
+
+        if (theRhs is not IntegerPropertyOrPort && theRhs is not NumberLiteral)
         {
             throw new Exception("Incomparable types");
         }

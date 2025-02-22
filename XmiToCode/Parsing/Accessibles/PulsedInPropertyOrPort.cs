@@ -18,7 +18,7 @@ Eu.ModSt.7548
     data at sender side typed with "PulsedOut".
 ***/
 
-public record PulsedInPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record PulsedInPropertyOrPort(IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     public override (string, string) DataType(TargetLanguage language) => language switch
     {

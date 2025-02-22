@@ -2,8 +2,6 @@
 using XmiToCode;
 using XmiToCode.Codegen;
 using XmiToCode.Codegen.C;
-using XmiToCode.Codegen.CSharp;
-using XmiToCode.Codegen.Rust;
 using XmiToCode.Parsing;
 
 var classWhitelist = new string[] {
@@ -37,9 +35,7 @@ if (args.Length == 1 && args[0] == "validate")
 else if (args.Length == 2 && Enum.TryParse<TargetLanguage>(args[0], out var targetLanguage))
 {
     ICodeWriter writer = targetLanguage switch {
-        TargetLanguage.CSharp => new CSharpWriter(args[1]),
         TargetLanguage.C => new CWriter(args[1]),
-        TargetLanguage.Rust => new RustWriter(args[1]),
         _ => throw new NotImplementedException()
     };
 

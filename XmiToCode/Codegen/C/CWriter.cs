@@ -2,7 +2,6 @@ using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Parsing.Context;
 using XmiToCode.Messages;
 using static XmiToCode.Codegen.CodeGenerationHelper;
-using XmiToCode.Transformation;
 using XmiToCode.Parsing.Model;
 using XmiToCode.Codegen.Model;
 using XmiToCode.Parsing.XmiModel;

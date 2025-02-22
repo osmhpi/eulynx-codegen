@@ -49,7 +49,7 @@ Eu.ModSt.7519
     Trigger in ports are mainly used as arguments of Boolean expressions in change events.
 ***/
 
-public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
+public abstract partial record PropertyOrPort(IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : IAccessible, IAssignable {
 
     public Identifier Identifier { get; } = new Identifier(Property.Name);
     public IAccessor TheAccessor { get; } = new ClassAccessor();
@@ -60,7 +60,7 @@ public abstract partial record PropertyOrPort(OwnedAttribute Property, PropertyO
     public bool IsInPort => IsInPortRegex().IsMatch(Identifier.RawName);
     public bool IsOutPort => IsOutPortRegex().IsMatch(Identifier.RawName);
 
-    public static PropertyOrPort CreatePropertyOrPort(TypeIdentifier className, OwnedAttribute property, Dictionary<string, PackagedElement> types, PropertyOrPort? ProxyFor = null)
+    public static PropertyOrPort CreatePropertyOrPort(TypeIdentifier className, IAttributeOrParameter property, Dictionary<string, PackagedElement> types, PropertyOrPort? ProxyFor = null)
     {
         if (property.Type == null) {
             Console.WriteLine($"Warn: Property {property.Name} has no type, assuming string.");

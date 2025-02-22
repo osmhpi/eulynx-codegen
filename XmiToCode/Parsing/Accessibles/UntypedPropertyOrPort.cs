@@ -3,7 +3,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record UntypedPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record UntypedPropertyOrPort(IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     public override (string, string) DataType(TargetLanguage language)
     {

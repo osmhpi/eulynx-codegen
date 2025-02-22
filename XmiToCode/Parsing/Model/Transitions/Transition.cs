@@ -58,7 +58,11 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     var instructions = CompoundState.ParseInstructions(transition.Effect?.Body ?? "", blockContext);
                     return new MessageEventTransition(from, to, transition, theEvent, messageSchema.Identifier, instructions, GetTransitionConstraints(transitions, blockContext));
                 }
+            } else if (transition.Trigger == null) {
+                var instructions = CompoundState.ParseInstructions(transition.Effect?.Body ?? "", context);
+                return new UnconditionalTransition(from, to, transition, instructions);
             } else {
+                // Old code, I think
                 var instructions = transitions.SelectMany(transition => CompoundState.ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
                 if (from.IsInitialState) {
                     return new InitialTransition(from, to, transitions, instructions, GetTransitionConstraints(transitions, context));
@@ -73,6 +77,19 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
     }
 
     protected static IAccessible? ParseExpression(string expression, IProgramContext context) {
+        #if !DISABLE_HACKS
+        // F_Handle_Commands
+        if (expression == "D23in_Con_Use_FC_P_A AND NOT d19in_Process_State = \"Waiting for an acknowledgment\"") {
+            expression = "D23in_Con_Use_FC_P_A AND NOT (d19in_Process_State = \"Waiting for an acknowledgment\")";
+        }
+        if (expression == "D22in_Con_Use_FC_P AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT d9in_Occupancy_Status = \"vacant\" AND NOT d9in_Occupancy_Status = \"technical disturbed\" AND NOT d14in_Monitoring_Time)") {
+            expression = "D22in_Con_Use_FC_P AND (NOT d18in_Perform_FC_P_Or_FC_P_A AND NOT (d9in_Occupancy_Status = \"vacant\") AND NOT (d9in_Occupancy_Status = \"technical disturbed\") AND NOT d14in_Monitoring_Time)";
+        }
+        // F_SCI_LC_Report
+        if (expression == "d1in_Receive_LC_State = \"Deactivated\" AND NOT d3in_LCPF_Protection_State = \"Idle\"") {
+            expression = "d1in_Receive_LC_State = \"Deactivated\" AND NOT (d3in_LCPF_Protection_State = \"Idle\")";
+        }
+        #endif
         expression = expression.Replace('\n', ' ').Trim();
 
         var parser = new Parser();

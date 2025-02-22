@@ -101,15 +101,22 @@ public record Package(GlobalContext Global, PackageContext Context, string[]? Cl
         var operations = (from umlOperation in klass.OwnedOperation
             where umlOperation.XmiType == "uml:Operation"
             let ownedBehavior = klass.OwnedBehavior.Single(behavior => behavior.Id == umlOperation.Method)
-            let operationContext = new OperationContext(classContext)
-            let instructions = Operation.ParseInstructions(ownedBehavior, operationContext)
-            select new Operation(umlOperation, ownedBehavior, instructions, operationContext.ReturnType)).ToList();
+            let operationContext = new OperationContext(classContext, ownedBehavior.OwnedParameter)
+            select new  {
+                ownedBehavior,
+                operationContext,
+                operation = new Operation(umlOperation, ownedBehavior, operationContext)
+            }).ToList();
 
-        classContext.Operations = operations;
+        classContext.Operations = operations.Select(x => x.operation).ToList();
+        foreach (var operation in operations)
+        {
+            operation.operation.Instructions = Operation.ParseInstructions(operation.ownedBehavior, operation.operationContext);
+        }
 
         var region = Region.ParseRegionWithTransitions(klass.StateMachine.Region, classContext);
 
-        return new Class(klass, classContext, operations, region, hierarchy);
+        return new Class(klass, classContext, classContext.Operations, region, hierarchy);
     }
 
     public static Package CreateFromUml(

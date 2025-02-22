@@ -1,10 +1,11 @@
 using XmiToCode.Parsing.Context;
 using XmiToCode.Identifiers;
 using XmiToCode.Parsing.XmiModel;
+using XmiToCode.Messages;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement UmlType, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record ComplexPropertyOrPort(IAttributeOrParameter Property, PackagedElement UmlType, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     // TODO: We re-implement three times an implemention detail of GlobalEnumeration:
     // new UniqueTypeIdentifier(UmlType.Name, UmlType.Id)
@@ -29,6 +30,19 @@ public record ComplexPropertyOrPort(OwnedAttribute Property, PackagedElement Uml
         {
             callableParameterless.EnsureComparableTypes(this);
             return;
+        }
+
+        if (rhsIdentifier is MessageMember messageMember)
+        {
+            rhsIdentifier = messageMember.Member;
+        }
+
+        if (rhsIdentifier is ComplexPropertyOrPort complexPropertyOrPort)
+        {
+            if (complexPropertyOrPort.UmlType.Type == "uml:Enumeration" && complexPropertyOrPort.UmlType.Id == UmlType.Id)
+            {
+                return;
+            }
         }
 
         throw new Exception("Incomparable types");

@@ -1,22 +1,26 @@
 using XmiToCode.Parsing.Accessibles;
 using XmiToCode.Identifiers;
 using XmiToCode.Messages;
+using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Context;
 
-public record OperationContext : IProgramContext
+public record OperationContext(ClassContext Parent, List<OwnedParameter> ownedParameter) : IProgramContext
 {
     public TypeIdentifier? ReturnType { get; private set; }
 
-    public IProgramContext Parent { get; }
-
-    public OperationContext(IProgramContext parent)
-    {
-        Parent = parent;
-    }
+    public Dictionary<Identifier, OperationParameter> Parameters { get; }
+        = ownedParameter.ToDictionary(
+            x => new Identifier(x.Name),
+            x => new OperationParameter(x, PropertyOrPort.CreatePropertyOrPort(Parent.ClassName, x, Parent.Package.Parent.DataTypes), new ParameterAccessor()));
 
     public IAccessible ResolveIdentifier(Identifier identifier)
     {
+        if (Parameters.TryGetValue(identifier, out var p))
+        {
+            return p;
+        }
+
         return Parent.ResolveIdentifier(identifier);
     }
 
@@ -58,10 +62,31 @@ public record OperationContext : IProgramContext
                 throw new InvalidOperationException("Return type mismatch");
             }
         }
+        else if (value is IntegerPropertyOrPort || value is NumberLiteral)
+        {
+            if (ReturnType == null)
+            {
+                ReturnType = new TypeIdentifier("int");
+            }
+            else if (ReturnType != new TypeIdentifier("int"))
+            {
+                throw new InvalidOperationException("Return type mismatch");
+            }
+        }
+        else if (value is ComplexPropertyOrPort complexPropertyOrPort)
+        {
+            if (ReturnType == null)
+            {
+                ReturnType = new UniqueTypeIdentifier(complexPropertyOrPort.UmlType.Name, complexPropertyOrPort.UmlType.Id);
+            }
+            else if (ReturnType != new UniqueTypeIdentifier(complexPropertyOrPort.UmlType.Name, complexPropertyOrPort.UmlType.Id))
+            {
+                throw new InvalidOperationException("Return type mismatch");
+            }
+        }
         else
         {
             throw new InvalidOperationException("Return type must be enumeration member.");
         }
-
     }
 }

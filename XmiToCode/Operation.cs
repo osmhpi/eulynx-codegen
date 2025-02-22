@@ -7,7 +7,8 @@ using XmiToCode.Parsing.Accessibles;
 
 namespace XmiToCode;
 
-public record Operation(OwnedOperation Op, OwnedBehavior Behavior, List<Instruction> Instructions, TypeIdentifier? ReturnType) {
+public record Operation(OwnedOperation Op, OwnedBehavior Behavior, OperationContext Context) {
+    public List<Instruction> Instructions { get; set; } = null!;
     public Identifier Identifier { get; } = new Identifier(Op.Name);
 
     public static List<Instruction> ParseInstructions(OwnedBehavior behavior, IProgramContext context) {
@@ -16,11 +17,13 @@ public record Operation(OwnedOperation Op, OwnedBehavior Behavior, List<Instruct
 
     internal void EnsureReturnTypeMatches(IAccessible accessible)
     {
-        if (accessible is ComplexPropertyOrPort complexPropertyOrPort)
-        {
-            return;
-        }
+        // if (accessible is ComplexPropertyOrPort)
+        // {
+        //     return;
+        // }
 
-        throw new Exception("Types cannot be matched");
+        Context.EnsureReturnType(accessible);
+
+        // throw new Exception("Types cannot be matched");
     }
 }

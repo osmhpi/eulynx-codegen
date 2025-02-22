@@ -4,7 +4,7 @@ using XmiToCode.Parsing.XmiModel;
 
 namespace XmiToCode.Parsing.Accessibles;
 
-public record BoolPropertyOrPort(OwnedAttribute Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
+public record BoolPropertyOrPort(IAttributeOrParameter Property, PropertyOrPort? ProxyFor) : PropertyOrPort(Property, ProxyFor)
 {
     public override (string, string) DataType(TargetLanguage language) => ("bool", "");
 

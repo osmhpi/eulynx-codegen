@@ -37,6 +37,9 @@ public partial class Tokenizer {
     private int TryTokenizeParenOpen(string input, int current, out Token? result)
          => TryTokenizeCharacter(TokenType.ParenOpen, '(', input, current, out result);
 
+    private int TryTokenizeComma(string input, int current, out Token? result)
+         => TryTokenizeCharacter(TokenType.Comma, ',', input, current, out result);
+
     private int TryTokenizeParenClose(string input, int current, out Token? result)
          => TryTokenizeCharacter(TokenType.ParenClose, ')', input, current, out result);
 
@@ -176,6 +179,12 @@ public partial class Tokenizer {
     private int TryTokenizeEndIfIgnoreCase(string input, int current, out Token? result)
         // Ignore case to work around some model issues
         => TryTokenizePatternWithWarning(TokenType.EndIf, EndIfIgnoreCaseRegex(), input, current, out result);
+
+    [GeneratedRegex("^endif$")]
+    private static partial Regex EndIfNoSpaceRegex();
+    private int TryTokenizeEndIfNoSpace(string input, int current, out Token? result)
+        // Ignore case to work around some model issues
+        => TryTokenizePatternWithWarning(TokenType.EndIf, EndIfNoSpaceRegex(), input, current, out result);
     #endif
 
     [GeneratedRegex("^send (.+)\\s?to (.+)$")]
@@ -211,6 +220,8 @@ public partial class Tokenizer {
         result = null;
         return 0;
     }
+    private int TryTokenizeAddition(string input, int current, out Token? result)
+        => TryTokenizeCharacter(TokenType.Addition, '+', input, current, out result);
 
     [GeneratedRegex("\\s")]
     private static partial Regex WhitespaceRegex();
@@ -260,6 +271,7 @@ public partial class Tokenizer {
             SkipMultilineComment,
             TryTokenizeParenClose,
             TryTokenizeParenOpen,
+            TryTokenizeComma,
             TryTokenizeAssignment,
             TryTokenizeGreaterThanOrEqual,
             TryTokenizeLessThanOrEqual,
@@ -296,11 +308,13 @@ public partial class Tokenizer {
             TryTokenizeEndIf,
             #if !DISABLE_HACKS
             TryTokenizeEndIfIgnoreCase,
+            TryTokenizeEndIfNoSpace,
             #endif
             TryTokenizeSendMessageToPort,
             TryTokenizeReturn,
             TryTokenizeNumberLiteral,
             TryTokenizeStringLiteral,
+            TryTokenizeAddition,
             TryTokenizeName,
         };
 

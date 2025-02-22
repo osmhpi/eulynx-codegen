@@ -41,22 +41,44 @@ public partial class CompoundState : IState
     }
 
     public static IAccessible ParseMessageInitializer(string initializer, string parsedMessageName, MessageMember member, IProgramContext context) {
+        if (int.TryParse(initializer, out var number)) {
+            return new NumberLiteral(number);
+        }
+
         if (TryParseLiteral(initializer, out var literal)) {
             // Resolve message
             var result = member.LookupValidLiteral(literal!);
             return result;
         }
 
-        // Does the initializer refer to a known variable or constant?
-        var id = new Identifier(initializer);
 
         try {
+            // Does the initializer refer to a known variable or constant?
+            var id = new Identifier(initializer);
             return member.LookupValidIdentifier(id, context);
         } catch (ModelException ex) when (ex.Message.Contains("Could not resolve accessible identifier")) {
             // It is not a known identifier
         }
 
         try {
+            // Is it a method call?
+            var id = new Identifier(initializer);
+
+            if (initializer.Contains('(') && initializer.EndsWith(')')) {
+                var call = initializer.Split('(')[0];
+                id = new Identifier(call);
+
+                // var parameters = initializer.Split('(')[1].TrimEnd(')').Split(',');
+                // if (parameters.Length > 0) {
+                //     var result = new CallableWithParameters(callable);
+                //     foreach (var parameter in parameters) {
+                //         var parsedParameter = ParseMessageInitializer(parameter, parsedMessageName, member, context);
+                //         result.Parameters.Add(parsedParameter);
+                //     }
+                //     return result;
+                // }
+            }
+
             var callable = context.ResolveCallableIdentifier(id);
             return new CallableParameterless(callable);
         } catch (ModelException ex) when (ex.Message.Contains("Could not resolve callable identifier")) {
@@ -76,6 +98,15 @@ public partial class CompoundState : IState
     }
 
     public static List<Instruction> ParseInstructions(string instructions, IProgramContext context) {
+        #if !DISABLE_HACKS
+        if (context is ClassContext classContext && (
+            classContext.ClassName.RawName == "F_SCI_TDS_Report_Track_Circuit"
+            || classContext.ClassName.RawName == "F_SCI_TDS_Report_TDP"))
+        {
+            instructions = instructions.Replace("\n", "");
+        }
+        #endif
+
         return instructions
             .Split(";")
             .SelectMany(x => x.Split("\n"))
