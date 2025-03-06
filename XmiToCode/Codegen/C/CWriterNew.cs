@@ -287,8 +287,9 @@ void new_{klass.ClassName.Name}({klass.ClassName.Name} *x);
     }
     private static string WriteOperationNew(Operation operation, Class klass)
     {
+        var arguments = operation.Context.Parameters.Select(x => $", {x.Value.Parameter.DataType(TargetLanguage.C).Item1} {x.Key.Name}").ToList();
         var abortWhenNoReturn = operation.Context.ReturnType != null ? "abort();" : "";
-        return @$"static {operation.Context.ReturnType?.Name ?? "void"} {operation.Identifier.Name}({klass.ClassName.Name} *self) {{
+        return @$"static {operation.Context.ReturnType?.Name ?? "void"} {operation.Identifier.Name}({klass.ClassName.Name} *self {string.Join("", arguments)}) {{
             {JoinLines(operation.Instructions.Select(x => x.ToC()))}
             {abortWhenNoReturn}
         }}";

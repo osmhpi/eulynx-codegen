@@ -81,6 +81,10 @@ public record TransitionFunction(
 
     public static List<Instruction> SelectActivities(IState fromState, IState toState, Transition transition)
     {
+        if (transition.SingleTransition.Kind == "internal") {
+            return transition.Instructions;
+        }
+
         // TODO: Partial transitions, exit/entry for compound states
         var exit = fromState.Exit;
         var transitionEffect = transition.Instructions;
@@ -110,6 +114,15 @@ public record TransitionFunction(
                 theTransition
             );
         }
+
+        #if !DISABLE_HACKS
+        if (className.RawName == "F_Monitor_Report_Status") {
+            // Single state machine with a join state
+            // TODO: Review and fix the joining.
+            return new CodeTransition(
+                SelectActivities(fromState, toState, theTransition), theTransition.Constraints, theTransition);
+        }
+        #endif
 
         throw new NotImplementedException();
     }

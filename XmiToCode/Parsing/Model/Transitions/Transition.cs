@@ -58,17 +58,15 @@ public abstract record Transition(IState From, IState To, List<UmlTransition> Tr
                     var instructions = CompoundState.ParseInstructions(transition.Effect?.Body ?? "", blockContext);
                     return new MessageEventTransition(from, to, transition, theEvent, messageSchema.Identifier, instructions, GetTransitionConstraints(transitions, blockContext));
                 }
-            } else if (transition.Trigger == null) {
-                var instructions = CompoundState.ParseInstructions(transition.Effect?.Body ?? "", context);
-                return new UnconditionalTransition(from, to, transition, instructions);
             } else {
-                // Old code, I think
                 var instructions = transitions.SelectMany(transition => CompoundState.ParseInstructions(transition.Effect?.Body ?? "", context)).ToList();
                 if (from.IsInitialState) {
                     return new InitialTransition(from, to, transitions, instructions, GetTransitionConstraints(transitions, context));
                 }
                 else if (from.IsJunction) {
                     return new JunctionTransition(from, to, transitions, instructions, GetTransitionConstraints(transitions, context));
+                } else {
+                    return new UnconditionalTransition(from, to, transition, instructions);
                 }
             }
         }

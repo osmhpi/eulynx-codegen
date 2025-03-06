@@ -12,6 +12,10 @@ public record TypeIdentifier (string RawName)
     }
 }
 
+public record IntTypeIdentifier() : TypeIdentifier("int") {
+    public override string Name => "int";
+}
+
 public record UniqueTypeIdentifier (string RawName, string Id) : TypeIdentifier(RawName) {
     public override string Name => InPascalCase(Sanitize(RawName)) + "_" + Id[..5];
 }

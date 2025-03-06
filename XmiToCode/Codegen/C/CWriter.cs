@@ -349,6 +349,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             MessageEventTransition messageEvent => $"if (self->In{messageEvent.MessageType.Name}.HasMessage)",
             InitialTransition => "", // TODO
             JunctionTransition => "", // no triggers necessary for transitioning from a junction state
+            UnconditionalTransition => "if (true)",
             _ => throw new NotImplementedException()
         };
 

@@ -66,9 +66,9 @@ public record OperationContext(ClassContext Parent, List<OwnedParameter> ownedPa
         {
             if (ReturnType == null)
             {
-                ReturnType = new TypeIdentifier("int");
+                ReturnType = new IntTypeIdentifier();
             }
-            else if (ReturnType != new TypeIdentifier("int"))
+            else if (ReturnType != new IntTypeIdentifier())
             {
                 throw new InvalidOperationException("Return type mismatch");
             }

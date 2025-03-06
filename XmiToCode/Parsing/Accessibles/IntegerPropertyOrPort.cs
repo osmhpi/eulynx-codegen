@@ -37,7 +37,7 @@ public record IntegerPropertyOrPort(IAttributeOrParameter Property, PropertyOrPo
             theRhs = messageMember.Member;
         }
 
-        if (rhsIdentifier is CallableParameterless callableParameterless)
+        if (rhsIdentifier is CallableNotSoParameterless callableParameterless)
         {
             callableParameterless.Callable.Operation.EnsureReturnTypeMatches(this);
             return;

@@ -64,23 +64,22 @@ public partial class CompoundState : IState
             // Is it a method call?
             var id = new Identifier(initializer);
 
+            var callable = context.ResolveCallableIdentifier(id);
+            var parametersAccessibles = new List<IAccessible>();
+
             if (initializer.Contains('(') && initializer.EndsWith(')')) {
                 var call = initializer.Split('(')[0];
                 id = new Identifier(call);
 
-                // var parameters = initializer.Split('(')[1].TrimEnd(')').Split(',');
-                // if (parameters.Length > 0) {
-                //     var result = new CallableWithParameters(callable);
-                //     foreach (var parameter in parameters) {
-                //         var parsedParameter = ParseMessageInitializer(parameter, parsedMessageName, member, context);
-                //         result.Parameters.Add(parsedParameter);
-                //     }
-                //     return result;
-                // }
+                var parameters = initializer.Split('(')[1].TrimEnd(')').Split(',');
+                if (parameters.Length > 0) {
+                    foreach (var parameter in parameters) {
+                        parametersAccessibles.Add(ParseMessageInitializer(parameter, parsedMessageName, member, context));
+                    }
+                }
             }
 
-            var callable = context.ResolveCallableIdentifier(id);
-            return new CallableParameterless(callable);
+            return new CallableNotSoParameterless(callable, parametersAccessibles);
         } catch (ModelException ex) when (ex.Message.Contains("Could not resolve callable identifier")) {
             // It is not a known callable
         }

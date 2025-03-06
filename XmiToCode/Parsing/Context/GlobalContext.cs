@@ -47,7 +47,11 @@ public record GlobalContext(Dictionary<TypeIdentifier, GlobalEnumeration> Enumer
                 && matchingEnumerations.First().Name.RawName == "DisturbanceStatus"
                 && matchingEnumerations.Skip(1).First().Name.RawName == "ReasonForRejection"
             ) {
-                matchingEnumerations = matchingEnumerations.Take(1).ToList();
+                // Actually, they mean something entirely different.
+                identifier = new Identifier("TechnicalFailure");
+                matchingEnumerations = Enumerations.Values
+                    .Where(x => x.Members.Any(x => x.RawName == identifier.RawName))
+                    .ToList();
             }
             #endif
 

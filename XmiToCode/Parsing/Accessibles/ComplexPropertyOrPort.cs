@@ -26,7 +26,7 @@ public record ComplexPropertyOrPort(IAttributeOrParameter Property, PackagedElem
             return;
         }
 
-        if (rhsIdentifier is CallableParameterless callableParameterless)
+        if (rhsIdentifier is CallableNotSoParameterless callableParameterless)
         {
             callableParameterless.EnsureComparableTypes(this);
             return;
