@@ -1,0 +1,24 @@
+name: Generated Files Consistency
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Transform model into code
+        run: cd Eulynx.Validation && CODEGEN_OUTPUT_DIR=$PWD/../generated/c dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"
+
+      - name: Assert working directory clean
+        run: git diff --exit-code
