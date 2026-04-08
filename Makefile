@@ -35,4 +35,3 @@ cleaned_28.xmi: EULYNX\ System_BL4R3_v28.xmi
 		echo "</uml:Model>" >> $@
 		echo "</xmi:XMI>" >> $@
 		rm tmp.xmi
-
