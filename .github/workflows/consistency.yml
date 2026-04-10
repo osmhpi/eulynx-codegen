@@ -24,12 +24,14 @@ jobs:
         run: |
             make clean
             make
+            git checkout 03_TransformationReport
 
       - name: Generate Baseline 4 Release 3
         working-directory: EulynxBaseline4Release3
         run: |
             make clean
             make
+            git checkout 03_TransformationReport
 
       - name: Assert working directory clean
         run: git diff --exit-code
