@@ -1,86 +1,86 @@
 <testsuites>
-  <testsuite name="Eulynx.Validation.dll" tests="62" skipped="9" failures="0" errors="0" time="7.8569651" timestamp="2026-04-10T06:16:04" hostname="MacBook-Pro-2" id="0" package="Eulynx.Validation.dll">
+  <testsuite name="Eulynx.Validation.dll" tests="62" skipped="9" failures="0" errors="0" time="7.260407200000001" timestamp="2026-04-10T06:21:46" hostname="MacBook-Pro-2" id="0" package="Eulynx.Validation.dll">
     <properties />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateCommonFilesC" time="0.2680190" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.2330408" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.2081879" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.2163187" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.2020370" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Output_Channel_State)" time="0.1184734">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateCommonFilesC" time="0.2367660" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.2070571" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.1276842" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.1428167" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.1285510" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Output_Channel_State)" time="0.1232998">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.1209132" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.1122658" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.1325907" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Receive)" time="0.1090215" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Report)" time="0.1117232" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Command)" time="0.1199880" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Receive)" time="0.1103542" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.1058255">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.1148400" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.1178081" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.1123136" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Receive)" time="0.1075304" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,F_SCI_IO_Report)" time="0.1098826" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Command)" time="0.1416282" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem IO,S_SCI_IO_Receive)" time="0.1114907" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.1072952">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.1349468" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.1173191" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.1237781" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.1014520" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.1463982" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.1102930">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.1300541" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.1087744" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.1270922" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.1176726" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.1144297" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.1120736">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.1027050" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.1271122" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.1500315" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Luminosity)" time="0.1296177" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.1075057" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.1194417" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.1438696" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0982600" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.1201957">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.1303553" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.1269474" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.1052303" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Luminosity)" time="0.1266527" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0978376" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.1167184" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.1003710" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.1504565" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.1420109">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.1200624" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.1152043" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.1273416" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Non4W_PM)" time="0.1507287" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Point)" time="0.2814594" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.1040613" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.1048769" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Movement_Failed)" time="0.1143349" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.1089061" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Receive)" time="0.0985290" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Report)" time="0.1062255" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Command)" time="0.1085329" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Receive)" time="0.0999139" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Control_Timer)" time="0.0960883" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Commands)" time="0.1191920">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.1055630" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.1030080" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.1008749" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Non4W_PM)" time="0.1040350" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Control_Point)" time="0.1196170" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.1183457" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.1148563" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Movement_Failed)" time="0.0971073" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.1114790" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Receive)" time="0.1101100" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,F_SCI_P_Report)" time="0.1076620" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Command)" time="0.1045553" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Point,S_SCI_P_Receive)" time="0.0985429" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Control_Timer)" time="0.0969833" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Commands)" time="0.1194507">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.1113175" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.1113925">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.1115063" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.1155315">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0957520" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.1263100" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_TDP)" time="0.1026424" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.1060402" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0992792" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0966965" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.1351776" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.1417149">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.1015266" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.1137518" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_TDP)" time="0.1030257" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.1078332" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0981856" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.1467760" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.1056454" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.1063357">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.1085766" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.1108272">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.1046806" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0967618">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.1202590" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.1212482">
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0946312" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.1356539">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0988188" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.1124215" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Simulation_Package,Hilfsblock)" time="0.0992488" />
-    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Simulation_Package,Point_Helpblock)" time="0.1020998" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0988526" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.1105607" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Simulation_Package,Hilfsblock)" time="0.0989854" />
+    <testcase classname="Eulynx.Validation.CodeGeneration" name="CodeGeneration.GenerateC (Simulation_Package,Point_Helpblock)" time="0.1023325" />
     <system-out>Warn: Property Aspect Lamp Combinations has no type, assuming string.
 Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
 Warn: Property Speed Indicator has no type, assuming string.

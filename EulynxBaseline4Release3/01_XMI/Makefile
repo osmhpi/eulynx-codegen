@@ -1,5 +1,8 @@
 all: cleaned.xmi
 
+clean:
+	rm -f cleaned.xmi tmp.xmi
+
 cleaned.xmi: EULYNX\ System_BL4R3_v28.xmi
 	LC_ALL=C tr '\0-\10\13\14\16-\37' '[ *]' < "$<" > tmp.xmi
 	# Truncate the profile garbage, skip all lines after the uml model

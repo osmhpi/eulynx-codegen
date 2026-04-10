@@ -19,14 +19,17 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Clean generated files
-        run: rm -rf EulynxBaseline4Release3/04_OutputC
+      - name: Generate Baseline 4 Release 2
+        working-directory: EulynxBaseline4Release2
+        run: |
+            make clean
+            make
 
-      - name: Transform model into code
-        run: cd EulynxBaseline4Release3/02_Transformation && 02_Transformation CODEGEN_OUTPUT_DIR=$PWD/../04_OutputC dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\03_TransformationReport\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"
-
-      - name: Format output
-        run: cd EulynxBaseline4Release3/04_OutputC && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -i
+      - name: Generate Baseline 4 Release 3
+        working-directory: EulynxBaseline4Release3
+        run: |
+            make clean
+            make
 
       - name: Assert working directory clean
         run: git diff --exit-code
