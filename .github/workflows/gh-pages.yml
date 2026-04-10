@@ -40,18 +40,18 @@ jobs:
 
       - name: Generate Baseline 4 Release 2
         working-directory: EulynxBaseline4Release2
-        run: make 03_TransformationReport/out/index.html
+        run: make 03_TransformationReport/report/index.html
 
       - name: Generate Baseline 4 Release 3
         working-directory: EulynxBaseline4Release3
-        run: make 03_TransformationReport/out/index.html
+        run: make 03_TransformationReport/report/index.html
 
       - name: Copy output artifacts
         run: |
           mkdir -p _site/EulynxBaseline4Release2
-          cp -r EulynxBaseline4Release2/03_TransformationReport/out/* _site/EulynxBaseline4Release2/
+          cp -r EulynxBaseline4Release2/03_TransformationReport/report/* _site/EulynxBaseline4Release2/
           mkdir -p _site/EulynxBaseline4Release3
-          cp -r EulynxBaseline4Release3/03_TransformationReport/out/* _site/EulynxBaseline4Release3/
+          cp -r EulynxBaseline4Release3/03_TransformationReport/report/* _site/EulynxBaseline4Release3/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
