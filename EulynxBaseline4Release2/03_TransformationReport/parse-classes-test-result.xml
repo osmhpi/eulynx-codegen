@@ -1,0 +1,1327 @@
+<testsuites>
+  <testsuite name="Eulynx.Validation.dll" tests="61" skipped="0" failures="9" errors="0" time="5.0538848" timestamp="2026-04-10T14:22:20" hostname="MacBook-Pro-2" id="0" package="Eulynx.Validation.dll">
+    <properties />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.1867420" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.1525317" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.1668945" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.1481926" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_Control_Output_Channel_State)" time="0.1551706">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.ArgumentException: Could not parse provided transition">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.ArgumentException: Could not parse provided transition
+Stack Trace:
+    at XmiToCode.Parsing.Model.Transition.Parse(IState from, IState to, List`1 transitions, IInstructionContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Transitions/Transition.cs:line 74
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass21_0.&lt;ParseTransitions&gt;b__0(UmlTransition x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 31
+   at System.Linq.Enumerable.SelectListIterator`2.Fill(ReadOnlySpan`1 source, Span`1 destination, Func`2 func)
+   at System.Linq.Enumerable.SelectListIterator`2.ToList()
+   at XmiToCode.Region.ParseTransitions(ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 30
+   at XmiToCode.Region.ParseTransitions(ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 27
+   at XmiToCode.Region.ParseRegionWithTransitions(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 80
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 117
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.1348885" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_Detect_Input_Channel_State)" time="0.0868132" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0627639" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_SCI_IO_Receive)" time="0.0657119" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,F_SCI_IO_Report)" time="0.0654325" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,S_SCI_IO_Command)" time="0.0598587" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem IO,S_SCI_IO_Receive)" time="0.0667586" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.0619480">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.NullReferenceException: Object reference not set to an instance of an object.">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+Stack Trace:
+    at XmiToCode.Parsing.Asal.Parser.Factor(IEnumerator`1 _current_token, IProgramContext context, IAssignable lhs) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 73
+   at XmiToCode.Parsing.Asal.Parser.Term(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 111
+   at XmiToCode.Parsing.Asal.Parser.Expr(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 124
+   at XmiToCode.Parsing.Asal.Parser.ParseExpression(String input, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 291
+   at XmiToCode.Parsing.Model.Transition.ParseExpression(String expression, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Transitions/Transition.cs:line 94
+   at XmiToCode.Parsing.Model.Transition.GetTransitionConstraints(List`1 transitions, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Transitions/Transition.cs:line 28
+   at XmiToCode.Parsing.Model.Transition.Parse(IState from, IState to, List`1 transitions, IInstructionContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Transitions/Transition.cs:line 52
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass21_0.&lt;ParseTransitions&gt;b__0(UmlTransition x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 31
+   at System.Linq.Enumerable.SelectListIterator`2.Fill(ReadOnlySpan`1 source, Span`1 destination, Func`2 func)
+   at System.Linq.Enumerable.SelectListIterator`2.ToList()
+   at XmiToCode.Region.ParseTransitions(ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 30
+   at XmiToCode.Region.ParseTransitions(ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 27
+   at XmiToCode.Region.ParseRegionWithTransitions(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 80
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 117
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.0611710" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0620621" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.0717004" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_Observe_LCPF)" time="0.0656792" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.0672444" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.0665113">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.InvalidOperationException: Sequence contains no matching element">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.InvalidOperationException: Sequence contains no matching element
+Stack Trace:
+    at System.Linq.ThrowHelper.ThrowNoMatchException()
+   at System.Linq.Enumerable.Single[TSource](IEnumerable`1 source, Func`2 predicate)
+   at XmiToCode.Parsing.Accessibles.ComplexPropertyOrPort.RecordPossibleValue(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/ComplexPropertyOrPort.cs:line 58
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.LookupValidLiteral(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 126
+   at XmiToCode.Messages.MessageMember.LookupValidLiteral(LiteralIdentifier literalIdentifier) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Messages/MessageMember.cs:line 31
+   at XmiToCode.Transformation.Model.CompoundState.ParseMessageInitializer(String initializer, String parsedMessageName, MessageMember member, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 89
+   at XmiToCode.Parsing.Asal.Parser.Instr(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 234
+   at XmiToCode.Parsing.Asal.Parser.ParseInstructions(String input, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 298
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstruction(String instruction, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 96
+   at XmiToCode.Transformation.Model.CompoundState.&lt;&gt;c__DisplayClass20_0.&lt;ParseInstructions&gt;b__2(String x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 113
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.ToList()
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstructions(String instructions, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 109
+   at XmiToCode.Operation.ParseInstructions(OwnedBehavior behavior, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Operation.cs:line 15
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 114
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0638254" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0615243" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0633179" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_Control_Luminosity)" time="0.0658536" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0728305" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0815858" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.1620368" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0771050" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0999381">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.ArgumentException: Name">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.ArgumentException: Name
+Stack Trace:
+    at XmiToCode.Parsing.Asal.Parser.Instr(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 202
+   at XmiToCode.Parsing.Asal.Parser.ParseInstructions(String input, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 298
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstruction(String instruction, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 96
+   at XmiToCode.Transformation.Model.CompoundState.&lt;&gt;c__DisplayClass20_0.&lt;ParseInstructions&gt;b__2(String x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 113
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.ToList()
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstructions(String instructions, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 109
+   at XmiToCode.Parsing.Model.SimpleState.Parse(UmlSubvertex x, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 37
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass23_0.&lt;ParseRegion&gt;b__0(UmlSubvertex x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 65
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Region.ParseRegion(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 64
+   at XmiToCode.Parsing.Model.SimpleState.&lt;&gt;c__DisplayClass24_0.&lt;Parse&gt;b__0(UmlRegion region) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.OfTypeIterator[TResult](IEnumerable source)+MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at XmiToCode.Parsing.Model.SimpleState.Parse(UmlSubvertex x, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass23_0.&lt;ParseRegion&gt;b__0(UmlSubvertex x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 65
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Region.ParseRegion(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 64
+   at XmiToCode.Region.ParseRegionWithTransitions(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 79
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 117
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,S_SCI_LS_Command)" time="0.0683208" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0664732" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0738945" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Control_Non4W_PM)" time="0.0705978" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Control_Point)" time="0.0675228" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0666150" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0637545" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Observe_Movement_Failed)" time="0.0697254" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0685737" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_SCI_P_Receive)" time="0.0684579" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,F_SCI_P_Report)" time="0.0655526" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,S_SCI_P_Command)" time="0.0645220" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Point,S_SCI_P_Receive)" time="0.0669583" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Control_Timer)" time="0.0658523" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Handle_Commands)" time="0.0702224">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.InvalidOperationException: Sequence contains no matching element">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.InvalidOperationException: Sequence contains no matching element
+Stack Trace:
+    at System.Linq.ThrowHelper.ThrowNoMatchException()
+   at System.Linq.Enumerable.Single[TSource](IEnumerable`1 source, Func`2 predicate)
+   at XmiToCode.Parsing.Accessibles.ComplexPropertyOrPort.RecordPossibleValue(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/ComplexPropertyOrPort.cs:line 58
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.LookupValidLiteral(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 126
+   at XmiToCode.Messages.MessageMember.LookupValidLiteral(LiteralIdentifier literalIdentifier) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Messages/MessageMember.cs:line 31
+   at XmiToCode.Transformation.Model.CompoundState.ParseMessageInitializer(String initializer, String parsedMessageName, MessageMember member, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 89
+   at XmiToCode.Parsing.Asal.Parser.Instr(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 234
+   at XmiToCode.Parsing.Asal.Parser.ParseInstructions(String input, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 298
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstruction(String instruction, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 96
+   at XmiToCode.Transformation.Model.CompoundState.&lt;&gt;c__DisplayClass20_0.&lt;ParseInstructions&gt;b__2(String x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 113
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.ToList()
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstructions(String instructions, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 109
+   at XmiToCode.Operation.ParseInstructions(OwnedBehavior behavior, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Operation.cs:line 15
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 114
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0765271" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0947924">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.
+Stack Trace:
+    at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.CreatePropertyOrPort(TypeIdentifier className, IAttributeOrParameter property, Dictionary`2 types, PropertyOrPort ProxyFor) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 72
+   at XmiToCode.Parsing.Context.ClassContext.&lt;&gt;c__DisplayClass0_0.&lt;.ctor&gt;b__0(OwnedAttribute x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Parsing.Context.ClassContext..ctor(PackageContext Package, List`1 properties, List`1 ports, List`1 OperationNames, TypeIdentifier ClassName) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 99
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0642504" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0689098" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Observe_TDP)" time="0.0693467" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0627664" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0995043" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.1272377" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0845093" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0965422">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.
+Stack Trace:
+    at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.CreatePropertyOrPort(TypeIdentifier className, IAttributeOrParameter property, Dictionary`2 types, PropertyOrPort ProxyFor) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 72
+   at XmiToCode.Parsing.Context.ClassContext.&lt;&gt;c__DisplayClass0_0.&lt;.ctor&gt;b__0(OwnedAttribute x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Parsing.Context.ClassContext..ctor(PackageContext Package, List`1 properties, List`1 ports, List`1 OperationNames, TypeIdentifier ClassName) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 99
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0692006" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.1289654">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.ArgumentException: Invalid integer value: LiteralIdentifier { RawName = cOp2_Fillinglevel(), Name = Cop2Fillinglevel() }">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.ArgumentException: Invalid integer value: LiteralIdentifier { RawName = cOp2_Fillinglevel(), Name = Cop2Fillinglevel() }
+Stack Trace:
+    at XmiToCode.Parsing.Accessibles.IntegerPropertyOrPort.RecordPossibleValue(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/IntegerPropertyOrPort.cs:line 14
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.LookupValidLiteral(LiteralIdentifier literal) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 126
+   at XmiToCode.Messages.MessageMember.LookupValidLiteral(LiteralIdentifier literalIdentifier) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Messages/MessageMember.cs:line 31
+   at XmiToCode.Transformation.Model.CompoundState.ParseMessageInitializer(String initializer, String parsedMessageName, MessageMember member, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 89
+   at XmiToCode.Parsing.Asal.Parser.Instr(IEnumerator`1 current_token, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 234
+   at XmiToCode.Parsing.Asal.Parser.ParseInstructions(String input, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Asal/Parser.cs:line 298
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstruction(String instruction, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 96
+   at XmiToCode.Transformation.Model.CompoundState.&lt;&gt;c__DisplayClass20_0.&lt;ParseInstructions&gt;b__2(String x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 113
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.ToList()
+   at XmiToCode.Transformation.Model.CompoundState.ParseInstructions(String instructions, IProgramContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Transformation/Model/CompoundState.cs:line 109
+   at XmiToCode.Parsing.Model.SimpleState.Parse(UmlSubvertex x, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 37
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass23_0.&lt;ParseRegion&gt;b__0(UmlSubvertex x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 65
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Region.ParseRegion(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 64
+   at XmiToCode.Parsing.Model.SimpleState.&lt;&gt;c__DisplayClass24_0.&lt;Parse&gt;b__0(UmlRegion region) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.OfTypeIterator[TResult](IEnumerable source)+MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at XmiToCode.Parsing.Model.SimpleState.Parse(UmlSubvertex x, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass23_0.&lt;ParseRegion&gt;b__0(UmlSubvertex x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 65
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Region.ParseRegion(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 64
+   at XmiToCode.Parsing.Model.SimpleState.&lt;&gt;c__DisplayClass24_0.&lt;Parse&gt;b__0(UmlRegion region) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.OfTypeIterator[TResult](IEnumerable source)+MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at XmiToCode.Parsing.Model.SimpleState.Parse(UmlSubvertex x, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/SimpleState.cs:line 39
+   at XmiToCode.Region.&lt;&gt;c__DisplayClass23_0.&lt;ParseRegion&gt;b__0(UmlSubvertex x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 65
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Region.ParseRegion(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 64
+   at XmiToCode.Region.ParseRegionWithTransitions(UmlRegion region, ClassContext context) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Region.cs:line 79
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 117
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0772778" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0717604">
+      <failure type="failure" message="Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: &#xD;&#xA;System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.">Test method Eulynx.Validation.ClassParsing.ParseClass threw exception: 
+System.Collections.Generic.KeyNotFoundException: The given key '_19180d5a-3661-40ea-b6a3-363563663c42' was not present in the dictionary.
+Stack Trace:
+    at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at XmiToCode.Parsing.Accessibles.PropertyOrPort.CreatePropertyOrPort(TypeIdentifier className, IAttributeOrParameter property, Dictionary`2 types, PropertyOrPort ProxyFor) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Accessibles/PropertyOrPort.cs:line 72
+   at XmiToCode.Parsing.Context.ClassContext.&lt;&gt;c__DisplayClass0_0.&lt;.ctor&gt;b__0(OwnedAttribute x) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at System.Linq.Enumerable.SelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+   at XmiToCode.Parsing.Context.ClassContext..ctor(PackageContext Package, List`1 properties, List`1 ports, List`1 OperationNames, TypeIdentifier ClassName) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Context/ClassContext.cs:line 14
+   at XmiToCode.Parsing.Model.Package.ParseClass(PackagedElement klass, PackageContext context, List`1 hierarchy) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/XmiToCode/Parsing/Model/Package.cs:line 99
+   at Eulynx.Validation.ClassParsing.ParseClass(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/ClassParsing.cs:line 32
+   at InvokeStub_ClassParsing.ParseClass(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.
+    Warn: Property Aspect Lamp Combinations has no type, assuming string.
+    Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+    Warn: Property Speed Indicator has no type, assuming string.
+    Warn: Property Speed Indicator Announcement has no type, assuming string.
+    Warn: Property Direction Indicator has no type, assuming string.
+    Warn: Property Direction Indicator Announcement has no type, assuming string.</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0714327" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0721611" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Simulation_Package,Hilfsblock)" time="0.0684436" />
+    <testcase classname="Eulynx.Validation.ClassParsing" name="ClassParsing.ParseClass (Simulation_Package,Point_Helpblock)" time="0.0771212" />
+    <system-out>Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warning: matching "Not " to Negation
+Warning: matching "Not " to Negation
+Warning: matching "Not " to Negation
+Warning: matching "Not " to Negation
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Naming convention was violated for T5_Signal_Aspect
+Warn: Naming convention was violated for T6_Luminosity
+Warn: Naming convention was violated for T5_Signal_Aspect
+Warn: Naming convention was violated for T6_Luminosity
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property d12out_Required_PM_Position has no type, assuming string.
+Warn: Property d12out_Required_PM_Position has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property D20in_Con_tmax_PM_Operation has no type, assuming string.
+Warn: Property D20in_Con_tmax_PM_Operation has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Naming convention was violated for HilfMDM_Maintenance_Commanded
+Warn: Naming convention was violated for HilfFinished_Data_Update
+Warn: Naming convention was violated for HilfStatus_Update_Completed
+Warn: Naming convention was violated for HilfMDM_Reboot_Required
+Warn: Naming convention was violated for HilfMDM_Triggered_Reset
+Warn: Naming convention was violated for HilfMDM_Maintenance_Commanded
+Warn: Naming convention was violated for HilfFinished_Data_Update
+Warn: Naming convention was violated for HilfStatus_Update_Completed
+Warn: Naming convention was violated for HilfMDM_Reboot_Required
+Warn: Naming convention was violated for HilfMDM_Triggered_Reset
+
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+
+
+Test Framework Informational Messages:
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+</system-out>
+    <system-err></system-err>
+  </testsuite>
+</testsuites>
