@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\XmiToCode\XmiToCode.csproj" />
+    <ProjectReference Include="..\..\Transformation\XmiToCode\XmiToCode.csproj" />
   </ItemGroup>
 
   <ItemGroup>

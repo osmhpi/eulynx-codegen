@@ -1,10 +1,10 @@
 <testsuites>
-  <testsuite name="Eulynx.Validation.dll" tests="61" skipped="9" failures="3" errors="0" time="4.534342099999999" timestamp="2026-04-10T14:22:28" hostname="MacBook-Pro-2" id="0" package="Eulynx.Validation.dll">
+  <testsuite name="XmiToCode.EulynxBaseline4Release2.dll" tests="61" skipped="9" failures="3" errors="0" time="3.7515359" timestamp="2026-04-10T14:49:05" hostname="MacBook-Pro-2" id="0" package="XmiToCode.EulynxBaseline4Release2.dll">
     <properties />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.1057281" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.0831267" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.0986378" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.0912719">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.0860740" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.0643309" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.0649300" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.0747592">
       <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
 Stack Trace:
    at Eulynx.Validation.Compilation.CompileC(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/Compilation.cs:line 51
@@ -19,14 +19,14 @@ Standard Output:
     1 error generated.
     make[1]: *** [SSciEfesPrim.o] Error 1</failure>
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Output_Channel_State)" time="0.0002912">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Output_Channel_State)" time="0.0003366">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.0787628" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.1133623" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0749698" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Receive)" time="0.0781898" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Report)" time="0.2630573">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.0639907" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.0695537" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0837701" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Receive)" time="0.0790275" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Report)" time="0.2528923">
       <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
 Stack Trace:
    at Eulynx.Validation.Compilation.CompileC(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/Compilation.cs:line 51
@@ -152,53 +152,53 @@ Standard Output:
     20 errors generated.
     make[1]: *** [FSciIoReport.o] Error 1</failure>
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Command)" time="0.0815622" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Receive)" time="0.0803230" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.0003276">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Command)" time="0.0595503" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Receive)" time="0.0631181" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.0003300">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.0805167" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0775961" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.0802101" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.0824728" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.0801453" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.0003019">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.0655922" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0683086" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.0674847" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.0661075" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.0663884" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.0003166">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0771183" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0759367" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0769236" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Luminosity)" time="0.0798322" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0829696" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0751665" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.0804574" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0803325" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0004175">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0740445" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0640838" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0626628" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Luminosity)" time="0.0655083" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0696005" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0671956" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.0660441" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0641498" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0002651">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.0761448" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0773234" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0822208" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Non4W_PM)" time="0.0829706" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Point)" time="0.0986130" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0813857" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0818951" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Movement_Failed)" time="0.0965214" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0816313" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Receive)" time="0.0776148" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Report)" time="0.0783422" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Command)" time="0.0762868" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Receive)" time="0.1081212" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Control_Timer)" time="0.0840225" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Commands)" time="0.0003562">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.0599107" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0627292" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0814403" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Non4W_PM)" time="0.0658800" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Point)" time="0.0676742" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0663817" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0687761" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Movement_Failed)" time="0.0651085" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0699521" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Receive)" time="0.0705097" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Report)" time="0.0702522" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Command)" time="0.0665738" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Receive)" time="0.0657355" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Control_Timer)" time="0.0711426" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Commands)" time="0.0003831">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0785358" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0002977">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0644330" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0003011">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0813547" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0761975">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0699369" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0657853">
       <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
 Stack Trace:
    at Eulynx.Validation.Compilation.CompileC(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release2/02_Transformation/Compilation.cs:line 51
@@ -216,26 +216,26 @@ Standard Output:
     2 errors generated.
     make[1]: *** [FObserveOccupancyStatus.o] Error 1</failure>
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_TDP)" time="0.0854322" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0825653" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0815239" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0785000" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0770280" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0003001">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_TDP)" time="0.0759871" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0751310" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0684283" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0683002" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0691915" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0003338">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0801112" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0003169">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0696839" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0002883">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0797856" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0003100">
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0714585" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0003190">
       <skipped />
     </testcase>
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.1349138" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0782621" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Simulation_Package,Hilfsblock)" time="0.0768318" />
-    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Simulation_Package,Point_Helpblock)" time="0.0786180" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0669784" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0652121" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Simulation_Package,Hilfsblock)" time="0.0688177" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Simulation_Package,Point_Helpblock)" time="0.0680842" />
     <system-out>cc -Werror   -c -o SSciAdjPrim.o SSciAdjPrim.c
 
 
