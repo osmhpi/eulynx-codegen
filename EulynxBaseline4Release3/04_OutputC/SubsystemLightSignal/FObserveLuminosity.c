@@ -6,218 +6,216 @@
 // Operations
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(
-    FObserveLuminosity *self,
-    FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region) {
-  LOG("[FObserveLuminosity] Entering state Day in region "
-      "root__ObservingLuminosity__root");
-  region->state = FObserveLuminosity__root__ObservingLuminosity__root__Day;
+    FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
+{
+    LOG("[FObserveLuminosity] Entering state Day in region "
+        "root__ObservingLuminosity__root");
+    region->state = FObserveLuminosity__root__ObservingLuminosity__root__Day;
 };
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(
-    FObserveLuminosity *self,
-    FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region) {
-  LOG("[FObserveLuminosity] Entering state Night in region "
-      "root__ObservingLuminosity__root");
-  region->state = FObserveLuminosity__root__ObservingLuminosity__root__Night;
+    FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
+{
+    LOG("[FObserveLuminosity] Entering state Night in region "
+        "root__ObservingLuminosity__root");
+    region->state = FObserveLuminosity__root__ObservingLuminosity__root__Night;
 };
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(
-    FObserveLuminosity *self,
-    FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region) {
-  LOG("[FObserveLuminosity] Entering state Waiting in region "
-      "root__ObservingLuminosity__root");
-  region->state = FObserveLuminosity__root__ObservingLuminosity__root__Waiting;
+    FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
+{
+    LOG("[FObserveLuminosity] Entering state Waiting in region "
+        "root__ObservingLuminosity__root");
+    region->state = FObserveLuminosity__root__ObservingLuminosity__root__Waiting;
 };
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root(
-    FObserveLuminosity *self,
-    FObserveLuminosity__root__ObservingLuminosity__root__state_struct *x) {
-  memset(
-      x, 0,
-      sizeof(
-          FObserveLuminosity__root__ObservingLuminosity__root__state_struct));
+    FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *x)
+{
+    memset(x, 0, sizeof(FObserveLuminosity__root__ObservingLuminosity__root__state_struct));
 
-  make_state_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(self,
-                                                                          x);
-  return;
+    make_state_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(self, x);
+    return;
 }
 
-void make_state_FObserveLuminosity__root__NoOperatingVoltage(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *region) {
-  LOG("[FObserveLuminosity] Entering state NoOperatingVoltage in region root");
-  region->state = FObserveLuminosity__root__NoOperatingVoltage;
+void make_state_FObserveLuminosity__root__NoOperatingVoltage(FObserveLuminosity *self,
+                                                             FObserveLuminosity__root__state_struct *region)
+{
+    LOG("[FObserveLuminosity] Entering state NoOperatingVoltage in region root");
+    region->state = FObserveLuminosity__root__NoOperatingVoltage;
 };
 
-void make_state_FObserveLuminosity__root__ObservingLuminosity(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *region) {
-  LOG("[FObserveLuminosity] Entering state ObservingLuminosity in region root");
-  region->state = FObserveLuminosity__root__ObservingLuminosity;
-  make_state_FObserveLuminosity__root__ObservingLuminosity__root(
-      self, &region->ObservingLuminosity.root);
+void make_state_FObserveLuminosity__root__ObservingLuminosity(FObserveLuminosity *self,
+                                                              FObserveLuminosity__root__state_struct *region)
+{
+    LOG("[FObserveLuminosity] Entering state ObservingLuminosity in region root");
+    region->state = FObserveLuminosity__root__ObservingLuminosity;
+    make_state_FObserveLuminosity__root__ObservingLuminosity__root(self, &region->ObservingLuminosity.root);
 };
 
-void make_state_FObserveLuminosity__root(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-  memset(x, 0, sizeof(FObserveLuminosity__root__state_struct));
-
-  make_state_FObserveLuminosity__root__NoOperatingVoltage(self, x);
-  return;
-}
-
-void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Day(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-
-  if (self->Change512.IsTriggered) {
-    self->D21outObservedLuminosity.Value =
-        FObserveLuminosity_D21outObservedLuminosityValue__Night;
-    self->D21outObservedLuminosity.IsSignalled = true;
-    make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(
-        self, &x->ObservingLuminosity.root);
-    return;
-  }
-}
-
-void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Night(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-
-  if (self->Change509.IsTriggered) {
-    self->D21outObservedLuminosity.Value =
-        FObserveLuminosity_D21outObservedLuminosityValue__Day;
-    self->D21outObservedLuminosity.IsSignalled = true;
-    make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(
-        self, &x->ObservingLuminosity.root);
-    return;
-  }
-}
-
-void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-
-  if (self->Change510.IsTriggered) {
-    self->D21outObservedLuminosity.Value =
-        FObserveLuminosity_D21outObservedLuminosityValue__Day;
-    self->D21outObservedLuminosity.IsSignalled = true;
-    make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(
-        self, &x->ObservingLuminosity.root);
-    return;
-  }
-  if (self->Change511.IsTriggered) {
-    self->D21outObservedLuminosity.Value =
-        FObserveLuminosity_D21outObservedLuminosityValue__Night;
-    self->D21outObservedLuminosity.IsSignalled = true;
-    make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(
-        self, &x->ObservingLuminosity.root);
-    return;
-  }
-}
-
-void transition_from_FObserveLuminosity__root__ObservingLuminosity__root(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-  switch (x->ObservingLuminosity.root.state) {
-  case FObserveLuminosity__root__ObservingLuminosity__root__Day:
-    transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Day(
-        self, x);
-    break;
-  case FObserveLuminosity__root__ObservingLuminosity__root__Night:
-    transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Night(
-        self, x);
-    break;
-  case FObserveLuminosity__root__ObservingLuminosity__root__Waiting:
-    transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(
-        self, x);
-    break;
-  }
-}
-
-void transition_from_FObserveLuminosity__root__NoOperatingVoltage(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-
-  if (self->Change327.IsTriggered) {
-
-    make_state_FObserveLuminosity__root__ObservingLuminosity(self, x);
-    return;
-  }
-}
-
-void transition_from_FObserveLuminosity__root__ObservingLuminosity(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-  transition_from_FObserveLuminosity__root__ObservingLuminosity__root(self, x);
-  if (self->Change339.IsTriggered) {
-
-    make_state_FObserveLuminosity__root__ObservingLuminosity(self, x);
-    return;
-  }
-  if (self->Change366.IsTriggered) {
+void make_state_FObserveLuminosity__root(FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x)
+{
+    memset(x, 0, sizeof(FObserveLuminosity__root__state_struct));
 
     make_state_FObserveLuminosity__root__NoOperatingVoltage(self, x);
     return;
-  }
 }
 
-void transition_from_FObserveLuminosity__root(
-    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x) {
-  switch (x->state) {
-  case FObserveLuminosity__root__NoOperatingVoltage:
-    transition_from_FObserveLuminosity__root__NoOperatingVoltage(self, x);
-    break;
-  case FObserveLuminosity__root__ObservingLuminosity:
-    transition_from_FObserveLuminosity__root__ObservingLuminosity(self, x);
-    break;
-  }
+void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Day(FObserveLuminosity *self,
+                                                                              FObserveLuminosity__root__state_struct *x)
+{
+
+    if (self->Change512.IsTriggered)
+    {
+        self->D21outObservedLuminosity.Value = FObserveLuminosity_D21outObservedLuminosityValue__Night;
+        self->D21outObservedLuminosity.IsSignalled = true;
+        make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(self, &x->ObservingLuminosity.root);
+        return;
+    }
 }
 
-static void evaluateChangeEvents(FObserveLuminosity *self) {
-  self->Change512.IsTriggered = IsTriggered(
-      MakeChange(self->D9inSensedLuminosity.IsSignalled,
-                 self->D9inSensedLuminosity.Value ==
-                     FObserveLuminosity_D9inSensedLuminosityValue__Night));
-  self->Change509.IsTriggered = IsTriggered(
-      MakeChange(self->D9inSensedLuminosity.IsSignalled,
-                 self->D9inSensedLuminosity.Value ==
-                     FObserveLuminosity_D9inSensedLuminosityValue__Day));
-  self->Change510.IsTriggered = IsTriggered(
-      MakeChange(self->D9inSensedLuminosity.IsSignalled,
-                 self->D9inSensedLuminosity.Value ==
-                     FObserveLuminosity_D9inSensedLuminosityValue__Day));
-  self->Change511.IsTriggered = IsTriggered(
-      MakeChange(self->D9inSensedLuminosity.IsSignalled,
-                 self->D9inSensedLuminosity.Value ==
-                     FObserveLuminosity_D9inSensedLuminosityValue__Night));
-  self->Change327.IsTriggered = IsTriggered(
-      MakeChange(self->D51inEstEfesState.IsSignalled,
-                 self->D51inEstEfesState.Value ==
-                     FObserveLuminosity_D51inEstEfesStateValue__Booting));
-  self->Change339.IsTriggered = IsTriggered(OrChange(
-      MakeChange(self->D51inEstEfesState.IsSignalled,
-                 self->D51inEstEfesState.Value ==
-                     FObserveLuminosity_D51inEstEfesStateValue__Booting),
-      MakeChange(self->D51inEstEfesState.IsSignalled,
-                 self->D51inEstEfesState.Value ==
-                     FObserveLuminosity_D51inEstEfesStateValue__Initialising)));
-  self->Change366.IsTriggered = IsTriggered(MakeChange(
-      self->D51inEstEfesState.IsSignalled,
-      self->D51inEstEfesState.Value ==
-          FObserveLuminosity_D51inEstEfesStateValue__NoOperatingVoltage));
+void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Night(
+    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x)
+{
+
+    if (self->Change509.IsTriggered)
+    {
+        self->D21outObservedLuminosity.Value = FObserveLuminosity_D21outObservedLuminosityValue__Day;
+        self->D21outObservedLuminosity.IsSignalled = true;
+        make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(self, &x->ObservingLuminosity.root);
+        return;
+    }
 }
 
-static void resetOutputs(FObserveLuminosity *self) {
+void transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(
+    FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x)
+{
 
-  self->D21outObservedLuminosity.IsSignalled = false;
+    if (self->Change510.IsTriggered)
+    {
+        self->D21outObservedLuminosity.Value = FObserveLuminosity_D21outObservedLuminosityValue__Day;
+        self->D21outObservedLuminosity.IsSignalled = true;
+        make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(self, &x->ObservingLuminosity.root);
+        return;
+    }
+    if (self->Change511.IsTriggered)
+    {
+        self->D21outObservedLuminosity.Value = FObserveLuminosity_D21outObservedLuminosityValue__Night;
+        self->D21outObservedLuminosity.IsSignalled = true;
+        make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(self, &x->ObservingLuminosity.root);
+        return;
+    }
 }
 
-static void resetTriggers(FObserveLuminosity *self) {
-
-  self->D9inSensedLuminosity.IsSignalled = false;
-  self->D51inEstEfesState.IsSignalled = false;
+void transition_from_FObserveLuminosity__root__ObservingLuminosity__root(FObserveLuminosity *self,
+                                                                         FObserveLuminosity__root__state_struct *x)
+{
+    switch (x->ObservingLuminosity.root.state)
+    {
+    case FObserveLuminosity__root__ObservingLuminosity__root__Day:
+        transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Day(self, x);
+        break;
+    case FObserveLuminosity__root__ObservingLuminosity__root__Night:
+        transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Night(self, x);
+        break;
+    case FObserveLuminosity__root__ObservingLuminosity__root__Waiting:
+        transition_from_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(self, x);
+        break;
+    }
 }
 
-void transition_FObserveLuminosity(FObserveLuminosity *self) {
-  resetOutputs(self);
-  evaluateChangeEvents(self);
-  transition_from_FObserveLuminosity__root(self, &self->state);
-  resetTriggers(self);
+void transition_from_FObserveLuminosity__root__NoOperatingVoltage(FObserveLuminosity *self,
+                                                                  FObserveLuminosity__root__state_struct *x)
+{
+
+    if (self->Change327.IsTriggered)
+    {
+
+        make_state_FObserveLuminosity__root__ObservingLuminosity(self, x);
+        return;
+    }
 }
 
-void new_FObserveLuminosity(FObserveLuminosity *self) {
-  make_state_FObserveLuminosity__root(self, &self->state);
+void transition_from_FObserveLuminosity__root__ObservingLuminosity(FObserveLuminosity *self,
+                                                                   FObserveLuminosity__root__state_struct *x)
+{
+    transition_from_FObserveLuminosity__root__ObservingLuminosity__root(self, x);
+    if (self->Change339.IsTriggered)
+    {
+
+        make_state_FObserveLuminosity__root__ObservingLuminosity(self, x);
+        return;
+    }
+    if (self->Change366.IsTriggered)
+    {
+
+        make_state_FObserveLuminosity__root__NoOperatingVoltage(self, x);
+        return;
+    }
+}
+
+void transition_from_FObserveLuminosity__root(FObserveLuminosity *self, FObserveLuminosity__root__state_struct *x)
+{
+    switch (x->state)
+    {
+    case FObserveLuminosity__root__NoOperatingVoltage:
+        transition_from_FObserveLuminosity__root__NoOperatingVoltage(self, x);
+        break;
+    case FObserveLuminosity__root__ObservingLuminosity:
+        transition_from_FObserveLuminosity__root__ObservingLuminosity(self, x);
+        break;
+    }
+}
+
+static void evaluateChangeEvents(FObserveLuminosity *self)
+{
+    self->Change512.IsTriggered = IsTriggered(
+        MakeChange(self->D9inSensedLuminosity.IsSignalled,
+                   self->D9inSensedLuminosity.Value == FObserveLuminosity_D9inSensedLuminosityValue__Night));
+    self->Change509.IsTriggered =
+        IsTriggered(MakeChange(self->D9inSensedLuminosity.IsSignalled,
+                               self->D9inSensedLuminosity.Value == FObserveLuminosity_D9inSensedLuminosityValue__Day));
+    self->Change510.IsTriggered =
+        IsTriggered(MakeChange(self->D9inSensedLuminosity.IsSignalled,
+                               self->D9inSensedLuminosity.Value == FObserveLuminosity_D9inSensedLuminosityValue__Day));
+    self->Change511.IsTriggered = IsTriggered(
+        MakeChange(self->D9inSensedLuminosity.IsSignalled,
+                   self->D9inSensedLuminosity.Value == FObserveLuminosity_D9inSensedLuminosityValue__Night));
+    self->Change327.IsTriggered =
+        IsTriggered(MakeChange(self->D51inEstEfesState.IsSignalled,
+                               self->D51inEstEfesState.Value == FObserveLuminosity_D51inEstEfesStateValue__Booting));
+    self->Change339.IsTriggered = IsTriggered(
+        OrChange(MakeChange(self->D51inEstEfesState.IsSignalled,
+                            self->D51inEstEfesState.Value == FObserveLuminosity_D51inEstEfesStateValue__Booting),
+                 MakeChange(self->D51inEstEfesState.IsSignalled,
+                            self->D51inEstEfesState.Value == FObserveLuminosity_D51inEstEfesStateValue__Initialising)));
+    self->Change366.IsTriggered = IsTriggered(
+        MakeChange(self->D51inEstEfesState.IsSignalled,
+                   self->D51inEstEfesState.Value == FObserveLuminosity_D51inEstEfesStateValue__NoOperatingVoltage));
+}
+
+static void resetOutputs(FObserveLuminosity *self)
+{
+
+    self->D21outObservedLuminosity.IsSignalled = false;
+}
+
+static void resetTriggers(FObserveLuminosity *self)
+{
+
+    self->D9inSensedLuminosity.IsSignalled = false;
+    self->D51inEstEfesState.IsSignalled = false;
+}
+
+void transition_FObserveLuminosity(FObserveLuminosity *self)
+{
+    resetOutputs(self);
+    evaluateChangeEvents(self);
+    transition_from_FObserveLuminosity__root(self, &self->state);
+    resetTriggers(self);
+}
+
+void new_FObserveLuminosity(FObserveLuminosity *self)
+{
+    make_state_FObserveLuminosity__root(self, &self->state);
 }

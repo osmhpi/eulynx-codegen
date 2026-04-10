@@ -4,40 +4,44 @@
 
 // Value Types
 
-typedef enum FObserveMovementFailed_D12inRequiredPmPositionValue {
-  FObserveMovementFailed_D12inRequiredPmPositionValue__NULL__,
-  FObserveMovementFailed_D12inRequiredPmPositionValue__Left,
-  FObserveMovementFailed_D12inRequiredPmPositionValue__Right,
-  FObserveMovementFailed_D12inRequiredPmPositionValue__Uncommanded,
-  FObserveMovementFailed_D12inRequiredPmPositionValue__UNKNOWN__
+typedef enum FObserveMovementFailed_D12inRequiredPmPositionValue
+{
+    FObserveMovementFailed_D12inRequiredPmPositionValue__NULL__,
+    FObserveMovementFailed_D12inRequiredPmPositionValue__Left,
+    FObserveMovementFailed_D12inRequiredPmPositionValue__Right,
+    FObserveMovementFailed_D12inRequiredPmPositionValue__Uncommanded,
+    FObserveMovementFailed_D12inRequiredPmPositionValue__UNKNOWN__
 } FObserveMovementFailed_D12inRequiredPmPositionValue;
 
-typedef enum FObserveMovementFailed__root__ObserveMovementFailure__root__state {
-  FObserveMovementFailed__root__ObserveMovementFailure__root__Idle,
-  FObserveMovementFailed__root__ObserveMovementFailure__root__ObservingMovementFailure
+typedef enum FObserveMovementFailed__root__ObserveMovementFailure__root__state
+{
+    FObserveMovementFailed__root__ObserveMovementFailure__root__Idle,
+    FObserveMovementFailed__root__ObserveMovementFailure__root__ObservingMovementFailure
 } FObserveMovementFailed__root__ObserveMovementFailure__root__state;
 
-typedef struct
-    FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct {
-  FObserveMovementFailed__root__ObserveMovementFailure__root__state state;
-  union {};
+typedef struct FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct
+{
+    FObserveMovementFailed__root__ObserveMovementFailure__root__state state;
+    union {
+    };
 } FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct;
 
-typedef enum FObserveMovementFailed__root__state {
-  FObserveMovementFailed__root__ObserveMovementFailure
+typedef enum FObserveMovementFailed__root__state
+{
+    FObserveMovementFailed__root__ObserveMovementFailure
 } FObserveMovementFailed__root__state;
 
-typedef struct
-    FObserveMovementFailed__root__ObserveMovementFailure__state_struct {
-  FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct root;
+typedef struct FObserveMovementFailed__root__ObserveMovementFailure__state_struct
+{
+    FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct root;
 } FObserveMovementFailed__root__ObserveMovementFailure__state_struct;
 
-typedef struct FObserveMovementFailed__root__state_struct {
-  FObserveMovementFailed__root__state state;
-  union {
-    FObserveMovementFailed__root__ObserveMovementFailure__state_struct
-        ObserveMovementFailure;
-  };
+typedef struct FObserveMovementFailed__root__state_struct
+{
+    FObserveMovementFailed__root__state state;
+    union {
+        FObserveMovementFailed__root__ObserveMovementFailure__state_struct ObserveMovementFailure;
+    };
 } FObserveMovementFailed__root__state_struct;
 
 /// Contained in:
@@ -45,40 +49,40 @@ typedef struct FObserveMovementFailed__root__state_struct {
 /// Functional requirements specification
 /// Subsystem - Point - Functional Viewpoint
 /// Subsystem - Point - Functional Entities
-typedef struct FObserveMovementFailed {
-  FObserveMovementFailed__root__state_struct state;
+typedef struct FObserveMovementFailed
+{
+    FObserveMovementFailed__root__state_struct state;
 
-  /// D20in_Con_tmax_PM_Operation
-  /// Trigger: False, DataPort: True, In: True, Out: False, External: True
-  DataPort(void *, ) D20inConTmaxPmOperation;
+    /// D20in_Con_tmax_PM_Operation
+    /// Trigger: False, DataPort: True, In: True, Out: False, External: True
+    DataPort(void *, ) D20inConTmaxPmOperation;
 
-  /// d13out_Observed_Movement_Failed
-  /// Trigger: False, DataPort: True, In: False, Out: True, External: False
-  DataPort(bool, ) D13outObservedMovementFailed;
+    /// d13out_Observed_Movement_Failed
+    /// Trigger: False, DataPort: True, In: False, Out: True, External: False
+    DataPort(bool, ) D13outObservedMovementFailed;
 
-  /// d12in_Required_PM_Position
-  /// Trigger: False, DataPort: True, In: True, Out: False, External: False
-  DataPort(FObserveMovementFailed_D12inRequiredPmPositionValue, )
-      D12inRequiredPmPosition;
+    /// d12in_Required_PM_Position
+    /// Trigger: False, DataPort: True, In: True, Out: False, External: False
+    DataPort(FObserveMovementFailed_D12inRequiredPmPositionValue, ) D12inRequiredPmPosition;
 
-  /// t21in_Movement_Failed
-  /// Trigger: True, DataPort: False, In: True, Out: False, External: False
-  PulsedIn T21inMovementFailed;
+    /// t21in_Movement_Failed
+    /// Trigger: True, DataPort: False, In: True, Out: False, External: False
+    PulsedIn T21inMovementFailed;
 
-  // Messages -- Incoming
+    // Messages -- Incoming
 
-  // Messages -- Outgoing
+    // Messages -- Outgoing
 
-  // Change Events
-  ChangeEvent Change73;  // d12in_Required_PM_Position = "LEFT" OR
-                         // d12in_Required_PM_Position = "RIGHT"
-  ChangeEvent Change70;  // d12in_Required_PM_Position = "LEFT"
-  ChangeEvent Change78;  // d12in_Required_PM_Position = "RIGHT"
-  ChangeEvent Change82;  // d12in_Required_PM_Position = "UNCOMMANDED"
-  ChangeEvent Change990; // t21in_Movement_Failed
+    // Change Events
+    ChangeEvent Change73;  // d12in_Required_PM_Position = "LEFT" OR
+                           // d12in_Required_PM_Position = "RIGHT"
+    ChangeEvent Change70;  // d12in_Required_PM_Position = "LEFT"
+    ChangeEvent Change78;  // d12in_Required_PM_Position = "RIGHT"
+    ChangeEvent Change82;  // d12in_Required_PM_Position = "UNCOMMANDED"
+    ChangeEvent Change990; // t21in_Movement_Failed
 
-  // Timeout Events
-  TimeoutEvent Time12;
+    // Timeout Events
+    TimeoutEvent Time12;
 
 } FObserveMovementFailed;
 

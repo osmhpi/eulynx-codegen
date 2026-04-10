@@ -5,822 +5,745 @@
 
 static FSciIoReport_D7inDetectedInputChannelState1Value
 map_MemLastReportedInputChannelState1_to_D7inDetectedInputChannelState1(
-    FSciIoReport_MemLastReportedInputChannelState1Value value) {
-  switch (value) {
-  case FSciIoReport_MemLastReportedInputChannelState1Value__NULL__:
-    return FSciIoReport_D7inDetectedInputChannelState1Value__NULL__;
-  case FSciIoReport_MemLastReportedInputChannelState1Value__UNKNOWN__:
-    return FSciIoReport_D7inDetectedInputChannelState1Value__UNKNOWN__;
-  case FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn:
-    return FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn;
-  case FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff:
-    return FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff;
-  case FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed:
-    return FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed;
-  default:
-    abort();
-  }
+    FSciIoReport_MemLastReportedInputChannelState1Value value)
+{
+    switch (value)
+    {
+    case FSciIoReport_MemLastReportedInputChannelState1Value__NULL__:
+        return FSciIoReport_D7inDetectedInputChannelState1Value__NULL__;
+    case FSciIoReport_MemLastReportedInputChannelState1Value__UNKNOWN__:
+        return FSciIoReport_D7inDetectedInputChannelState1Value__UNKNOWN__;
+    case FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn:
+        return FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn;
+    case FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff:
+        return FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff;
+    case FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed:
+        return FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed;
+    default:
+        abort();
+    }
 }
 static FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value
 map_MemLastReportedOutputChannelState1_to_D9inMonitoredOutputChannelDisturbanceState1(
-    FSciIoReport_MemLastReportedOutputChannelState1Value value) {
-  switch (value) {
-  case FSciIoReport_MemLastReportedOutputChannelState1Value__NULL__:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NULL__;
-  case FSciIoReport_MemLastReportedOutputChannelState1Value__UNKNOWN__:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__UNKNOWN__;
-  case FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed;
-  case FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed;
-  default:
-    abort();
-  }
+    FSciIoReport_MemLastReportedOutputChannelState1Value value)
+{
+    switch (value)
+    {
+    case FSciIoReport_MemLastReportedOutputChannelState1Value__NULL__:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NULL__;
+    case FSciIoReport_MemLastReportedOutputChannelState1Value__UNKNOWN__:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__UNKNOWN__;
+    case FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed;
+    case FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed;
+    default:
+        abort();
+    }
 }
 static FSciIoReport_D7inDetectedInputChannelStatenValue
 map_MemLastReportedInputChannelStaten_to_D7inDetectedInputChannelStaten(
-    FSciIoReport_MemLastReportedInputChannelStatenValue value) {
-  switch (value) {
-  case FSciIoReport_MemLastReportedInputChannelStatenValue__NULL__:
-    return FSciIoReport_D7inDetectedInputChannelStatenValue__NULL__;
-  case FSciIoReport_MemLastReportedInputChannelStatenValue__UNKNOWN__:
-    return FSciIoReport_D7inDetectedInputChannelStatenValue__UNKNOWN__;
-  case FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn:
-    return FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn;
-  case FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff:
-    return FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff;
-  case FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed:
-    return FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed;
-  default:
-    abort();
-  }
+    FSciIoReport_MemLastReportedInputChannelStatenValue value)
+{
+    switch (value)
+    {
+    case FSciIoReport_MemLastReportedInputChannelStatenValue__NULL__:
+        return FSciIoReport_D7inDetectedInputChannelStatenValue__NULL__;
+    case FSciIoReport_MemLastReportedInputChannelStatenValue__UNKNOWN__:
+        return FSciIoReport_D7inDetectedInputChannelStatenValue__UNKNOWN__;
+    case FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn:
+        return FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn;
+    case FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff:
+        return FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff;
+    case FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed:
+        return FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed;
+    default:
+        abort();
+    }
 }
 static FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue
 map_MemLastReportedOutputChannelStaten_to_D9inMonitoredOutputChannelDisturbanceStaten(
-    FSciIoReport_MemLastReportedOutputChannelStatenValue value) {
-  switch (value) {
-  case FSciIoReport_MemLastReportedOutputChannelStatenValue__NULL__:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NULL__;
-  case FSciIoReport_MemLastReportedOutputChannelStatenValue__UNKNOWN__:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__UNKNOWN__;
-  case FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed;
-  case FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed:
-    return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed;
-  default:
-    abort();
-  }
+    FSciIoReport_MemLastReportedOutputChannelStatenValue value)
+{
+    switch (value)
+    {
+    case FSciIoReport_MemLastReportedOutputChannelStatenValue__NULL__:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NULL__;
+    case FSciIoReport_MemLastReportedOutputChannelStatenValue__UNKNOWN__:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__UNKNOWN__;
+    case FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed;
+    case FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed:
+        return FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed;
+    default:
+        abort();
+    }
 }
 
 // Operations
-static void Cop1InitialReportStatusOuputChannelStates(
-    FSciIoReport *self,
-    FSciIoReport_OutputChannelState1Value OutputChannelState1,
-    FSciIoReport_OutputChannelStatenValue OutputChannelStaten) {
-  if ((OutputChannelState1 ==
-       FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &&
-      (OutputChannelStaten ==
-       FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed)) {
+static void Cop1InitialReportStatusOuputChannelStates(FSciIoReport *self,
+                                                      FSciIoReport_OutputChannelState1Value OutputChannelState1,
+                                                      FSciIoReport_OutputChannelStatenValue OutputChannelStaten)
+{
+    if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &&
+        (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+    {
 
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-        OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-        OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-    self->MemLastReportedOutputChannelState1 =
-        FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed;
-    self->MemLastReportedOutputChannelStaten =
-        FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed;
-  } else if ((OutputChannelState1 ==
-              FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &&
-             (OutputChannelStaten ==
-              FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed)) {
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+            OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+            OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+        self->MemLastReportedOutputChannelState1 =
+            FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed;
+        self->MemLastReportedOutputChannelStaten =
+            FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed;
+    }
+    else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &&
+             (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+    {
 
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-        OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-        OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-    self->MemLastReportedOutputChannelState1 =
-        FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed;
-    self->MemLastReportedOutputChannelStaten =
-        FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed;
-  } else if ((OutputChannelState1 ==
-              FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &&
-             (OutputChannelStaten ==
-              FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed)) {
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+            OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+            OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+        self->MemLastReportedOutputChannelState1 =
+            FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed;
+        self->MemLastReportedOutputChannelStaten =
+            FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed;
+    }
+    else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &&
+             (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+    {
 
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-        OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-        OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-    self->MemLastReportedOutputChannelState1 =
-        FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed;
-    self->MemLastReportedOutputChannelStaten =
-        FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed;
-  } else if ((OutputChannelState1 ==
-              FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &&
-             (OutputChannelStaten ==
-              FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed)) {
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+            OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+            OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+        self->MemLastReportedOutputChannelState1 =
+            FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed;
+        self->MemLastReportedOutputChannelStaten =
+            FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed;
+    }
+    else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &&
+             (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+    {
 
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-        OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-        OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-    self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-    self->MemLastReportedOutputChannelState1 =
-        FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed;
-    self->MemLastReportedOutputChannelStaten =
-        FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed;
-  }
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+            OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+            OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+        self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+        self->MemLastReportedOutputChannelState1 =
+            FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed;
+        self->MemLastReportedOutputChannelStaten =
+            FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed;
+    }
 }
-static void Cop2InitialReportStatusInputChannelStates(
-    FSciIoReport *self, FSciIoReport_InputChannelState1Value InputChannelState1,
-    FSciIoReport_InputChannelStatenValue InputChannelStaten) {
-  if ((InputChannelState1 ==
-       FSciIoReport_InputChannelState1Value__SwitchedOn) &&
-      (InputChannelStaten ==
-       FSciIoReport_InputChannelStatenValue__SwitchedOn)) {
+static void Cop2InitialReportStatusInputChannelStates(FSciIoReport *self,
+                                                      FSciIoReport_InputChannelState1Value InputChannelState1,
+                                                      FSciIoReport_InputChannelStatenValue InputChannelStaten)
+{
+    if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOn) &&
+        (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOn))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__SwitchedOff) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__SwitchedOff)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOff))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__Disturbed) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__Disturbed)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__Disturbed) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__Disturbed))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__SwitchedOff) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__SwitchedOn)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOn))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__SwitchedOn) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__SwitchedOff)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOn) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOff))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__SwitchedOff) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__Disturbed)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__Disturbed))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__SwitchedOn) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__Disturbed)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOff;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOn) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__Disturbed))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__Disturbed) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__SwitchedOff)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__SwitchedOn;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__Disturbed;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__Disturbed) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOff))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOff;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
-  } else if ((InputChannelState1 ==
-              FSciIoReport_InputChannelState1Value__Disturbed) &&
-             (InputChannelStaten ==
-              FSciIoReport_InputChannelStatenValue__SwitchedOn)) {
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOff;
+    }
+    else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__Disturbed) &&
+             (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOn))
+    {
 
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-        InputChannelState__a4d2__Disturbed;
-    self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-        InputChannelState__a4d2__SwitchedOn;
-    self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-    self->MemLastReportedInputChannelState1 =
-        FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
-    self->MemLastReportedInputChannelStaten =
-        FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
-  }
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+        self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+        self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+        self->MemLastReportedInputChannelState1 = FSciIoReport_MemLastReportedInputChannelState1Value__Disturbed;
+        self->MemLastReportedInputChannelStaten = FSciIoReport_MemLastReportedInputChannelStatenValue__SwitchedOn;
+    }
 }
 
 void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
     FSciIoReport *self,
-    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct
-        *region) {
-  LOG("[FSciIoReport] Entering state SendingInputChannelReports in region "
-      "root__ReportingLogicalChannelStates__"
-      "ReportingLogicalInputChannelStates");
-  region->state =
-      FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports;
+    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct *region)
+{
+    LOG("[FSciIoReport] Entering state SendingInputChannelReports in region "
+        "root__ReportingLogicalChannelStates__"
+        "ReportingLogicalInputChannelStates");
+    region->state =
+        FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports;
 };
 
 void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
     FSciIoReport *self,
-    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct
-        *x) {
-  memset(
-      x, 0,
-      sizeof(
-          FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct));
+    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct *x)
+{
+    memset(x, 0,
+           sizeof(FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct));
 
-  make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-      self, x);
-  return;
+    make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+        self, x);
+    return;
 }
 
 void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
     FSciIoReport *self,
-    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct
-        *region) {
-  LOG("[FSciIoReport] Entering state SendingOutputChannelReports in region "
-      "root__ReportingLogicalChannelStates__"
-      "ReportingLogicalOutputChannelStates");
-  region->state =
-      FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports;
+    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct *region)
+{
+    LOG("[FSciIoReport] Entering state SendingOutputChannelReports in region "
+        "root__ReportingLogicalChannelStates__"
+        "ReportingLogicalOutputChannelStates");
+    region->state =
+        FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports;
 };
 
 void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
     FSciIoReport *self,
-    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct
-        *x) {
-  memset(
-      x, 0,
-      sizeof(
-          FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct));
+    FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct *x)
+{
+    memset(
+        x, 0,
+        sizeof(FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct));
 
-  make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-      self, x);
-  return;
+    make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+        self, x);
+    return;
 }
 
-void make_state_FSciIoReport__root__ReportingLogicalChannelStates(
-    FSciIoReport *self, FSciIoReport__root__state_struct *region) {
-  LOG("[FSciIoReport] Entering state ReportingLogicalChannelStates in region "
-      "root");
-  region->state = FSciIoReport__root__ReportingLogicalChannelStates;
-  make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
-      self, &region->ReportingLogicalChannelStates
-                 .ReportingLogicalInputChannelStates);
-  make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
-      self, &region->ReportingLogicalChannelStates
-                 .ReportingLogicalOutputChannelStates);
+void make_state_FSciIoReport__root__ReportingLogicalChannelStates(FSciIoReport *self,
+                                                                  FSciIoReport__root__state_struct *region)
+{
+    LOG("[FSciIoReport] Entering state ReportingLogicalChannelStates in region "
+        "root");
+    region->state = FSciIoReport__root__ReportingLogicalChannelStates;
+    make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
+        self, &region->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+    make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
+        self, &region->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
 };
 
-void make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(
-    FSciIoReport *self, FSciIoReport__root__state_struct *region) {
-  LOG("[FSciIoReport] Entering state InterfaceConnectionNotEstablished in "
-      "region root");
-  region->state = FSciIoReport__root__InterfaceConnectionNotEstablished;
+void make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(FSciIoReport *self,
+                                                                      FSciIoReport__root__state_struct *region)
+{
+    LOG("[FSciIoReport] Entering state InterfaceConnectionNotEstablished in "
+        "region root");
+    region->state = FSciIoReport__root__InterfaceConnectionNotEstablished;
 };
 
-void make_state_FSciIoReport__root(FSciIoReport *self,
-                                   FSciIoReport__root__state_struct *x) {
-  memset(x, 0, sizeof(FSciIoReport__root__state_struct));
-
-  make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(self, x);
-  return;
-}
-
-void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
-
-  if (self->Change325.IsTriggered) {
-    if ((!(self->D7inDetectedInputChannelState1.Value ==
-           map_MemLastReportedInputChannelState1_to_D7inDetectedInputChannelState1(
-               self->MemLastReportedInputChannelState1))) ||
-        (!(self->D7inDetectedInputChannelStaten.Value ==
-           map_MemLastReportedInputChannelStaten_to_D7inDetectedInputChannelStaten(
-               self->MemLastReportedInputChannelStaten)))) {
-      Cop2InitialReportStatusInputChannelStates(
-          self, self->D7inDetectedInputChannelState1.Value,
-          self->D7inDetectedInputChannelStaten.Value);
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change461.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change459.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change460.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change466.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change465.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change463.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__Disturbed;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change467.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change464.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-  if (self->Change462.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 =
-          InputChannelState__a4d2__SwitchedOff;
-      self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN =
-          InputChannelState__a4d2__SwitchedOn;
-      self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-          self,
-          &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
-      return;
-    }
-  }
-}
-
-void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
-  switch (x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates
-              .state) {
-  case FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports:
-    transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
-        self, x);
-    break;
-  }
-}
-
-void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
-
-  if (self->Change326.IsTriggered) {
-    if ((!(self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
-           map_MemLastReportedOutputChannelState1_to_D9inMonitoredOutputChannelDisturbanceState1(
-               self->MemLastReportedOutputChannelState1))) ||
-        (!(self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
-           map_MemLastReportedOutputChannelStaten_to_D9inMonitoredOutputChannelDisturbanceStaten(
-               self->MemLastReportedOutputChannelStaten)))) {
-      Cop1InitialReportStatusOuputChannelStates(
-          self, self->D9inMonitoredOutputChannelDisturbanceState1.Value,
-          self->D9inMonitoredOutputChannelDisturbanceStaten.Value);
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-          self, &x->ReportingLogicalChannelStates
-                     .ReportingLogicalOutputChannelStates);
-      return;
-    }
-  }
-  if (self->Change505.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-          OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-          OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-          self, &x->ReportingLogicalChannelStates
-                     .ReportingLogicalOutputChannelStates);
-      return;
-    }
-  }
-  if (self->Change503.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-          OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-          OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-          self, &x->ReportingLogicalChannelStates
-                     .ReportingLogicalOutputChannelStates);
-      return;
-    }
-  }
-  if (self->Change499.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-          OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-          OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-          self, &x->ReportingLogicalChannelStates
-                     .ReportingLogicalOutputChannelStates);
-      return;
-    }
-  }
-  if (self->Change504.IsTriggered) {
-    if (self->D50inPdiConnectionState.Value ==
-        FSciIoReport_D50inPdiConnectionStateValue__Established) {
-
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
-          OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
-          OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
-      self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
-      make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-          self, &x->ReportingLogicalChannelStates
-                     .ReportingLogicalOutputChannelStates);
-      return;
-    }
-  }
-}
-
-void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
-  switch (x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates
-              .state) {
-  case FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports:
-    transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
-        self, x);
-    break;
-  }
-}
-
-void transition_from_FSciIoReport__root__ReportingLogicalChannelStates(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
-  transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
-      self, x);
-  transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
-      self, x);
-  if (self->Change334.IsTriggered) {
+void make_state_FSciIoReport__root(FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
+    memset(x, 0, sizeof(FSciIoReport__root__state_struct));
 
     make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(self, x);
     return;
-  }
 }
 
-void transition_from_FSciIoReport__root__InterfaceConnectionNotEstablished(
-    FSciIoReport *self, FSciIoReport__root__state_struct *x) {
+void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+    FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
 
-  if (self->InStartStatusReport__1e4e.HasMessage) {
-    Cop1InitialReportStatusOuputChannelStates(
-        self, self->D9inMonitoredOutputChannelDisturbanceState1.Value,
-        self->D9inMonitoredOutputChannelDisturbanceStaten.Value);
-    Cop2InitialReportStatusInputChannelStates(
-        self, self->D7inDetectedInputChannelState1.Value,
-        self->D7inDetectedInputChannelStaten.Value);
+    if (self->Change325.IsTriggered)
+    {
+        if ((!(self->D7inDetectedInputChannelState1.Value ==
+               map_MemLastReportedInputChannelState1_to_D7inDetectedInputChannelState1(
+                   self->MemLastReportedInputChannelState1))) ||
+            (!(self->D7inDetectedInputChannelStaten.Value ==
+               map_MemLastReportedInputChannelStaten_to_D7inDetectedInputChannelStaten(
+                   self->MemLastReportedInputChannelStaten))))
+        {
+            Cop2InitialReportStatusInputChannelStates(self, self->D7inDetectedInputChannelState1.Value,
+                                                      self->D7inDetectedInputChannelStaten.Value);
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change461.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
 
-    self->OutStatusReportCompleted__b457.HasMessage = 1;
-    make_state_FSciIoReport__root__ReportingLogicalChannelStates(self, x);
-    return;
-  }
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change459.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change460.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change466.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change465.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change463.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__Disturbed;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change467.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change464.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
+    if (self->Change462.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputState1 = InputChannelState__a4d2__SwitchedOff;
+            self->OutMsgStateOfInputChannels__8132.Value.ResportedInputStateN = InputChannelState__a4d2__SwitchedOn;
+            self->OutMsgStateOfInputChannels__8132.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
+            return;
+        }
+    }
 }
 
-void transition_from_FSciIoReport__root(FSciIoReport *self,
-                                        FSciIoReport__root__state_struct *x) {
-  switch (x->state) {
-  case FSciIoReport__root__ReportingLogicalChannelStates:
-    transition_from_FSciIoReport__root__ReportingLogicalChannelStates(self, x);
-    break;
-  case FSciIoReport__root__InterfaceConnectionNotEstablished:
-    transition_from_FSciIoReport__root__InterfaceConnectionNotEstablished(self,
-                                                                          x);
-    break;
-  }
+void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
+    FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
+    switch (x->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates.state)
+    {
+    case FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports:
+        transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports(
+            self, x);
+        break;
+    }
 }
 
-static void evaluateChangeEvents(FSciIoReport *self) {
-  self->Change325.IsTriggered = IsTriggered(
-      MakeChange(self->D50inPdiConnectionState.IsSignalled,
-                 self->D50inPdiConnectionState.Value ==
-                     FSciIoReport_D50inPdiConnectionStateValue__Established));
-  self->Change461.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
-  self->Change459.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
-  self->Change460.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
-  self->Change466.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
-  self->Change465.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
-  self->Change463.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
-  self->Change467.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
-  self->Change464.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
-  self->Change462.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D7inDetectedInputChannelState1.IsSignalled,
-          self->D7inDetectedInputChannelState1.Value ==
-              FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
-      MakeChange(
-          self->D7inDetectedInputChannelStaten.IsSignalled,
-          self->D7inDetectedInputChannelStaten.Value ==
-              FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
-  self->Change326.IsTriggered = IsTriggered(
-      MakeChange(self->D50inPdiConnectionState.IsSignalled,
-                 self->D50inPdiConnectionState.Value ==
-                     FSciIoReport_D50inPdiConnectionStateValue__Established));
-  self->Change505.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed),
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed)));
-  self->Change503.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed),
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed)));
-  self->Change499.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed),
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed)));
-  self->Change504.IsTriggered = IsTriggered(AndChange(
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed),
-      MakeChange(
-          self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
-          self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
-              FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed)));
-  self->Change334.IsTriggered = IsTriggered(OrChange(
-      OrChange(
-          OrChange(
-              OrChange(
-                  MakeChange(
-                      self->D50inPdiConnectionState.IsSignalled,
-                      self->D50inPdiConnectionState.Value ==
-                          FSciIoReport_D50inPdiConnectionStateValue__NotReadyForPdiNoScp),
-                  MakeChange(
-                      self->D50inPdiConnectionState.IsSignalled,
-                      self->D50inPdiConnectionState.Value ==
-                          FSciIoReport_D50inPdiConnectionStateValue__ReadyForPdiNoScp)),
-              MakeChange(
-                  self->D50inPdiConnectionState.IsSignalled,
-                  self->D50inPdiConnectionState.Value ==
-                      FSciIoReport_D50inPdiConnectionStateValue__NotReadyForPdi)),
-          MakeChange(
-              self->D50inPdiConnectionState.IsSignalled,
-              self->D50inPdiConnectionState.Value ==
-                  FSciIoReport_D50inPdiConnectionStateValue__ReadyForPdi)),
-      MakeChange(self->D50inPdiConnectionState.IsSignalled,
-                 self->D50inPdiConnectionState.Value ==
-                     FSciIoReport_D50inPdiConnectionStateValue__Suspended)));
+void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+    FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
+
+    if (self->Change326.IsTriggered)
+    {
+        if ((!(self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
+               map_MemLastReportedOutputChannelState1_to_D9inMonitoredOutputChannelDisturbanceState1(
+                   self->MemLastReportedOutputChannelState1))) ||
+            (!(self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
+               map_MemLastReportedOutputChannelStaten_to_D9inMonitoredOutputChannelDisturbanceStaten(
+                   self->MemLastReportedOutputChannelStaten))))
+        {
+            Cop1InitialReportStatusOuputChannelStates(self, self->D9inMonitoredOutputChannelDisturbanceState1.Value,
+                                                      self->D9inMonitoredOutputChannelDisturbanceStaten.Value);
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
+            return;
+        }
+    }
+    if (self->Change505.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+                OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+                OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
+            return;
+        }
+    }
+    if (self->Change503.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+                OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+                OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
+            return;
+        }
+    }
+    if (self->Change499.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+                OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+                OutputChannelDisturbanceState__bed9__PhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
+            return;
+        }
+    }
+    if (self->Change504.IsTriggered)
+    {
+        if (self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established)
+        {
+
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceState1 =
+                OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.Value.ResportedDisturbanceStateN =
+                OutputChannelDisturbanceState__bed9__NotPhysicallyDisturbed;
+            self->OutMsgStateOfOutputChannels__c6d6.HasMessage = 1;
+            make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+                self, &x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates);
+            return;
+        }
+    }
 }
 
-static void resetOutputs(FSciIoReport *self) {
-  self->OutMsgStateOfOutputChannels__c6d6.HasMessage = false;
-  self->OutMsgStateOfInputChannels__8132.HasMessage = false;
-  self->OutStatusReportCompleted__b457.HasMessage = false;
+void transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(
+    FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
+    switch (x->ReportingLogicalChannelStates.ReportingLogicalOutputChannelStates.state)
+    {
+    case FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports:
+        transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports(
+            self, x);
+        break;
+    }
 }
 
-static void resetTriggers(FSciIoReport *self) {
-  self->InStartStatusReport__1e4e.HasMessage = false;
+void transition_from_FSciIoReport__root__ReportingLogicalChannelStates(FSciIoReport *self,
+                                                                       FSciIoReport__root__state_struct *x)
+{
+    transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(self, x);
+    transition_from_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates(self, x);
+    if (self->Change334.IsTriggered)
+    {
 
-  self->D7inDetectedInputChannelState1.IsSignalled = false;
-  self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled = false;
-  self->D50inPdiConnectionState.IsSignalled = false;
-  self->D7inDetectedInputChannelStaten.IsSignalled = false;
-  self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled = false;
+        make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(self, x);
+        return;
+    }
 }
 
-void transition_FSciIoReport(FSciIoReport *self) {
-  resetOutputs(self);
-  evaluateChangeEvents(self);
-  transition_from_FSciIoReport__root(self, &self->state);
-  resetTriggers(self);
+void transition_from_FSciIoReport__root__InterfaceConnectionNotEstablished(FSciIoReport *self,
+                                                                           FSciIoReport__root__state_struct *x)
+{
+
+    if (self->InStartStatusReport__1e4e.HasMessage)
+    {
+        Cop1InitialReportStatusOuputChannelStates(self, self->D9inMonitoredOutputChannelDisturbanceState1.Value,
+                                                  self->D9inMonitoredOutputChannelDisturbanceStaten.Value);
+        Cop2InitialReportStatusInputChannelStates(self, self->D7inDetectedInputChannelState1.Value,
+                                                  self->D7inDetectedInputChannelStaten.Value);
+
+        self->OutStatusReportCompleted__b457.HasMessage = 1;
+        make_state_FSciIoReport__root__ReportingLogicalChannelStates(self, x);
+        return;
+    }
 }
 
-void new_FSciIoReport(FSciIoReport *self) {
-  make_state_FSciIoReport__root(self, &self->state);
+void transition_from_FSciIoReport__root(FSciIoReport *self, FSciIoReport__root__state_struct *x)
+{
+    switch (x->state)
+    {
+    case FSciIoReport__root__ReportingLogicalChannelStates:
+        transition_from_FSciIoReport__root__ReportingLogicalChannelStates(self, x);
+        break;
+    case FSciIoReport__root__InterfaceConnectionNotEstablished:
+        transition_from_FSciIoReport__root__InterfaceConnectionNotEstablished(self, x);
+        break;
+    }
+}
+
+static void evaluateChangeEvents(FSciIoReport *self)
+{
+    self->Change325.IsTriggered = IsTriggered(
+        MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                   self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established));
+    self->Change461.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
+    self->Change459.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
+    self->Change460.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__Disturbed),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
+    self->Change466.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
+    self->Change465.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
+    self->Change463.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__Disturbed)));
+    self->Change467.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
+    self->Change464.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff)));
+    self->Change462.IsTriggered =
+        IsTriggered(AndChange(MakeChange(self->D7inDetectedInputChannelState1.IsSignalled,
+                                         self->D7inDetectedInputChannelState1.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff),
+                              MakeChange(self->D7inDetectedInputChannelStaten.IsSignalled,
+                                         self->D7inDetectedInputChannelStaten.Value ==
+                                             FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn)));
+    self->Change326.IsTriggered = IsTriggered(
+        MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                   self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Established));
+    self->Change505.IsTriggered = IsTriggered(AndChange(
+        MakeChange(self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
+                   self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
+                       FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed),
+        MakeChange(self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
+                   self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
+                       FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed)));
+    self->Change503.IsTriggered = IsTriggered(
+        AndChange(MakeChange(self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
+                             self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
+                                 FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed),
+                  MakeChange(self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
+                             self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
+                                 FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed)));
+    self->Change499.IsTriggered = IsTriggered(
+        AndChange(MakeChange(self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
+                             self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
+                                 FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__PhysicallyDisturbed),
+                  MakeChange(self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
+                             self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
+                                 FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__PhysicallyDisturbed)));
+    self->Change504.IsTriggered = IsTriggered(AndChange(
+        MakeChange(self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled,
+                   self->D9inMonitoredOutputChannelDisturbanceState1.Value ==
+                       FSciIoReport_D9inMonitoredOutputChannelDisturbanceState1Value__NotPhysicallyDisturbed),
+        MakeChange(self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled,
+                   self->D9inMonitoredOutputChannelDisturbanceStaten.Value ==
+                       FSciIoReport_D9inMonitoredOutputChannelDisturbanceStatenValue__NotPhysicallyDisturbed)));
+    self->Change334.IsTriggered = IsTriggered(OrChange(
+        OrChange(
+            OrChange(OrChange(MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                                         self->D50inPdiConnectionState.Value ==
+                                             FSciIoReport_D50inPdiConnectionStateValue__NotReadyForPdiNoScp),
+                              MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                                         self->D50inPdiConnectionState.Value ==
+                                             FSciIoReport_D50inPdiConnectionStateValue__ReadyForPdiNoScp)),
+                     MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                                self->D50inPdiConnectionState.Value ==
+                                    FSciIoReport_D50inPdiConnectionStateValue__NotReadyForPdi)),
+            MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                       self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__ReadyForPdi)),
+        MakeChange(self->D50inPdiConnectionState.IsSignalled,
+                   self->D50inPdiConnectionState.Value == FSciIoReport_D50inPdiConnectionStateValue__Suspended)));
+}
+
+static void resetOutputs(FSciIoReport *self)
+{
+    self->OutMsgStateOfOutputChannels__c6d6.HasMessage = false;
+    self->OutMsgStateOfInputChannels__8132.HasMessage = false;
+    self->OutStatusReportCompleted__b457.HasMessage = false;
+}
+
+static void resetTriggers(FSciIoReport *self)
+{
+    self->InStartStatusReport__1e4e.HasMessage = false;
+
+    self->D7inDetectedInputChannelState1.IsSignalled = false;
+    self->D9inMonitoredOutputChannelDisturbanceState1.IsSignalled = false;
+    self->D50inPdiConnectionState.IsSignalled = false;
+    self->D7inDetectedInputChannelStaten.IsSignalled = false;
+    self->D9inMonitoredOutputChannelDisturbanceStaten.IsSignalled = false;
+}
+
+void transition_FSciIoReport(FSciIoReport *self)
+{
+    resetOutputs(self);
+    evaluateChangeEvents(self);
+    transition_from_FSciIoReport__root(self, &self->state);
+    resetTriggers(self);
+}
+
+void new_FSciIoReport(FSciIoReport *self)
+{
+    make_state_FSciIoReport__root(self, &self->state);
 }

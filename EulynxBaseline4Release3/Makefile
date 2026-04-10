@@ -35,4 +35,4 @@ clean:
 	cp -r ../utils/testreport/out/* 03_TransformationReport/report/
 
 04_OutputC: 03_TransformationReport/generate-c-test-result.xml
-	cd 04_OutputC && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -i
+	cd 04_OutputC && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=microsoft -i
