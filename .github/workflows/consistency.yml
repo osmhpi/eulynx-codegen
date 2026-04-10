@@ -19,6 +19,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Clean generated files
+        run: rm -rf generated/c
+
       - name: Transform model into code
         run: cd Eulynx.Validation && CODEGEN_OUTPUT_DIR=$PWD/../generated/c dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"
 
