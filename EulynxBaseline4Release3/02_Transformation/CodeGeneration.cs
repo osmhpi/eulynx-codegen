@@ -13,7 +13,7 @@ public class CodeGeneration
     {
         get
         {
-            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_XMI_FILE);
             foreach (var package in processor.InterestingPackages) {
                 var classes = Package.ClassElements(package);
                 foreach (var (Element, _) in classes)
@@ -27,7 +27,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_XMI_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();
@@ -45,7 +45,7 @@ public class CodeGeneration
         Package? pkg = null;
         Class? klass = null;
         try {
-            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
+            var processor = new EulynxV28XmiParser(ClassParsing.EULYNX_XMI_FILE);
 
             foreach (var _umlPackage in processor.InterestingPackages) {
                 var _pkg = Package.CreateFromUml(_umlPackage, processor.GlobalContext);
@@ -72,7 +72,7 @@ public class CodeGeneration
     {
         XmiParser? processor;
         try {
-            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_V28_FILE);
+            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_XMI_FILE);
         } catch (Exception) {
             // Parsing is tested elsewhere
             Assert.Inconclusive();

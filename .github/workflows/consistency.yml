@@ -20,13 +20,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Clean generated files
-        run: rm -rf generated/c
+        run: rm -rf EulynxBaseline4Release3/04_OutputC
 
       - name: Transform model into code
-        run: cd Eulynx.Validation && CODEGEN_OUTPUT_DIR=$PWD/../generated/c dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"
+        run: cd EulynxBaseline4Release3/02_Transformation && 02_Transformation CODEGEN_OUTPUT_DIR=$PWD/../04_OutputC dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\03_TransformationReport\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c"
 
       - name: Format output
-        run: cd generated/c && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -i
+        run: cd EulynxBaseline4Release3/04_OutputC && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -i
 
       - name: Assert working directory clean
         run: git diff --exit-code
