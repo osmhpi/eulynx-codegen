@@ -171,16 +171,6 @@ function CustomersContent() {
   const stage3Name = 'Compilation.CompileC';
   const stage3Success = t.map(x => x.tests.find(x => x.testname === stage3Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
 
-  const stage4Name = 'SymbolicExecution.ExecuteKlee';
-  const stage4Success = t.map(x => x.tests.find(x => x.testname === stage4Name)).filter(x => x !== undefined && !x.failure && !x.skipped).length;
-
-  // const notfound = Object.entries(components)
-  //   .map(([key, value]) =>
-  //     ({key, value: value.map(component =>
-  //       ({ component, tests: t.find(test => test.class === component)?.tests || null })
-  //     )}));
-  // console.log(JSON.stringify(notfound))
-
   const componentsSuccesses = Object.entries(components)
     .map(([key, value]) =>
       ({key, value: value.map(component =>
@@ -188,12 +178,10 @@ function CustomersContent() {
       ).map(({component, tests}) => {
         const parsing = tests.find(x => x.testname === stage1Name);
         const compilation = tests.find(x => x.testname === stage3Name);
-        const checks = tests.find(x => x.testname === stage4Name);
         return {
           component,
           parsing: parsing && !parsing.failure && !parsing.skipped,
           compilation: compilation && !compilation.failure && !compilation.skipped,
-          checks: checks && !checks.failure && !checks.skipped,
         }
       })}))
 
@@ -201,7 +189,6 @@ function CustomersContent() {
     key: thething.key,
     parsing: thething.value.filter(x => x.parsing).map(x => x.component),
     compilation: thething.value.filter(x => x.compilation).map(x => x.component),
-    checks: thething.value.filter(x => x.checks).map(x => x.component),
     total: thething.value.map(x => x.component),
   }))
 
@@ -212,7 +199,7 @@ function CustomersContent() {
 
         {/* Left: Title */}
         <div className="mb-4 sm:mb-0">
-          <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">UML Classes</h1>
+          <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">EULYNX SysML Classes Transformation</h1>
         </div>
 
         {/* Right: Actions */}
@@ -230,9 +217,6 @@ function CustomersContent() {
           <div>
             C Compiled: {stage3Success}
           </div>
-          <div>
-            Symbolic Execution Checked: {stage4Success}
-          </div>
         </div>
 
       </div>
@@ -242,7 +226,7 @@ function CustomersContent() {
         <div>
           <h4 className="text-slate-800 dark:text-slate-100 font-medium mb-4">Successful Classes by Subsystem</h4>
           {/* Job list */}
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {allSuccessful.map(job => (
               <JobsItem
                 key={job.key}

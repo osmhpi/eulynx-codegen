@@ -50,34 +50,4 @@ public class Compilation
         process.WaitForExit();
         Assert.AreEqual(0, process.ExitCode);
     }
-
-    [TestMethod, TestCategory("compile-klee")]
-    [DynamicData(nameof(UmlClasses))]
-    public void CompileKlee(string package, string className)
-    {
-        using var process = new Process();
-
-        var output = Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set");
-        var workingDir = $"{output}/{new TypeIdentifier(package).Name}";
-        var inFile = $"{new TypeIdentifier(className).Name}.c";
-        var outFile = $"{new TypeIdentifier(className).Name}.bc";
-
-        var info = new FileInfo($"{workingDir}/{inFile}");
-        if (!info.Exists)
-            Assert.Inconclusive();
-
-        process.StartInfo.FileName = "make";
-        process.StartInfo.Arguments = $"-f {Environment.CurrentDirectory}/../../../../Klee/Makefile -C {workingDir} {outFile}";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.EnvironmentVariables["CFLAGS"] = "-Werror";
-        process.Start();
-
-        Console.WriteLine(process.StandardOutput.ReadToEnd());
-        Console.WriteLine(process.StandardError.ReadToEnd());
-
-        process.WaitForExit();
-        Assert.AreEqual(0, process.ExitCode);
-    }
 }
