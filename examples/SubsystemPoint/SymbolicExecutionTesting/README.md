@@ -6,11 +6,10 @@ The execution semantics of this project assume a single state machine transition
 The analysis possibilities are illustrated by investigating the maximum delay between a change in detected point position and the emission of a PDI message by the connected state machine logic.
 
 EULYNX declares the following requirement in [Eu.P.3263](https://eulynx.relesoft.io/?#Eu.P.3263):
-```
-The Subsystem - Point shall send the corresponding message telegram to the Subsystem - Electronic Interlocking within 250 ms after successful change of state, according to specific use cases.
-```
 
-The present test case shows by symbolic execution that the propagation of a change in the detected point position is sent as a message telegram within at most three execution cycles.
+> The Subsystem - Point shall send the corresponding message telegram to the Subsystem - Electronic Interlocking within 250 ms after successful change of state, according to specific use cases.
+
+The present test case shows by symbolic execution that a change in the detected point position is sent as a message telegram within at most three execution cycles.
 Therefore, the cycle length can be 250ms / 3 = 83ms at maximum to fulfill the requirement with the present software logic.
 
 Specifically, the test setup makes the following assumptions:

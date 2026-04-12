@@ -16,8 +16,8 @@ A small, self-contained example exists for how to compose a complete subsystem p
 
 ## Example of using Symbolic Execution
 
-Symbolic execution is a static analysis technique that traces all possible execution paths through a program given a set of inputs.
-An example illustrates how the KLEE symbolic execution framework can be used to assert that a change in detected point position is signalled to the connected Subsystem Electronic Interlocking within at most three execution cycles by the Subsystem Point ([SymbolicExecutionTesting](examples/SubsystemPoint/SymbolicExecutionTesting)).
+Symbolic execution is a static analysis technique that traces all possible execution paths through a program given a range of possible inputs.
+An example illustrates how to use the KLEE symbolic execution framework to assert that a change in detected point position is signalled to the connected Subsystem Electronic Interlocking within at most three execution cycles by the Subsystem Point ([SymbolicExecutionTesting](examples/SubsystemPoint/SymbolicExecutionTesting)).
 
 ## Transformation
 
