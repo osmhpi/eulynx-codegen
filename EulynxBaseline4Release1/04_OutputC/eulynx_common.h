@@ -3035,6 +3035,10 @@ typedef struct Message__RequestVisualSweepingConfirmation__2333
 } Message__RequestVisualSweepingConfirmation__2333;
 
 // Logging
+#ifndef NOLOG
 #define LOG(...)                                                                                                       \
     fprintf(stderr, __VA_ARGS__);                                                                                      \
     fprintf(stderr, "\n")
+#else
+#define LOG(...)
+#endif

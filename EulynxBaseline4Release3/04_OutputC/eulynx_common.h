@@ -3079,6 +3079,10 @@ typedef struct Message__RebootRequired__bc8e
 } Message__RebootRequired__bc8e;
 
 // Logging
+#ifndef NOLOG
 #define LOG(...)                                                                                                       \
     fprintf(stderr, __VA_ARGS__);                                                                                      \
     fprintf(stderr, "\n")
+#else
+#define LOG(...)
+#endif

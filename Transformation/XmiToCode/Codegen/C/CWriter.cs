@@ -118,7 +118,11 @@ typedef struct TimeoutEvent
 {JoinLines(global.Messages.Select(x => WriteMessageSchema(x.Value)))}
 
 // Logging
+#ifndef NOLOG
 #define LOG(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, ""\n"")
+#else
+#define LOG(...)
+#endif
 ";
     }
 
