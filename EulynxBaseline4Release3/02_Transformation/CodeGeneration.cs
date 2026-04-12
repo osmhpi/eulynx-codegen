@@ -66,20 +66,4 @@ public class CodeGeneration
         var c = new CWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
         await c.WriteClassFilesAsyncNew(klass, pkg);
     }
-
-    [TestMethod, TestCategory("generate-klee")]
-    public async Task GenerateCommonFilesKlee()
-    {
-        XmiParser? processor;
-        try {
-            processor = new EulynxV28XmiParser(ClassParsing.EULYNX_XMI_FILE);
-        } catch (Exception) {
-            // Parsing is tested elsewhere
-            Assert.Inconclusive();
-            return;
-        }
-
-        var c = new KleeCheckUniqueTransitionsWriter(Environment.GetEnvironmentVariable("CODEGEN_OUTPUT_DIR") ?? throw new Exception("CODEGEN_OUTPUT_DIR not set"));
-        await c.WriteCommonFilesAsync(processor.GlobalContext, processor.InterestingPackages);
-    }
 }
