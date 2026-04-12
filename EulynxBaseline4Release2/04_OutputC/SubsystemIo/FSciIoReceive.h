@@ -140,23 +140,17 @@ typedef struct FSciIoReceive
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change502; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Not_Physically_Disturbed"
+    ChangeEvent Change502; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Not_Physically_Disturbed"
     ChangeEvent Change548; // Not d13out_Switch_Off_Each_Physical_Ouput_Channel
     ChangeEvent Change100; // d13out_Switch_Off_Each_Physical_Ouput_Channel OR
-                           // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Physically_Disturbed"
-    ChangeEvent Change500; // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Not_Physically_Disturbed"
+                           // d9in_Monitored_Output_Channel_Disturbance_State1 = "Physically_Disturbed"
+    ChangeEvent Change500; // d9in_Monitored_Output_Channel_Disturbance_StateN = "Not_Physically_Disturbed"
     ChangeEvent Change549; // Not d13out_Switch_Off_Each_Physical_Ouput_Channel
     ChangeEvent Change99;  // d13out_Switch_Off_Each_Physical_Ouput_Channel OR
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Physically_Disturbed"
-    ChangeEvent Change336; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Physically_Disturbed"
+    ChangeEvent Change336; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State = "NOT_READY_FOR_PDI"OR
+                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
     ChangeEvent Change327; // d50in_PDI_Connection_State = "ESTABLISHED"
 
     // Timeout Events

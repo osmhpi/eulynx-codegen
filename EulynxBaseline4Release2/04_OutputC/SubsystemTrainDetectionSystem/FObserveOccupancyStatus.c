@@ -26,48 +26,42 @@ static void Cop4ResetCount(FObserveOccupancyStatus *self)
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__UnreliableIncoming(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state UnreliableIncoming in region "
-        "root__ObserveTvpsStatus__root");
+    LOG("[FObserveOccupancyStatus] Entering state UnreliableIncoming in region root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__UnreliableIncoming;
 };
 
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__UnreliableOutgoing(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state UnreliableOutgoing in region "
-        "root__ObserveTvpsStatus__root");
+    LOG("[FObserveOccupancyStatus] Entering state UnreliableOutgoing in region root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__UnreliableOutgoing;
 };
 
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__Vacant(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state Vacant in region "
-        "root__ObserveTvpsStatus__root");
+    LOG("[FObserveOccupancyStatus] Entering state Vacant in region root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__Vacant;
 };
 
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__OccupiedIncoming(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state OccupiedIncoming in region "
-        "root__ObserveTvpsStatus__root");
+    LOG("[FObserveOccupancyStatus] Entering state OccupiedIncoming in region root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__OccupiedIncoming;
 };
 
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__OccupiedOutgoing(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state OccupiedOutgoing in region "
-        "root__ObserveTvpsStatus__root");
+    LOG("[FObserveOccupancyStatus] Entering state OccupiedOutgoing in region root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__OccupiedOutgoing;
 };
 
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root__WaitingForNotificationOfAvailability(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__ObserveTvpsStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state "
-        "WaitingForNotificationOfAvailability in region "
+    LOG("[FObserveOccupancyStatus] Entering state WaitingForNotificationOfAvailability in region "
         "root__ObserveTvpsStatus__root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus__root__WaitingForNotificationOfAvailability;
 };
@@ -98,8 +92,7 @@ void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root(
 void make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus(FObserveOccupancyStatus *self,
                                                                  FObserveOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state ObserveTvpsStatus in region "
-        "root");
+    LOG("[FObserveOccupancyStatus] Entering state ObserveTvpsStatus in region root");
     region->state = FObserveOccupancyStatus__root__ObserveTvpsStatus;
     make_state_FObserveOccupancyStatus__root__ObserveTvpsStatus__root(self, &region->ObserveTvpsStatus.root);
 };
@@ -114,16 +107,14 @@ void make_state_FObserveOccupancyStatus__root__FallbackMode(FObserveOccupancySta
 void make_state_FObserveOccupancyStatus__root__WaitingForFinishBooting(
     FObserveOccupancyStatus *self, FObserveOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state WaitingForFinishBooting in "
-        "region root");
+    LOG("[FObserveOccupancyStatus] Entering state WaitingForFinishBooting in region root");
     region->state = FObserveOccupancyStatus__root__WaitingForFinishBooting;
 };
 
 void make_state_FObserveOccupancyStatus__root__TechnicalDisturbance(FObserveOccupancyStatus *self,
                                                                     FObserveOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FObserveOccupancyStatus] Entering state TechnicalDisturbance in region "
-        "root");
+    LOG("[FObserveOccupancyStatus] Entering state TechnicalDisturbance in region root");
     region->state = FObserveOccupancyStatus__root__TechnicalDisturbance;
 };
 

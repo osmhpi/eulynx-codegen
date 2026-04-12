@@ -148,10 +148,8 @@ typedef struct FSciLcReceive
     ChangeEvent Change340; // d51in_EST_EfeS_State  = "BOOTING"
     ChangeEvent Change345; // d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change368; // d51in_EST_EfeS_State = "FALLBACK_MODE"
-    ChangeEvent Change347; // d51in_EST_EfeS_State  = "OPERATIONAL" OR
-                           // d51in_EST_EfeS_State  = "BOOTING" OR
-                           // d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State  = "INITIALISING"
+    ChangeEvent Change347; // d51in_EST_EfeS_State  = "OPERATIONAL" OR d51in_EST_EfeS_State  = "BOOTING" OR
+                           // d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State  = "INITIALISING"
     ChangeEvent Change341; // d51in_EST_EfeS_State  = "BOOTING"
 
     // Timeout Events

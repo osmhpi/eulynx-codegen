@@ -10,8 +10,7 @@ void make_state_SSciIoReceive__root__ReceivingInputAndOutputChannelStates__Recei
     SSciIoReceive__root__ReceivingInputAndOutputChannelStates__ReceivingInputChannelStates__state_struct *region)
 {
     LOG("[SSciIoReceive] Entering state ReceivingInputChannelReports in region "
-        "root__ReceivingInputAndOutputChannelStates__"
-        "ReceivingInputChannelStates");
+        "root__ReceivingInputAndOutputChannelStates__ReceivingInputChannelStates");
     region->state =
         SSciIoReceive__root__ReceivingInputAndOutputChannelStates__ReceivingInputChannelStates__ReceivingInputChannelReports;
 };
@@ -37,8 +36,7 @@ void make_state_SSciIoReceive__root__ReceivingInputAndOutputChannelStates__Recei
     SSciIoReceive__root__ReceivingInputAndOutputChannelStates__ReceivingOutputChannelStates__state_struct *region)
 {
     LOG("[SSciIoReceive] Entering state ReceivingOutputChannelReports in region "
-        "root__ReceivingInputAndOutputChannelStates__"
-        "ReceivingOutputChannelStates");
+        "root__ReceivingInputAndOutputChannelStates__ReceivingOutputChannelStates");
     region->state =
         SSciIoReceive__root__ReceivingInputAndOutputChannelStates__ReceivingOutputChannelStates__ReceivingOutputChannelReports;
 };
@@ -64,8 +62,7 @@ void make_state_SSciIoReceive__root__ReceivingInputAndOutputChannelStates__Recei
 void make_state_SSciIoReceive__root__ReceivingInputAndOutputChannelStates(SSciIoReceive *self,
                                                                           SSciIoReceive__root__state_struct *region)
 {
-    LOG("[SSciIoReceive] Entering state ReceivingInputAndOutputChannelStates in "
-        "region root");
+    LOG("[SSciIoReceive] Entering state ReceivingInputAndOutputChannelStates in region root");
     region->state = SSciIoReceive__root__ReceivingInputAndOutputChannelStates;
     make_state_SSciIoReceive__root__ReceivingInputAndOutputChannelStates__ReceivingInputChannelStates(
         self, &region->ReceivingInputAndOutputChannelStates.ReceivingInputChannelStates);

@@ -243,8 +243,7 @@ void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogi
     FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__state_struct *region)
 {
     LOG("[FSciIoReport] Entering state SendingInputChannelReports in region "
-        "root__ReportingLogicalChannelStates__"
-        "ReportingLogicalInputChannelStates");
+        "root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates");
     region->state =
         FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates__SendingInputChannelReports;
 };
@@ -266,8 +265,7 @@ void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogi
     FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__state_struct *region)
 {
     LOG("[FSciIoReport] Entering state SendingOutputChannelReports in region "
-        "root__ReportingLogicalChannelStates__"
-        "ReportingLogicalOutputChannelStates");
+        "root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates");
     region->state =
         FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalOutputChannelStates__SendingOutputChannelReports;
 };
@@ -288,8 +286,7 @@ void make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogi
 void make_state_FSciIoReport__root__ReportingLogicalChannelStates(FSciIoReport *self,
                                                                   FSciIoReport__root__state_struct *region)
 {
-    LOG("[FSciIoReport] Entering state ReportingLogicalChannelStates in region "
-        "root");
+    LOG("[FSciIoReport] Entering state ReportingLogicalChannelStates in region root");
     region->state = FSciIoReport__root__ReportingLogicalChannelStates;
     make_state_FSciIoReport__root__ReportingLogicalChannelStates__ReportingLogicalInputChannelStates(
         self, &region->ReportingLogicalChannelStates.ReportingLogicalInputChannelStates);
@@ -300,8 +297,7 @@ void make_state_FSciIoReport__root__ReportingLogicalChannelStates(FSciIoReport *
 void make_state_FSciIoReport__root__InterfaceConnectionNotEstablished(FSciIoReport *self,
                                                                       FSciIoReport__root__state_struct *region)
 {
-    LOG("[FSciIoReport] Entering state InterfaceConnectionNotEstablished in "
-        "region root");
+    LOG("[FSciIoReport] Entering state InterfaceConnectionNotEstablished in region root");
     region->state = FSciIoReport__root__InterfaceConnectionNotEstablished;
 };
 

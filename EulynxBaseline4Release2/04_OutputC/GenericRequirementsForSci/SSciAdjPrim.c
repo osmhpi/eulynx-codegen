@@ -13,48 +13,42 @@ static void Cop1Init(SSciAdjPrim *self)
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__WaitingForVersionCheck(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state WaitingForVersionCheck in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state WaitingForVersionCheck in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__WaitingForVersionCheck;
 };
 
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__WaitingForInitialisation(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state WaitingForInitialisation in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state WaitingForInitialisation in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__WaitingForInitialisation;
 };
 
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__ReceivingSecStatus(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state ReceivingSecStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state ReceivingSecStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__ReceivingSecStatus;
 };
 
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__CheckingSecStatus(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state CheckingSecStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state CheckingSecStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__CheckingSecStatus;
 };
 
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__SendingPrimStatus(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state SendingPrimStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state SendingPrimStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__SendingPrimStatus;
 };
 
 void make_state_SSciAdjPrim__root__Active__root__Establishing__root__WaitingForInitCompletion(
     SSciAdjPrim *self, SSciAdjPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjPrim] Entering state WaitingForInitCompletion in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjPrim] Entering state WaitingForInitCompletion in region root__Active__root__Establishing__root");
     region->state = SSciAdjPrim__root__Active__root__Establishing__root__WaitingForInitCompletion;
 };
 

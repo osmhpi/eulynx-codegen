@@ -9,8 +9,8 @@ void make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForced
     FObserveAbilityToBeForcedToClear *self,
     FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state AbleToBeForcedToClear "
-        "in region root__ObserveAbilityToBeForcedToClear__root");
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state AbleToBeForcedToClear in region "
+        "root__ObserveAbilityToBeForcedToClear__root");
     region->state =
         FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear__root__AbleToBeForcedToClear;
 };
@@ -19,8 +19,7 @@ void make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForced
     FObserveAbilityToBeForcedToClear *self,
     FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state "
-        "NotAbleToBeForcedToClear in region "
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state NotAbleToBeForcedToClear in region "
         "root__ObserveAbilityToBeForcedToClear__root");
     region->state =
         FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear__root__NotAbleToBeForcedToClear;
@@ -51,8 +50,7 @@ void make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForced
 void make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear(
     FObserveAbilityToBeForcedToClear *self, FObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state "
-        "ObserveAbilityToBeForcedToClear in region root");
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state ObserveAbilityToBeForcedToClear in region root");
     region->state = FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear;
     make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForcedToClear__root(
         self, &region->ObserveAbilityToBeForcedToClear.root);
@@ -61,24 +59,21 @@ void make_state_FObserveAbilityToBeForcedToClear__root__ObserveAbilityToBeForced
 void make_state_FObserveAbilityToBeForcedToClear__root__WaitingForFinishBooting(
     FObserveAbilityToBeForcedToClear *self, FObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state "
-        "WaitingForFinishBooting in region root");
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state WaitingForFinishBooting in region root");
     region->state = FObserveAbilityToBeForcedToClear__root__WaitingForFinishBooting;
 };
 
 void make_state_FObserveAbilityToBeForcedToClear__root__FallbackMode(
     FObserveAbilityToBeForcedToClear *self, FObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state FallbackMode in "
-        "region root");
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state FallbackMode in region root");
     region->state = FObserveAbilityToBeForcedToClear__root__FallbackMode;
 };
 
 void make_state_FObserveAbilityToBeForcedToClear__root__TechnicalDisturbance(
     FObserveAbilityToBeForcedToClear *self, FObserveAbilityToBeForcedToClear__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToBeForcedToClear] Entering state TechnicalDisturbance "
-        "in region root");
+    LOG("[FObserveAbilityToBeForcedToClear] Entering state TechnicalDisturbance in region root");
     region->state = FObserveAbilityToBeForcedToClear__root__TechnicalDisturbance;
 };
 

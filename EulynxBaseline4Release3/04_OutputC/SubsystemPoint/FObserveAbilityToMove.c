@@ -8,8 +8,7 @@
 void make_state_FObserveAbilityToMove__root__WaitingForInitialising(FObserveAbilityToMove *self,
                                                                     FObserveAbilityToMove__root__state_struct *region)
 {
-    LOG("[FObserveAbilityToMove] Entering state WaitingForInitialising in region "
-        "root");
+    LOG("[FObserveAbilityToMove] Entering state WaitingForInitialising in region root");
     region->state = FObserveAbilityToMove__root__WaitingForInitialising;
 };
 

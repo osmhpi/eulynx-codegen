@@ -171,8 +171,7 @@ void make_state_FSciPReport__root__ReportingOverallPointStates__ReportingMsgPoin
 void make_state_FSciPReport__root__ReportingOverallPointStates__ReportingMsgPointPosition__Waiting(
     FSciPReport *self, FSciPReport__root__ReportingOverallPointStates__ReportingMsgPointPosition__state_struct *region)
 {
-    LOG("[FSciPReport] Entering state Waiting in region "
-        "root__ReportingOverallPointStates__ReportingMsgPointPosition");
+    LOG("[FSciPReport] Entering state Waiting in region root__ReportingOverallPointStates__ReportingMsgPointPosition");
     region->state = FSciPReport__root__ReportingOverallPointStates__ReportingMsgPointPosition__Waiting;
 };
 
@@ -205,8 +204,7 @@ void make_state_FSciPReport__root__ReportingOverallPointStates__ReportingMovemen
 void make_state_FSciPReport__root__ReportingOverallPointStates(FSciPReport *self,
                                                                FSciPReport__root__state_struct *region)
 {
-    LOG("[FSciPReport] Entering state ReportingOverallPointStates in region "
-        "root");
+    LOG("[FSciPReport] Entering state ReportingOverallPointStates in region root");
     region->state = FSciPReport__root__ReportingOverallPointStates;
     make_state_FSciPReport__root__ReportingOverallPointStates__ReportingAbilityToMove(
         self, &region->ReportingOverallPointStates.ReportingAbilityToMove);
@@ -219,8 +217,7 @@ void make_state_FSciPReport__root__ReportingOverallPointStates(FSciPReport *self
 void make_state_FSciPReport__root__InterfaceConnectionNotEstablished(FSciPReport *self,
                                                                      FSciPReport__root__state_struct *region)
 {
-    LOG("[FSciPReport] Entering state InterfaceConnectionNotEstablished in "
-        "region root");
+    LOG("[FSciPReport] Entering state InterfaceConnectionNotEstablished in region root");
     region->state = FSciPReport__root__InterfaceConnectionNotEstablished;
 };
 

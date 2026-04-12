@@ -8,24 +8,21 @@
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Day(
     FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
 {
-    LOG("[FObserveLuminosity] Entering state Day in region "
-        "root__ObservingLuminosity__root");
+    LOG("[FObserveLuminosity] Entering state Day in region root__ObservingLuminosity__root");
     region->state = FObserveLuminosity__root__ObservingLuminosity__root__Day;
 };
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Night(
     FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
 {
-    LOG("[FObserveLuminosity] Entering state Night in region "
-        "root__ObservingLuminosity__root");
+    LOG("[FObserveLuminosity] Entering state Night in region root__ObservingLuminosity__root");
     region->state = FObserveLuminosity__root__ObservingLuminosity__root__Night;
 };
 
 void make_state_FObserveLuminosity__root__ObservingLuminosity__root__Waiting(
     FObserveLuminosity *self, FObserveLuminosity__root__ObservingLuminosity__root__state_struct *region)
 {
-    LOG("[FObserveLuminosity] Entering state Waiting in region "
-        "root__ObservingLuminosity__root");
+    LOG("[FObserveLuminosity] Entering state Waiting in region root__ObservingLuminosity__root");
     region->state = FObserveLuminosity__root__ObservingLuminosity__root__Waiting;
 };
 

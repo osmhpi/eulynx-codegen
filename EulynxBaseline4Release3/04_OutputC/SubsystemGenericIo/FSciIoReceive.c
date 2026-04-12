@@ -8,8 +8,8 @@
 void make_state_FSciIoReceive__root__ReceivingCommands__OutputChannelState1__RequiredOutputChannel1StateCanNotBeSet(
     FSciIoReceive *self, FSciIoReceive__root__ReceivingCommands__OutputChannelState1__state_struct *region)
 {
-    LOG("[FSciIoReceive] Entering state RequiredOutputChannel1StateCanNotBeSet "
-        "in region root__ReceivingCommands__OutputChannelState1");
+    LOG("[FSciIoReceive] Entering state RequiredOutputChannel1StateCanNotBeSet in region "
+        "root__ReceivingCommands__OutputChannelState1");
     region->state = FSciIoReceive__root__ReceivingCommands__OutputChannelState1__RequiredOutputChannel1StateCanNotBeSet;
 };
 
@@ -33,8 +33,8 @@ void make_state_FSciIoReceive__root__ReceivingCommands__OutputChannelState1(
 void make_state_FSciIoReceive__root__ReceivingCommands__OutputChannelStateN__RequiredOutputChannelNStateCanNotBeSet(
     FSciIoReceive *self, FSciIoReceive__root__ReceivingCommands__OutputChannelStateN__state_struct *region)
 {
-    LOG("[FSciIoReceive] Entering state RequiredOutputChannelNStateCanNotBeSet "
-        "in region root__ReceivingCommands__OutputChannelStateN");
+    LOG("[FSciIoReceive] Entering state RequiredOutputChannelNStateCanNotBeSet in region "
+        "root__ReceivingCommands__OutputChannelStateN");
     region->state = FSciIoReceive__root__ReceivingCommands__OutputChannelStateN__RequiredOutputChannelNStateCanNotBeSet;
 };
 
@@ -68,8 +68,7 @@ void make_state_FSciIoReceive__root__ReceivingCommands(FSciIoReceive *self, FSci
 void make_state_FSciIoReceive__root__InterfaceConnectionClosed(FSciIoReceive *self,
                                                                FSciIoReceive__root__state_struct *region)
 {
-    LOG("[FSciIoReceive] Entering state InterfaceConnectionClosed in region "
-        "root");
+    LOG("[FSciIoReceive] Entering state InterfaceConnectionClosed in region root");
     region->state = FSciIoReceive__root__InterfaceConnectionClosed;
 };
 

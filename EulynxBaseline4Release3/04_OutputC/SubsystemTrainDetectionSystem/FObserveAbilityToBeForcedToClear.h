@@ -112,8 +112,7 @@ typedef struct FObserveAbilityToBeForcedToClear
     ChangeEvent Change550; // NOT d18in_Perform_FC_P_Or_FC_P_A
     ChangeEvent Change553; // NOT d18in_Perform_FC_P_Or_FC_P_A
     ChangeEvent Change234; // D32in_Critical_Failure_TVPS
-    ChangeEvent Change388; // d51out_EST_EfeS_State = "BOOTING" OR
-                           // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change388; // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change393; // d51out_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change403; // d51out_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change384; // d51out_EST_EfeS_State = "BOOTING"

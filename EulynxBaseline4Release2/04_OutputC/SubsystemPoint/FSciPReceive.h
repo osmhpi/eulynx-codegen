@@ -80,9 +80,8 @@ typedef struct FSciPReceive
     // Change Events
     ChangeEvent Change31;  // d11in_Observed_Ability_To_Move = "ABLE_TO_MOVE"
     ChangeEvent Change75;  // d12in_Required_PM_Position = "UNCOMMANDED"
-    ChangeEvent Change331; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI" OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change331; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State =
+                           // "NOT_READY_FOR_PDI" OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

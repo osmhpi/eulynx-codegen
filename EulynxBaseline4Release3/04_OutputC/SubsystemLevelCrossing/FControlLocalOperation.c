@@ -60,8 +60,7 @@ void make_state_FControlLocalOperation__root__ControlLocalOperation__ReceiveInpu
         *region)
 {
     LOG("[FControlLocalOperation] Entering state Allow in region "
-        "root__ControlLocalOperation__"
-        "ReceiveInputForLocalOperationByLocalOperator");
+        "root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator");
     region->state =
         FControlLocalOperation__root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator__Allow;
 };
@@ -72,8 +71,7 @@ void make_state_FControlLocalOperation__root__ControlLocalOperation__ReceiveInpu
         *region)
 {
     LOG("[FControlLocalOperation] Entering state Return in region "
-        "root__ControlLocalOperation__"
-        "ReceiveInputForLocalOperationByLocalOperator");
+        "root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator");
     region->state =
         FControlLocalOperation__root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator__Return;
 };
@@ -84,8 +82,7 @@ void make_state_FControlLocalOperation__root__ControlLocalOperation__ReceiveInpu
         *region)
 {
     LOG("[FControlLocalOperation] Entering state Waiting in region "
-        "root__ControlLocalOperation__"
-        "ReceiveInputForLocalOperationByLocalOperator");
+        "root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator");
     region->state =
         FControlLocalOperation__root__ControlLocalOperation__ReceiveInputForLocalOperationByLocalOperator__Waiting;
 };
@@ -144,8 +141,7 @@ void make_state_FControlLocalOperation__root__ControlLocalOperation__RequestByLo
 void make_state_FControlLocalOperation__root__ControlLocalOperation(FControlLocalOperation *self,
                                                                     FControlLocalOperation__root__state_struct *region)
 {
-    LOG("[FControlLocalOperation] Entering state ControlLocalOperation in region "
-        "root");
+    LOG("[FControlLocalOperation] Entering state ControlLocalOperation in region root");
     region->state = FControlLocalOperation__root__ControlLocalOperation;
     make_state_FControlLocalOperation__root__ControlLocalOperation__CommandHandoverToLocalOperation(
         self, &region->ControlLocalOperation.CommandHandoverToLocalOperation);

@@ -12,40 +12,35 @@ static void Cop1Init(SSciAdjSec *self)
 void make_state_SSciAdjSec__root__Active__root__Establishing__root__ReadyForInitialisation(
     SSciAdjSec *self, SSciAdjSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjSec] Entering state ReadyForInitialisation in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjSec] Entering state ReadyForInitialisation in region root__Active__root__Establishing__root");
     region->state = SSciAdjSec__root__Active__root__Establishing__root__ReadyForInitialisation;
 };
 
 void make_state_SSciAdjSec__root__Active__root__Establishing__root__SendingSecStatus(
     SSciAdjSec *self, SSciAdjSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjSec] Entering state SendingSecStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjSec] Entering state SendingSecStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjSec__root__Active__root__Establishing__root__SendingSecStatus;
 };
 
 void make_state_SSciAdjSec__root__Active__root__Establishing__root__VersionUnequal(
     SSciAdjSec *self, SSciAdjSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjSec] Entering state VersionUnequal in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjSec] Entering state VersionUnequal in region root__Active__root__Establishing__root");
     region->state = SSciAdjSec__root__Active__root__Establishing__root__VersionUnequal;
 };
 
 void make_state_SSciAdjSec__root__Active__root__Establishing__root__ReceivingPrimStatus(
     SSciAdjSec *self, SSciAdjSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjSec] Entering state ReceivingPrimStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjSec] Entering state ReceivingPrimStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjSec__root__Active__root__Establishing__root__ReceivingPrimStatus;
 };
 
 void make_state_SSciAdjSec__root__Active__root__Establishing__root__CheckingPrimStatus(
     SSciAdjSec *self, SSciAdjSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciAdjSec] Entering state CheckingPrimStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciAdjSec] Entering state CheckingPrimStatus in region root__Active__root__Establishing__root");
     region->state = SSciAdjSec__root__Active__root__Establishing__root__CheckingPrimStatus;
 };
 

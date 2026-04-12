@@ -160,21 +160,14 @@ typedef struct FSciTdsReportTrackCircuit
     ChangeEvent Change271; // d47in_Report_POM_Status = "Power supply NOK"
     ChangeEvent Change272; // d47in_Report_POM_Status = "Power supply NOK"
     ChangeEvent Change275; // d47in_Report_POM_Status = "Power supply OK"
-    ChangeEvent Change265; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state occupied"
-    ChangeEvent Change267; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state disturbed"
-    ChangeEvent Change268; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state disturbed"
-    ChangeEvent Change269; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state vacant"
-    ChangeEvent Change266; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state occupied"
-    ChangeEvent Change264; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state vacant"
-    ChangeEvent Change310; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change265; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state occupied"
+    ChangeEvent Change267; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state disturbed"
+    ChangeEvent Change268; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state disturbed"
+    ChangeEvent Change269; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state vacant"
+    ChangeEvent Change266; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state occupied"
+    ChangeEvent Change264; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state vacant"
+    ChangeEvent Change310; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

@@ -82,16 +82,12 @@ typedef struct FControlSafeStateOfAllPhysicalOutputChannel
     ChangeEvent Change348; // d51in_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change362; // d51in_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change367; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
-    ChangeEvent Change496; // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Physically_Disturbed"
-    ChangeEvent Change491; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Physically_Disturbed"
+    ChangeEvent Change496; // d9in_Monitored_Output_Channel_Disturbance_StateN = "Physically_Disturbed"
+    ChangeEvent Change491; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Physically_Disturbed"
     ChangeEvent Change381; // d51in_EST_EfeS_State = "OPERATIONAL"
     ChangeEvent Change378; // d51in_EST_EfeS_State = "OPERATIONAL"
-    ChangeEvent Change495; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Not_Physically_Disturbed" AND
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Not_Physically_Disturbed"
+    ChangeEvent Change495; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Not_Physically_Disturbed" AND
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Not_Physically_Disturbed"
 
     // Timeout Events
 

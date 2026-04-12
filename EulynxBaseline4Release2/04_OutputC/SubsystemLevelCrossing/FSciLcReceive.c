@@ -75,8 +75,7 @@ void make_state_FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLoca
     FSciLcReceive *self,
     FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover__state_struct *region)
 {
-    LOG("[FSciLcReceive] Entering state HandoverToLocalOperatorInitiated in "
-        "region "
+    LOG("[FSciLcReceive] Entering state HandoverToLocalOperatorInitiated in region "
         "root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover");
     region->state =
         FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover__HandoverToLocalOperatorInitiated;
@@ -86,8 +85,7 @@ void make_state_FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLoca
     FSciLcReceive *self,
     FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover__state_struct *region)
 {
-    LOG("[FSciLcReceive] Entering state HandoverToLocalOperatorEstablished in "
-        "region "
+    LOG("[FSciLcReceive] Entering state HandoverToLocalOperatorEstablished in region "
         "root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover");
     region->state =
         FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLocalOperationHandover__HandoverToLocalOperatorEstablished;
@@ -107,8 +105,7 @@ void make_state_FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceiveLoca
 void make_state_FSciLcReceive__root__ReceivingLevelCrossingCommands(FSciLcReceive *self,
                                                                     FSciLcReceive__root__state_struct *region)
 {
-    LOG("[FSciLcReceive] Entering state ReceivingLevelCrossingCommands in region "
-        "root");
+    LOG("[FSciLcReceive] Entering state ReceivingLevelCrossingCommands in region root");
     region->state = FSciLcReceive__root__ReceivingLevelCrossingCommands;
     make_state_FSciLcReceive__root__ReceivingLevelCrossingCommands__ReceivingActivationState(
         self, &region->ReceivingLevelCrossingCommands.ReceivingActivationState);

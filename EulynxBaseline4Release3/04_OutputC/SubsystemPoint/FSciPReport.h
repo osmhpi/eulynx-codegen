@@ -167,18 +167,13 @@ typedef struct FSciPReport
     // Change Events
     ChangeEvent Change40;  // d11in_Observed_Ability_To_Move = "ABLE_TO_MOVE"
     ChangeEvent Change43;  // d11in_Observed_Ability_To_Move = "UNABLE_TO_MOVE"
-    ChangeEvent Change8;   // (d14in_Observed_Point_Position <>
-                           // Mem_Last_Reported_Point_Position)
-    ChangeEvent Change11;  // (d17in_Observed_Degraded_Point_Position <>
-                           // Mem_Last_Reported_Degraded_Point_Position)
-    ChangeEvent Change7;   // (d14in_Observed_Point_Position <>
-                           // Mem_Last_Reported_Point_Position) OR
-                           // (d17in_Observed_Degraded_Point_Position <>
-                           // Mem_Last_Reported_Degraded_Point_Position)
+    ChangeEvent Change8;   // (d14in_Observed_Point_Position <> Mem_Last_Reported_Point_Position)
+    ChangeEvent Change11;  // (d17in_Observed_Degraded_Point_Position <> Mem_Last_Reported_Degraded_Point_Position)
+    ChangeEvent Change7;   // (d14in_Observed_Point_Position <> Mem_Last_Reported_Point_Position) OR
+                           // (d17in_Observed_Degraded_Point_Position <> Mem_Last_Reported_Degraded_Point_Position)
     ChangeEvent Change95;  // d13in_Observed_Movement_Failed
-    ChangeEvent Change316; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change316; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

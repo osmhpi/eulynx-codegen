@@ -157,40 +157,31 @@ typedef struct FControlLocalOperation
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change484; // d8in_Handover_To_Local_Operator_State =
-                           // "Established" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change486; // d8in_Handover_To_Local_Operator_State = "Initiated"
-                           // And D83in_Con_Use_Local_Operation
-    ChangeEvent Change490; // d8in_Handover_To_Local_Operator_State = "No
-                           // Handover" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change483; // d8in_Handover_To_Local_Operator_State =
-                           // "Established" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change489; // d8in_Handover_To_Local_Operator_State = "No
-                           // Handover" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change491; // d8in_Handover_To_Local_Operator_State = "No
-                           // Handover" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change487; // d8in_Handover_To_Local_Operator_State = "Initiated"
-                           // And D83in_Con_Use_Local_Operation
-    ChangeEvent Change488; // d8in_Handover_To_Local_Operator_State = "Initiated"
-                           // And D83in_Con_Use_Local_Operation
-    ChangeEvent Change485; // d8in_Handover_To_Local_Operator_State =
-                           // "Established" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change474; // D81in_Local_Operation_Handover = "Return handover from local
-                           // operator" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change473; // D81in_Local_Operation_Handover = "Allow handover to
-                           // local operator" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change472; // D81in_Local_Operation_Handover = "Allow handover to
-                           // local operator" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change476; // D81in_Local_Operation_Handover = "Return handover from local
-                           // operator" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change479; // D82in_Request_by_Local_Operator = "Request to activate the
-                           // level Crossing" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change482; // D82in_Request_by_Local_Operator = "Request to deactivate the
-                           // level Crossing" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change481; // D82in_Request_by_Local_Operator = "Request to deactivate the
-                           // level Crossing" And D83in_Con_Use_Local_Operation
-    ChangeEvent Change480; // D82in_Request_by_Local_Operator = "Request to activate the
-                           // level Crossing" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change484; // d8in_Handover_To_Local_Operator_State = "Established" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change486; // d8in_Handover_To_Local_Operator_State = "Initiated" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change490; // d8in_Handover_To_Local_Operator_State = "No Handover" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change483; // d8in_Handover_To_Local_Operator_State = "Established" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change489; // d8in_Handover_To_Local_Operator_State = "No Handover" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change491; // d8in_Handover_To_Local_Operator_State = "No Handover" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change487; // d8in_Handover_To_Local_Operator_State = "Initiated" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change488; // d8in_Handover_To_Local_Operator_State = "Initiated" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change485; // d8in_Handover_To_Local_Operator_State = "Established" And D83in_Con_Use_Local_Operation
+    ChangeEvent Change474; // D81in_Local_Operation_Handover = "Return handover from local operator" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change473; // D81in_Local_Operation_Handover = "Allow handover to local operator" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change472; // D81in_Local_Operation_Handover = "Allow handover to local operator" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change476; // D81in_Local_Operation_Handover = "Return handover from local operator" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change479; // D82in_Request_by_Local_Operator = "Request to activate the level Crossing" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change482; // D82in_Request_by_Local_Operator = "Request to deactivate the level Crossing" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change481; // D82in_Request_by_Local_Operator = "Request to deactivate the level Crossing" And
+                           // D83in_Con_Use_Local_Operation
+    ChangeEvent Change480; // D82in_Request_by_Local_Operator = "Request to activate the level Crossing" And
+                           // D83in_Con_Use_Local_Operation
 
     // Timeout Events
 

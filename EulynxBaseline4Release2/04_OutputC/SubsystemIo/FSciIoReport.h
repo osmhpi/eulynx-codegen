@@ -180,46 +180,36 @@ typedef struct FSciIoReport
 
     // Change Events
     ChangeEvent Change325; // d50in_PDI_Connection_State = "ESTABLISHED"
-    ChangeEvent Change461; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_Off"
-    ChangeEvent Change459; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_On"
-    ChangeEvent Change460; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND
-                           // d7in_Detected_Input_Channel_StateN = "Disturbed"
-    ChangeEvent Change466; // d7in_Detected_Input_Channel_State1 = "Switched_Off" AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_Off"
-    ChangeEvent Change465; // d7in_Detected_Input_Channel_State1 = "Switched_Off"
-                           // AND d7in_Detected_Input_Channel_StateN = "Disturbed"
-    ChangeEvent Change463; // d7in_Detected_Input_Channel_State1 = "Switched_On"
-                           // AND d7in_Detected_Input_Channel_StateN = "Disturbed"
-    ChangeEvent Change467; // d7in_Detected_Input_Channel_State1 = "Switched_On"AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_On"
-    ChangeEvent Change464; // d7in_Detected_Input_Channel_State1 = "Switched_On" AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_Off"
-    ChangeEvent Change462; // d7in_Detected_Input_Channel_State1 = "Switched_Off" AND
-                           // d7in_Detected_Input_Channel_StateN = "Switched_On"
+    ChangeEvent Change461; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND d7in_Detected_Input_Channel_StateN =
+                           // "Switched_Off"
+    ChangeEvent Change459; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND d7in_Detected_Input_Channel_StateN =
+                           // "Switched_On"
+    ChangeEvent Change460; // d7in_Detected_Input_Channel_State1 = "Disturbed" AND d7in_Detected_Input_Channel_StateN =
+                           // "Disturbed"
+    ChangeEvent Change466; // d7in_Detected_Input_Channel_State1 = "Switched_Off" AND d7in_Detected_Input_Channel_StateN
+                           // = "Switched_Off"
+    ChangeEvent Change465; // d7in_Detected_Input_Channel_State1 = "Switched_Off" AND d7in_Detected_Input_Channel_StateN
+                           // = "Disturbed"
+    ChangeEvent Change463; // d7in_Detected_Input_Channel_State1 = "Switched_On" AND d7in_Detected_Input_Channel_StateN
+                           // = "Disturbed"
+    ChangeEvent Change467; // d7in_Detected_Input_Channel_State1 = "Switched_On"AND d7in_Detected_Input_Channel_StateN =
+                           // "Switched_On"
+    ChangeEvent Change464; // d7in_Detected_Input_Channel_State1 = "Switched_On" AND d7in_Detected_Input_Channel_StateN
+                           // = "Switched_Off"
+    ChangeEvent Change462; // d7in_Detected_Input_Channel_State1 = "Switched_Off" AND d7in_Detected_Input_Channel_StateN
+                           // = "Switched_On"
     ChangeEvent Change326; // d50in_PDI_Connection_State = "ESTABLISHED"
-    ChangeEvent Change505; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Physically_Disturbed"AND
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Not_Physically_Disturbed"
-    ChangeEvent Change503; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Not_Physically_Disturbed"AND
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Physically_Disturbed"
-    ChangeEvent Change499; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Physically_Disturbed"AND
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Physically_Disturbed"
-    ChangeEvent Change504; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Not_Physically_Disturbed"AND
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Not_Physically_Disturbed"
-    ChangeEvent Change334; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change505; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Physically_Disturbed"AND
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Not_Physically_Disturbed"
+    ChangeEvent Change503; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Not_Physically_Disturbed"AND
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Physically_Disturbed"
+    ChangeEvent Change499; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Physically_Disturbed"AND
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Physically_Disturbed"
+    ChangeEvent Change504; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Not_Physically_Disturbed"AND
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Not_Physically_Disturbed"
+    ChangeEvent Change334; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State = "NOT_READY_FOR_PDI"OR
+                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

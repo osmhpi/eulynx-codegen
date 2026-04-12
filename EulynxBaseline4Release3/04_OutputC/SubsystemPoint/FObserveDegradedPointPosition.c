@@ -75,8 +75,8 @@ void make_state_FObserveDegradedPointPosition__root__ObserveDegradedPointPositio
     FObserveDegradedPointPosition *self,
     FObserveDegradedPointPosition__root__ObserveDegradedPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveDegradedPointPosition] Entering state WaitingForInitialisation "
-        "in region root__ObserveDegradedPointPosition__root");
+    LOG("[FObserveDegradedPointPosition] Entering state WaitingForInitialisation in region "
+        "root__ObserveDegradedPointPosition__root");
     region->state = FObserveDegradedPointPosition__root__ObserveDegradedPointPosition__root__WaitingForInitialisation;
 };
 
@@ -130,8 +130,7 @@ void make_state_FObserveDegradedPointPosition__root__ObserveDegradedPointPositio
 void make_state_FObserveDegradedPointPosition__root__ObserveDegradedPointPosition(
     FObserveDegradedPointPosition *self, FObserveDegradedPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveDegradedPointPosition] Entering state "
-        "ObserveDegradedPointPosition in region root");
+    LOG("[FObserveDegradedPointPosition] Entering state ObserveDegradedPointPosition in region root");
     region->state = FObserveDegradedPointPosition__root__ObserveDegradedPointPosition;
     make_state_FObserveDegradedPointPosition__root__ObserveDegradedPointPosition__root(
         self, &region->ObserveDegradedPointPosition.root);

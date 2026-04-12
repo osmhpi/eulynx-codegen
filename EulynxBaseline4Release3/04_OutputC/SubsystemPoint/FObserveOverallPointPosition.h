@@ -198,13 +198,10 @@ typedef struct FObserveOverallPointPosition
 
     // Change Events
     ChangeEvent Change25;  // D10in_PM1_Crucial_Position <> Mem_PM1_Crucial_Position
-    ChangeEvent Change30;  // D10in_PM1_Non_Crucial_Position <>
-                           // Mem_PM1_Non_Crucial_Position
+    ChangeEvent Change30;  // D10in_PM1_Non_Crucial_Position <> Mem_PM1_Non_Crucial_Position
     ChangeEvent Change31;  // D10in_PMi_Crucial_Position <> Mem_PMi_Crucial_Position
-    ChangeEvent Change32;  // D10in_PMk_Non_Crucial_Position <>
-                           // Mem_PMk_Non_Crucial_Position
-    ChangeEvent Change369; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "BOOTING" OR
+    ChangeEvent Change32;  // D10in_PMk_Non_Crucial_Position <> Mem_PMk_Non_Crucial_Position
+    ChangeEvent Change369; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "BOOTING" OR
                            // d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events

@@ -138,21 +138,16 @@ typedef struct FSciIoReceive
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change498; // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Not_Physically_Disturbed"
+    ChangeEvent Change498; // d9in_Monitored_Output_Channel_Disturbance_State1 = "Not_Physically_Disturbed"
     ChangeEvent Change543; // Not d13in_Switch_Off_Each_Physical_Output_Channel
     ChangeEvent Change104; // d13in_Switch_Off_Each_Physical_Output_Channel OR
-                           // d9in_Monitored_Output_Channel_Disturbance_State1 =
-                           // "Physically_Disturbed"
-    ChangeEvent Change493; // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Not_Physically_Disturbed"
+                           // d9in_Monitored_Output_Channel_Disturbance_State1 = "Physically_Disturbed"
+    ChangeEvent Change493; // d9in_Monitored_Output_Channel_Disturbance_StateN = "Not_Physically_Disturbed"
     ChangeEvent Change542; // Not d13in_Switch_Off_Each_Physical_Output_Channel
     ChangeEvent Change106; // d13in_Switch_Off_Each_Physical_Output_Channel OR
-                           // d9in_Monitored_Output_Channel_Disturbance_StateN =
-                           // "Physically_Disturbed"
-    ChangeEvent Change317; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+                           // d9in_Monitored_Output_Channel_Disturbance_StateN = "Physically_Disturbed"
+    ChangeEvent Change317; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
     ChangeEvent Change305; // d50in_PDI_Connection_State = "ESTABLISHED"
 
     // Timeout Events

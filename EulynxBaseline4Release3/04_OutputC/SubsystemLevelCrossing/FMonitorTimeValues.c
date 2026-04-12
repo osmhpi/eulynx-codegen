@@ -38,8 +38,7 @@ static void Cop3ReactOnNoClosureTimeOverrun(FMonitorTimeValues *self)
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__Idle(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state Idle in region "
-        "root__MonitorTimeValues__MonitorClosureTime");
+    LOG("[FMonitorTimeValues] Entering state Idle in region root__MonitorTimeValues__MonitorClosureTime");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__Idle;
 };
 
@@ -54,8 +53,7 @@ void make_state_FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime_
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__ClosureTimeExpired(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state ClosureTimeExpired in region "
-        "root__MonitorTimeValues__MonitorClosureTime");
+    LOG("[FMonitorTimeValues] Entering state ClosureTimeExpired in region root__MonitorTimeValues__MonitorClosureTime");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime__ClosureTimeExpired;
 };
 
@@ -73,32 +71,28 @@ void make_state_FMonitorTimeValues__root__MonitorTimeValues__MonitorClosureTime(
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__Idle(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state Idle in region "
-        "root__MonitorTimeValues__PdiConLossDelay");
+    LOG("[FMonitorTimeValues] Entering state Idle in region root__MonitorTimeValues__PdiConLossDelay");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__Idle;
 };
 
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__WaitingForDelay(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state WaitingForDelay in region "
-        "root__MonitorTimeValues__PdiConLossDelay");
+    LOG("[FMonitorTimeValues] Entering state WaitingForDelay in region root__MonitorTimeValues__PdiConLossDelay");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__WaitingForDelay;
 };
 
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__DelayReached(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state DelayReached in region "
-        "root__MonitorTimeValues__PdiConLossDelay");
+    LOG("[FMonitorTimeValues] Entering state DelayReached in region root__MonitorTimeValues__PdiConLossDelay");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__DelayReached;
 };
 
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__Waiting(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state Waiting in region "
-        "root__MonitorTimeValues__PdiConLossDelay");
+    LOG("[FMonitorTimeValues] Entering state Waiting in region root__MonitorTimeValues__PdiConLossDelay");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay__Waiting;
 };
 
@@ -114,8 +108,7 @@ void make_state_FMonitorTimeValues__root__MonitorTimeValues__PdiConLossDelay(
 void make_state_FMonitorTimeValues__root__WaitingForFinishBooting(FMonitorTimeValues *self,
                                                                   FMonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state WaitingForFinishBooting in region "
-        "root");
+    LOG("[FMonitorTimeValues] Entering state WaitingForFinishBooting in region root");
     region->state = FMonitorTimeValues__root__WaitingForFinishBooting;
 };
 
@@ -129,8 +122,7 @@ void make_state_FMonitorTimeValues__root__Fallbackmode(FMonitorTimeValues *self,
 void make_state_FMonitorTimeValues__root__TechnicalDisturbance(FMonitorTimeValues *self,
                                                                FMonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state TechnicalDisturbance in region "
-        "root");
+    LOG("[FMonitorTimeValues] Entering state TechnicalDisturbance in region root");
     region->state = FMonitorTimeValues__root__TechnicalDisturbance;
 };
 

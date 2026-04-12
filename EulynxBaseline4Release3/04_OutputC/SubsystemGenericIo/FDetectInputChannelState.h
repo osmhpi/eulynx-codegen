@@ -163,34 +163,28 @@ typedef struct FDetectInputChannelState
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change5;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF")
-                          // OR (D11in_State_RIC = "ON" AND D22in_State_VIC = "ON")
-    ChangeEvent Change51; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change5;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF") OR (D11in_State_RIC = "ON" AND
+                          // D22in_State_VIC = "ON")
+    ChangeEvent Change51; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change58; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON"
-    ChangeEvent Change6;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF")
-                          // OR (D11in_State_RIC = "ON" AND D22in_State_VIC = "ON")
-    ChangeEvent Change48; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change6;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF") OR (D11in_State_RIC = "ON" AND
+                          // D22in_State_VIC = "ON")
+    ChangeEvent Change48; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change65; // D11in_State_RIC = "ON" AND D22in_State_VIC = "OFF"
-    ChangeEvent Change47; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change47; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change56; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON"
     ChangeEvent Change64; // D11in_State_RIC = "ON" AND D22in_State_VIC = "OFF"
     ChangeEvent Change59; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON"
     ChangeEvent Change63; // D11in_State_RIC = "ON" AND D22in_State_VIC = "OFF"
-    ChangeEvent Change3;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON") OR
-                          // (D11in_State_RIC = "ON" AND D22in_State_VIC = "OFF")
-    ChangeEvent Change50; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change3;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON") OR (D11in_State_RIC = "ON" AND
+                          // D22in_State_VIC = "OFF")
+    ChangeEvent Change50; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change57; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF"
-    ChangeEvent Change4;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON") OR
-                          // (D11in_State_RIC = "ON" AND D22in_State_VIC = "OFF")
-    ChangeEvent Change46; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change4;  // (D11in_State_RIC = "OFF" AND D22in_State_VIC = "ON") OR (D11in_State_RIC = "ON" AND
+                          // D22in_State_VIC = "OFF")
+    ChangeEvent Change46; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change67; // D11in_State_RIC = "ON" AND D22in_State_VIC = "ON"
-    ChangeEvent Change49; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC =
-                          // "DISTURBED"
+    ChangeEvent Change49; // D11in_State_RIC = "DISTURBED" OR D22in_State_VIC = "DISTURBED"
     ChangeEvent Change55; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF"
     ChangeEvent Change66; // D11in_State_RIC = "ON" AND D22in_State_VIC = "ON"
     ChangeEvent Change54; // D11in_State_RIC = "OFF" AND D22in_State_VIC = "OFF"

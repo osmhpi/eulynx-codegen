@@ -100,16 +100,12 @@ typedef struct FControlTimer
 
     // Change Events
     ChangeEvent Change492;  // d8in_Last_Wheel_Out
-    ChangeEvent Change1109; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
+    ChangeEvent Change1109; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
     ChangeEvent Change493;  // d8in_Last_Wheel_Out
-    ChangeEvent Change1107; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
-    ChangeEvent Change1108; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
+    ChangeEvent Change1107; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
+    ChangeEvent Change1108; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
     ChangeEvent Change255;  // D32in_Critical_Failure_TVPS
-    ChangeEvent Change410;  // d51out_EST_EfeS_State = "BOOTING" OR
-                            // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change410;  // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change415;  // d51out_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change422;  // d51out_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change407;  // d51out_EST_EfeS_State = "BOOTING"

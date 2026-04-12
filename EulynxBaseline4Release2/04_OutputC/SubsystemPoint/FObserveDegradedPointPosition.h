@@ -157,67 +157,45 @@ typedef struct FObserveDegradedPointPosition
 
     // Change Events
     ChangeEvent Change376; // d51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change9;   // (d14in_Observed_Point_Position = "LEFT" OR
-                           // d14in_Observed_Point_Position = "RIGHT") OR
-                           // ((D22in_PM1_Crucial_Position <> D23in_PM1n_Crucial_Position)
-                           // AND D26in_Con_PM1n_Crucial_Activation) OR
-                           // ((D24in_PM2_Non_Crucial_Position <> D22in_PM1_Crucial_Position
-                           // AND D24in_PM2_Non_Crucial_Position <> "UNINTENDED_POSITION"
-                           // AND D24in_PM2_Non_Crucial_Position <> "NO_END_POSITION")AND
-                           // D27in_Con_PM2_Non_Crucial_Activation) OR
-                           // ((D25in_PM2n_Non_Crucial_Position <>
-                           // D22in_PM1_Crucial_Position AND D25in_PM2n_Non_Crucial_Position
-                           // <> "UNINTENDED_POSITION" AND D25in_PM2n_Non_Crucial_Position
-                           // <> "NO_END_POSITION")AND
-                           // D28in_Con_PM2n_Non_Crucial_Activation)
-    ChangeEvent Change186; // D22in_PM1_Crucial_Position = "LEFT" AND
-                           // (D23in_PM1n_Crucial_Position = "LEFT" OR NOT
-                           // D26in_Con_PM1n_Crucial_Activation) AND
-                           // ((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") OR
-                           // (D24in_PM2_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION"))
-    ChangeEvent Change187; // D22in_PM1_Crucial_Position = "LEFT" AND
-                           // (D23in_PM1n_Crucial_Position = "LEFT" OR NOT
-                           // D26in_Con_PM1n_Crucial_Activation) AND
-                           // ((((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") AND
-                           // D24in_PM2_Non_Crucial_Position <> "RIGHT")) OR
-                           // (((D24in_PM2_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION") AND
+    ChangeEvent
+        Change9; // (d14in_Observed_Point_Position = "LEFT" OR d14in_Observed_Point_Position = "RIGHT") OR
+                 // ((D22in_PM1_Crucial_Position <> D23in_PM1n_Crucial_Position) AND D26in_Con_PM1n_Crucial_Activation)
+                 // OR ((D24in_PM2_Non_Crucial_Position <> D22in_PM1_Crucial_Position AND D24in_PM2_Non_Crucial_Position
+                 // <> "UNINTENDED_POSITION" AND D24in_PM2_Non_Crucial_Position <> "NO_END_POSITION")AND
+                 // D27in_Con_PM2_Non_Crucial_Activation) OR ((D25in_PM2n_Non_Crucial_Position <>
+                 // D22in_PM1_Crucial_Position AND D25in_PM2n_Non_Crucial_Position <> "UNINTENDED_POSITION" AND
+                 // D25in_PM2n_Non_Crucial_Position <> "NO_END_POSITION")AND D28in_Con_PM2n_Non_Crucial_Activation)
+    ChangeEvent
+        Change186; // D22in_PM1_Crucial_Position = "LEFT" AND (D23in_PM1n_Crucial_Position = "LEFT" OR NOT
+                   // D26in_Con_PM1n_Crucial_Activation) AND ((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
+                   // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") OR (D24in_PM2_Non_Crucial_Position =
+                   // "NO_END_POSITION" OR D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION"))
+    ChangeEvent Change187; // D22in_PM1_Crucial_Position = "LEFT" AND (D23in_PM1n_Crucial_Position = "LEFT" OR NOT
+                           // D26in_Con_PM1n_Crucial_Activation) AND ((((D25in_PM2n_Non_Crucial_Position =
+                           // "NO_END_POSITION" OR D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") AND
+                           // D24in_PM2_Non_Crucial_Position <> "RIGHT")) OR (((D24in_PM2_Non_Crucial_Position =
+                           // "NO_END_POSITION" OR D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION") AND
                            // D25in_PM2n_Non_Crucial_Position <> "RIGHT")))
-    ChangeEvent Change188; // D22in_PM1_Crucial_Position = "RIGHT" AND
-                           // (D23in_PM1n_Crucial_Position = "RIGHT" OR NOT
-                           // D26in_Con_PM1n_Crucial_Activation) AND
-                           // ((((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") AND
-                           // D24in_PM2_Non_Crucial_Position <> "LEFT")) OR
-                           // (((D24in_PM2_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION") AND
+    ChangeEvent Change188; // D22in_PM1_Crucial_Position = "RIGHT" AND (D23in_PM1n_Crucial_Position = "RIGHT" OR NOT
+                           // D26in_Con_PM1n_Crucial_Activation) AND ((((D25in_PM2n_Non_Crucial_Position =
+                           // "NO_END_POSITION" OR D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") AND
+                           // D24in_PM2_Non_Crucial_Position <> "LEFT")) OR (((D24in_PM2_Non_Crucial_Position =
+                           // "NO_END_POSITION" OR D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION") AND
                            // D25in_PM2n_Non_Crucial_Position <> "LEFT")))
-    ChangeEvent Change10;  // (d14in_Observed_Point_Position = "LEFT" OR
-                           // d14in_Observed_Point_Position = "RIGHT") OR
-                           // ((D22in_PM1_Crucial_Position <> D23in_PM1n_Crucial_Position)
-                           // AND D26in_Con_PM1n_Crucial_Activation) OR
-                           // ((D24in_PM2_Non_Crucial_Position <>
-                           // D22in_PM1_Crucial_Position AND D24in_PM2_Non_Crucial_Position
-                           // <> "UNINTENDED_POSITION" AND D24in_PM2_Non_Crucial_Position
-                           // <> "NO_END_POSITION")AND
-                           // D27in_Con_PM2_Non_Crucial_Activation)
-                           // OR((D25in_PM2n_Non_Crucial_Position <>
-                           // D22in_PM1_Crucial_Position AND
-                           // D25in_PM2n_Non_Crucial_Position <> "UNINTENDED_POSITION" AND
-                           // D25in_PM2n_Non_Crucial_Position <> "NO_END_POSITION")AND
-                           // D28in_Con_PM2n_Non_Crucial_Activation)
-    ChangeEvent Change189; // D22in_PM1_Crucial_Position = "RIGHT" AND
-                           // (D23in_PM1n_Crucial_Position = "RIGHT" OR NOT
-                           // D26in_Con_PM1n_Crucial_Activation) AND
-                           // ((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") OR
-                           // (D24in_PM2_Non_Crucial_Position = "NO_END_POSITION" OR
-                           // D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION"))
-    ChangeEvent Change391; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "BOOTING" OR
+    ChangeEvent
+        Change10; // (d14in_Observed_Point_Position = "LEFT" OR d14in_Observed_Point_Position = "RIGHT") OR
+                  // ((D22in_PM1_Crucial_Position <> D23in_PM1n_Crucial_Position) AND D26in_Con_PM1n_Crucial_Activation)
+                  // OR ((D24in_PM2_Non_Crucial_Position <> D22in_PM1_Crucial_Position AND
+                  // D24in_PM2_Non_Crucial_Position <> "UNINTENDED_POSITION" AND D24in_PM2_Non_Crucial_Position <>
+                  // "NO_END_POSITION")AND D27in_Con_PM2_Non_Crucial_Activation) OR((D25in_PM2n_Non_Crucial_Position <>
+                  // D22in_PM1_Crucial_Position AND D25in_PM2n_Non_Crucial_Position <> "UNINTENDED_POSITION" AND
+                  // D25in_PM2n_Non_Crucial_Position <> "NO_END_POSITION")AND D28in_Con_PM2n_Non_Crucial_Activation)
+    ChangeEvent
+        Change189; // D22in_PM1_Crucial_Position = "RIGHT" AND (D23in_PM1n_Crucial_Position = "RIGHT" OR NOT
+                   // D26in_Con_PM1n_Crucial_Activation) AND ((D25in_PM2n_Non_Crucial_Position = "NO_END_POSITION" OR
+                   // D25in_PM2n_Non_Crucial_Position = "UNINTENDED_POSITION") OR (D24in_PM2_Non_Crucial_Position =
+                   // "NO_END_POSITION" OR D24in_PM2_Non_Crucial_Position = "UNINTENDED_POSITION"))
+    ChangeEvent Change391; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "BOOTING" OR
                            // d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events

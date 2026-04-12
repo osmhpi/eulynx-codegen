@@ -8,24 +8,21 @@
 void make_state_FControlAndObserve4WPm__root__Operating__root__Detection(
     FControlAndObserve4WPm *self, FControlAndObserve4WPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlAndObserve4WPm] Entering state Detection in region "
-        "root__Operating__root");
+    LOG("[FControlAndObserve4WPm] Entering state Detection in region root__Operating__root");
     region->state = FControlAndObserve4WPm__root__Operating__root__Detection;
 };
 
 void make_state_FControlAndObserve4WPm__root__Operating__root__MovingRightPm(
     FControlAndObserve4WPm *self, FControlAndObserve4WPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlAndObserve4WPm] Entering state MovingRightPm in region "
-        "root__Operating__root");
+    LOG("[FControlAndObserve4WPm] Entering state MovingRightPm in region root__Operating__root");
     region->state = FControlAndObserve4WPm__root__Operating__root__MovingRightPm;
 };
 
 void make_state_FControlAndObserve4WPm__root__Operating__root__MovingLeftPm(
     FControlAndObserve4WPm *self, FControlAndObserve4WPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlAndObserve4WPm] Entering state MovingLeftPm in region "
-        "root__Operating__root");
+    LOG("[FControlAndObserve4WPm] Entering state MovingLeftPm in region root__Operating__root");
     region->state = FControlAndObserve4WPm__root__Operating__root__MovingLeftPm;
 };
 
@@ -51,8 +48,7 @@ void make_state_FControlAndObserve4WPm__root__Operating(FControlAndObserve4WPm *
 void make_state_FControlAndObserve4WPm__root__WaitingForInitialising(FControlAndObserve4WPm *self,
                                                                      FControlAndObserve4WPm__root__state_struct *region)
 {
-    LOG("[FControlAndObserve4WPm] Entering state WaitingForInitialising in "
-        "region root");
+    LOG("[FControlAndObserve4WPm] Entering state WaitingForInitialising in region root");
     region->state = FControlAndObserve4WPm__root__WaitingForInitialising;
 };
 

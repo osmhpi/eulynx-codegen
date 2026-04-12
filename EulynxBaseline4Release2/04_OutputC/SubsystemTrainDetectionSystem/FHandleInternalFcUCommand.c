@@ -8,8 +8,7 @@
 void make_state_FHandleInternalFcUCommand__root__ReceivingCommandsFromInternal(
     FHandleInternalFcUCommand *self, FHandleInternalFcUCommand__root__state_struct *region)
 {
-    LOG("[FHandleInternalFcUCommand] Entering state "
-        "ReceivingCommandsFromInternal in region root");
+    LOG("[FHandleInternalFcUCommand] Entering state ReceivingCommandsFromInternal in region root");
     region->state = FHandleInternalFcUCommand__root__ReceivingCommandsFromInternal;
 };
 

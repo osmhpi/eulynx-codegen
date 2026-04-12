@@ -62,24 +62,24 @@ typedef struct FObserveDetectionElement
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change13; // D108in_Detection_Element_Status = "Detection element
-                          // occupied" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change12; // D108in_Detection_Element_Status = "Detection element
-                          // vacant" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change14; // D108in_Detection_Element_Status = "Detection element
-                          // failed" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change18; // D108in_Detection_Element_Status = "Detection element
-                          // vacant" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change19; // D108in_Detection_Element_Status = "Detection element
-                          // failed" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change16; // D108in_Detection_Element_Status = "Detection element
-                          // occupied" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change15; // D108in_Detection_Element_Status = "Detection element
-                          // failed" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change20; // D108in_Detection_Element_Status = "Detection element
-                          // occupied" AND D118in_Con_Use_Detection_Element
-    ChangeEvent Change17; // D108in_Detection_Element_Status = "Detection element
-                          // vacant" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change13; // D108in_Detection_Element_Status = "Detection element occupied" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change12; // D108in_Detection_Element_Status = "Detection element vacant" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change14; // D108in_Detection_Element_Status = "Detection element failed" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change18; // D108in_Detection_Element_Status = "Detection element vacant" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change19; // D108in_Detection_Element_Status = "Detection element failed" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change16; // D108in_Detection_Element_Status = "Detection element occupied" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change15; // D108in_Detection_Element_Status = "Detection element failed" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change20; // D108in_Detection_Element_Status = "Detection element occupied" AND D118in_Con_Use_Detection_Element
+    ChangeEvent
+        Change17; // D108in_Detection_Element_Status = "Detection element vacant" AND D118in_Con_Use_Detection_Element
 
     // Timeout Events
 

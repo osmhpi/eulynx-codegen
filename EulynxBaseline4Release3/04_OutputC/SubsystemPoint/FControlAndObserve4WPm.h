@@ -153,8 +153,7 @@ typedef struct FControlAndObserve4WPm
     ChangeEvent Change76;  // d12in_Required_PM_Position = "RIGHT"
     ChangeEvent Change81;  // d12in_Required_PM_Position = "UNCOMMANDED"
     ChangeEvent Change328; // d51in_EST_EfeS_State = "BOOTING"
-    ChangeEvent Change372; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "FALLBACK_MODE"
+    ChangeEvent Change372; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change176; // D26in_Internal_Trigger_Ability_To_Move_PM_Available
     ChangeEvent Change557; // NOT D26in_Internal_Trigger_Ability_To_Move_PM_Available
     ChangeEvent Change329; // d51in_EST_EfeS_State = "BOOTING"

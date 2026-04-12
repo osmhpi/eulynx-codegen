@@ -147,15 +147,11 @@ typedef struct FSciLcReceive
 
     // Change Events
     ChangeEvent Change411; // d53in_Time_Expired = "Delay Expired"
-    ChangeEvent Change322; // d51in_EST_EfeS_State  = "INITIALISING" AND
-                           // D55in_Con_Inital_Activate_LCPF = TRUE
-    ChangeEvent Change323; // d51in_EST_EfeS_State  = "INITIALISING" AND
-                           // D55in_Con_Inital_Activate_LCPF = TRUE
+    ChangeEvent Change322; // d51in_EST_EfeS_State  = "INITIALISING" AND D55in_Con_Inital_Activate_LCPF = TRUE
+    ChangeEvent Change323; // d51in_EST_EfeS_State  = "INITIALISING" AND D55in_Con_Inital_Activate_LCPF = TRUE
     ChangeEvent Change320; // d51in_EST_EfeS_State  = "BOOTING"
-    ChangeEvent Change355; // d51in_EST_EfeS_State = "FALLBACK_MODE" OR
-                           // d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE"
-    ChangeEvent Change325; // d51in_EST_EfeS_State  = "OPERATIONAL" OR
-                           // d51in_EST_EfeS_State  = "BOOTING" OR
+    ChangeEvent Change355; // d51in_EST_EfeS_State = "FALLBACK_MODE" OR d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change325; // d51in_EST_EfeS_State  = "OPERATIONAL" OR d51in_EST_EfeS_State  = "BOOTING" OR
                            // d51in_EST_EfeS_State  = "INITIALISING"
     ChangeEvent Change319; // d51in_EST_EfeS_State  = "BOOTING"
 

@@ -18,8 +18,7 @@ void make_state_FControlLuminosity__root__OperatingVoltage__root__ControllingLum
     FControlLuminosity *self,
     FControlLuminosity__root__OperatingVoltage__root__ControllingLuminosity__root__state_struct *region)
 {
-    LOG("[FControlLuminosity] Entering state Day in region "
-        "root__OperatingVoltage__root__ControllingLuminosity__root");
+    LOG("[FControlLuminosity] Entering state Day in region root__OperatingVoltage__root__ControllingLuminosity__root");
     region->state = FControlLuminosity__root__OperatingVoltage__root__ControllingLuminosity__root__Day;
 };
 
@@ -71,8 +70,7 @@ void make_state_FControlLuminosity__root__OperatingVoltage__root__ControllingLum
 void make_state_FControlLuminosity__root__OperatingVoltage__root__ControllingLuminosity(
     FControlLuminosity *self, FControlLuminosity__root__OperatingVoltage__root__state_struct *region)
 {
-    LOG("[FControlLuminosity] Entering state ControllingLuminosity in region "
-        "root__OperatingVoltage__root");
+    LOG("[FControlLuminosity] Entering state ControllingLuminosity in region root__OperatingVoltage__root");
     region->state = FControlLuminosity__root__OperatingVoltage__root__ControllingLuminosity;
     make_state_FControlLuminosity__root__OperatingVoltage__root__ControllingLuminosity__root(
         self, &region->ControllingLuminosity.root);

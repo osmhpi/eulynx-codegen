@@ -8,16 +8,14 @@
 void make_state_FMonitorOutputChannelDisturbanceState__root__NotPhysicallyDisturbed(
     FMonitorOutputChannelDisturbanceState *self, FMonitorOutputChannelDisturbanceState__root__state_struct *region)
 {
-    LOG("[FMonitorOutputChannelDisturbanceState] Entering state "
-        "NotPhysicallyDisturbed in region root");
+    LOG("[FMonitorOutputChannelDisturbanceState] Entering state NotPhysicallyDisturbed in region root");
     region->state = FMonitorOutputChannelDisturbanceState__root__NotPhysicallyDisturbed;
 };
 
 void make_state_FMonitorOutputChannelDisturbanceState__root__PhysicallyDisturbed(
     FMonitorOutputChannelDisturbanceState *self, FMonitorOutputChannelDisturbanceState__root__state_struct *region)
 {
-    LOG("[FMonitorOutputChannelDisturbanceState] Entering state "
-        "PhysicallyDisturbed in region root");
+    LOG("[FMonitorOutputChannelDisturbanceState] Entering state PhysicallyDisturbed in region root");
     region->state = FMonitorOutputChannelDisturbanceState__root__PhysicallyDisturbed;
 };
 

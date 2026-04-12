@@ -146,19 +146,16 @@ typedef struct FSciLsReceive
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change311; // D4in_Fault_Lamps_Aspect_1 OR D5in_Fault_Lamps_Aspect_2 OR
-                           // D6in_Fault_Lamps_Most_Restrict
+    ChangeEvent Change311; // D4in_Fault_Lamps_Aspect_1 OR D5in_Fault_Lamps_Aspect_2 OR D6in_Fault_Lamps_Most_Restrict
     ChangeEvent Change581; // NOT D4in_Fault_Lamps_Aspect_1
     ChangeEvent Change584; // NOT D5in_Fault_Lamps_Aspect_2
     ChangeEvent Change587; // NOT D6in_Fault_Lamps_Most_Restrict
     ChangeEvent Change86;  // D13in_Luminosity_Day_Fault OR D14in_Luminosity_Night_Fault
     ChangeEvent Change547; // NOT D13in_Luminosity_Day_Fault
     ChangeEvent Change550; // NOT D14in_Luminosity_Night_Fault
-    ChangeEvent Change332; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI" OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI" OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change332; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State = "NOT_READY_FOR_PDI" OR
+                           // d50in_PDI_Connection_State = "READY_FOR_PDI" OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

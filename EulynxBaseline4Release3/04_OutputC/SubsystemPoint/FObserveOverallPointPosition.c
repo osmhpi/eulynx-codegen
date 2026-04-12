@@ -200,8 +200,7 @@ void make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition_
     FObserveOverallPointPosition *self,
     FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveOverallPointPosition] Entering state Left in region "
-        "root__ObserveOverallPointPosition__root");
+    LOG("[FObserveOverallPointPosition] Entering state Left in region root__ObserveOverallPointPosition__root");
     region->state = FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__Left;
 };
 
@@ -209,8 +208,7 @@ void make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition_
     FObserveOverallPointPosition *self,
     FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveOverallPointPosition] Entering state Right in region "
-        "root__ObserveOverallPointPosition__root");
+    LOG("[FObserveOverallPointPosition] Entering state Right in region root__ObserveOverallPointPosition__root");
     region->state = FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__Right;
 };
 
@@ -227,8 +225,8 @@ void make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition_
     FObserveOverallPointPosition *self,
     FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveOverallPointPosition] Entering state UnintendedPosition in "
-        "region root__ObserveOverallPointPosition__root");
+    LOG("[FObserveOverallPointPosition] Entering state UnintendedPosition in region "
+        "root__ObserveOverallPointPosition__root");
     region->state = FObserveOverallPointPosition__root__ObserveOverallPointPosition__root__UnintendedPosition;
 };
 
@@ -309,8 +307,7 @@ void make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition_
 void make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition(
     FObserveOverallPointPosition *self, FObserveOverallPointPosition__root__state_struct *region)
 {
-    LOG("[FObserveOverallPointPosition] Entering state "
-        "ObserveOverallPointPosition in region root");
+    LOG("[FObserveOverallPointPosition] Entering state ObserveOverallPointPosition in region root");
     region->state = FObserveOverallPointPosition__root__ObserveOverallPointPosition;
     make_state_FObserveOverallPointPosition__root__ObserveOverallPointPosition__root(
         self, &region->ObserveOverallPointPosition.root);

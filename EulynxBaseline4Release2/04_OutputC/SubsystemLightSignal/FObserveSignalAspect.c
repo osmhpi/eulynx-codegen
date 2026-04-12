@@ -8,40 +8,35 @@
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect__root__SignalAspect2(
     FObserveSignalAspect *self, FObserveSignalAspect__root__ObservingSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state SignalAspect2 in region "
-        "root__ObservingSignalAspect__root");
+    LOG("[FObserveSignalAspect] Entering state SignalAspect2 in region root__ObservingSignalAspect__root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect__root__SignalAspect2;
 };
 
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect__root__NoSignalAspect(
     FObserveSignalAspect *self, FObserveSignalAspect__root__ObservingSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state NoSignalAspect in region "
-        "root__ObservingSignalAspect__root");
+    LOG("[FObserveSignalAspect] Entering state NoSignalAspect in region root__ObservingSignalAspect__root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect__root__NoSignalAspect;
 };
 
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect__root__Waiting(
     FObserveSignalAspect *self, FObserveSignalAspect__root__ObservingSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state Waiting in region "
-        "root__ObservingSignalAspect__root");
+    LOG("[FObserveSignalAspect] Entering state Waiting in region root__ObservingSignalAspect__root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect__root__Waiting;
 };
 
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect__root__MostRestrictAspect(
     FObserveSignalAspect *self, FObserveSignalAspect__root__ObservingSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state MostRestrictAspect in region "
-        "root__ObservingSignalAspect__root");
+    LOG("[FObserveSignalAspect] Entering state MostRestrictAspect in region root__ObservingSignalAspect__root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect__root__MostRestrictAspect;
 };
 
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect__root__SignalAspect1(
     FObserveSignalAspect *self, FObserveSignalAspect__root__ObservingSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state SignalAspect1 in region "
-        "root__ObservingSignalAspect__root");
+    LOG("[FObserveSignalAspect] Entering state SignalAspect1 in region root__ObservingSignalAspect__root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect__root__SignalAspect1;
 };
 
@@ -64,8 +59,7 @@ void make_state_FObserveSignalAspect__root__NationalAspect(FObserveSignalAspect 
 void make_state_FObserveSignalAspect__root__ObservingSignalAspect(FObserveSignalAspect *self,
                                                                   FObserveSignalAspect__root__state_struct *region)
 {
-    LOG("[FObserveSignalAspect] Entering state ObservingSignalAspect in region "
-        "root");
+    LOG("[FObserveSignalAspect] Entering state ObservingSignalAspect in region root");
     region->state = FObserveSignalAspect__root__ObservingSignalAspect;
     make_state_FObserveSignalAspect__root__ObservingSignalAspect__root(self, &region->ObservingSignalAspect.root);
 };

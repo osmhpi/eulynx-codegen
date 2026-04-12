@@ -242,8 +242,7 @@ void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root_
     FSciTdsReportTrackCircuit *self,
     FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTrackCircuit] Entering state Waiting in region "
-        "root__ReportingOccupancyStatus__root");
+    LOG("[FSciTdsReportTrackCircuit] Entering state Waiting in region root__ReportingOccupancyStatus__root");
     region->state = FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Waiting;
 };
 
@@ -251,8 +250,7 @@ void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root_
     FSciTdsReportTrackCircuit *self,
     FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTrackCircuit] Entering state Vacant in region "
-        "root__ReportingOccupancyStatus__root");
+    LOG("[FSciTdsReportTrackCircuit] Entering state Vacant in region root__ReportingOccupancyStatus__root");
     region->state = FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Vacant;
     make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Vacant__root(self,
                                                                                              &region->Vacant.root);
@@ -262,8 +260,7 @@ void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root_
     FSciTdsReportTrackCircuit *self,
     FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTrackCircuit] Entering state Occupied in region "
-        "root__ReportingOccupancyStatus__root");
+    LOG("[FSciTdsReportTrackCircuit] Entering state Occupied in region root__ReportingOccupancyStatus__root");
     region->state = FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Occupied;
     make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Occupied__root(self,
                                                                                                &region->Occupied.root);
@@ -273,8 +270,7 @@ void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root_
     FSciTdsReportTrackCircuit *self,
     FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTrackCircuit] Entering state Disturbed in region "
-        "root__ReportingOccupancyStatus__root");
+    LOG("[FSciTdsReportTrackCircuit] Entering state Disturbed in region root__ReportingOccupancyStatus__root");
     region->state = FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Disturbed;
     make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root__Disturbed__root(
         self, &region->Disturbed.root);
@@ -292,8 +288,7 @@ void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root(
 void make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus(
     FSciTdsReportTrackCircuit *self, FSciTdsReportTrackCircuit__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTrackCircuit] Entering state ReportingOccupancyStatus in "
-        "region root");
+    LOG("[FSciTdsReportTrackCircuit] Entering state ReportingOccupancyStatus in region root");
     region->state = FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus;
     make_state_FSciTdsReportTrackCircuit__root__ReportingOccupancyStatus__root(self,
                                                                                &region->ReportingOccupancyStatus.root);

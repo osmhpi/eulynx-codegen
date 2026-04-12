@@ -125,9 +125,8 @@ typedef struct FSciLsReport
     ChangeEvent Change172; // d21in_Observed_Luminosity = "Night"
     ChangeEvent Change302; // d50in_PDI_Connection_State = "ESTABLISHED"
     ChangeEvent Change298; // d50in_PDI_Connection_State = "ESTABLISHED"
-    ChangeEvent Change312; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change312; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

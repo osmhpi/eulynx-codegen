@@ -128,16 +128,13 @@ typedef struct FControlLuminosity
     // Change Events
     ChangeEvent Change109; // D14in_Luminosity_Night_Fault
     ChangeEvent Change110; // D14in_Luminosity_Night_Fault
-    ChangeEvent Change111; // D14in_Luminosity_Night_Fault OR
-                           // d11in_Required_Luminosity = "Day"
+    ChangeEvent Change111; // D14in_Luminosity_Night_Fault OR d11in_Required_Luminosity = "Day"
     ChangeEvent Change91;  // D13in_Luminosity_Day_Fault
     ChangeEvent Change92;  // D13in_Luminosity_Day_Fault
-    ChangeEvent Change93;  // D13in_Luminosity_Day_Fault OR
-                           // d11in_Required_Luminosity = "Night"
+    ChangeEvent Change93;  // D13in_Luminosity_Day_Fault OR d11in_Required_Luminosity = "Night"
     ChangeEvent Change540; // NOT D13in_Luminosity_Day_Fault
     ChangeEvent Change545; // NOT D14in_Luminosity_Night_Fault
-    ChangeEvent Change342; // d51in_EST_EfeS_State = "BOOTING" OR
-                           // d51in_EST_EfeS_State = "INITIALISING"
+    ChangeEvent Change342; // d51in_EST_EfeS_State = "BOOTING" OR d51in_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change333; // d51in_EST_EfeS_State = "BOOTING"
     ChangeEvent Change363; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
 

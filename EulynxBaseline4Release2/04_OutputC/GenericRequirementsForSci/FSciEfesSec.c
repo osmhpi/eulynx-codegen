@@ -12,24 +12,21 @@ static void Cop1Init(FSciEfesSec *self)
 void make_state_FSciEfesSec__root__Active__root__Establishing__root__ReadyForInitialisation(
     FSciEfesSec *self, FSciEfesSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[FSciEfesSec] Entering state ReadyForInitialisation in region "
-        "root__Active__root__Establishing__root");
+    LOG("[FSciEfesSec] Entering state ReadyForInitialisation in region root__Active__root__Establishing__root");
     region->state = FSciEfesSec__root__Active__root__Establishing__root__ReadyForInitialisation;
 };
 
 void make_state_FSciEfesSec__root__Active__root__Establishing__root__SendingStatus(
     FSciEfesSec *self, FSciEfesSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[FSciEfesSec] Entering state SendingStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[FSciEfesSec] Entering state SendingStatus in region root__Active__root__Establishing__root");
     region->state = FSciEfesSec__root__Active__root__Establishing__root__SendingStatus;
 };
 
 void make_state_FSciEfesSec__root__Active__root__Establishing__root__VersionUnequal(
     FSciEfesSec *self, FSciEfesSec__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[FSciEfesSec] Entering state VersionUnequal in region "
-        "root__Active__root__Establishing__root");
+    LOG("[FSciEfesSec] Entering state VersionUnequal in region root__Active__root__Establishing__root");
     region->state = FSciEfesSec__root__Active__root__Establishing__root__VersionUnequal;
 };
 

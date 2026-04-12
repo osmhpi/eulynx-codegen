@@ -85,8 +85,7 @@ void make_state_FSciLsReport__root__SendingLightSignalReports(FSciLsReport *self
 void make_state_FSciLsReport__root__InterfaceConnectionNotEstablished(FSciLsReport *self,
                                                                       FSciLsReport__root__state_struct *region)
 {
-    LOG("[FSciLsReport] Entering state InterfaceConnectionNotEstablished in "
-        "region root");
+    LOG("[FSciLsReport] Entering state InterfaceConnectionNotEstablished in region root");
     region->state = FSciLsReport__root__InterfaceConnectionNotEstablished;
 };
 

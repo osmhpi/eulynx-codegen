@@ -35,32 +35,28 @@ static void Cop1Init(SSciEfesPrim *self)
 void make_state_SSciEfesPrim__root__Active__root__Establishing__root__WaitingForVersionCheck(
     SSciEfesPrim *self, SSciEfesPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciEfesPrim] Entering state WaitingForVersionCheck in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciEfesPrim] Entering state WaitingForVersionCheck in region root__Active__root__Establishing__root");
     region->state = SSciEfesPrim__root__Active__root__Establishing__root__WaitingForVersionCheck;
 };
 
 void make_state_SSciEfesPrim__root__Active__root__Establishing__root__WaitingForInitialisation(
     SSciEfesPrim *self, SSciEfesPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciEfesPrim] Entering state WaitingForInitialisation in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciEfesPrim] Entering state WaitingForInitialisation in region root__Active__root__Establishing__root");
     region->state = SSciEfesPrim__root__Active__root__Establishing__root__WaitingForInitialisation;
 };
 
 void make_state_SSciEfesPrim__root__Active__root__Establishing__root__ReceivingStatus(
     SSciEfesPrim *self, SSciEfesPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciEfesPrim] Entering state ReceivingStatus in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciEfesPrim] Entering state ReceivingStatus in region root__Active__root__Establishing__root");
     region->state = SSciEfesPrim__root__Active__root__Establishing__root__ReceivingStatus;
 };
 
 void make_state_SSciEfesPrim__root__Active__root__Establishing__root__OtherVersionRequired(
     SSciEfesPrim *self, SSciEfesPrim__root__Active__root__Establishing__root__state_struct *region)
 {
-    LOG("[SSciEfesPrim] Entering state OtherVersionRequired in region "
-        "root__Active__root__Establishing__root");
+    LOG("[SSciEfesPrim] Entering state OtherVersionRequired in region root__Active__root__Establishing__root");
     region->state = SSciEfesPrim__root__Active__root__Establishing__root__OtherVersionRequired;
 };
 
@@ -80,8 +76,7 @@ void make_state_SSciEfesPrim__root__Active__root__Establishing__root(
 void make_state_SSciEfesPrim__root__Active__root__Establishing(SSciEfesPrim *self,
                                                                SSciEfesPrim__root__Active__root__state_struct *region)
 {
-    LOG("[SSciEfesPrim] Entering state Establishing in region "
-        "root__Active__root");
+    LOG("[SSciEfesPrim] Entering state Establishing in region root__Active__root");
     region->state = SSciEfesPrim__root__Active__root__Establishing;
     make_state_SSciEfesPrim__root__Active__root__Establishing__root(self, &region->Establishing.root);
 };

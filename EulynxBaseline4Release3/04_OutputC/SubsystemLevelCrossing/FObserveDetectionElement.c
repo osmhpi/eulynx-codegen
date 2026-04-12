@@ -29,8 +29,7 @@ void make_state_FObserveDetectionElement__root__Vacant(FObserveDetectionElement 
 void make_state_FObserveDetectionElement__root__TechnicalFailure(FObserveDetectionElement *self,
                                                                  FObserveDetectionElement__root__state_struct *region)
 {
-    LOG("[FObserveDetectionElement] Entering state TechnicalFailure in region "
-        "root");
+    LOG("[FObserveDetectionElement] Entering state TechnicalFailure in region root");
     region->state = FObserveDetectionElement__root__TechnicalFailure;
 };
 

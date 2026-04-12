@@ -9,8 +9,8 @@ void make_state_FControlSafeStateOfAllPhysicalOutputChannel__root__NotSwitchedOf
     FControlSafeStateOfAllPhysicalOutputChannel *self,
     FControlSafeStateOfAllPhysicalOutputChannel__root__state_struct *region)
 {
-    LOG("[FControlSafeStateOfAllPhysicalOutputChannel] Entering state "
-        "NotSwitchedOffAllPhysicalOutputChannel in region root");
+    LOG("[FControlSafeStateOfAllPhysicalOutputChannel] Entering state NotSwitchedOffAllPhysicalOutputChannel in region "
+        "root");
     region->state = FControlSafeStateOfAllPhysicalOutputChannel__root__NotSwitchedOffAllPhysicalOutputChannel;
 };
 
@@ -18,8 +18,8 @@ void make_state_FControlSafeStateOfAllPhysicalOutputChannel__root__SwitchedOffAl
     FControlSafeStateOfAllPhysicalOutputChannel *self,
     FControlSafeStateOfAllPhysicalOutputChannel__root__state_struct *region)
 {
-    LOG("[FControlSafeStateOfAllPhysicalOutputChannel] Entering state "
-        "SwitchedOffAllPhysicalOutputChannel in region root");
+    LOG("[FControlSafeStateOfAllPhysicalOutputChannel] Entering state SwitchedOffAllPhysicalOutputChannel in region "
+        "root");
     region->state = FControlSafeStateOfAllPhysicalOutputChannel__root__SwitchedOffAllPhysicalOutputChannel;
 };
 

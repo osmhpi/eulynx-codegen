@@ -21,8 +21,7 @@ void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Initialising__ro
 void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__WaitingForPdi(
     FEstEfes *self, FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__state_struct *region)
 {
-    LOG("[FEstEfes] Entering state WaitingForPdi in region "
-        "root__OperatingVoltageSupplied__root__Initialising__root");
+    LOG("[FEstEfes] Entering state WaitingForPdi in region root__OperatingVoltageSupplied__root__Initialising__root");
     region->state = FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root__WaitingForPdi;
 };
 
@@ -73,32 +72,28 @@ void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Initialising__ro
 void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Booting(
     FEstEfes *self, FEstEfes__root__OperatingVoltageSupplied__root__state_struct *region)
 {
-    LOG("[FEstEfes] Entering state Booting in region "
-        "root__OperatingVoltageSupplied__root");
+    LOG("[FEstEfes] Entering state Booting in region root__OperatingVoltageSupplied__root");
     region->state = FEstEfes__root__OperatingVoltageSupplied__root__Booting;
 };
 
 void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Operational(
     FEstEfes *self, FEstEfes__root__OperatingVoltageSupplied__root__state_struct *region)
 {
-    LOG("[FEstEfes] Entering state Operational in region "
-        "root__OperatingVoltageSupplied__root");
+    LOG("[FEstEfes] Entering state Operational in region root__OperatingVoltageSupplied__root");
     region->state = FEstEfes__root__OperatingVoltageSupplied__root__Operational;
 };
 
 void make_state_FEstEfes__root__OperatingVoltageSupplied__root__FallbackMode(
     FEstEfes *self, FEstEfes__root__OperatingVoltageSupplied__root__state_struct *region)
 {
-    LOG("[FEstEfes] Entering state FallbackMode in region "
-        "root__OperatingVoltageSupplied__root");
+    LOG("[FEstEfes] Entering state FallbackMode in region root__OperatingVoltageSupplied__root");
     region->state = FEstEfes__root__OperatingVoltageSupplied__root__FallbackMode;
 };
 
 void make_state_FEstEfes__root__OperatingVoltageSupplied__root__Initialising(
     FEstEfes *self, FEstEfes__root__OperatingVoltageSupplied__root__state_struct *region)
 {
-    LOG("[FEstEfes] Entering state Initialising in region "
-        "root__OperatingVoltageSupplied__root");
+    LOG("[FEstEfes] Entering state Initialising in region root__OperatingVoltageSupplied__root");
     region->state = FEstEfes__root__OperatingVoltageSupplied__root__Initialising;
     make_state_FEstEfes__root__OperatingVoltageSupplied__root__Initialising__root(self, &region->Initialising.root);
 };

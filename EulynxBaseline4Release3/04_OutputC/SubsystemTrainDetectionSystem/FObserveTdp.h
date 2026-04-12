@@ -236,10 +236,8 @@ typedef struct FObserveTdp
     ChangeEvent Change1229; // T60in_Passing_Against_Reference_Direction
     ChangeEvent Change1238; // T62in_Receiving_An_Undefined_Pattern
     ChangeEvent Change1197; // T59in_Passing_In_Reference_Direction
-    ChangeEvent Change1232; // T60in_Passing_Against_Reference_Direction or
-                            // T62in_Receiving_An_Undefined_Pattern
-    ChangeEvent Change1198; // T59in_Passing_In_Reference_Direction or
-                            // T62in_Receiving_An_Undefined_Pattern
+    ChangeEvent Change1232; // T60in_Passing_Against_Reference_Direction or T62in_Receiving_An_Undefined_Pattern
+    ChangeEvent Change1198; // T59in_Passing_In_Reference_Direction or T62in_Receiving_An_Undefined_Pattern
     ChangeEvent Change1230; // T60in_Passing_Against_Reference_Direction
     ChangeEvent Change1196; // T59in_Passing_In_Reference_Direction
     ChangeEvent Change1231; // T60in_Passing_Against_Reference_Direction
@@ -249,15 +247,13 @@ typedef struct FObserveTdp
     ChangeEvent Change426;  // D63in_Critical_Failure_TDP = FALSE
     ChangeEvent Change1234; // T61in_Passing_Without_Direction
     ChangeEvent Change1239; // T62in_Receiving_An_Undefined_Pattern
-    ChangeEvent Change1236; // T61in_Passing_Without_Direction or
-                            // T62in_Receiving_An_Undefined_Pattern
+    ChangeEvent Change1236; // T61in_Passing_Without_Direction or T62in_Receiving_An_Undefined_Pattern
     ChangeEvent Change1233; // T61in_Passing_Without_Direction
     ChangeEvent Change1235; // T61in_Passing_Without_Direction
     ChangeEvent Change424;  // D63in_Critical_Failure_TDP
     ChangeEvent Change427;  // D63in_Critical_Failure_TDP = FALSE
     ChangeEvent Change401;  // d51out_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change390;  // d51out_EST_EfeS_State = "BOOTING" OR
-                            // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change390;  // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change398;  // d51out_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change385;  // d51out_EST_EfeS_State = "BOOTING"
 

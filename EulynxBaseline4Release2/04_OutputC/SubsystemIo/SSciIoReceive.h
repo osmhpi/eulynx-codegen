@@ -132,10 +132,9 @@ typedef struct SSciIoReceive
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change323; // d50in_PDI_Connection_State = "DISCONNECTED"OR
-                           // d50in_PDI_Connection_State = "IMPERMISSIBLE"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"OR
-                           // d50in_PDI_Connection_State = "REQUESTED_NO_SCP"
+    ChangeEvent
+        Change323; // d50in_PDI_Connection_State = "DISCONNECTED"OR d50in_PDI_Connection_State = "IMPERMISSIBLE"OR
+                   // d50in_PDI_Connection_State = "SUSPENDED"OR d50in_PDI_Connection_State = "REQUESTED_NO_SCP"
 
     // Timeout Events
 

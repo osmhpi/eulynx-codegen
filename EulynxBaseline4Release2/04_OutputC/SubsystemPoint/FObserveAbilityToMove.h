@@ -122,22 +122,18 @@ typedef struct FObserveAbilityToMove
 
     // Change Events
     ChangeEvent Change381; // d51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change209; // D29in_Ability_To_Move_PM1_Crucial = "UNABLE" OR
-                           // D30in_Ability_To_Move_PM1n_Crucial = "UNABLE" OR
-                           // D31in_Ability_To_Move_PM2_Non_Crucial = "UNABLE" OR
-                           // D32in_Ability_To_Move_PM2n_Non_Crucial = "UNABLE" OR NOT
-                           // D33in_Internal_Trigger_Ability_To_Move_Point_Available
-    ChangeEvent Change208; // D29in_Ability_To_Move_PM1_Crucial = "ABLE"  AND
-                           // (D30in_Ability_To_Move_PM1n_Crucial = "ABLE" OR
-                           // D30in_Ability_To_Move_PM1n_Crucial = "NOT_USED" OR NOT
-                           // D26in_Con_PM1n_Crucial_Activation) AND
-                           // (D32in_Ability_To_Move_PM2n_Non_Crucial = "ABLE" OR
-                           // D32in_Ability_To_Move_PM2n_Non_Crucial = "NOT_USED" OR NOT
-                           // D28in_Con_PM2n_Non_Crucial_Activation) AND
-                           // (D31in_Ability_To_Move_PM2_Non_Crucial = "ABLE" OR
-                           // D31in_Ability_To_Move_PM2_Non_Crucial = "NOT_USED" OR NOT
-                           // D27in_Con_PM2_Non_Crucial_Activation) AND
-                           // D33in_Internal_Trigger_Ability_To_Move_Point_Available
+    ChangeEvent
+        Change209; // D29in_Ability_To_Move_PM1_Crucial = "UNABLE" OR D30in_Ability_To_Move_PM1n_Crucial = "UNABLE" OR
+                   // D31in_Ability_To_Move_PM2_Non_Crucial = "UNABLE" OR D32in_Ability_To_Move_PM2n_Non_Crucial =
+                   // "UNABLE" OR NOT D33in_Internal_Trigger_Ability_To_Move_Point_Available
+    ChangeEvent
+        Change208; // D29in_Ability_To_Move_PM1_Crucial = "ABLE"  AND (D30in_Ability_To_Move_PM1n_Crucial = "ABLE" OR
+                   // D30in_Ability_To_Move_PM1n_Crucial = "NOT_USED" OR NOT D26in_Con_PM1n_Crucial_Activation) AND
+                   // (D32in_Ability_To_Move_PM2n_Non_Crucial = "ABLE" OR D32in_Ability_To_Move_PM2n_Non_Crucial =
+                   // "NOT_USED" OR NOT D28in_Con_PM2n_Non_Crucial_Activation) AND
+                   // (D31in_Ability_To_Move_PM2_Non_Crucial = "ABLE" OR D31in_Ability_To_Move_PM2_Non_Crucial =
+                   // "NOT_USED" OR NOT D27in_Con_PM2_Non_Crucial_Activation) AND
+                   // D33in_Internal_Trigger_Ability_To_Move_Point_Available
 
     // Timeout Events
 

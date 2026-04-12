@@ -144,17 +144,15 @@ typedef struct FSciLsReceive
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change288; // D4in_Fault_Lamps_Aspect_1 OR D5in_Fault_Lamps_Aspect_2 OR
-                           // D6in_Fault_Lamps_Most_Restrict
+    ChangeEvent Change288; // D4in_Fault_Lamps_Aspect_1 OR D5in_Fault_Lamps_Aspect_2 OR D6in_Fault_Lamps_Most_Restrict
     ChangeEvent Change573; // NOT D4in_Fault_Lamps_Aspect_1
     ChangeEvent Change574; // NOT D5in_Fault_Lamps_Aspect_2
     ChangeEvent Change578; // NOT D6in_Fault_Lamps_Most_Restrict
     ChangeEvent Change94;  // D13in_Luminosity_Day_Fault OR D14in_Luminosity_Night_Fault
     ChangeEvent Change541; // NOT D13in_Luminosity_Day_Fault
     ChangeEvent Change544; // NOT D14in_Luminosity_Night_Fault
-    ChangeEvent Change311; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change311; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

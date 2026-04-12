@@ -74,8 +74,7 @@ typedef struct FObserveMovementFailed
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change73;  // d12in_Required_PM_Position = "LEFT" OR
-                           // d12in_Required_PM_Position = "RIGHT"
+    ChangeEvent Change73;  // d12in_Required_PM_Position = "LEFT" OR d12in_Required_PM_Position = "RIGHT"
     ChangeEvent Change70;  // d12in_Required_PM_Position = "LEFT"
     ChangeEvent Change78;  // d12in_Required_PM_Position = "RIGHT"
     ChangeEvent Change82;  // d12in_Required_PM_Position = "UNCOMMANDED"

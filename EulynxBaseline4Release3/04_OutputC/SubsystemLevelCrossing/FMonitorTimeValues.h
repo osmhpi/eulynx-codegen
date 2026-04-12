@@ -169,13 +169,10 @@ typedef struct FMonitorTimeValues
 
     // Change Events
     ChangeEvent Change155; // d1in_Receive_LC_State = "Activated"
-    ChangeEvent Change244; // d3in_LCPF_Protection_State = "Idle" OR
-                           // d51in_EST_EfeS_State  = "FALLBACK_MODE"
-    ChangeEvent Change243; // d3in_LCPF_Protection_State = "Idle" OR
-                           // d51in_EST_EfeS_State  = "FALLBACK_MODE"
+    ChangeEvent Change244; // d3in_LCPF_Protection_State = "Idle" OR d51in_EST_EfeS_State  = "FALLBACK_MODE"
+    ChangeEvent Change243; // d3in_LCPF_Protection_State = "Idle" OR d51in_EST_EfeS_State  = "FALLBACK_MODE"
     ChangeEvent Change324; // d51in_EST_EfeS_State  = "OPERATIONAL"
-    ChangeEvent Change326; // d51in_EST_EfeS_State  = "OPERATIONAL" OR
-                           // d51in_EST_EfeS_State  = "BOOTING" OR
+    ChangeEvent Change326; // d51in_EST_EfeS_State  = "OPERATIONAL" OR d51in_EST_EfeS_State  = "BOOTING" OR
                            // d51in_EST_EfeS_State  = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change376; // d51in_EST_EfeS_State = "OPERATIONAL"
     ChangeEvent Change321; // d51in_EST_EfeS_State  = "INITIALISING"

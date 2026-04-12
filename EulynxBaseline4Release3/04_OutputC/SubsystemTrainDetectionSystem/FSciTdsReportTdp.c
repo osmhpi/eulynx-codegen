@@ -8,8 +8,7 @@
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__InRefenceDirection(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state InRefenceDirection in region "
-        "root__ReportingTdpStatus__root__Passed__root");
+    LOG("[FSciTdsReportTdp] Entering state InRefenceDirection in region root__ReportingTdpStatus__root__Passed__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__InRefenceDirection;
 };
 
@@ -24,8 +23,7 @@ void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__WithoutDirection(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state WithoutDirection in region "
-        "root__ReportingTdpStatus__root__Passed__root");
+    LOG("[FSciTdsReportTdp] Entering state WithoutDirection in region root__ReportingTdpStatus__root__Passed__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root__WithoutDirection;
 };
 
@@ -69,24 +67,21 @@ void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root(
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Waiting(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state Waiting in region "
-        "root__ReportingTdpStatus__root");
+    LOG("[FSciTdsReportTdp] Entering state Waiting in region root__ReportingTdpStatus__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__Waiting;
 };
 
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__NotPassed(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state NotPassed in region "
-        "root__ReportingTdpStatus__root");
+    LOG("[FSciTdsReportTdp] Entering state NotPassed in region root__ReportingTdpStatus__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__NotPassed;
 };
 
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state Passed in region "
-        "root__ReportingTdpStatus__root");
+    LOG("[FSciTdsReportTdp] Entering state Passed in region root__ReportingTdpStatus__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed;
     make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed__root(self, &region->Passed.root);
 };
@@ -94,8 +89,7 @@ void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Passed(
 void make_state_FSciTdsReportTdp__root__ReportingTdpStatus__root__Disturbed(
     FSciTdsReportTdp *self, FSciTdsReportTdp__root__ReportingTdpStatus__root__state_struct *region)
 {
-    LOG("[FSciTdsReportTdp] Entering state Disturbed in region "
-        "root__ReportingTdpStatus__root");
+    LOG("[FSciTdsReportTdp] Entering state Disturbed in region root__ReportingTdpStatus__root");
     region->state = FSciTdsReportTdp__root__ReportingTdpStatus__root__Disturbed;
 };
 

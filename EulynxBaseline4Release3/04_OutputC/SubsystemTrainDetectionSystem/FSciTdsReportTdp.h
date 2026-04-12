@@ -110,8 +110,7 @@ typedef struct FSciTdsReportTdp
     MessagePort(Message__MsgTdpStatus__b6d9) OutMsgTdpStatus__b6d9;
 
     // Change Events
-    ChangeEvent Change412; // d54int_Reported_TDP_Direction = "against reference
-                           // direction"
+    ChangeEvent Change412; // d54int_Reported_TDP_Direction = "against reference direction"
     ChangeEvent Change413; // d54int_Reported_TDP_Direction = "reference direction"
     ChangeEvent Change408; // d53in_Reported_TDP_Status = "passed"
     ChangeEvent Change410; // d53in_Reported_TDP_Status = "TDP disturbed"
@@ -119,9 +118,8 @@ typedef struct FSciTdsReportTdp
     ChangeEvent Change409; // d53in_Reported_TDP_Status = "TDP disturbed"
     ChangeEvent Change405; // d53in_Reported_TDP_Status = "not passed"
     ChangeEvent Change407; // d53in_Reported_TDP_Status = "passed"
-    ChangeEvent Change314; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI"OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change314; // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP"OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI"OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

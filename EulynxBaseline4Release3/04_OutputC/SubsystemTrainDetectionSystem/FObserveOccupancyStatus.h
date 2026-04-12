@@ -155,8 +155,7 @@ typedef struct FObserveOccupancyStatus
     ChangeEvent Change1108; // T38in_Wheel_Out
     ChangeEvent Change1112; // T39in_Undefined_Pattern
     ChangeEvent Change235;  // D32in_Critical_Failure_TVPS
-    ChangeEvent Change389;  // d51out_EST_EfeS_State = "BOOTING" OR
-                            // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change389;  // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change397;  // d51out_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change1097; // T37in_Wheel_In
     ChangeEvent Change1105; // T38in_Wheel_Out

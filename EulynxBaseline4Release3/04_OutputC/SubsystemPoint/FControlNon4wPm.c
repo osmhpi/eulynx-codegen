@@ -28,32 +28,28 @@ static FControlNon4wPm_D12inRequiredPmPositionValue map_D35inPmPosition_to_D12in
 void make_state_FControlNon4wPm__root__Operating__root__MovingLeft(
     FControlNon4wPm *self, FControlNon4wPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlNon4wPm] Entering state MovingLeft in region "
-        "root__Operating__root");
+    LOG("[FControlNon4wPm] Entering state MovingLeft in region root__Operating__root");
     region->state = FControlNon4wPm__root__Operating__root__MovingLeft;
 };
 
 void make_state_FControlNon4wPm__root__Operating__root__MovingRight(
     FControlNon4wPm *self, FControlNon4wPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlNon4wPm] Entering state MovingRight in region "
-        "root__Operating__root");
+    LOG("[FControlNon4wPm] Entering state MovingRight in region root__Operating__root");
     region->state = FControlNon4wPm__root__Operating__root__MovingRight;
 };
 
 void make_state_FControlNon4wPm__root__Operating__root__Stopped(
     FControlNon4wPm *self, FControlNon4wPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlNon4wPm] Entering state Stopped in region "
-        "root__Operating__root");
+    LOG("[FControlNon4wPm] Entering state Stopped in region root__Operating__root");
     region->state = FControlNon4wPm__root__Operating__root__Stopped;
 };
 
 void make_state_FControlNon4wPm__root__Operating__root__Waiting(
     FControlNon4wPm *self, FControlNon4wPm__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlNon4wPm] Entering state Waiting in region "
-        "root__Operating__root");
+    LOG("[FControlNon4wPm] Entering state Waiting in region root__Operating__root");
     region->state = FControlNon4wPm__root__Operating__root__Waiting;
 };
 

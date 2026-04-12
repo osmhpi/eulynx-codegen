@@ -8,8 +8,7 @@
 void make_state_SSciIoCommand__root__SendingOutputChannelCommand(SSciIoCommand *self,
                                                                  SSciIoCommand__root__state_struct *region)
 {
-    LOG("[SSciIoCommand] Entering state SendingOutputChannelCommand in region "
-        "root");
+    LOG("[SSciIoCommand] Entering state SendingOutputChannelCommand in region root");
     region->state = SSciIoCommand__root__SendingOutputChannelCommand;
 };
 

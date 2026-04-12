@@ -8,24 +8,22 @@
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__root__NoMonitoring(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state NoMonitoring in region "
-        "root__MonitorTimeValues__root");
+    LOG("[FMonitorTimeValues] Entering state NoMonitoring in region root__MonitorTimeValues__root");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__root__NoMonitoring;
 };
 
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__root__MonitorInhibitionTime(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state MonitorInhibitionTime in region "
-        "root__MonitorTimeValues__root");
+    LOG("[FMonitorTimeValues] Entering state MonitorInhibitionTime in region root__MonitorTimeValues__root");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__root__MonitorInhibitionTime;
 };
 
 void make_state_FMonitorTimeValues__root__MonitorTimeValues__root__MonitorNotificationOfAvailability(
     FMonitorTimeValues *self, FMonitorTimeValues__root__MonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state MonitorNotificationOfAvailability "
-        "in region root__MonitorTimeValues__root");
+    LOG("[FMonitorTimeValues] Entering state MonitorNotificationOfAvailability in region "
+        "root__MonitorTimeValues__root");
     region->state = FMonitorTimeValues__root__MonitorTimeValues__root__MonitorNotificationOfAvailability;
 };
 
@@ -49,8 +47,7 @@ void make_state_FMonitorTimeValues__root__MonitorTimeValues(FMonitorTimeValues *
 void make_state_FMonitorTimeValues__root__WaitingForFinishBooting(FMonitorTimeValues *self,
                                                                   FMonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state WaitingForFinishBooting in region "
-        "root");
+    LOG("[FMonitorTimeValues] Entering state WaitingForFinishBooting in region root");
     region->state = FMonitorTimeValues__root__WaitingForFinishBooting;
 };
 
@@ -64,8 +61,7 @@ void make_state_FMonitorTimeValues__root__FallbackMode(FMonitorTimeValues *self,
 void make_state_FMonitorTimeValues__root__TechnicalDisturbance(FMonitorTimeValues *self,
                                                                FMonitorTimeValues__root__state_struct *region)
 {
-    LOG("[FMonitorTimeValues] Entering state TechnicalDisturbance in region "
-        "root");
+    LOG("[FMonitorTimeValues] Entering state TechnicalDisturbance in region root");
     region->state = FMonitorTimeValues__root__TechnicalDisturbance;
 };
 

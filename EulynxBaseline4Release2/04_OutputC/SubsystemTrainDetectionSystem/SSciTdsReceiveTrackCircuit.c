@@ -8,8 +8,7 @@
 void make_state_SSciTdsReceiveTrackCircuit__root__RepoprtingOccupancyStatus(
     SSciTdsReceiveTrackCircuit *self, SSciTdsReceiveTrackCircuit__root__state_struct *region)
 {
-    LOG("[SSciTdsReceiveTrackCircuit] Entering state RepoprtingOccupancyStatus "
-        "in region root");
+    LOG("[SSciTdsReceiveTrackCircuit] Entering state RepoprtingOccupancyStatus in region root");
     region->state = SSciTdsReceiveTrackCircuit__root__RepoprtingOccupancyStatus;
 };
 

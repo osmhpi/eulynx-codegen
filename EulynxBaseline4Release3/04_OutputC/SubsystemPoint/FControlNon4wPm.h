@@ -113,23 +113,18 @@ typedef struct FControlNon4wPm
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change75;  // d12in_Required_PM_Position = "RIGHT"
-    ChangeEvent Change85;  // d12in_Required_PM_Position = "UNCOMMANDED"
-    ChangeEvent Change88;  // d12in_Required_PM_Position = D35in_PM_Position
-    ChangeEvent Change69;  // d12in_Required_PM_Position = "LEFT"
-    ChangeEvent Change86;  // d12in_Required_PM_Position = "UNCOMMANDED"
-    ChangeEvent Change87;  // d12in_Required_PM_Position = D35in_PM_Position
-    ChangeEvent Change72;  // d12in_Required_PM_Position = "LEFT" AND
-                           // ((d12in_Required_PM_Position <> D35in_PM_Position) OR
-                           // (d12in_Required_PM_Position = D35in_PM_Position AND
-                           // D37in_Con_Common_Drive))
-    ChangeEvent Change79;  // d12in_Required_PM_Position = "RIGHT" AND
-                           // ((d12in_Required_PM_Position <> D35in_PM_Position) OR
-                           // (d12in_Required_PM_Position = D35in_PM_Position AND
-                           // D37in_Con_Common_Drive))
+    ChangeEvent Change75; // d12in_Required_PM_Position = "RIGHT"
+    ChangeEvent Change85; // d12in_Required_PM_Position = "UNCOMMANDED"
+    ChangeEvent Change88; // d12in_Required_PM_Position = D35in_PM_Position
+    ChangeEvent Change69; // d12in_Required_PM_Position = "LEFT"
+    ChangeEvent Change86; // d12in_Required_PM_Position = "UNCOMMANDED"
+    ChangeEvent Change87; // d12in_Required_PM_Position = D35in_PM_Position
+    ChangeEvent Change72; // d12in_Required_PM_Position = "LEFT" AND ((d12in_Required_PM_Position <> D35in_PM_Position)
+                          // OR (d12in_Required_PM_Position = D35in_PM_Position AND D37in_Con_Common_Drive))
+    ChangeEvent Change79; // d12in_Required_PM_Position = "RIGHT" AND ((d12in_Required_PM_Position <> D35in_PM_Position)
+                          // OR (d12in_Required_PM_Position = D35in_PM_Position AND D37in_Con_Common_Drive))
     ChangeEvent Change361; // d51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change370; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "BOOTING" OR
+    ChangeEvent Change370; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "BOOTING" OR
                            // d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events

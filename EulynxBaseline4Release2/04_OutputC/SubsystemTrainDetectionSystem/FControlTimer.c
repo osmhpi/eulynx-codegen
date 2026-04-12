@@ -8,24 +8,21 @@
 void make_state_FControlTimer__root__ObserveTimer__root__NoTimer(
     FControlTimer *self, FControlTimer__root__ObserveTimer__root__state_struct *region)
 {
-    LOG("[FControlTimer] Entering state NoTimer in region "
-        "root__ObserveTimer__root");
+    LOG("[FControlTimer] Entering state NoTimer in region root__ObserveTimer__root");
     region->state = FControlTimer__root__ObserveTimer__root__NoTimer;
 };
 
 void make_state_FControlTimer__root__ObserveTimer__root__InhibitionRunningTimer(
     FControlTimer *self, FControlTimer__root__ObserveTimer__root__state_struct *region)
 {
-    LOG("[FControlTimer] Entering state InhibitionRunningTimer in region "
-        "root__ObserveTimer__root");
+    LOG("[FControlTimer] Entering state InhibitionRunningTimer in region root__ObserveTimer__root");
     region->state = FControlTimer__root__ObserveTimer__root__InhibitionRunningTimer;
 };
 
 void make_state_FControlTimer__root__ObserveTimer__root__NotificationOfAvailabilityRunningTimer(
     FControlTimer *self, FControlTimer__root__ObserveTimer__root__state_struct *region)
 {
-    LOG("[FControlTimer] Entering state NotificationOfAvailabilityRunningTimer "
-        "in region root__ObserveTimer__root");
+    LOG("[FControlTimer] Entering state NotificationOfAvailabilityRunningTimer in region root__ObserveTimer__root");
     region->state = FControlTimer__root__ObserveTimer__root__NotificationOfAvailabilityRunningTimer;
 };
 

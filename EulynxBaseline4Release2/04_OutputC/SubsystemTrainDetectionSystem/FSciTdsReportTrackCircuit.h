@@ -159,23 +159,15 @@ typedef struct FSciTdsReportTrackCircuit
     ChangeEvent Change293; // d47in_Report_POM_Status = "Power supply NOK"
     ChangeEvent Change295; // d47in_Report_POM_Status = "Power supply NOK"
     ChangeEvent Change297; // d47in_Report_POM_Status = "Power supply OK"
-    ChangeEvent Change288; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state occupied"
-    ChangeEvent Change289; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state disturbed"
-    ChangeEvent Change287; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state disturbed"
-    ChangeEvent Change292; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state vacant"
-    ChangeEvent Change291; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state occupied"
-    ChangeEvent Change290; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in
-                           // state vacant"
-    ChangeEvent Change335; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI_NO_SCP" OR
-                           // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI" OR
-                           // d50in_PDI_Connection_State = "READY_FOR_PDI" OR
-                           // d50in_PDI_Connection_State = "SUSPENDED"
+    ChangeEvent Change288; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state occupied"
+    ChangeEvent Change289; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state disturbed"
+    ChangeEvent Change287; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state disturbed"
+    ChangeEvent Change292; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state vacant"
+    ChangeEvent Change291; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state occupied"
+    ChangeEvent Change290; // d45in_Reported_TVPS_Occupancy_Status = "TVPS is in state vacant"
+    ChangeEvent Change335; // d50in_PDI_Connection_State = "NOT_READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State =
+                           // "READY_FOR_PDI_NO_SCP" OR d50in_PDI_Connection_State = "NOT_READY_FOR_PDI" OR
+                           // d50in_PDI_Connection_State = "READY_FOR_PDI" OR d50in_PDI_Connection_State = "SUSPENDED"
 
     // Timeout Events
 

@@ -85,16 +85,14 @@ static FControlPoint_MemLastRequiredPointPositionValue map_D14inObservedPointPos
 void make_state_FControlPoint__root__Operating__root__MovingLeft(
     FControlPoint *self, FControlPoint__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlPoint] Entering state MovingLeft in region "
-        "root__Operating__root");
+    LOG("[FControlPoint] Entering state MovingLeft in region root__Operating__root");
     region->state = FControlPoint__root__Operating__root__MovingLeft;
 };
 
 void make_state_FControlPoint__root__Operating__root__MovingRight(
     FControlPoint *self, FControlPoint__root__Operating__root__state_struct *region)
 {
-    LOG("[FControlPoint] Entering state MovingRight in region "
-        "root__Operating__root");
+    LOG("[FControlPoint] Entering state MovingRight in region root__Operating__root");
     region->state = FControlPoint__root__Operating__root__MovingRight;
 };
 

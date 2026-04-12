@@ -100,16 +100,12 @@ typedef struct FMonitorTimeValues
 
     // Change Events
     ChangeEvent Change120;  // d16in_Last_Wheel_Out
-    ChangeEvent Change1102; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
+    ChangeEvent Change1102; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
     ChangeEvent Change119;  // d16in_Last_Wheel_Out
-    ChangeEvent Change1100; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
-    ChangeEvent Change1101; // T37in_Wheel_In OR T38in_Wheel_Out OR
-                            // T39in_Undefined_Pattern
+    ChangeEvent Change1100; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
+    ChangeEvent Change1101; // T37in_Wheel_In OR T38in_Wheel_Out OR T39in_Undefined_Pattern
     ChangeEvent Change233;  // D32in_Critical_Failure_TVPS
-    ChangeEvent Change391;  // d51out_EST_EfeS_State = "BOOTING" OR
-                            // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change391;  // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change392;  // d51out_EST_EfeS_State = "FALLBACK_MODE"
     ChangeEvent Change402;  // d51out_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change386;  // d51out_EST_EfeS_State = "BOOTING"

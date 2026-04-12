@@ -103,8 +103,8 @@ typedef struct FObserveSignalAspect
 
     // Change Events
     ChangeEvent Change115; // D17in_Sensed_Signal_Aspect = "Most Restrict Aspect"
-    ChangeEvent Change119; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp
-                           // failure" OR D17in_Sensed_Signal_Aspect = "No Signal Aspect"
+    ChangeEvent Change119; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp failure" OR
+                           // D17in_Sensed_Signal_Aspect = "No Signal Aspect"
     ChangeEvent Change120; // D17in_Sensed_Signal_Aspect = "Signal Aspect 1"
     ChangeEvent Change134; // D18in_Sensed_Intentionally_Dark
     ChangeEvent Change560; // NOT D18in_Sensed_Intentionally_Dark
@@ -112,25 +112,23 @@ typedef struct FObserveSignalAspect
     ChangeEvent Change122; // D17in_Sensed_Signal_Aspect = "Signal Aspect 1"
     ChangeEvent Change123; // D17in_Sensed_Signal_Aspect = "Signal Aspect 2"
     ChangeEvent Change112; // D17in_Sensed_Signal_Aspect = "Most Restrict Aspect"
-    ChangeEvent Change116; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp
-                           // failure" OR D17in_Sensed_Signal_Aspect = "No Signal Aspect"
-    ChangeEvent Change118; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp
-                           // failure" OR D17in_Sensed_Signal_Aspect = "No Signal Aspect"
+    ChangeEvent Change116; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp failure" OR
+                           // D17in_Sensed_Signal_Aspect = "No Signal Aspect"
+    ChangeEvent Change118; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp failure" OR
+                           // D17in_Sensed_Signal_Aspect = "No Signal Aspect"
     ChangeEvent Change121; // D17in_Sensed_Signal_Aspect = "Signal Aspect 1"
     ChangeEvent Change125; // D17in_Sensed_Signal_Aspect = "Signal Aspect 2"
     ChangeEvent Change135; // D18in_Sensed_Intentionally_Dark
     ChangeEvent Change559; // NOT D18in_Sensed_Intentionally_Dark
     ChangeEvent Change114; // D17in_Sensed_Signal_Aspect = "Most Restrict Aspect"
-    ChangeEvent Change117; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp
-                           // failure" OR D17in_Sensed_Signal_Aspect = "No Signal Aspect"
+    ChangeEvent Change117; // D17in_Sensed_Signal_Aspect = "No Signal Aspect - lamp failure" OR
+                           // D17in_Sensed_Signal_Aspect = "No Signal Aspect"
     ChangeEvent Change124; // D17in_Sensed_Signal_Aspect = "Signal Aspect 2"
     ChangeEvent Change136; // D18in_Sensed_Intentionally_Dark
     ChangeEvent Change561; // NOT D18in_Sensed_Intentionally_Dark
     ChangeEvent Change349; // d51in_EST_EfeS_State = "BOOTING"
-    ChangeEvent Change358; // d51in_EST_EfeS_State = "BOOTING"
-                           // ORd51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change393; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "FALLBACK_MODE"
+    ChangeEvent Change358; // d51in_EST_EfeS_State = "BOOTING" ORd51in_EST_EfeS_State = "INITIALISING"
+    ChangeEvent Change393; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events
 

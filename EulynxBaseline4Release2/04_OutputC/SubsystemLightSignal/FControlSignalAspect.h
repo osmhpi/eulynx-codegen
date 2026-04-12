@@ -161,10 +161,8 @@ typedef struct FControlSignalAspect
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change210; // d2in_Required_Signal_Aspect = "Most Restrict Aspect"
-                           // OR D5in_Fault_Lamps_Aspect_2
-    ChangeEvent Change211; // d2in_Required_Signal_Aspect = "Most Restrict Aspect"
-                           // OR D5in_Fault_Lamps_Aspect_2
+    ChangeEvent Change210; // d2in_Required_Signal_Aspect = "Most Restrict Aspect" OR D5in_Fault_Lamps_Aspect_2
+    ChangeEvent Change211; // d2in_Required_Signal_Aspect = "Most Restrict Aspect" OR D5in_Fault_Lamps_Aspect_2
     ChangeEvent Change214; // d2in_Required_Signal_Aspect = "Signal Aspect 1"
     ChangeEvent Change217; // d2in_Required_Signal_Aspect = "Signal Aspect 1"
     ChangeEvent Change219; // d2in_Required_Signal_Aspect = "Signal Aspect 1"
@@ -192,10 +190,8 @@ typedef struct FControlSignalAspect
     ChangeEvent Change574; // NOT d3in_Required_Intentionally_Dark
     ChangeEvent Change521; // d9in_Set_Luminosity = "Undefined"
     ChangeEvent Change350; // d51in_EST_EfeS_State = "BOOTING"
-    ChangeEvent Change359; // d51in_EST_EfeS_State = "BOOTING"
-                           // ORd51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change388; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "FALLBACK_MODE"
+    ChangeEvent Change359; // d51in_EST_EfeS_State = "BOOTING" ORd51in_EST_EfeS_State = "INITIALISING"
+    ChangeEvent Change388; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events
 

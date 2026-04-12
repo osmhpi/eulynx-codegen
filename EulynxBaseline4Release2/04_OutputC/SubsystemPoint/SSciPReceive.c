@@ -8,8 +8,7 @@
 void make_state_SSciPReceive__root__Operating__PointPositionObserving__ReceiveOverallPointPositionAndDegradedPointPositionReport(
     SSciPReceive *self, SSciPReceive__root__Operating__PointPositionObserving__state_struct *region)
 {
-    LOG("[SSciPReceive] Entering state "
-        "ReceiveOverallPointPositionAndDegradedPointPositionReport in region "
+    LOG("[SSciPReceive] Entering state ReceiveOverallPointPositionAndDegradedPointPositionReport in region "
         "root__Operating__PointPositionObserving");
     region->state =
         SSciPReceive__root__Operating__PointPositionObserving__ReceiveOverallPointPositionAndDegradedPointPositionReport;
@@ -28,8 +27,7 @@ void make_state_SSciPReceive__root__Operating__PointPositionObserving(
 void make_state_SSciPReceive__root__Operating__AbilityToMoveObserving__ReceiveAbilityToMoveReport(
     SSciPReceive *self, SSciPReceive__root__Operating__AbilityToMoveObserving__state_struct *region)
 {
-    LOG("[SSciPReceive] Entering state ReceiveAbilityToMoveReport in region "
-        "root__Operating__AbilityToMoveObserving");
+    LOG("[SSciPReceive] Entering state ReceiveAbilityToMoveReport in region root__Operating__AbilityToMoveObserving");
     region->state = SSciPReceive__root__Operating__AbilityToMoveObserving__ReceiveAbilityToMoveReport;
 };
 
@@ -45,8 +43,7 @@ void make_state_SSciPReceive__root__Operating__AbilityToMoveObserving(
 void make_state_SSciPReceive__root__Operating__MovementFailedObserving__ReceiveMovementFailedReport(
     SSciPReceive *self, SSciPReceive__root__Operating__MovementFailedObserving__state_struct *region)
 {
-    LOG("[SSciPReceive] Entering state ReceiveMovementFailedReport in region "
-        "root__Operating__MovementFailedObserving");
+    LOG("[SSciPReceive] Entering state ReceiveMovementFailedReport in region root__Operating__MovementFailedObserving");
     region->state = SSciPReceive__root__Operating__MovementFailedObserving__ReceiveMovementFailedReport;
 };
 

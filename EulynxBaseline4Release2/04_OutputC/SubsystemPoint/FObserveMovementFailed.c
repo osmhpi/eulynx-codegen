@@ -8,16 +8,15 @@
 void make_state_FObserveMovementFailed__root__ObserveMovementFailure__root__Idle(
     FObserveMovementFailed *self, FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct *region)
 {
-    LOG("[FObserveMovementFailed] Entering state Idle in region "
-        "root__ObserveMovementFailure__root");
+    LOG("[FObserveMovementFailed] Entering state Idle in region root__ObserveMovementFailure__root");
     region->state = FObserveMovementFailed__root__ObserveMovementFailure__root__Idle;
 };
 
 void make_state_FObserveMovementFailed__root__ObserveMovementFailure__root__ObservingMovementFailure(
     FObserveMovementFailed *self, FObserveMovementFailed__root__ObserveMovementFailure__root__state_struct *region)
 {
-    LOG("[FObserveMovementFailed] Entering state ObservingMovementFailure in "
-        "region root__ObserveMovementFailure__root");
+    LOG("[FObserveMovementFailed] Entering state ObservingMovementFailure in region "
+        "root__ObserveMovementFailure__root");
     region->state = FObserveMovementFailed__root__ObserveMovementFailure__root__ObservingMovementFailure;
 };
 
@@ -33,8 +32,7 @@ void make_state_FObserveMovementFailed__root__ObserveMovementFailure__root(
 void make_state_FObserveMovementFailed__root__ObserveMovementFailure(FObserveMovementFailed *self,
                                                                      FObserveMovementFailed__root__state_struct *region)
 {
-    LOG("[FObserveMovementFailed] Entering state ObserveMovementFailure in "
-        "region root");
+    LOG("[FObserveMovementFailed] Entering state ObserveMovementFailure in region root");
     region->state = FObserveMovementFailed__root__ObserveMovementFailure;
     make_state_FObserveMovementFailed__root__ObserveMovementFailure__root(self, &region->ObserveMovementFailure.root);
 };

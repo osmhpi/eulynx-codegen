@@ -8,8 +8,7 @@
 void make_state_SSciLsReceive__root__ReceivingLightSignalReports(SSciLsReceive *self,
                                                                  SSciLsReceive__root__state_struct *region)
 {
-    LOG("[SSciLsReceive] Entering state ReceivingLightSignalReports in region "
-        "root");
+    LOG("[SSciLsReceive] Entering state ReceivingLightSignalReports in region root");
     region->state = SSciLsReceive__root__ReceivingLightSignalReports;
 };
 

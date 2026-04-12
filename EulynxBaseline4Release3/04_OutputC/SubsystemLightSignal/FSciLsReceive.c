@@ -65,8 +65,7 @@ void make_state_FSciLsReceive__root__ReceivingLightSignalCommands__ReceivingLumi
 void make_state_FSciLsReceive__root__ReceivingLightSignalCommands(FSciLsReceive *self,
                                                                   FSciLsReceive__root__state_struct *region)
 {
-    LOG("[FSciLsReceive] Entering state ReceivingLightSignalCommands in region "
-        "root");
+    LOG("[FSciLsReceive] Entering state ReceivingLightSignalCommands in region root");
     region->state = FSciLsReceive__root__ReceivingLightSignalCommands;
     make_state_FSciLsReceive__root__ReceivingLightSignalCommands__ReceivingSignalAspect(
         self, &region->ReceivingLightSignalCommands.ReceivingSignalAspect);

@@ -8,8 +8,7 @@
 void make_state_FTds6MaintainerCommandsAndMessages__root__ReceivingCommandsAndReportMessages(
     FTds6MaintainerCommandsAndMessages *self, FTds6MaintainerCommandsAndMessages__root__state_struct *region)
 {
-    LOG("[FTds6MaintainerCommandsAndMessages] Entering state "
-        "ReceivingCommandsAndReportMessages in region root");
+    LOG("[FTds6MaintainerCommandsAndMessages] Entering state ReceivingCommandsAndReportMessages in region root");
     region->state = FTds6MaintainerCommandsAndMessages__root__ReceivingCommandsAndReportMessages;
 };
 

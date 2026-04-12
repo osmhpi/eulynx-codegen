@@ -257,8 +257,7 @@ typedef struct FObserveTrackCircuits
     ChangeEvent Change254; // D32in_Critical_Failure_TVPS
     ChangeEvent Change259; // D32in_Critical_Failure_TVPS = FALSE
     ChangeEvent Change423; // d51out_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change409; // d51out_EST_EfeS_State = "BOOTING" OR
-                           // d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
+    ChangeEvent Change409; // d51out_EST_EfeS_State = "BOOTING" OR d51out_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
     ChangeEvent Change404; // d51out_EST_EfeS_State = "BOOTING"
     ChangeEvent Change419; // d51out_EST_EfeS_State = "FALLBACK_MODE"
 

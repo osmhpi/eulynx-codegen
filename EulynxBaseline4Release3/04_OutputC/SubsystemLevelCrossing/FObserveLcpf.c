@@ -8,32 +8,28 @@
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Unprotected(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Unprotected in region "
-        "root__ObserveLcpf__ObserveLcpfProtectionState");
+    LOG("[FObserveLcpf] Entering state Unprotected in region root__ObserveLcpf__ObserveLcpfProtectionState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Unprotected;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Protected(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Protected in region "
-        "root__ObserveLcpf__ObserveLcpfProtectionState");
+    LOG("[FObserveLcpf] Entering state Protected in region root__ObserveLcpf__ObserveLcpfProtectionState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Protected;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Idle(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Idle in region "
-        "root__ObserveLcpf__ObserveLcpfProtectionState");
+    LOG("[FObserveLcpf] Entering state Idle in region root__ObserveLcpf__ObserveLcpfProtectionState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Idle;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Waiting(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Waiting in region "
-        "root__ObserveLcpf__ObserveLcpfProtectionState");
+    LOG("[FObserveLcpf] Entering state Waiting in region root__ObserveLcpf__ObserveLcpfProtectionState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfProtectionState__Waiting;
 };
 
@@ -65,8 +61,7 @@ void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfObstacleDetectionSta
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfObstacleDetectionState__Waiting(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfObstacleDetectionState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Waiting in region "
-        "root__ObserveLcpf__ObserveLcpfObstacleDetectionState");
+    LOG("[FObserveLcpf] Entering state Waiting in region root__ObserveLcpf__ObserveLcpfObstacleDetectionState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfObstacleDetectionState__Waiting;
 };
 
@@ -82,24 +77,21 @@ void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfObstacleDetectionSta
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__NoFailureDetected(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state NoFailureDetected in region "
-        "root__ObserveLcpf__ObserveLcpfFailureState");
+    LOG("[FObserveLcpf] Entering state NoFailureDetected in region root__ObserveLcpf__ObserveLcpfFailureState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__NoFailureDetected;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__FailureDetected(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state FailureDetected in region "
-        "root__ObserveLcpf__ObserveLcpfFailureState");
+    LOG("[FObserveLcpf] Entering state FailureDetected in region root__ObserveLcpf__ObserveLcpfFailureState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__FailureDetected;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__Waiting(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state Waiting in region "
-        "root__ObserveLcpf__ObserveLcpfFailureState");
+    LOG("[FObserveLcpf] Entering state Waiting in region root__ObserveLcpf__ObserveLcpfFailureState");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState__Waiting;
 };
 
@@ -115,16 +107,14 @@ void make_state_FObserveLcpf__root__ObserveLcpf__ObserveLcpfFailureState(
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__MonitoringParameterSet2(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state MonitoringParameterSet2 in region "
-        "root__ObserveLcpf__ObserveMonitoringStatus");
+    LOG("[FObserveLcpf] Entering state MonitoringParameterSet2 in region root__ObserveLcpf__ObserveMonitoringStatus");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__MonitoringParameterSet2;
 };
 
 void make_state_FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__MonitoringParameterSet1(
     FObserveLcpf *self, FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__state_struct *region)
 {
-    LOG("[FObserveLcpf] Entering state MonitoringParameterSet1 in region "
-        "root__ObserveLcpf__ObserveMonitoringStatus");
+    LOG("[FObserveLcpf] Entering state MonitoringParameterSet1 in region root__ObserveLcpf__ObserveMonitoringStatus");
     region->state = FObserveLcpf__root__ObserveLcpf__ObserveMonitoringStatus__MonitoringParameterSet1;
 };
 

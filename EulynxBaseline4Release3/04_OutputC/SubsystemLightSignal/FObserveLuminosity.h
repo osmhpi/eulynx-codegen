@@ -91,8 +91,7 @@ typedef struct FObserveLuminosity
     ChangeEvent Change510; // D9in_Sensed_Luminosity = "Day"
     ChangeEvent Change511; // D9in_Sensed_Luminosity = "Night"
     ChangeEvent Change327; // d51in_EST_EfeS_State = "BOOTING"
-    ChangeEvent Change339; // d51in_EST_EfeS_State = "BOOTING"
-                           // ORd51in_EST_EfeS_State = "INITIALISING"
+    ChangeEvent Change339; // d51in_EST_EfeS_State = "BOOTING" ORd51in_EST_EfeS_State = "INITIALISING"
     ChangeEvent Change366; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE"
 
     // Timeout Events

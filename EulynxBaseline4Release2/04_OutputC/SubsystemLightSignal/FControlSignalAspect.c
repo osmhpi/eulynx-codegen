@@ -28,8 +28,8 @@ void make_state_FControlSignalAspect__root__OperatingVoltage__root__ControllingS
     FControlSignalAspect *self,
     FControlSignalAspect__root__OperatingVoltage__root__ControllingSignalAspect__root__state_struct *region)
 {
-    LOG("[FControlSignalAspect] Entering state NoSignalAspectLampFailure in "
-        "region root__OperatingVoltage__root__ControllingSignalAspect__root");
+    LOG("[FControlSignalAspect] Entering state NoSignalAspectLampFailure in region "
+        "root__OperatingVoltage__root__ControllingSignalAspect__root");
     region->state =
         FControlSignalAspect__root__OperatingVoltage__root__ControllingSignalAspect__root__NoSignalAspectLampFailure;
 };
@@ -74,8 +74,7 @@ void make_state_FControlSignalAspect__root__OperatingVoltage__root__ControllingS
 void make_state_FControlSignalAspect__root__OperatingVoltage__root__ControllingSignalAspect(
     FControlSignalAspect *self, FControlSignalAspect__root__OperatingVoltage__root__state_struct *region)
 {
-    LOG("[FControlSignalAspect] Entering state ControllingSignalAspect in region "
-        "root__OperatingVoltage__root");
+    LOG("[FControlSignalAspect] Entering state ControllingSignalAspect in region root__OperatingVoltage__root");
     region->state = FControlSignalAspect__root__OperatingVoltage__root__ControllingSignalAspect;
     make_state_FControlSignalAspect__root__OperatingVoltage__root__ControllingSignalAspect__root(
         self, &region->ControllingSignalAspect.root);
@@ -84,8 +83,7 @@ void make_state_FControlSignalAspect__root__OperatingVoltage__root__ControllingS
 void make_state_FControlSignalAspect__root__OperatingVoltage__root__SetNoSignalAspect(
     FControlSignalAspect *self, FControlSignalAspect__root__OperatingVoltage__root__state_struct *region)
 {
-    LOG("[FControlSignalAspect] Entering state SetNoSignalAspect in region "
-        "root__OperatingVoltage__root");
+    LOG("[FControlSignalAspect] Entering state SetNoSignalAspect in region root__OperatingVoltage__root");
     region->state = FControlSignalAspect__root__OperatingVoltage__root__SetNoSignalAspect;
 };
 

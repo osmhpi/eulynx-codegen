@@ -132,35 +132,26 @@ typedef struct FControlPoint
     // Messages -- Outgoing
 
     // Change Events
-    ChangeEvent Change28;  // d10in_Required_Point_Position = "RIGHT" AND
-                           // (d10in_Required_Point_Position <>
+    ChangeEvent Change28;  // d10in_Required_Point_Position = "RIGHT" AND (d10in_Required_Point_Position <>
                            // d14in_Observed_Point_Position)
     ChangeEvent Change30;  // d10in_Required_Point_Position = "UNCOMMANDED"
     ChangeEvent Change33;  // d11in_Observed_Ability_To_Move = "UNABLE_TO_MOVE"
     ChangeEvent Change89;  // d13in_Observed_Movement_Failed
-    ChangeEvent Change107; // d14in_Observed_Point_Position =
-                           // d10in_Required_Point_Position
-    ChangeEvent Change108; // d14in_Observed_Point_Position =
-                           // Mem_Last_Required_Point_Position
-    ChangeEvent Change26;  // d10in_Required_Point_Position = "LEFT" AND
-                           // (d10in_Required_Point_Position <>
+    ChangeEvent Change107; // d14in_Observed_Point_Position = d10in_Required_Point_Position
+    ChangeEvent Change108; // d14in_Observed_Point_Position = Mem_Last_Required_Point_Position
+    ChangeEvent Change26;  // d10in_Required_Point_Position = "LEFT" AND (d10in_Required_Point_Position <>
                            // d14in_Observed_Point_Position)
     ChangeEvent Change29;  // d10in_Required_Point_Position = "UNCOMMANDED"
     ChangeEvent Change35;  // d11in_Observed_Ability_To_Move = "UNABLE_TO_MOVE"
     ChangeEvent Change88;  // d13in_Observed_Movement_Failed
-    ChangeEvent Change106; // d14in_Observed_Point_Position =
-                           // d10in_Required_Point_Position
-    ChangeEvent Change109; // d14in_Observed_Point_Position =
-                           // Mem_Last_Required_Point_Position
+    ChangeEvent Change106; // d14in_Observed_Point_Position = d10in_Required_Point_Position
+    ChangeEvent Change109; // d14in_Observed_Point_Position = Mem_Last_Required_Point_Position
     ChangeEvent Change25;  // d10in_Required_Point_Position = "LEFT"
     ChangeEvent Change27;  // d10in_Required_Point_Position = "RIGHT"
-    ChangeEvent Change105; // d14in_Observed_Point_Position <>
-                           // Mem_Last_Required_Point_Position
-    ChangeEvent Change104; // d14in_Observed_Point_Position <>
-                           // Mem_Last_Required_Point_Position
+    ChangeEvent Change105; // d14in_Observed_Point_Position <> Mem_Last_Required_Point_Position
+    ChangeEvent Change104; // d14in_Observed_Point_Position <> Mem_Last_Required_Point_Position
     ChangeEvent Change380; // d51in_EST_EfeS_State = "INITIALISING"
-    ChangeEvent Change390; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR
-                           // d51in_EST_EfeS_State = "BOOTING" OR
+    ChangeEvent Change390; // d51in_EST_EfeS_State = "NO_OPERATING_VOLTAGE" OR d51in_EST_EfeS_State = "BOOTING" OR
                            // d51in_EST_EfeS_State = "FALLBACK_MODE"
 
     // Timeout Events

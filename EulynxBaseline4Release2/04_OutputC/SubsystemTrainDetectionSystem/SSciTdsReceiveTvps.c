@@ -153,8 +153,7 @@ static void Cop4GetReasonForFailureFcPA(SSciTdsReceiveTvps *self, ReasonForFailu
 void make_state_SSciTdsReceiveTvps__root__ReceivingTvpsReports(SSciTdsReceiveTvps *self,
                                                                SSciTdsReceiveTvps__root__state_struct *region)
 {
-    LOG("[SSciTdsReceiveTvps] Entering state ReceivingTvpsReports in region "
-        "root");
+    LOG("[SSciTdsReceiveTvps] Entering state ReceivingTvpsReports in region root");
     region->state = SSciTdsReceiveTvps__root__ReceivingTvpsReports;
 };
 

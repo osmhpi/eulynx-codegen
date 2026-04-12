@@ -170,8 +170,7 @@ typedef struct FPerformFcPOrFcPA
     ChangeEvent Change1154; // T42in_In_Permitted_Wheel OR T44in_Out_Permitted_Wheel
     ChangeEvent Change231;  // D32in_Critical_Failure_TVPS
     ChangeEvent Change1113; // T39in_Undefined_Pattern
-    ChangeEvent Change1267; // T88in_In_Not_Permitted_Wheel OR
-                            // T43in_Out_Not_Permitted_Wheel
+    ChangeEvent Change1267; // T88in_In_Not_Permitted_Wheel OR T43in_Out_Not_Permitted_Wheel
 
     // Timeout Events
     TimeoutEvent Time26;
