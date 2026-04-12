@@ -1,4 +1,4 @@
-# EULYNX System Model to C compiler
+# EULYNX System Model to C Compiler
 
 This repository contains a C# library that parses the XMI artifacts delivered by the EULYNX consortium and creates self-contained C code for each class with an associated state machine.
 

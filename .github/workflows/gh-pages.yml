@@ -58,6 +58,8 @@ jobs:
 
       - name: Copy output artifacts
         run: |
+          mkdir -p _site/EulynxBaseline4Release1
+          cp -r EulynxBaseline4Release1/03_TransformationReport/report/* _site/EulynxBaseline4Release1/
           mkdir -p _site/EulynxBaseline4Release2
           cp -r EulynxBaseline4Release2/03_TransformationReport/report/* _site/EulynxBaseline4Release2/
           mkdir -p _site/EulynxBaseline4Release3
