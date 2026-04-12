@@ -4,7 +4,7 @@ This repository contains a C# library that parses the XMI artifacts delivered by
 
 | EULYNX Baseline | Generated C Code | Translation Report |
 -|-|-
-| Baseline 4 Release 1 | [Missing](EulynxBaseline4Release1/04_OutputC) | [Missing](https://osmhpi.github.io/eulynx-codegen/EulynxBaseline4Release1)
+| Baseline 4 Release 1 | [Link](EulynxBaseline4Release1/04_OutputC) | [Link](https://osmhpi.github.io/eulynx-codegen/EulynxBaseline4Release1)
 | Baseline 4 Release 2 | [Link](EulynxBaseline4Release2/04_OutputC) | [Link](https://osmhpi.github.io/eulynx-codegen/EulynxBaseline4Release2)
 | Baseline 4 Release 3 | [Link](EulynxBaseline4Release3/04_OutputC) | [Link](https://osmhpi.github.io/eulynx-codegen/EulynxBaseline4Release3)
 

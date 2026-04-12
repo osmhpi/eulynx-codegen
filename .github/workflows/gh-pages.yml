@@ -38,6 +38,12 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Generate Baseline 4 Release 1
+        working-directory: EulynxBaseline4Release1
+        env:
+          BASE_PATH: /eulynx-codegen/EulynxBaseline4Release1
+        run: make 03_TransformationReport/report/index.html
+
       - name: Generate Baseline 4 Release 2
         working-directory: EulynxBaseline4Release2
         env:

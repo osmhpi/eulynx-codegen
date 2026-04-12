@@ -1,0 +1,633 @@
+<testsuites>
+  <testsuite name="XmiToCode.EulynxBaseline4Release1.dll" tests="56" skipped="18" failures="2" errors="0" time="3.5122249" timestamp="2026-04-12T14:24:03" hostname="MacBook-Pro-2" id="0" package="XmiToCode.EulynxBaseline4Release1.dll">
+    <properties />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Prim)" time="0.3383692" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_Adj_Sec)" time="0.0782281" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,F_SCI_EfeS_Sec)" time="0.0588527" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Generic requirements for SCI,S_SCI_EfeS_Prim)" time="0.0948941">
+      <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
+Stack Trace:
+   at Eulynx.Validation.Compilation.CompileC(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release1/02_Transformation/Compilation.cs:line 51
+   at InvokeStub_Compilation.CompileC(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    cc -Werror   -c -o SSciEfesPrim.o SSciEfesPrim.c
+    SSciEfesPrim.c:19:10: error: use of undeclared identifier 'MsgPdiVersionCheck__9827_ResultValue__Unknown'
+    19 |     case MsgPdiVersionCheck__9827_ResultValue__Unknown:
+    |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    1 error generated.
+    make[1]: *** [SSciEfesPrim.o] Error 1</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Output_Channel_State)" time="0.0002779">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Control_Safe_State_Of_All_Physical_Output_Channel)" time="0.0759059" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Detect_Input_Channel_State)" time="0.0865599" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_Monitor_Output_Channel_Disturbance_State)" time="0.0862591" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Receive)" time="0.0768147" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,F_SCI_IO_Report)" time="0.2716581">
+      <failure type="failure" message="Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. ">Assert.AreEqual failed. Expected:&lt;0&gt;. Actual:&lt;2&gt;. 
+Stack Trace:
+   at Eulynx.Validation.Compilation.CompileC(String package, String className) in /Users/robert/Documents/code/github.com/osmhpi/eulynx-codegen/EulynxBaseline4Release1/02_Transformation/Compilation.cs:line 51
+   at InvokeStub_Compilation.CompileC(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Standard Output:
+    cc -Werror   -c -o FSciIoReport.o FSciIoReport.c
+    FSciIoReport.c:85:55: error: unknown type name 'FSciIoReport_OutputChannelState1Value'
+    85 |                                                       FSciIoReport_OutputChannelState1Value OutputChannelState1,
+    |                                                       ^
+    FSciIoReport.c:86:55: error: unknown type name 'FSciIoReport_OutputChannelStatenValue'
+    86 |                                                       FSciIoReport_OutputChannelStatenValue OutputChannelStaten)
+    |                                                       ^
+    FSciIoReport.c:88:33: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed'?
+    88 |     if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &amp;&amp;
+    |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                 FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed
+    ./FSciIoReport.h:51:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed' declared here
+    51 |     FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:89:33: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed'?
+    89 |         (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+    |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                 FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed
+    ./FSciIoReport.h:58:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed' declared here
+    58 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:102:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed'?
+    102 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &amp;&amp;
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed
+    ./FSciIoReport.h:52:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed' declared here
+    52 |     FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:103:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed'?
+    103 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed
+    ./FSciIoReport.h:59:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed' declared here
+    59 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:116:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed'?
+    116 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &amp;&amp;
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed
+    ./FSciIoReport.h:52:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed' declared here
+    52 |     FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:117:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed'?
+    117 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed
+    ./FSciIoReport.h:58:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed' declared here
+    58 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:130:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed'?
+    130 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &amp;&amp;
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed
+    ./FSciIoReport.h:51:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed' declared here
+    51 |     FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:131:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed'?
+    131 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+    |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed
+    ./FSciIoReport.h:59:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed' declared here
+    59 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed,
+    |     ^
+    FSciIoReport.c:146:55: error: unknown type name 'FSciIoReport_InputChannelState1Value'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value'?
+    146 |                                                       FSciIoReport_InputChannelState1Value InputChannelState1,
+    |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                                       FSciIoReport_D7inDetectedInputChannelState1Value
+    ./FSciIoReport.h:14:3: note: 'FSciIoReport_D7inDetectedInputChannelState1Value' declared here
+    14 | } FSciIoReport_D7inDetectedInputChannelState1Value;
+    |   ^
+    FSciIoReport.c:147:55: error: unknown type name 'FSciIoReport_InputChannelStatenValue'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue'?
+    147 |                                                       FSciIoReport_InputChannelStatenValue InputChannelStaten)
+    |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                                       FSciIoReport_D7inDetectedInputChannelStatenValue
+    ./FSciIoReport.h:40:3: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue' declared here
+    40 | } FSciIoReport_D7inDetectedInputChannelStatenValue;
+    |   ^
+    FSciIoReport.c:149:32: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOn'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn'?
+    149 |     if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOn) &amp;&amp;
+    |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn
+    ./FSciIoReport.h:12:5: note: 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn' declared here
+    12 |     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn,
+    |     ^
+    FSciIoReport.c:150:32: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__SwitchedOn'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn'?
+    150 |         (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOn))
+    |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn
+    ./FSciIoReport.h:37:5: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn' declared here
+    37 |     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn,
+    |     ^
+    FSciIoReport.c:159:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOff'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff'?
+    159 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &amp;&amp;
+    |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff
+    ./FSciIoReport.h:11:5: note: 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff' declared here
+    11 |     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff,
+    |     ^
+    FSciIoReport.c:160:37: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__SwitchedOff'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff'?
+    160 |              (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOff))
+    |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                                     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff
+    ./FSciIoReport.h:36:5: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff' declared here
+    36 |     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff,
+    |     ^
+    FSciIoReport.c:169:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__Disturbed'
+    169 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__Disturbed) &amp;&amp;
+    |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FSciIoReport.c:170:37: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__Disturbed'
+    170 |              (InputChannelStaten == FSciIoReport_InputChannelStatenValue__Disturbed))
+    |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FSciIoReport.c:179:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOff'
+    179 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &amp;&amp;
+    |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    fatal error: too many errors emitted, stopping now [-ferror-limit=]
+    20 errors generated.
+    make[1]: *** [FSciIoReport.o] Error 1</failure>
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Command)" time="0.0772685" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem IO,S_SCI_IO_Receive)" time="0.0778377" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_LC_Timer)" time="0.0003430">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Control_Local_Operation)" time="0.0794361" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Detection_Element)" time="0.0772905" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_Failure_State)" time="0.0836215" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_Observe_LCPF)" time="0.0803447" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Receive)" time="0.0003449">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,F_SCI_LC_Report)" time="0.0001434">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Command)" time="0.0756881" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Level Crossing,S_SCI_LC_Receive)" time="0.0003260">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command_expl)" time="0.0754171" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Luminosity)" time="0.0807540" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Control_Signal_Aspect)" time="0.0828564" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Luminosity)" time="0.0794818" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_Observe_Signal_Aspect)" time="0.0788483" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Receive)" time="0.0003768">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,F_SCI_LS_Report)" time="0.0001219">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Command)" time="0.0924694" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Light Signal,S_SCI_LS_Receive)" time="0.0002725">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_Point_Machine_Position)" time="0.0783126" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Ability_To_Move)" time="0.0769962" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Degraded_Point_Position)" time="0.0814657" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Observe_Overall_Point_Position)" time="0.0879562" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Recieve_and_Report_Timeout)" time="0.0919520" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_SCI_P_Report)" time="0.0781169" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,S_SCI_P_Command_And_Recieve)" time="0.0775043" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Point,F_Control_And_Observe_4W_PM)" time="0.0830018" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Control_Timer)" time="0.0802661" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Commands)" time="0.0003074">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Handle_Internal_FC_U_Command)" time="0.0762369" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Monitor_Report_Status)" time="0.0002820">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Ability_to_be_Forced_to_clear)" time="0.0768262" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Occupancy_Status)" time="0.0002681">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_TDP)" time="0.0829313" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Observe_Track_Circuits)" time="0.0838136" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_Perform_FC_P_Or_FC_P_A)" time="0.0002630">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_TDS6_Maintainer_Commands_And_Messages)" time="0.0001055">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Receive)" time="0.0002124">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TDP)" time="0.0808362" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_Track_Circuit)" time="0.0804470" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,F_SCI_TDS_Report_TVPS)" time="0.0003433">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Command)" time="0.0822169" />
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TDP)" time="0.0002892">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_Track_Circuit)" time="0.0001128">
+      <skipped />
+    </testcase>
+    <testcase classname="Eulynx.Validation.Compilation" name="Compilation.CompileC (Subsystem Train Detection System,S_SCI_TDS_Receive_TVPS)" time="0.0000990">
+      <skipped />
+    </testcase>
+    <system-out>cc -Werror   -c -o SSciAdjPrim.o SSciAdjPrim.c
+
+
+
+cc -Werror   -c -o SSciAdjSec.o SSciAdjSec.c
+
+
+
+cc -Werror   -c -o FSciEfesSec.o FSciEfesSec.c
+
+
+
+cc -Werror   -c -o SSciEfesPrim.o SSciEfesPrim.c
+
+SSciEfesPrim.c:19:10: error: use of undeclared identifier 'MsgPdiVersionCheck__9827_ResultValue__Unknown'
+   19 |     case MsgPdiVersionCheck__9827_ResultValue__Unknown:
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make[1]: *** [SSciEfesPrim.o] Error 1
+
+
+cc -Werror   -c -o FControlSafeStateOfAllPhysicalOutputChannel.o FControlSafeStateOfAllPhysicalOutputChannel.c
+
+
+
+cc -Werror   -c -o FDetectInputChannelState.o FDetectInputChannelState.c
+
+
+
+cc -Werror   -c -o FMonitorOutputChannelDisturbanceState.o FMonitorOutputChannelDisturbanceState.c
+
+
+
+cc -Werror   -c -o FSciIoReceive.o FSciIoReceive.c
+
+
+
+cc -Werror   -c -o FSciIoReport.o FSciIoReport.c
+
+FSciIoReport.c:85:55: error: unknown type name 'FSciIoReport_OutputChannelState1Value'
+   85 |                                                       FSciIoReport_OutputChannelState1Value OutputChannelState1,
+      |                                                       ^
+FSciIoReport.c:86:55: error: unknown type name 'FSciIoReport_OutputChannelStatenValue'
+   86 |                                                       FSciIoReport_OutputChannelStatenValue OutputChannelStaten)
+      |                                                       ^
+FSciIoReport.c:88:33: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed'?
+   88 |     if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &amp;&amp;
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                 FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed
+./FSciIoReport.h:51:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed' declared here
+   51 |     FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:89:33: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed'?
+   89 |         (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                 FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed
+./FSciIoReport.h:58:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed' declared here
+   58 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:102:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed'?
+  102 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &amp;&amp;
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed
+./FSciIoReport.h:52:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed' declared here
+   52 |     FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:103:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed'?
+  103 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed
+./FSciIoReport.h:59:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed' declared here
+   59 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:116:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed'?
+  116 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__PhysicallyDisturbed) &amp;&amp;
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed
+./FSciIoReport.h:52:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed' declared here
+   52 |     FSciIoReport_MemLastReportedOutputChannelState1Value__PhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:117:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed'?
+  117 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__NotPhysicallyDisturbed))
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed
+./FSciIoReport.h:58:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed' declared here
+   58 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__NotPhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:130:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed'?
+  130 |     else if ((OutputChannelState1 == FSciIoReport_OutputChannelState1Value__NotPhysicallyDisturbed) &amp;&amp;
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed
+./FSciIoReport.h:51:5: note: 'FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed' declared here
+   51 |     FSciIoReport_MemLastReportedOutputChannelState1Value__NotPhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:131:38: error: use of undeclared identifier 'FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed'; did you mean 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed'?
+  131 |              (OutputChannelStaten == FSciIoReport_OutputChannelStatenValue__PhysicallyDisturbed))
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                      FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed
+./FSciIoReport.h:59:5: note: 'FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed' declared here
+   59 |     FSciIoReport_MemLastReportedOutputChannelStatenValue__PhysicallyDisturbed,
+      |     ^
+FSciIoReport.c:146:55: error: unknown type name 'FSciIoReport_InputChannelState1Value'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value'?
+  146 |                                                       FSciIoReport_InputChannelState1Value InputChannelState1,
+      |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                       FSciIoReport_D7inDetectedInputChannelState1Value
+./FSciIoReport.h:14:3: note: 'FSciIoReport_D7inDetectedInputChannelState1Value' declared here
+   14 | } FSciIoReport_D7inDetectedInputChannelState1Value;
+      |   ^
+FSciIoReport.c:147:55: error: unknown type name 'FSciIoReport_InputChannelStatenValue'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue'?
+  147 |                                                       FSciIoReport_InputChannelStatenValue InputChannelStaten)
+      |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                       FSciIoReport_D7inDetectedInputChannelStatenValue
+./FSciIoReport.h:40:3: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue' declared here
+   40 | } FSciIoReport_D7inDetectedInputChannelStatenValue;
+      |   ^
+FSciIoReport.c:149:32: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOn'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn'?
+  149 |     if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOn) &amp;&amp;
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn
+./FSciIoReport.h:12:5: note: 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn' declared here
+   12 |     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOn,
+      |     ^
+FSciIoReport.c:150:32: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__SwitchedOn'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn'?
+  150 |         (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOn))
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn
+./FSciIoReport.h:37:5: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn' declared here
+   37 |     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOn,
+      |     ^
+FSciIoReport.c:159:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOff'; did you mean 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff'?
+  159 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &amp;&amp;
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff
+./FSciIoReport.h:11:5: note: 'FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff' declared here
+   11 |     FSciIoReport_D7inDetectedInputChannelState1Value__SwitchedOff,
+      |     ^
+FSciIoReport.c:160:37: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__SwitchedOff'; did you mean 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff'?
+  160 |              (InputChannelStaten == FSciIoReport_InputChannelStatenValue__SwitchedOff))
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff
+./FSciIoReport.h:36:5: note: 'FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff' declared here
+   36 |     FSciIoReport_D7inDetectedInputChannelStatenValue__SwitchedOff,
+      |     ^
+FSciIoReport.c:169:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__Disturbed'
+  169 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__Disturbed) &amp;&amp;
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciIoReport.c:170:37: error: use of undeclared identifier 'FSciIoReport_InputChannelStatenValue__Disturbed'
+  170 |              (InputChannelStaten == FSciIoReport_InputChannelStatenValue__Disturbed))
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSciIoReport.c:179:37: error: use of undeclared identifier 'FSciIoReport_InputChannelState1Value__SwitchedOff'
+  179 |     else if ((InputChannelState1 == FSciIoReport_InputChannelState1Value__SwitchedOff) &amp;&amp;
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make[1]: *** [FSciIoReport.o] Error 1
+
+
+cc -Werror   -c -o SSciIoCommand.o SSciIoCommand.c
+
+
+
+cc -Werror   -c -o SSciIoReceive.o SSciIoReceive.c
+
+
+
+cc -Werror   -c -o FControlLocalOperation.o FControlLocalOperation.c
+
+
+
+cc -Werror   -c -o FObserveDetectionElement.o FObserveDetectionElement.c
+
+
+
+cc -Werror   -c -o FObserveFailureState.o FObserveFailureState.c
+
+
+
+cc -Werror   -c -o FObserveLcpf.o FObserveLcpf.c
+
+
+
+cc -Werror   -c -o SSciLcCommand.o SSciLcCommand.c
+
+
+
+cc -Werror   -c -o SSciLsCommandExpl.o SSciLsCommandExpl.c
+
+
+
+cc -Werror   -c -o FControlLuminosity.o FControlLuminosity.c
+
+
+
+cc -Werror   -c -o FControlSignalAspect.o FControlSignalAspect.c
+
+
+
+cc -Werror   -c -o FObserveLuminosity.o FObserveLuminosity.c
+
+
+
+cc -Werror   -c -o FObserveSignalAspect.o FObserveSignalAspect.c
+
+
+
+cc -Werror   -c -o SSciLsCommand.o SSciLsCommand.c
+
+
+
+cc -Werror   -c -o FControlPointMachinePosition.o FControlPointMachinePosition.c
+
+
+
+cc -Werror   -c -o FObserveAbilityToMove.o FObserveAbilityToMove.c
+
+
+
+cc -Werror   -c -o FObserveDegradedPointPosition.o FObserveDegradedPointPosition.c
+
+
+
+cc -Werror   -c -o FObserveOverallPointPosition.o FObserveOverallPointPosition.c
+
+
+
+cc -Werror   -c -o FSciPRecieveAndReportTimeout.o FSciPRecieveAndReportTimeout.c
+
+
+
+cc -Werror   -c -o FSciPReport.o FSciPReport.c
+
+
+
+cc -Werror   -c -o SSciPCommandAndRecieve.o SSciPCommandAndRecieve.c
+
+
+
+cc -Werror   -c -o FControlAndObserve4WPm.o FControlAndObserve4WPm.c
+
+
+
+cc -Werror   -c -o FControlTimer.o FControlTimer.c
+
+
+
+cc -Werror   -c -o FHandleInternalFcUCommand.o FHandleInternalFcUCommand.c
+
+
+
+cc -Werror   -c -o FObserveAbilityToBeForcedToClear.o FObserveAbilityToBeForcedToClear.c
+
+
+
+cc -Werror   -c -o FObserveTdp.o FObserveTdp.c
+
+
+
+cc -Werror   -c -o FObserveTrackCircuits.o FObserveTrackCircuits.c
+
+
+
+cc -Werror   -c -o FSciTdsReportTdp.o FSciTdsReportTdp.c
+
+
+
+cc -Werror   -c -o FSciTdsReportTrackCircuit.o FSciTdsReportTrackCircuit.c
+
+
+
+cc -Werror   -c -o SSciTdsCommand.o SSciTdsCommand.c
+
+
+
+
+Test Framework Informational Messages:
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+Warn: Property Aspect Lamp Combinations has no type, assuming string.
+Warn: Property Aspect Extension Lamp Combinations has no type, assuming string.
+Warn: Property Speed Indicator has no type, assuming string.
+Warn: Property Speed Indicator Announcement has no type, assuming string.
+Warn: Property Direction Indicator has no type, assuming string.
+Warn: Property Direction Indicator Announcement has no type, assuming string.
+</system-out>
+    <system-err></system-err>
+  </testsuite>
+</testsuites>

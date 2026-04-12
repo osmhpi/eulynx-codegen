@@ -47,13 +47,13 @@ public abstract class XmiParser {
             .Single(x => x.Type == "uml:Package" && x.Name == "EULYNX_Profile");
 
         var eulynxSystem = packages.Single(x => x.Name == "EULYNX System");
-        var simulation = packages.Single(x => x.Name == "Simulation_Package");
+        var simulation = packages.SingleOrDefault(x => x.Name == "Simulation_Package");
 
         var genericEvents = ResolveGenericEvents(packages);
 
         var dataTypes = FindAllDataTypes(sysimProfile)
             .Concat(FindAllDataTypes(eulynxProfile))
-            .Concat(FindAllClasses(simulation))
+            .Concat(FindAllClasses(simulation ?? new PackagedElement { PackagedElements = new List<PackagedElement>() }))
             .Concat(FindAllClasses(eulynxSystem))
             .Concat(FindAllEnumerations(eulynxSystem))
             // TODO: Shouldn't this be x.Name? Then, we start to have duplicates, which is a problem later on anyways
@@ -64,13 +64,16 @@ public abstract class XmiParser {
             .. eulynxSystem.PackagedElements
                 .Where(x => PackageWhitelist.Length == 0 || PackageWhitelist.Contains(x.Name))
                 .Where(x => !PackageBlacklist.Contains(x.Name)),
-            simulation,
         ];
+
+        if (simulation != null) {
+            InterestingPackages.Add(simulation);
+        }
 
         var changeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:ChangeEvent").ToDictionary(x => x.Id);
         var timeEvents = xmi.Model.PackagedElements.Where(x => x.Type == "uml:TimeEvent").ToDictionary(x => x.Id);
         var signals = FindAllSignals(eulynxSystem)
-            .Concat(FindAllSignals(simulation))
+            .Concat(FindAllSignals(simulation ?? new PackagedElement { PackagedElements = new List<PackagedElement>() }))
             .ToDictionary(x => x.Signal.Id, x => (x.Hierarchy.Last(), x.Signal));
         var enumerations = dataTypes.Where(x => x.Value.Type == "uml:Enumeration")
             .Select(x => new GlobalEnumeration(x.Value))
