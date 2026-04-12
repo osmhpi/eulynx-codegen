@@ -9,7 +9,7 @@ project(
 add_definitions(-DNOLOG)
 
 set(sources
-    point.c
+    main.c
     helpers.c
     ../cycle.c
     ../../../EulynxBaseline4Release3/04_OutputC/GenericRequirementsForSci/FSciEfesSec.c

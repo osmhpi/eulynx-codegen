@@ -6,7 +6,7 @@ project(
   LANGUAGES C)
 
 set(sources
-    point.c
+    main.c
     cycle.c
     ../../EulynxBaseline4Release3/04_OutputC/GenericRequirementsForSci/FSciEfesSec.c
     ../../EulynxBaseline4Release3/04_OutputC/SubsystemPoint/FSciPReport.c

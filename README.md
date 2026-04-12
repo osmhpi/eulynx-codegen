@@ -14,6 +14,11 @@ For EULYNX Baseline 4 Release 4, no XMI export was delivered.
 
 A small, self-contained example exists for how to compose a complete subsystem point implementation from the individual classes ([SubsystemPoint](examples/SubsystemPoint)).
 
+## Example of using Symbolic Execution
+
+Symbolic execution is a static analysis technique that traces all possible execution paths through a program given a set of inputs.
+An example illustrates how the KLEE symbolic execution framework can be used to assert that a change in detected point position is signalled to the connected Subsystem Electronic Interlocking within at most three execution cycles by the Subsystem Point ([SymbolicExecutionTesting](examples/SubsystemPoint/SymbolicExecutionTesting)).
+
 ## Transformation
 
 The transformation library contains several model-specific workarounds, which can be disabled by a compiler define (DISABLE_HACKS).
