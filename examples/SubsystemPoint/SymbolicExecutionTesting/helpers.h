@@ -62,4 +62,4 @@ typedef struct system_inputs {
     PulsedIn T7inInvalidOrMissingBasicData;
 } system_inputs_t;
 
-void apply_inputs(system_inputs_t* inputs, FSciEfesSec *fSciEfesSec, FSciPReport *fSciPReport, FSciPReceive *fSciPReceive, FObserveDegradedPointPosition *fObserveDegradedPointPosition, FObserveOverallPointPosition *fObserveOverallPointPosition, FObserveAbilityToMove *fObserveAbilityToMove, FControlAndObserve4WPm *fControlAndObserve4WPm, FObserveMovementFailed *fObserveMovementFailed, FControlPoint *fControlPoint, FEstEfes *fEstEfes);
+void apply_inputs(system_inputs_t* inputs, SubsystemPoint *point);

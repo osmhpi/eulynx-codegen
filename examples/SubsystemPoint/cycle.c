@@ -380,104 +380,104 @@ FObserveAbilityToMove_D51inEstEfesStateValue map_FEstEfes_D51outEstEfesState_to_
     }
 }
 
-void propagate(FSciEfesSec *fSciEfesSec, FSciPReport *fSciPReport, FSciPReceive *fSciPReceive, FObserveDegradedPointPosition *fObserveDegradedPointPosition, FObserveOverallPointPosition *fObserveOverallPointPosition, FObserveAbilityToMove *fObserveAbilityToMove, FControlAndObserve4WPm *fControlAndObserve4WPm, FObserveMovementFailed *fObserveMovementFailed, FControlPoint *fControlPoint, FEstEfes *fEstEfes)
+void propagate(SubsystemPoint *point)
 {
-    fEstEfes->InPdiConnectionStarted__f9c3.HasMessage = fSciEfesSec->OutPdiConnectionStarted__f9c3.HasMessage;
-    fEstEfes->InPdiConnectionStarted__f9c3.Value = fSciEfesSec->OutPdiConnectionStarted__f9c3.Value;
-    fEstEfes->InPdiConnectionEstablished__4cbf.HasMessage = fSciEfesSec->OutPdiConnectionEstablished__4cbf.HasMessage;
-    fEstEfes->InPdiConnectionEstablished__4cbf.Value = fSciEfesSec->OutPdiConnectionEstablished__4cbf.Value;
-    fEstEfes->InPdiConnectionClosed__d803.HasMessage = fSciEfesSec->OutPdiConnectionClosed__d803.HasMessage;
-    fEstEfes->InPdiConnectionClosed__d803.Value = fSciEfesSec->OutPdiConnectionClosed__d803.Value;
-    fEstEfes->InPdiReleasedForMaintenance__3f7c.HasMessage = fSciEfesSec->OutPdiReleasedForMaintenance__3f7c.HasMessage;
-    fEstEfes->InPdiReleasedForMaintenance__3f7c.Value = fSciEfesSec->OutPdiReleasedForMaintenance__3f7c.Value;
+    point->fEstEfes.InPdiConnectionStarted__f9c3.HasMessage = point->fSciEfesSec.OutPdiConnectionStarted__f9c3.HasMessage;
+    point->fEstEfes.InPdiConnectionStarted__f9c3.Value = point->fSciEfesSec.OutPdiConnectionStarted__f9c3.Value;
+    point->fEstEfes.InPdiConnectionEstablished__4cbf.HasMessage = point->fSciEfesSec.OutPdiConnectionEstablished__4cbf.HasMessage;
+    point->fEstEfes.InPdiConnectionEstablished__4cbf.Value = point->fSciEfesSec.OutPdiConnectionEstablished__4cbf.Value;
+    point->fEstEfes.InPdiConnectionClosed__d803.HasMessage = point->fSciEfesSec.OutPdiConnectionClosed__d803.HasMessage;
+    point->fEstEfes.InPdiConnectionClosed__d803.Value = point->fSciEfesSec.OutPdiConnectionClosed__d803.Value;
+    point->fEstEfes.InPdiReleasedForMaintenance__3f7c.HasMessage = point->fSciEfesSec.OutPdiReleasedForMaintenance__3f7c.HasMessage;
+    point->fEstEfes.InPdiReleasedForMaintenance__3f7c.Value = point->fSciEfesSec.OutPdiReleasedForMaintenance__3f7c.Value;
 
-    fSciEfesSec->InStatusReportCompleted__b457.HasMessage = fSciPReport->OutStatusReportCompleted__b457.HasMessage;
-    fSciEfesSec->InStatusReportCompleted__b457.Value = fSciPReport->OutStatusReportCompleted__b457.Value;
+    point->fSciEfesSec.InStatusReportCompleted__b457.HasMessage = point->fSciPReport.OutStatusReportCompleted__b457.HasMessage;
+    point->fSciEfesSec.InStatusReportCompleted__b457.Value = point->fSciPReport.OutStatusReportCompleted__b457.Value;
 
-    fSciPReport->InStartStatusReport__1e4e.HasMessage = fSciEfesSec->OutStartStatusReport__1e4e.HasMessage;
-    fSciPReport->InStartStatusReport__1e4e.Value = fSciEfesSec->OutStartStatusReport__1e4e.Value;
-    fSciPReport->D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FSciPReport_D11inObservedAbilityToMoveValue(fObserveAbilityToMove->D11outObservedAbilityToMove.Value);
-    fSciPReport->D11inObservedAbilityToMove.IsSignalled = fObserveAbilityToMove->D11outObservedAbilityToMove.IsSignalled;
-    fSciPReport->D13inObservedMovementFailed.Value = fObserveMovementFailed->D13outObservedMovementFailed.Value;
-    fSciPReport->D13inObservedMovementFailed.IsSignalled = fObserveMovementFailed->D13outObservedMovementFailed.IsSignalled;
-    fSciPReport->D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FSciPReport_D14inObservedPointPositionValue(fObserveOverallPointPosition->D14outObservedPointPosition.Value);
-    fSciPReport->D14inObservedPointPosition.IsSignalled = fObserveOverallPointPosition->D14outObservedPointPosition.IsSignalled;
-    fSciPReport->D17inObservedDegradedPointPosition.Value = map_FObserveDegradedPointPosition_D17outObservedDegradedPointPosition_to_FSciPReport_D17inObservedDegradedPointPositionValue(fObserveDegradedPointPosition->D17outObservedDegradedPointPosition.Value);
-    fSciPReport->D17inObservedDegradedPointPosition.IsSignalled = fObserveDegradedPointPosition->D17outObservedDegradedPointPosition.IsSignalled;
-    fSciPReport->D50inPdiConnectionState.Value = map_FSciEfesSec_D50outPdiConnectionState_to_FSciPReport_D50inPdiConnectionStateValue(fSciEfesSec->D50outPdiConnectionState.Value);
-    fSciPReport->D50inPdiConnectionState.IsSignalled = fSciEfesSec->D50outPdiConnectionState.IsSignalled;
+    point->fSciPReport.InStartStatusReport__1e4e.HasMessage = point->fSciEfesSec.OutStartStatusReport__1e4e.HasMessage;
+    point->fSciPReport.InStartStatusReport__1e4e.Value = point->fSciEfesSec.OutStartStatusReport__1e4e.Value;
+    point->fSciPReport.D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FSciPReport_D11inObservedAbilityToMoveValue(point->fObserveAbilityToMove.D11outObservedAbilityToMove.Value);
+    point->fSciPReport.D11inObservedAbilityToMove.IsSignalled = point->fObserveAbilityToMove.D11outObservedAbilityToMove.IsSignalled;
+    point->fSciPReport.D13inObservedMovementFailed.Value = point->fObserveMovementFailed.D13outObservedMovementFailed.Value;
+    point->fSciPReport.D13inObservedMovementFailed.IsSignalled = point->fObserveMovementFailed.D13outObservedMovementFailed.IsSignalled;
+    point->fSciPReport.D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FSciPReport_D14inObservedPointPositionValue(point->fObserveOverallPointPosition.D14outObservedPointPosition.Value);
+    point->fSciPReport.D14inObservedPointPosition.IsSignalled = point->fObserveOverallPointPosition.D14outObservedPointPosition.IsSignalled;
+    point->fSciPReport.D17inObservedDegradedPointPosition.Value = map_FObserveDegradedPointPosition_D17outObservedDegradedPointPosition_to_FSciPReport_D17inObservedDegradedPointPositionValue(point->fObserveDegradedPointPosition.D17outObservedDegradedPointPosition.Value);
+    point->fSciPReport.D17inObservedDegradedPointPosition.IsSignalled = point->fObserveDegradedPointPosition.D17outObservedDegradedPointPosition.IsSignalled;
+    point->fSciPReport.D50inPdiConnectionState.Value = map_FSciEfesSec_D50outPdiConnectionState_to_FSciPReport_D50inPdiConnectionStateValue(point->fSciEfesSec.D50outPdiConnectionState.Value);
+    point->fSciPReport.D50inPdiConnectionState.IsSignalled = point->fSciEfesSec.D50outPdiConnectionState.IsSignalled;
 
-    fSciPReceive->D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FSciPReceive_D11inObservedAbilityToMoveValue(fObserveAbilityToMove->D11outObservedAbilityToMove.Value);
-    fSciPReceive->D11inObservedAbilityToMove.IsSignalled = fObserveAbilityToMove->D11outObservedAbilityToMove.IsSignalled;
-    fSciPReceive->D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FSciPReceive_D12inRequiredPmPositionValue(fControlPoint->D12outRequiredPmPosition.Value);
-    fSciPReceive->D12inRequiredPmPosition.IsSignalled = fControlPoint->D12outRequiredPmPosition.IsSignalled;
-    fSciPReceive->D50inPdiConnectionState.Value = map_FSciEfesSec_D50outPdiConnectionState_to_FSciPReceive_D50inPdiConnectionStateValue(fSciEfesSec->D50outPdiConnectionState.Value);
-    fSciPReceive->D50inPdiConnectionState.IsSignalled = fSciEfesSec->D50outPdiConnectionState.IsSignalled;
+    point->fSciPReceive.D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FSciPReceive_D11inObservedAbilityToMoveValue(point->fObserveAbilityToMove.D11outObservedAbilityToMove.Value);
+    point->fSciPReceive.D11inObservedAbilityToMove.IsSignalled = point->fObserveAbilityToMove.D11outObservedAbilityToMove.IsSignalled;
+    point->fSciPReceive.D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FSciPReceive_D12inRequiredPmPositionValue(point->fControlPoint.D12outRequiredPmPosition.Value);
+    point->fSciPReceive.D12inRequiredPmPosition.IsSignalled = point->fControlPoint.D12outRequiredPmPosition.IsSignalled;
+    point->fSciPReceive.D50inPdiConnectionState.Value = map_FSciEfesSec_D50outPdiConnectionState_to_FSciPReceive_D50inPdiConnectionStateValue(point->fSciEfesSec.D50outPdiConnectionState.Value);
+    point->fSciPReceive.D50inPdiConnectionState.IsSignalled = point->fSciEfesSec.D50outPdiConnectionState.IsSignalled;
 
-    fControlPoint->D10inRequiredPointPosition.Value = map_FSciPReceive_D10outRequiredPointPosition_to_FControlPoint_D10inRequiredPointPositionValue(fSciPReceive->D10outRequiredPointPosition.Value);
-    fControlPoint->D10inRequiredPointPosition.IsSignalled = fSciPReceive->D10outRequiredPointPosition.IsSignalled;
-    fControlPoint->D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FControlPoint_D11inObservedAbilityToMoveValue(fObserveAbilityToMove->D11outObservedAbilityToMove.Value);
-    fControlPoint->D11inObservedAbilityToMove.IsSignalled = fObserveAbilityToMove->D11outObservedAbilityToMove.IsSignalled;
-    fControlPoint->D13inObservedMovementFailed.Value = fObserveMovementFailed->D13outObservedMovementFailed.Value;
-    fControlPoint->D13inObservedMovementFailed.IsSignalled = fObserveMovementFailed->D13outObservedMovementFailed.IsSignalled;
-    fControlPoint->D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FControlPoint_D14inObservedPointPositionValue(fObserveOverallPointPosition->D14outObservedPointPosition.Value);
-    fControlPoint->D14inObservedPointPosition.IsSignalled = fObserveOverallPointPosition->D14outObservedPointPosition.IsSignalled;
-    fControlPoint->D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FControlPoint_D51inEstEfesStateValue(fEstEfes->D51outEstEfesState.Value);
-    fControlPoint->D51inEstEfesState.IsSignalled = fEstEfes->D51outEstEfesState.IsSignalled;
+    point->fControlPoint.D10inRequiredPointPosition.Value = map_FSciPReceive_D10outRequiredPointPosition_to_FControlPoint_D10inRequiredPointPositionValue(point->fSciPReceive.D10outRequiredPointPosition.Value);
+    point->fControlPoint.D10inRequiredPointPosition.IsSignalled = point->fSciPReceive.D10outRequiredPointPosition.IsSignalled;
+    point->fControlPoint.D11inObservedAbilityToMove.Value = map_FObserveAbilityToMove_D11outObservedAbilityToMove_to_FControlPoint_D11inObservedAbilityToMoveValue(point->fObserveAbilityToMove.D11outObservedAbilityToMove.Value);
+    point->fControlPoint.D11inObservedAbilityToMove.IsSignalled = point->fObserveAbilityToMove.D11outObservedAbilityToMove.IsSignalled;
+    point->fControlPoint.D13inObservedMovementFailed.Value = point->fObserveMovementFailed.D13outObservedMovementFailed.Value;
+    point->fControlPoint.D13inObservedMovementFailed.IsSignalled = point->fObserveMovementFailed.D13outObservedMovementFailed.IsSignalled;
+    point->fControlPoint.D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FControlPoint_D14inObservedPointPositionValue(point->fObserveOverallPointPosition.D14outObservedPointPosition.Value);
+    point->fControlPoint.D14inObservedPointPosition.IsSignalled = point->fObserveOverallPointPosition.D14outObservedPointPosition.IsSignalled;
+    point->fControlPoint.D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FControlPoint_D51inEstEfesStateValue(point->fEstEfes.D51outEstEfesState.Value);
+    point->fControlPoint.D51inEstEfesState.IsSignalled = point->fEstEfes.D51outEstEfesState.IsSignalled;
 
-    fObserveMovementFailed->D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FObserveMovementFailed_D12inRequiredPmPositionValue(fControlPoint->D12outRequiredPmPosition.Value);
-    fObserveMovementFailed->D12inRequiredPmPosition.IsSignalled = fControlPoint->D12outRequiredPmPosition.IsSignalled;
+    point->fObserveMovementFailed.D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FObserveMovementFailed_D12inRequiredPmPositionValue(point->fControlPoint.D12outRequiredPmPosition.Value);
+    point->fObserveMovementFailed.D12inRequiredPmPosition.IsSignalled = point->fControlPoint.D12outRequiredPmPosition.IsSignalled;
 
-    // fControlAndObserve4WPm->D26inInternalTriggerAbilityToMovePmAvailable
-    // fControlAndObserve4WPm->D27in4WPmPosition
-    fControlAndObserve4WPm->D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FControlAndObserve4WPm_D12inRequiredPmPositionValue(fControlPoint->D12outRequiredPmPosition.Value);
-    fControlAndObserve4WPm->D12inRequiredPmPosition.IsSignalled = fControlPoint->D12outRequiredPmPosition.IsSignalled;
-    fControlAndObserve4WPm->D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FControlAndObserve4WPm_D51inEstEfesStateValue(fEstEfes->D51outEstEfesState.Value);
-    fControlAndObserve4WPm->D51inEstEfesState.IsSignalled = fEstEfes->D51outEstEfesState.IsSignalled;
+    // point->fControlAndObserve4WPm.D26inInternalTriggerAbilityToMovePmAvailable
+    // point->fControlAndObserve4WPm.D27in4WPmPosition
+    point->fControlAndObserve4WPm.D12inRequiredPmPosition.Value = map_FControlPoint_D12outRequiredPmPosition_to_FControlAndObserve4WPm_D12inRequiredPmPositionValue(point->fControlPoint.D12outRequiredPmPosition.Value);
+    point->fControlAndObserve4WPm.D12inRequiredPmPosition.IsSignalled = point->fControlPoint.D12outRequiredPmPosition.IsSignalled;
+    point->fControlAndObserve4WPm.D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FControlAndObserve4WPm_D51inEstEfesStateValue(point->fEstEfes.D51outEstEfesState.Value);
+    point->fControlAndObserve4WPm.D51inEstEfesState.IsSignalled = point->fEstEfes.D51outEstEfesState.IsSignalled;
 
-    // fControlAndObserve4WPm->D10outPmPosition
-    // fObserveDegradedPointPosition->D10inPm1CrucialPosition
-    // fObserveDegradedPointPosition->D10inPmiCrucialPosition
-    // fObserveDegradedPointPosition->D10inPm1NonCrucialPosition
-    // fObserveDegradedPointPosition->D10inPmkNonCrucialPosition
-    fObserveDegradedPointPosition->D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FObserveDegradedPointPosition_D14inObservedPointPositionValue(fObserveOverallPointPosition->D14outObservedPointPosition.Value);
-    fObserveDegradedPointPosition->D14inObservedPointPosition.IsSignalled = fObserveOverallPointPosition->D14outObservedPointPosition.IsSignalled;
-    fObserveDegradedPointPosition->D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveDegradedPointPosition_D51inEstEfesStateValue(fEstEfes->D51outEstEfesState.Value);
-    fObserveDegradedPointPosition->D51inEstEfesState.IsSignalled = fEstEfes->D51outEstEfesState.IsSignalled;
+    // point->fControlAndObserve4WPm.D10outPmPosition
+    // point->fObserveDegradedPointPosition.D10inPm1CrucialPosition
+    // point->fObserveDegradedPointPosition.D10inPmiCrucialPosition
+    // point->fObserveDegradedPointPosition.D10inPm1NonCrucialPosition
+    // point->fObserveDegradedPointPosition.D10inPmkNonCrucialPosition
+    point->fObserveDegradedPointPosition.D14inObservedPointPosition.Value = map_FObserveOverallPointPosition_D14outObservedPointPosition_to_FObserveDegradedPointPosition_D14inObservedPointPositionValue(point->fObserveOverallPointPosition.D14outObservedPointPosition.Value);
+    point->fObserveDegradedPointPosition.D14inObservedPointPosition.IsSignalled = point->fObserveOverallPointPosition.D14outObservedPointPosition.IsSignalled;
+    point->fObserveDegradedPointPosition.D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveDegradedPointPosition_D51inEstEfesStateValue(point->fEstEfes.D51outEstEfesState.Value);
+    point->fObserveDegradedPointPosition.D51inEstEfesState.IsSignalled = point->fEstEfes.D51outEstEfesState.IsSignalled;
 
-    // fControlAndObserve4WPm->D10outPmPosition
-    // fObserveOverallPointPosition->D10inPm1CrucialPosition
-    // fObserveOverallPointPosition->D10inPm1NonCrucialPosition
-    // fObserveOverallPointPosition->D10inPmiCrucialPosition
-    // fObserveOverallPointPosition->D10inPmkNonCrucialPosition
-    fObserveOverallPointPosition->D10inPm1CrucialPosition.Value = map_FControlAndObserve4WPm_D10outPmPositionValue_to_FObserveOverallPointPosition_D10inPm1CrucialPositionValue(fControlAndObserve4WPm->D10outPmPosition.Value);
-    fObserveOverallPointPosition->D10inPm1CrucialPosition.IsSignalled = fControlAndObserve4WPm->D10outPmPosition.IsSignalled;
-    fObserveOverallPointPosition->D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveOverallPointPosition_D51inEstEfesStateValue(fEstEfes->D51outEstEfesState.Value);
-    fObserveOverallPointPosition->D51inEstEfesState.IsSignalled = fEstEfes->D51outEstEfesState.IsSignalled;
+    // point->fControlAndObserve4WPm.D10outPmPosition
+    // point->fObserveOverallPointPosition.D10inPm1CrucialPosition
+    // point->fObserveOverallPointPosition.D10inPm1NonCrucialPosition
+    // point->fObserveOverallPointPosition.D10inPmiCrucialPosition
+    // point->fObserveOverallPointPosition.D10inPmkNonCrucialPosition
+    point->fObserveOverallPointPosition.D10inPm1CrucialPosition.Value = map_FControlAndObserve4WPm_D10outPmPositionValue_to_FObserveOverallPointPosition_D10inPm1CrucialPositionValue(point->fControlAndObserve4WPm.D10outPmPosition.Value);
+    point->fObserveOverallPointPosition.D10inPm1CrucialPosition.IsSignalled = point->fControlAndObserve4WPm.D10outPmPosition.IsSignalled;
+    point->fObserveOverallPointPosition.D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveOverallPointPosition_D51inEstEfesStateValue(point->fEstEfes.D51outEstEfesState.Value);
+    point->fObserveOverallPointPosition.D51inEstEfesState.IsSignalled = point->fEstEfes.D51outEstEfesState.IsSignalled;
 
-    // fObserveAbilityToMove->D19inAbilityToMovePm1Crucial
-    // fObserveAbilityToMove->D19inAbilityToMovePm1nCrucial
-    // fObserveAbilityToMove->D19inAbilityToMovePm2nNonCrucial
-    // fObserveAbilityToMove->D19inAbilityToMovePm2NonCrucial
-    // fObserveAbilityToMove->D33inInternalTriggerAbilityToMovePointAvailable
-    fObserveAbilityToMove->D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveAbilityToMove_D51inEstEfesStateValue(fEstEfes->D51outEstEfesState.Value);
-    fObserveAbilityToMove->D51inEstEfesState.IsSignalled = fEstEfes->D51outEstEfesState.IsSignalled;
+    // point->fObserveAbilityToMove.D19inAbilityToMovePm1Crucial
+    // point->fObserveAbilityToMove.D19inAbilityToMovePm1nCrucial
+    // point->fObserveAbilityToMove.D19inAbilityToMovePm2nNonCrucial
+    // point->fObserveAbilityToMove.D19inAbilityToMovePm2NonCrucial
+    // point->fObserveAbilityToMove.D33inInternalTriggerAbilityToMovePointAvailable
+    point->fObserveAbilityToMove.D51inEstEfesState.Value = map_FEstEfes_D51outEstEfesState_to_FObserveAbilityToMove_D51inEstEfesStateValue(point->fEstEfes.D51outEstEfesState.Value);
+    point->fObserveAbilityToMove.D51inEstEfesState.IsSignalled = point->fEstEfes.D51outEstEfesState.IsSignalled;
 }
 
-void cycle(FSciEfesSec *fSciEfesSec, FSciPReport *fSciPReport, FSciPReceive *fSciPReceive, FObserveDegradedPointPosition *fObserveDegradedPointPosition, FObserveOverallPointPosition *fObserveOverallPointPosition, FObserveAbilityToMove *fObserveAbilityToMove, FControlAndObserve4WPm *fControlAndObserve4WPm, FObserveMovementFailed *fObserveMovementFailed, FControlPoint *fControlPoint, FEstEfes *fEstEfes)
+void cycle(SubsystemPoint *point)
 {
-    transition_FSciEfesSec(fSciEfesSec);
-    transition_FSciPReport(fSciPReport);
-    transition_FSciPReceive(fSciPReceive);
-    transition_FObserveDegradedPointPosition(fObserveDegradedPointPosition);
-    transition_FObserveOverallPointPosition(fObserveOverallPointPosition);
-    transition_FObserveAbilityToMove(fObserveAbilityToMove);
-    transition_FControlAndObserve4WPm(fControlAndObserve4WPm);
-    transition_FObserveMovementFailed(fObserveMovementFailed);
-    transition_FControlPoint(fControlPoint);
-    transition_FEstEfes(fEstEfes);
+    transition_FSciEfesSec(&point->fSciEfesSec);
+    transition_FSciPReport(&point->fSciPReport);
+    transition_FSciPReceive(&point->fSciPReceive);
+    transition_FObserveDegradedPointPosition(&point->fObserveDegradedPointPosition);
+    transition_FObserveOverallPointPosition(&point->fObserveOverallPointPosition);
+    transition_FObserveAbilityToMove(&point->fObserveAbilityToMove);
+    transition_FControlAndObserve4WPm(&point->fControlAndObserve4WPm);
+    transition_FObserveMovementFailed(&point->fObserveMovementFailed);
+    transition_FControlPoint(&point->fControlPoint);
+    transition_FEstEfes(&point->fEstEfes);
 
-    propagate(fSciEfesSec, fSciPReport, fSciPReceive, fObserveDegradedPointPosition, fObserveOverallPointPosition, fObserveAbilityToMove, fControlAndObserve4WPm, fObserveMovementFailed, fControlPoint, fEstEfes);
+    propagate(point);
 
     LOG("===TICK===");
 }

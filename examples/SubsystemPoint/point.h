@@ -12,4 +12,17 @@
 #include <SubsystemPoint/FControlPoint.h>
 #include <SimulationPackage/FEstEfes.h>
 
-void cycle(FSciEfesSec *fSciEfesSec, FSciPReport *fSciPReport, FSciPReceive *fSciPReceive, FObserveDegradedPointPosition *fObserveDegradedPointPosition, FObserveOverallPointPosition *fObserveOverallPointPosition, FObserveAbilityToMove *fObserveAbilityToMove, FControlAndObserve4WPm *fControlAndObserve4WPm, FObserveMovementFailed *fObserveMovementFailed, FControlPoint *fControlPoint, FEstEfes *fEstEfes);
+typedef struct SubsystemPoint {
+    FSciEfesSec fSciEfesSec;
+    FSciPReport fSciPReport;
+    FSciPReceive fSciPReceive;
+    FObserveDegradedPointPosition fObserveDegradedPointPosition;
+    FObserveOverallPointPosition fObserveOverallPointPosition;
+    FObserveAbilityToMove fObserveAbilityToMove;
+    FControlAndObserve4WPm fControlAndObserve4WPm;
+    FObserveMovementFailed fObserveMovementFailed;
+    FControlPoint fControlPoint;
+    FEstEfes fEstEfes;
+} SubsystemPoint;
+
+void cycle(SubsystemPoint* point);
