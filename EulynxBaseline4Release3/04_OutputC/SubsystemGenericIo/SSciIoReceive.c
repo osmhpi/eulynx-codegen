@@ -401,3 +401,7 @@ void new_SSciIoReceive(SSciIoReceive *self)
 {
     make_state_SSciIoReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemGenericIo/SSciIoReceive.c"
+#endif

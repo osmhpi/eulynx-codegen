@@ -403,3 +403,7 @@ void new_FSciIoReceive(FSciIoReceive *self)
 {
     make_state_FSciIoReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemGenericIo/FSciIoReceive.c"
+#endif

@@ -360,3 +360,7 @@ void new_FSciLsReceive(FSciLsReceive *self)
 {
     make_state_FSciLsReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FSciLsReceive.c"
+#endif

@@ -49,4 +49,5 @@ typedef struct FSciTdsReceive
 } FSciTdsReceive;
 
 void transition_FSciTdsReceive(FSciTdsReceive *self);
+void transition_FSciTdsReceive(FSciTdsReceive *self);
 void new_FSciTdsReceive(FSciTdsReceive *x);

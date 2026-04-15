@@ -37,4 +37,5 @@ typedef struct PointHelpblock
 } PointHelpblock;
 
 void transition_PointHelpblock(PointHelpblock *self);
+void transition_PointHelpblock(PointHelpblock *self);
 void new_PointHelpblock(PointHelpblock *x);

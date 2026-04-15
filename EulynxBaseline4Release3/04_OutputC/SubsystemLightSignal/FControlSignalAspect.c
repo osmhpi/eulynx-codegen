@@ -702,3 +702,7 @@ void new_FControlSignalAspect(FControlSignalAspect *self)
 {
     make_state_FControlSignalAspect__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FControlSignalAspect.c"
+#endif

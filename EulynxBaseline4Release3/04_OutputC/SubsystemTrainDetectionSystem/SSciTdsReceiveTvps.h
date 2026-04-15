@@ -147,4 +147,5 @@ typedef struct SSciTdsReceiveTvps
 } SSciTdsReceiveTvps;
 
 void transition_SSciTdsReceiveTvps(SSciTdsReceiveTvps *self);
+void transition_SSciTdsReceiveTvps(SSciTdsReceiveTvps *self);
 void new_SSciTdsReceiveTvps(SSciTdsReceiveTvps *x);

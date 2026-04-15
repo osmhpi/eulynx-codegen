@@ -129,4 +129,5 @@ typedef struct SSciPReceive
 } SSciPReceive;
 
 void transition_SSciPReceive(SSciPReceive *self);
+void transition_SSciPReceive(SSciPReceive *self);
 void new_SSciPReceive(SSciPReceive *x);

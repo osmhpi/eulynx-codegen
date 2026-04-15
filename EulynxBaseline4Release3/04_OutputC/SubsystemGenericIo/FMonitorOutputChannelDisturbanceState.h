@@ -78,4 +78,5 @@ typedef struct FMonitorOutputChannelDisturbanceState
 } FMonitorOutputChannelDisturbanceState;
 
 void transition_FMonitorOutputChannelDisturbanceState(FMonitorOutputChannelDisturbanceState *self);
+void transition_FMonitorOutputChannelDisturbanceState(FMonitorOutputChannelDisturbanceState *self);
 void new_FMonitorOutputChannelDisturbanceState(FMonitorOutputChannelDisturbanceState *x);

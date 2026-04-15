@@ -63,4 +63,5 @@ typedef struct Hilfsblock
 } Hilfsblock;
 
 void transition_Hilfsblock(Hilfsblock *self);
+void transition_Hilfsblock(Hilfsblock *self);
 void new_Hilfsblock(Hilfsblock *x);

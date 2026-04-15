@@ -990,3 +990,7 @@ void new_FDetectInputChannelState(FDetectInputChannelState *self)
 {
     make_state_FDetectInputChannelState__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemGenericIo/FDetectInputChannelState.c"
+#endif

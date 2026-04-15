@@ -236,4 +236,5 @@ typedef struct SSciEfesPrim
 } SSciEfesPrim;
 
 void transition_SSciEfesPrim(SSciEfesPrim *self);
+void transition_SSciEfesPrim(SSciEfesPrim *self);
 void new_SSciEfesPrim(SSciEfesPrim *x);

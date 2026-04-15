@@ -109,4 +109,5 @@ typedef struct FMonitorReportStatus
 } FMonitorReportStatus;
 
 void transition_FMonitorReportStatus(FMonitorReportStatus *self);
+void transition_FMonitorReportStatus(FMonitorReportStatus *self);
 void new_FMonitorReportStatus(FMonitorReportStatus *x);

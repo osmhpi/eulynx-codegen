@@ -94,4 +94,5 @@ typedef struct SSciLsCommandExpl
 } SSciLsCommandExpl;
 
 void transition_SSciLsCommandExpl(SSciLsCommandExpl *self);
+void transition_SSciLsCommandExpl(SSciLsCommandExpl *self);
 void new_SSciLsCommandExpl(SSciLsCommandExpl *x);

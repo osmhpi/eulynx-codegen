@@ -159,4 +159,5 @@ typedef struct FEstEfes
 } FEstEfes;
 
 void transition_FEstEfes(FEstEfes *self);
+void transition_FEstEfes(FEstEfes *self);
 void new_FEstEfes(FEstEfes *x);

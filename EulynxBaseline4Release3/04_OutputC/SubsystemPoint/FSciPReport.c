@@ -518,3 +518,7 @@ void new_FSciPReport(FSciPReport *self)
 {
     make_state_FSciPReport__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FSciPReport.c"
+#endif

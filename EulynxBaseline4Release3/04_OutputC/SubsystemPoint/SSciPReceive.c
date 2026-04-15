@@ -385,3 +385,7 @@ void new_SSciPReceive(SSciPReceive *self)
 {
     make_state_SSciPReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/SSciPReceive.c"
+#endif

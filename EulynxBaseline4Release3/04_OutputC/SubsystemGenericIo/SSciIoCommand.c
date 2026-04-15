@@ -220,3 +220,7 @@ void new_SSciIoCommand(SSciIoCommand *self)
 {
     make_state_SSciIoCommand__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemGenericIo/SSciIoCommand.c"
+#endif

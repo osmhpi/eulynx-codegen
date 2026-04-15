@@ -142,3 +142,7 @@ void new_SSciLsCommandExpl(SSciLsCommandExpl *self)
 {
     make_state_SSciLsCommandExpl__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/SSciLsCommandExpl.c"
+#endif

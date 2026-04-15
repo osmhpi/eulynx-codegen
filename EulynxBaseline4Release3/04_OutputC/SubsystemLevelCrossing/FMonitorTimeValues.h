@@ -184,4 +184,5 @@ typedef struct FMonitorTimeValues
 } FMonitorTimeValues;
 
 void transition_FMonitorTimeValues(FMonitorTimeValues *self);
+void transition_FMonitorTimeValues(FMonitorTimeValues *self);
 void new_FMonitorTimeValues(FMonitorTimeValues *x);

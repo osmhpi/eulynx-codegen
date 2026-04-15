@@ -473,3 +473,7 @@ void new_SSciAdjSec(SSciAdjSec *self)
 {
     make_state_SSciAdjSec__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/GenericRequirementsForSci/SSciAdjSec.c"
+#endif

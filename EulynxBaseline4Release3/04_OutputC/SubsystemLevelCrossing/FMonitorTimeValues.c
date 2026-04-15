@@ -413,3 +413,7 @@ void new_FMonitorTimeValues(FMonitorTimeValues *self)
 {
     make_state_FMonitorTimeValues__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FMonitorTimeValues.c"
+#endif

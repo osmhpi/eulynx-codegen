@@ -295,7 +295,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
             .Select(x => $"{behaviorRecord.Name} make_state_{x.Name}({x.record.ClassName.Name} *self);"));
     }
 
-    private string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
+    protected string WriteICodeTransition(ICodeTransition initializer, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         return initializer switch
         {
@@ -379,7 +379,7 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
         );
     }
 
-    private static string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
+    protected virtual string WriteCodeTransition(CodeTransition codeTransition, Dictionary<IState, string> states, Dictionary<IState, IEnumerable<string>> regionAccessor)
     {
         if (!states.TryGetValue(codeTransition.Transition.To, out var state))
         {

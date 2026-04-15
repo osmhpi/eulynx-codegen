@@ -86,4 +86,5 @@ typedef struct FObserveMovementFailed
 } FObserveMovementFailed;
 
 void transition_FObserveMovementFailed(FObserveMovementFailed *self);
+void transition_FObserveMovementFailed(FObserveMovementFailed *self);
 void new_FObserveMovementFailed(FObserveMovementFailed *x);

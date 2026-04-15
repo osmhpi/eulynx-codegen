@@ -487,3 +487,7 @@ void new_FObserveFailureState(FObserveFailureState *self)
 {
     make_state_FObserveFailureState__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FObserveFailureState.c"
+#endif

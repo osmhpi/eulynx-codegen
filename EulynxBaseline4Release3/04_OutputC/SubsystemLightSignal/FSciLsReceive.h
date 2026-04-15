@@ -159,4 +159,5 @@ typedef struct FSciLsReceive
 } FSciLsReceive;
 
 void transition_FSciLsReceive(FSciLsReceive *self);
+void transition_FSciLsReceive(FSciLsReceive *self);
 void new_FSciLsReceive(FSciLsReceive *x);

@@ -179,3 +179,7 @@ void new_FObserveMovementFailed(FObserveMovementFailed *self)
 {
     make_state_FObserveMovementFailed__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FObserveMovementFailed.c"
+#endif

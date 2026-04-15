@@ -199,4 +199,5 @@ typedef struct FControlSignalAspect
 } FControlSignalAspect;
 
 void transition_FControlSignalAspect(FControlSignalAspect *self);
+void transition_FControlSignalAspect(FControlSignalAspect *self);
 void new_FControlSignalAspect(FControlSignalAspect *x);

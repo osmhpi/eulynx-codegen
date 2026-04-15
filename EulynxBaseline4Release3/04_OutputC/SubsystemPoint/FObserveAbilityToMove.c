@@ -231,3 +231,7 @@ void new_FObserveAbilityToMove(FObserveAbilityToMove *self)
 {
     make_state_FObserveAbilityToMove__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FObserveAbilityToMove.c"
+#endif

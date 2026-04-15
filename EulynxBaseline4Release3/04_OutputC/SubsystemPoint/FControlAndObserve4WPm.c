@@ -379,3 +379,7 @@ void new_FControlAndObserve4WPm(FControlAndObserve4WPm *self)
 {
     make_state_FControlAndObserve4WPm__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FControlAndObserve4WPm.c"
+#endif

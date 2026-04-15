@@ -180,4 +180,5 @@ typedef struct FSciPReport
 } FSciPReport;
 
 void transition_FSciPReport(FSciPReport *self);
+void transition_FSciPReport(FSciPReport *self);
 void new_FSciPReport(FSciPReport *x);

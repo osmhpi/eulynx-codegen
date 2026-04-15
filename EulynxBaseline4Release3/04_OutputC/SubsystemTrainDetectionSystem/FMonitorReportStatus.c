@@ -279,3 +279,7 @@ void new_FMonitorReportStatus(FMonitorReportStatus *self)
 {
     make_state_FMonitorReportStatus__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FMonitorReportStatus.c"
+#endif

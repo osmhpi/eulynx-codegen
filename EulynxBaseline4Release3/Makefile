@@ -15,6 +15,9 @@ clean:
 03_TransformationReport/generate-c-test-result.xml: 01_XMI/cleaned.xmi
 	cd 02_Transformation && CODEGEN_OUTPUT_DIR=$$PWD/../04_OutputC dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\03_TransformationReport\generate-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-c" || true
 
+03_TransformationReport/generate-klee-test-result.xml: 01_XMI/cleaned.xmi
+	cd 02_Transformation && CODEGEN_OUTPUT_DIR=$$PWD/../05_OutputKleeAnalysis dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\03_TransformationReport\generate-klee-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=generate-klee" || true
+
 03_TransformationReport/compile-c-test-result.xml: 01_XMI/cleaned.xmi
 	cd 02_Transformation && CODEGEN_OUTPUT_DIR=$$PWD/../04_OutputC dotnet test --test-adapter-path:. --logger:"junit;LogFilePath=..\03_TransformationReport\compile-c-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" --filter "TestCategory=compile-c" || true
 
@@ -27,3 +30,6 @@ clean:
 
 04_OutputC: 03_TransformationReport/generate-c-test-result.xml
 	cd 04_OutputC && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=microsoft -i
+
+05_OutputKleeAnalysis: 03_TransformationReport/generate-klee-test-result.xml
+	cd 05_OutputKleeAnalysis && find . -iname '*.h' -o -iname '*.c' | xargs clang-format -style=microsoft -i

@@ -644,3 +644,7 @@ void new_SSciEfesPrim(SSciEfesPrim *self)
 {
     make_state_SSciEfesPrim__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/GenericRequirementsForSci/SSciEfesPrim.c"
+#endif

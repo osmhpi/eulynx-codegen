@@ -126,3 +126,7 @@ void new_FSciPReceive(FSciPReceive *self)
 {
     make_state_FSciPReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FSciPReceive.c"
+#endif

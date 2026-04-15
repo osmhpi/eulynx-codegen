@@ -165,3 +165,7 @@ void new_FMonitorOutputChannelDisturbanceState(FMonitorOutputChannelDisturbanceS
 {
     make_state_FMonitorOutputChannelDisturbanceState__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemGenericIo/FMonitorOutputChannelDisturbanceState.c"
+#endif

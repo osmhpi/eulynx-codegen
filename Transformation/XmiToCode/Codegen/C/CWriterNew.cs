@@ -17,16 +17,16 @@ public partial class CWriter : ICodeWriter
         using var file = File.Create(cFilename);
         using var writer = new StreamWriter(file);
 
-        await writer.WriteAsync(WriteClassNew(klass));
+        await writer.WriteAsync(WriteClassNew(pkg, klass));
 
         var headerFilename = $"{_outputDir}/{pkg.Name.Name}/{klass.ClassName.Name}.h";
         using var headerFile = File.Create(headerFilename);
         using var headerWriter = new StreamWriter(headerFile);
 
-        await headerWriter.WriteAsync(WriteHeaderNew(klass));
+        await headerWriter.WriteAsync(WriteHeaderNew(pkg, klass));
     }
 
-    private string WriteClassNew(Class klass)
+    protected virtual string WriteClassNew(Package pkg, Class klass)
     {
         return @$"
 #include ""{klass.ClassName.Name}.h""
@@ -74,6 +74,10 @@ void transition_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
 void new_{klass.ClassName.Name}({klass.ClassName.Name} *self) {{
     make_state_{klass.ClassName.Name}__root(self, &self->state);
 }}
+
+#ifdef KLEE_ENABLED
+#include ""../../05_OutputKleeAnalysis/{pkg.Name.Name}/{klass.ClassName.Name}.c""
+#endif
 ";
     }
 
@@ -121,7 +125,7 @@ void make_state_{className.Name}__{regionName}({className.Name} *self, {classNam
         return WriteTransitionFunctions(region, regionName, [], className, [], []);
     }
 
-    private string WriteTransitionFunctions(Region region, string regionName, IEnumerable<string> thisRegionAccessor, TypeIdentifier className, Dictionary<IState, string> parentStates, Dictionary<IState, IEnumerable<string>> parentRegions)
+    protected virtual string WriteTransitionFunctions(Region region, string regionName, IEnumerable<string> thisRegionAccessor, TypeIdentifier className, Dictionary<IState, string> parentStates, Dictionary<IState, IEnumerable<string>> parentRegions)
     {
         var regularStates = region.States.Where(x => x.IsRegularState);
         var substatesWithRegions = regularStates.Where(x => x.Regions.Count != 0).ToList();
@@ -230,7 +234,7 @@ typedef struct {className.Name}__{regionName}__state_struct {{
 ";
     }
 
-    private string WriteHeaderNew(Class klass)
+    protected virtual string WriteHeaderNew(Package pkg, Class klass)
     {
         return @$"
 #pragma once

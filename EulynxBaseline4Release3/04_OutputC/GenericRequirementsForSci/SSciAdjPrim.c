@@ -537,3 +537,7 @@ void new_SSciAdjPrim(SSciAdjPrim *self)
 {
     make_state_SSciAdjPrim__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/GenericRequirementsForSci/SSciAdjPrim.c"
+#endif

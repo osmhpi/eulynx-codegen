@@ -485,3 +485,7 @@ void new_FSciLsReport(FSciLsReport *self)
 {
     make_state_FSciLsReport__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FSciLsReport.c"
+#endif

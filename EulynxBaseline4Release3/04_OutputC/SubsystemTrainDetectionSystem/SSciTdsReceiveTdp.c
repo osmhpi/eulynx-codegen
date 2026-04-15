@@ -137,3 +137,7 @@ void new_SSciTdsReceiveTdp(SSciTdsReceiveTdp *self)
 {
     make_state_SSciTdsReceiveTdp__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/SSciTdsReceiveTdp.c"
+#endif

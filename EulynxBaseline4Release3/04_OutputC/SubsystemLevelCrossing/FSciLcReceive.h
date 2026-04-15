@@ -160,4 +160,5 @@ typedef struct FSciLcReceive
 } FSciLcReceive;
 
 void transition_FSciLcReceive(FSciLcReceive *self);
+void transition_FSciLcReceive(FSciLcReceive *self);
 void new_FSciLcReceive(FSciLcReceive *x);

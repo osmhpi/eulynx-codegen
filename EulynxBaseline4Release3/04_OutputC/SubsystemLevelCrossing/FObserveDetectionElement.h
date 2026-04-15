@@ -86,4 +86,5 @@ typedef struct FObserveDetectionElement
 } FObserveDetectionElement;
 
 void transition_FObserveDetectionElement(FObserveDetectionElement *self);
+void transition_FObserveDetectionElement(FObserveDetectionElement *self);
 void new_FObserveDetectionElement(FObserveDetectionElement *x);

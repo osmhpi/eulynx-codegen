@@ -795,3 +795,7 @@ void new_FObserveTrackCircuits(FObserveTrackCircuits *self)
 {
     make_state_FObserveTrackCircuits__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FObserveTrackCircuits.c"
+#endif

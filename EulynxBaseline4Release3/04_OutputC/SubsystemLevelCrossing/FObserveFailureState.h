@@ -161,4 +161,5 @@ typedef struct FObserveFailureState
 } FObserveFailureState;
 
 void transition_FObserveFailureState(FObserveFailureState *self);
+void transition_FObserveFailureState(FObserveFailureState *self);
 void new_FObserveFailureState(FObserveFailureState *x);

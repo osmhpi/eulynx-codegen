@@ -99,4 +99,5 @@ typedef struct FObserveLuminosity
 } FObserveLuminosity;
 
 void transition_FObserveLuminosity(FObserveLuminosity *self);
+void transition_FObserveLuminosity(FObserveLuminosity *self);
 void new_FObserveLuminosity(FObserveLuminosity *x);

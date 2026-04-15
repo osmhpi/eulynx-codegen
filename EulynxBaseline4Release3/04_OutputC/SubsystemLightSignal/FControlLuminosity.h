@@ -143,4 +143,5 @@ typedef struct FControlLuminosity
 } FControlLuminosity;
 
 void transition_FControlLuminosity(FControlLuminosity *self);
+void transition_FControlLuminosity(FControlLuminosity *self);
 void new_FControlLuminosity(FControlLuminosity *x);

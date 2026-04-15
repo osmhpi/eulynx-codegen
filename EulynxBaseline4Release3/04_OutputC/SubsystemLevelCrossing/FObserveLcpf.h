@@ -201,4 +201,5 @@ typedef struct FObserveLcpf
 } FObserveLcpf;
 
 void transition_FObserveLcpf(FObserveLcpf *self);
+void transition_FObserveLcpf(FObserveLcpf *self);
 void new_FObserveLcpf(FObserveLcpf *x);

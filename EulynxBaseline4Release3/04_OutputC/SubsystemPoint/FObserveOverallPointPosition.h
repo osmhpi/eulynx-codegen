@@ -209,4 +209,5 @@ typedef struct FObserveOverallPointPosition
 } FObserveOverallPointPosition;
 
 void transition_FObserveOverallPointPosition(FObserveOverallPointPosition *self);
+void transition_FObserveOverallPointPosition(FObserveOverallPointPosition *self);
 void new_FObserveOverallPointPosition(FObserveOverallPointPosition *x);

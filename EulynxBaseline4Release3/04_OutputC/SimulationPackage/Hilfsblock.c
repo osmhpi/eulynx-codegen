@@ -109,3 +109,7 @@ void new_Hilfsblock(Hilfsblock *self)
 {
     make_state_Hilfsblock__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SimulationPackage/Hilfsblock.c"
+#endif

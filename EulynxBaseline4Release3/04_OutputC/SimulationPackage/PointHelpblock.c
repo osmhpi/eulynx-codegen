@@ -57,3 +57,7 @@ void new_PointHelpblock(PointHelpblock *self)
 {
     make_state_PointHelpblock__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SimulationPackage/PointHelpblock.c"
+#endif

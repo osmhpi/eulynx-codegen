@@ -132,4 +132,5 @@ typedef struct FControlNon4wPm
 } FControlNon4wPm;
 
 void transition_FControlNon4wPm(FControlNon4wPm *self);
+void transition_FControlNon4wPm(FControlNon4wPm *self);
 void new_FControlNon4wPm(FControlNon4wPm *x);

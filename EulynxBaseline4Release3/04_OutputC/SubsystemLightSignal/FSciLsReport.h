@@ -133,4 +133,5 @@ typedef struct FSciLsReport
 } FSciLsReport;
 
 void transition_FSciLsReport(FSciLsReport *self);
+void transition_FSciLsReport(FSciLsReport *self);
 void new_FSciLsReport(FSciLsReport *x);

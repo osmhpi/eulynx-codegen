@@ -213,4 +213,5 @@ typedef struct FSciIoReport
 } FSciIoReport;
 
 void transition_FSciIoReport(FSciIoReport *self);
+void transition_FSciIoReport(FSciIoReport *self);
 void new_FSciIoReport(FSciIoReport *x);

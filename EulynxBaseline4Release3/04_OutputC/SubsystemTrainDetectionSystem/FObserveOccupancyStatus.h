@@ -169,4 +169,5 @@ typedef struct FObserveOccupancyStatus
 } FObserveOccupancyStatus;
 
 void transition_FObserveOccupancyStatus(FObserveOccupancyStatus *self);
+void transition_FObserveOccupancyStatus(FObserveOccupancyStatus *self);
 void new_FObserveOccupancyStatus(FObserveOccupancyStatus *x);
