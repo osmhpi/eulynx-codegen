@@ -5,6 +5,8 @@
 
 static SubsystemPoint point;
 
+#define input(ASSIGNMENT) (ASSIGNMENT); LOG("[input] " #ASSIGNMENT)
+
 int main() {
     // Configuration
     bool D15inConObserveAbilityToMove = false;
@@ -50,28 +52,28 @@ int main() {
     cycle(&point);
 
     // Provide operating voltage
-    point.fEstEfes.T1inPowerOnDetected.IsTriggered = true;
+    input(point.fEstEfes.T1inPowerOnDetected.IsTriggered = true);
     cycle(&point);
 
     // Complete boot
-    point.fEstEfes.T4inBooted.IsTriggered = true;
+    input(point.fEstEfes.T4inBooted.IsTriggered = true);
     cycle(&point);
 
     // Declare ready to accept connections.
-    point.fSciEfesSec.InReadyForPdiConnection__6bd3.HasMessage = true;
+    input(point.fSciEfesSec.InReadyForPdiConnection__6bd3.HasMessage = true);
     cycle(&point);
     assert(point.fSciEfesSec.D50outPdiConnectionState.Value == FSciEfesSec_D50outPdiConnectionStateValue__ReadyForPdiNoScp);
 
     // Signal RaSTA connection established.
-    point.fSciEfesSec.T5inScpConnectionEstablished.IsTriggered = true;
+    input(point.fSciEfesSec.T5inScpConnectionEstablished.IsTriggered = true);
     cycle(&point);
     assert(point.fSciEfesSec.D50outPdiConnectionState.Value == FSciEfesSec_D50outPdiConnectionStateValue__ReadyForPdi);
 
     // Perform initialization sequence.
 
     // 1. Send version check message
-    point.fSciEfesSec.InCdPdiVersionCheck__ffab.HasMessage = true;
-    point.fSciEfesSec.InCdPdiVersionCheck__ffab.Value.PdiVersion = 1;
+    input(point.fSciEfesSec.InCdPdiVersionCheck__ffab.HasMessage = true);
+    input(point.fSciEfesSec.InCdPdiVersionCheck__ffab.Value.PdiVersion = 1);
     cycle(&point);
     // Expect version check message
     assert(point.fSciEfesSec.OutMsgPdiVersionCheck__9827.HasMessage);
@@ -79,7 +81,7 @@ int main() {
     assert(point.fSciEfesSec.OutMsgPdiVersionCheck__9827.Value.PDIVersion == 1);
 
     // 2. Respond to version check message
-    point.fSciEfesSec.InCdInitialisationRequest__8d96.HasMessage = true;
+    input(point.fSciEfesSec.InCdInitialisationRequest__8d96.HasMessage = true);
     cycle(&point);
     // Expect start initialization message
     assert(point.fSciEfesSec.OutMsgStartInitialisation__43d2.HasMessage);
@@ -99,8 +101,8 @@ int main() {
     assert(point.fControlAndObserve4WPm.D23outDriveVoltageLeft.Value == false);
 
     // Trigger a point movement to the right
-    point.fControlAndObserve4WPm.D27in4WPmPosition.IsSignalled = true;
-    point.fControlAndObserve4WPm.D27in4WPmPosition.Value = FControlAndObserve4WPm_D27in4WPmPositionValue__RightDetected;
+    input(point.fControlAndObserve4WPm.D27in4WPmPosition.IsSignalled = true);
+    input(point.fControlAndObserve4WPm.D27in4WPmPosition.Value = FControlAndObserve4WPm_D27in4WPmPositionValue__RightDetected);
     cycle(&point);
     cycle(&point);
     cycle(&point);
@@ -112,8 +114,8 @@ int main() {
 
 /*
     // Command a point movement to the left
-    point.fSciPReceive.InCdMovePoint__342e.Value.CommandedPointPositionState = PointPositionControlableState__14bc__Left;
-    point.fSciPReceive.InCdMovePoint__342e.HasMessage = true;
+    input(point.fSciPReceive.InCdMovePoint__342e.Value.CommandedPointPositionState = PointPositionControlableState__14bc__Left);
+    input(point.fSciPReceive.InCdMovePoint__342e.HasMessage = true);
     cycle(&point);
     cycle(&point);
     cycle(&point);
@@ -129,7 +131,7 @@ int main() {
 */
 
     // Ensure system is in a stable state (no further transitions expected).
-    LOG("NO TRANSITIONS EXPECTED");
+    LOG("No transitions expected.");
     cycle(&point);
 
     LOG("Done.");

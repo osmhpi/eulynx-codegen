@@ -466,6 +466,9 @@ void propagate(SubsystemPoint *point)
 
 void cycle(SubsystemPoint *point)
 {
+    // Map the SySim model execution semantics.
+    // Data is propagated between state machines only at the end of a cycle.
+
     transition_FSciEfesSec(&point->fSciEfesSec);
     transition_FSciPReport(&point->fSciPReport);
     transition_FSciPReceive(&point->fSciPReceive);
@@ -479,5 +482,5 @@ void cycle(SubsystemPoint *point)
 
     propagate(point);
 
-    LOG("===TICK===");
+    LOG("===END OF CYCLE===");
 }
