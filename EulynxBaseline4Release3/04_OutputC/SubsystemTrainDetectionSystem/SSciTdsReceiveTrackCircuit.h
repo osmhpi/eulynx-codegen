@@ -82,5 +82,4 @@ typedef struct SSciTdsReceiveTrackCircuit
 } SSciTdsReceiveTrackCircuit;
 
 void transition_SSciTdsReceiveTrackCircuit(SSciTdsReceiveTrackCircuit *self);
-void transition_SSciTdsReceiveTrackCircuit(SSciTdsReceiveTrackCircuit *self);
 void new_SSciTdsReceiveTrackCircuit(SSciTdsReceiveTrackCircuit *x);

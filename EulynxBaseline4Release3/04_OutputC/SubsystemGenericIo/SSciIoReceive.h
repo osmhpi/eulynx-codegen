@@ -141,5 +141,4 @@ typedef struct SSciIoReceive
 } SSciIoReceive;
 
 void transition_SSciIoReceive(SSciIoReceive *self);
-void transition_SSciIoReceive(SSciIoReceive *self);
 void new_SSciIoReceive(SSciIoReceive *x);

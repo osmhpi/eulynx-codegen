@@ -209,5 +209,4 @@ typedef struct FDetectInputChannelState
 } FDetectInputChannelState;
 
 void transition_FDetectInputChannelState(FDetectInputChannelState *self);
-void transition_FDetectInputChannelState(FDetectInputChannelState *self);
 void new_FDetectInputChannelState(FDetectInputChannelState *x);

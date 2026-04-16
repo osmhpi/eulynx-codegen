@@ -1,10 +1,11 @@
-all: 04_OutputC 03_TransformationReport/report/index.html
+all: 04_OutputC 05_OutputKleeAnalysis 03_TransformationReport/report/index.html
 
 clean:
 	make -C 01_XMI clean
 	rm -rf 03_TransformationReport/report
 	rm -f 03_TransformationReport/*.xml
 	rm -rf 04_OutputC
+	rm -rf 05_OutputKleeAnalysis
 
 01_XMI/cleaned.xmi:
 	make -C 01_XMI

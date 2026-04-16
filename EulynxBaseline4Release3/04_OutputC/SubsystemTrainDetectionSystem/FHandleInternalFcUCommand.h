@@ -42,5 +42,4 @@ typedef struct FHandleInternalFcUCommand
 } FHandleInternalFcUCommand;
 
 void transition_FHandleInternalFcUCommand(FHandleInternalFcUCommand *self);
-void transition_FHandleInternalFcUCommand(FHandleInternalFcUCommand *self);
 void new_FHandleInternalFcUCommand(FHandleInternalFcUCommand *x);

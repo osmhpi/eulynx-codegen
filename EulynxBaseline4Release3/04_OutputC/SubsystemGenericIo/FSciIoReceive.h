@@ -155,5 +155,4 @@ typedef struct FSciIoReceive
 } FSciIoReceive;
 
 void transition_FSciIoReceive(FSciIoReceive *self);
-void transition_FSciIoReceive(FSciIoReceive *self);
 void new_FSciIoReceive(FSciIoReceive *x);

@@ -403,3 +403,7 @@ void new_FObserveAbilityToBeForcedToClear(FObserveAbilityToBeForcedToClear *self
 {
     make_state_FObserveAbilityToBeForcedToClear__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FObserveAbilityToBeForcedToClear.c"
+#endif

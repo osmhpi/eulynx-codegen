@@ -631,3 +631,7 @@ void new_FSciTdsReportTrackCircuit(FSciTdsReportTrackCircuit *self)
 {
     make_state_FSciTdsReportTrackCircuit__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FSciTdsReportTrackCircuit.c"
+#endif

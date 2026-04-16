@@ -191,3 +191,7 @@ void new_SSciLcCommand(SSciLcCommand *self)
 {
     make_state_SSciLcCommand__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/SSciLcCommand.c"
+#endif

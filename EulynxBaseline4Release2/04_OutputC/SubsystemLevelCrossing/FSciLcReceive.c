@@ -593,3 +593,7 @@ void new_FSciLcReceive(FSciLcReceive *self)
 {
     make_state_FSciLcReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FSciLcReceive.c"
+#endif

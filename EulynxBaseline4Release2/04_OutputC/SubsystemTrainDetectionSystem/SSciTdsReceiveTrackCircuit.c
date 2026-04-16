@@ -182,3 +182,7 @@ void new_SSciTdsReceiveTrackCircuit(SSciTdsReceiveTrackCircuit *self)
 {
     make_state_SSciTdsReceiveTrackCircuit__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/SSciTdsReceiveTrackCircuit.c"
+#endif

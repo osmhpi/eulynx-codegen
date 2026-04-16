@@ -464,3 +464,7 @@ void new_SSciPCommandAndRecieve(SSciPCommandAndRecieve *self)
 {
     make_state_SSciPCommandAndRecieve__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/SSciPCommandAndRecieve.c"
+#endif

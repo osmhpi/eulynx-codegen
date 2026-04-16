@@ -203,5 +203,4 @@ typedef struct FObserveDegradedPointPosition
 } FObserveDegradedPointPosition;
 
 void transition_FObserveDegradedPointPosition(FObserveDegradedPointPosition *self);
-void transition_FObserveDegradedPointPosition(FObserveDegradedPointPosition *self);
 void new_FObserveDegradedPointPosition(FObserveDegradedPointPosition *x);

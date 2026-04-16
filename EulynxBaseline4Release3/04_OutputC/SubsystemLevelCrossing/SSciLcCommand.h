@@ -119,5 +119,4 @@ typedef struct SSciLcCommand
 } SSciLcCommand;
 
 void transition_SSciLcCommand(SSciLcCommand *self);
-void transition_SSciLcCommand(SSciLcCommand *self);
 void new_SSciLcCommand(SSciLcCommand *x);

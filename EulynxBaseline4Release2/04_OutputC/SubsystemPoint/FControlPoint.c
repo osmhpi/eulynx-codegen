@@ -456,3 +456,7 @@ void new_FControlPoint(FControlPoint *self)
 {
     make_state_FControlPoint__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FControlPoint.c"
+#endif

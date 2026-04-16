@@ -579,3 +579,7 @@ void new_FSciEfesSec(FSciEfesSec *self)
 {
     make_state_FSciEfesSec__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/GenericRequirementsForSci/FSciEfesSec.c"
+#endif

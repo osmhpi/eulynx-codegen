@@ -175,3 +175,7 @@ void new_SSciLsReceive(SSciLsReceive *self)
 {
     make_state_SSciLsReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/SSciLsReceive.c"
+#endif

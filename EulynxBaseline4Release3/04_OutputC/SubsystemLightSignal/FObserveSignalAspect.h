@@ -135,5 +135,4 @@ typedef struct FObserveSignalAspect
 } FObserveSignalAspect;
 
 void transition_FObserveSignalAspect(FObserveSignalAspect *self);
-void transition_FObserveSignalAspect(FObserveSignalAspect *self);
 void new_FObserveSignalAspect(FObserveSignalAspect *x);

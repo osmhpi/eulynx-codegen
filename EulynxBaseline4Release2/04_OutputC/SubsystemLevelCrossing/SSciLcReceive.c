@@ -335,3 +335,7 @@ void new_SSciLcReceive(SSciLcReceive *self)
 {
     make_state_SSciLcReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/SSciLcReceive.c"
+#endif

@@ -90,3 +90,7 @@ void new_SSciPCommand(SSciPCommand *self)
 {
     make_state_SSciPCommand__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/SSciPCommand.c"
+#endif

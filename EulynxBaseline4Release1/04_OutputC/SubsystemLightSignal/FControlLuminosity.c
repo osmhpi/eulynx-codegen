@@ -401,3 +401,7 @@ void new_FControlLuminosity(FControlLuminosity *self)
 {
     make_state_FControlLuminosity__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FControlLuminosity.c"
+#endif

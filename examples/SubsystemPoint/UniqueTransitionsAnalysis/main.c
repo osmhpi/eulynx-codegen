@@ -141,12 +141,9 @@ int main() {
   // Initialize the heap for storing path hashes
   newHeap(&states_heap, MAX_PATHLEN, states_heap_storage);
 
-  SubsystemPoint initial;
-  memset(&initial, 0, sizeof(initial));
-  initialize(&initial);
-
   SubsystemPoint state;
-  klee_make_symbolic(&state, sizeof(state), "state");
+  memset(&state, 0, sizeof(state));
+  initialize(&state);
 
   int i = 0;
 
@@ -168,7 +165,6 @@ int main() {
 
     system_inputs_t input;
     klee_make_symbolic(&input, sizeof(input), "input");
-    input_path[i-1] = input;
 
     apply_inputs(&input, &state);
     cycle(&state);
@@ -176,8 +172,10 @@ int main() {
       break;
     }
 
-    path[i] = state;
     assert_is_safe(&state);
+
+    path[i] = state;
+    input_path[i-1] = input;
 
     i++;
   }

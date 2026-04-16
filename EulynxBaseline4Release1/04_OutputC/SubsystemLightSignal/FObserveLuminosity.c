@@ -237,3 +237,7 @@ void new_FObserveLuminosity(FObserveLuminosity *self)
 {
     make_state_FObserveLuminosity__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FObserveLuminosity.c"
+#endif

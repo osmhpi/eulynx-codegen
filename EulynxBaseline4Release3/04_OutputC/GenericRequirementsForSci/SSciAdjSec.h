@@ -184,5 +184,4 @@ typedef struct SSciAdjSec
 } SSciAdjSec;
 
 void transition_SSciAdjSec(SSciAdjSec *self);
-void transition_SSciAdjSec(SSciAdjSec *self);
 void new_SSciAdjSec(SSciAdjSec *x);

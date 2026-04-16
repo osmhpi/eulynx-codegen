@@ -328,3 +328,7 @@ void new_FControlNon4wPm(FControlNon4wPm *self)
 {
     make_state_FControlNon4wPm__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FControlNon4wPm.c"
+#endif

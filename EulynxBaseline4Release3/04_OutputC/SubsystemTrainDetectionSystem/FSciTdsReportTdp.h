@@ -126,5 +126,4 @@ typedef struct FSciTdsReportTdp
 } FSciTdsReportTdp;
 
 void transition_FSciTdsReportTdp(FSciTdsReportTdp *self);
-void transition_FSciTdsReportTdp(FSciTdsReportTdp *self);
 void new_FSciTdsReportTdp(FSciTdsReportTdp *x);

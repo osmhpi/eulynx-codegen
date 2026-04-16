@@ -163,5 +163,4 @@ typedef struct FControlAndObserve4WPm
 } FControlAndObserve4WPm;
 
 void transition_FControlAndObserve4WPm(FControlAndObserve4WPm *self);
-void transition_FControlAndObserve4WPm(FControlAndObserve4WPm *self);
 void new_FControlAndObserve4WPm(FControlAndObserve4WPm *x);

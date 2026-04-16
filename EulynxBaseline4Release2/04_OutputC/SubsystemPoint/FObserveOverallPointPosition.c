@@ -483,3 +483,7 @@ void new_FObserveOverallPointPosition(FObserveOverallPointPosition *self)
 {
     make_state_FObserveOverallPointPosition__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FObserveOverallPointPosition.c"
+#endif

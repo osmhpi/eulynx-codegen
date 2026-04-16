@@ -88,5 +88,4 @@ typedef struct FSciPReceive
 } FSciPReceive;
 
 void transition_FSciPReceive(FSciPReceive *self);
-void transition_FSciPReceive(FSciPReceive *self);
 void new_FSciPReceive(FSciPReceive *x);

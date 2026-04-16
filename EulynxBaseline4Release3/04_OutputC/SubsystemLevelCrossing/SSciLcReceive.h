@@ -182,5 +182,4 @@ typedef struct SSciLcReceive
 } SSciLcReceive;
 
 void transition_SSciLcReceive(SSciLcReceive *self);
-void transition_SSciLcReceive(SSciLcReceive *self);
 void new_SSciLcReceive(SSciLcReceive *x);

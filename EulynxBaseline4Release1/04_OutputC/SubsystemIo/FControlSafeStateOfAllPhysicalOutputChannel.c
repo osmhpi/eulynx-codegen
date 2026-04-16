@@ -216,3 +216,7 @@ void new_FControlSafeStateOfAllPhysicalOutputChannel(FControlSafeStateOfAllPhysi
 {
     make_state_FControlSafeStateOfAllPhysicalOutputChannel__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemIo/FControlSafeStateOfAllPhysicalOutputChannel.c"
+#endif

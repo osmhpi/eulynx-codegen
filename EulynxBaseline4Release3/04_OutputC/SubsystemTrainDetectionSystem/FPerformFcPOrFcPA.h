@@ -179,5 +179,4 @@ typedef struct FPerformFcPOrFcPA
 } FPerformFcPOrFcPA;
 
 void transition_FPerformFcPOrFcPA(FPerformFcPOrFcPA *self);
-void transition_FPerformFcPOrFcPA(FPerformFcPOrFcPA *self);
 void new_FPerformFcPOrFcPA(FPerformFcPOrFcPA *x);

@@ -143,3 +143,7 @@ void new_FTds6MaintainerCommandsAndMessages(FTds6MaintainerCommandsAndMessages *
 {
     make_state_FTds6MaintainerCommandsAndMessages__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FTds6MaintainerCommandsAndMessages.c"
+#endif

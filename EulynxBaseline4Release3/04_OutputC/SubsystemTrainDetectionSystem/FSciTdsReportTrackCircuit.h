@@ -174,5 +174,4 @@ typedef struct FSciTdsReportTrackCircuit
 } FSciTdsReportTrackCircuit;
 
 void transition_FSciTdsReportTrackCircuit(FSciTdsReportTrackCircuit *self);
-void transition_FSciTdsReportTrackCircuit(FSciTdsReportTrackCircuit *self);
 void new_FSciTdsReportTrackCircuit(FSciTdsReportTrackCircuit *x);

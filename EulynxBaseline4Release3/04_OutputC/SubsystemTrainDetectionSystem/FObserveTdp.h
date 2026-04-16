@@ -267,5 +267,4 @@ typedef struct FObserveTdp
 } FObserveTdp;
 
 void transition_FObserveTdp(FObserveTdp *self);
-void transition_FObserveTdp(FObserveTdp *self);
 void new_FObserveTdp(FObserveTdp *x);

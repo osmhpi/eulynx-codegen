@@ -87,5 +87,4 @@ typedef struct SSciIoCommand
 } SSciIoCommand;
 
 void transition_SSciIoCommand(SSciIoCommand *self);
-void transition_SSciIoCommand(SSciIoCommand *self);
 void new_SSciIoCommand(SSciIoCommand *x);

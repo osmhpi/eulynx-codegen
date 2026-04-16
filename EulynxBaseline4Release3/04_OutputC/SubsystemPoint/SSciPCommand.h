@@ -67,5 +67,4 @@ typedef struct SSciPCommand
 } SSciPCommand;
 
 void transition_SSciPCommand(SSciPCommand *self);
-void transition_SSciPCommand(SSciPCommand *self);
 void new_SSciPCommand(SSciPCommand *x);

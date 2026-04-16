@@ -83,5 +83,4 @@ typedef struct FTds6MaintainerCommandsAndMessages
 } FTds6MaintainerCommandsAndMessages;
 
 void transition_FTds6MaintainerCommandsAndMessages(FTds6MaintainerCommandsAndMessages *self);
-void transition_FTds6MaintainerCommandsAndMessages(FTds6MaintainerCommandsAndMessages *self);
 void new_FTds6MaintainerCommandsAndMessages(FTds6MaintainerCommandsAndMessages *x);

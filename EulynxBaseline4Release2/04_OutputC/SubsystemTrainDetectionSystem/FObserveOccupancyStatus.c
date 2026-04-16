@@ -630,3 +630,7 @@ void new_FObserveOccupancyStatus(FObserveOccupancyStatus *self)
 {
     make_state_FObserveOccupancyStatus__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FObserveOccupancyStatus.c"
+#endif

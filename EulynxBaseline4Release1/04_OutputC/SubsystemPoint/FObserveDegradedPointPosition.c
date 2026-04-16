@@ -582,3 +582,7 @@ void new_FObserveDegradedPointPosition(FObserveDegradedPointPosition *self)
 {
     make_state_FObserveDegradedPointPosition__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FObserveDegradedPointPosition.c"
+#endif

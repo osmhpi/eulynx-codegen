@@ -223,3 +223,7 @@ void new_FObserveDetectionElement(FObserveDetectionElement *self)
 {
     make_state_FObserveDetectionElement__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FObserveDetectionElement.c"
+#endif

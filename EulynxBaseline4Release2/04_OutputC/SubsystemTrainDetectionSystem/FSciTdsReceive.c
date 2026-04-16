@@ -146,3 +146,7 @@ void new_FSciTdsReceive(FSciTdsReceive *self)
 {
     make_state_FSciTdsReceive__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FSciTdsReceive.c"
+#endif

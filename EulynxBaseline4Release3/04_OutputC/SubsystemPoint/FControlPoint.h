@@ -159,5 +159,4 @@ typedef struct FControlPoint
 } FControlPoint;
 
 void transition_FControlPoint(FControlPoint *self);
-void transition_FControlPoint(FControlPoint *self);
 void new_FControlPoint(FControlPoint *x);

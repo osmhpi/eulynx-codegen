@@ -743,3 +743,7 @@ void new_FSciIoReport(FSciIoReport *self)
 {
     make_state_FSciIoReport__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemIo/FSciIoReport.c"
+#endif

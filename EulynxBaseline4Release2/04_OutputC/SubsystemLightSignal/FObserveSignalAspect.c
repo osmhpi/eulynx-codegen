@@ -450,3 +450,7 @@ void new_FObserveSignalAspect(FObserveSignalAspect *self)
 {
     make_state_FObserveSignalAspect__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLightSignal/FObserveSignalAspect.c"
+#endif

@@ -486,3 +486,7 @@ void new_FControlPointMachinePosition(FControlPointMachinePosition *self)
 {
     make_state_FControlPointMachinePosition__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemPoint/FControlPointMachinePosition.c"
+#endif

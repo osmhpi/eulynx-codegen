@@ -139,5 +139,4 @@ typedef struct FObserveAbilityToMove
 } FObserveAbilityToMove;
 
 void transition_FObserveAbilityToMove(FObserveAbilityToMove *self);
-void transition_FObserveAbilityToMove(FObserveAbilityToMove *self);
 void new_FObserveAbilityToMove(FObserveAbilityToMove *x);

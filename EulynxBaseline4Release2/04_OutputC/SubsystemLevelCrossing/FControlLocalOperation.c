@@ -557,3 +557,7 @@ void new_FControlLocalOperation(FControlLocalOperation *self)
 {
     make_state_FControlLocalOperation__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FControlLocalOperation.c"
+#endif

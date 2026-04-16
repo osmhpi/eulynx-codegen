@@ -167,3 +167,7 @@ void new_SSciTdsCommand(SSciTdsCommand *self)
 {
     make_state_SSciTdsCommand__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/SSciTdsCommand.c"
+#endif

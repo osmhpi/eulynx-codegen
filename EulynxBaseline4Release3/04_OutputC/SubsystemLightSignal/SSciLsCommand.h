@@ -91,5 +91,4 @@ typedef struct SSciLsCommand
 } SSciLsCommand;
 
 void transition_SSciLsCommand(SSciLsCommand *self);
-void transition_SSciLsCommand(SSciLsCommand *self);
 void new_SSciLsCommand(SSciLsCommand *x);

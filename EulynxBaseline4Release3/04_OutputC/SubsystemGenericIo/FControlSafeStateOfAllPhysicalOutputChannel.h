@@ -94,5 +94,4 @@ typedef struct FControlSafeStateOfAllPhysicalOutputChannel
 } FControlSafeStateOfAllPhysicalOutputChannel;
 
 void transition_FControlSafeStateOfAllPhysicalOutputChannel(FControlSafeStateOfAllPhysicalOutputChannel *self);
-void transition_FControlSafeStateOfAllPhysicalOutputChannel(FControlSafeStateOfAllPhysicalOutputChannel *self);
 void new_FControlSafeStateOfAllPhysicalOutputChannel(FControlSafeStateOfAllPhysicalOutputChannel *x);

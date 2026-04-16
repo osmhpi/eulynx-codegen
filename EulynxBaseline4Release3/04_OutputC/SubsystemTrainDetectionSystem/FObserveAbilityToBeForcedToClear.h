@@ -124,5 +124,4 @@ typedef struct FObserveAbilityToBeForcedToClear
 } FObserveAbilityToBeForcedToClear;
 
 void transition_FObserveAbilityToBeForcedToClear(FObserveAbilityToBeForcedToClear *self);
-void transition_FObserveAbilityToBeForcedToClear(FObserveAbilityToBeForcedToClear *self);
 void new_FObserveAbilityToBeForcedToClear(FObserveAbilityToBeForcedToClear *x);

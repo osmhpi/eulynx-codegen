@@ -242,5 +242,4 @@ typedef struct FObserveTrackCircuits
 } FObserveTrackCircuits;
 
 void transition_FObserveTrackCircuits(FObserveTrackCircuits *self);
-void transition_FObserveTrackCircuits(FObserveTrackCircuits *self);
 void new_FObserveTrackCircuits(FObserveTrackCircuits *x);

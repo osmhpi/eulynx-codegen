@@ -67,5 +67,4 @@ typedef struct SSciTdsReceiveTdp
 } SSciTdsReceiveTdp;
 
 void transition_SSciTdsReceiveTdp(SSciTdsReceiveTdp *self);
-void transition_SSciTdsReceiveTdp(SSciTdsReceiveTdp *self);
 void new_SSciTdsReceiveTdp(SSciTdsReceiveTdp *x);

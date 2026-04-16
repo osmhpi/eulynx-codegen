@@ -511,3 +511,7 @@ void new_FObserveLcpf(FObserveLcpf *self)
 {
     make_state_FObserveLcpf__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemLevelCrossing/FObserveLcpf.c"
+#endif

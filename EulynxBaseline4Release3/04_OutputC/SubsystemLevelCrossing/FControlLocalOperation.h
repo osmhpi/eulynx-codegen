@@ -188,5 +188,4 @@ typedef struct FControlLocalOperation
 } FControlLocalOperation;
 
 void transition_FControlLocalOperation(FControlLocalOperation *self);
-void transition_FControlLocalOperation(FControlLocalOperation *self);
 void new_FControlLocalOperation(FControlLocalOperation *x);

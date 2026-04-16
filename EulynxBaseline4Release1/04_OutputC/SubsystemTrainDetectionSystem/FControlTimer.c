@@ -326,3 +326,7 @@ void new_FControlTimer(FControlTimer *self)
 {
     make_state_FControlTimer__root(self, &self->state);
 }
+
+#ifdef KLEE_ENABLED
+#include "../../05_OutputKleeAnalysis/SubsystemTrainDetectionSystem/FControlTimer.c"
+#endif

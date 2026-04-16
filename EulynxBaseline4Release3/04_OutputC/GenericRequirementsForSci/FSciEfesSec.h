@@ -180,5 +180,4 @@ typedef struct FSciEfesSec
 } FSciEfesSec;
 
 void transition_FSciEfesSec(FSciEfesSec *self);
-void transition_FSciEfesSec(FSciEfesSec *self);
 void new_FSciEfesSec(FSciEfesSec *x);

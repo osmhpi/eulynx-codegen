@@ -206,5 +206,4 @@ typedef struct SSciAdjPrim
 } SSciAdjPrim;
 
 void transition_SSciAdjPrim(SSciAdjPrim *self);
-void transition_SSciAdjPrim(SSciAdjPrim *self);
 void new_SSciAdjPrim(SSciAdjPrim *x);
