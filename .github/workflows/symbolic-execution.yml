@@ -1,0 +1,17 @@
+name: Run Unique Transitions Analysis
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Run KLEE
+        working-directory: examples/SubsystemPoint/UniqueTransitionsAnalysis
+        run: make
