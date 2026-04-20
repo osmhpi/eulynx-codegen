@@ -21,7 +21,6 @@
 
 #define MAX_PATHLEN 1024
 
-static SubsystemPoint path[MAX_PATHLEN];
 static system_inputs_t input_path[MAX_PATHLEN];
 static Heap states_heap;
 static SubsystemPoint states_heap_storage[MAX_PATHLEN];
@@ -146,17 +145,10 @@ int main() {
   initialize(&state);
 
   int i = 0;
-
-  insertIfNotPresent(&states_heap, &state, sizeof(state));
-  path[i++] = state;
+  assert(insertIfNotPresent(&states_heap, &state, sizeof(state)));
 
   for (;;)
   {
-    if (memcmp(&path[0], &initial, sizeof(initial)) != 0) {
-      // Path does not start with initial state
-      break;
-    }
-
     // Safety abort, user must increase MAX_PATHLEN to obtain a conclusive result.
     if (i >= MAX_PATHLEN) {
       printf("Reached maximum path length of %d. Please increase MAX_PATHLEN and rerun.\n", MAX_PATHLEN);
@@ -169,15 +161,13 @@ int main() {
     apply_inputs(&input, &state);
     cycle(&state);
     if (insertIfNotPresent(&states_heap, &state, sizeof(state)) == false) {
+      // State has been seen before, stop exploration
       break;
     }
 
     assert_is_safe(&state);
 
-    path[i] = state;
-    input_path[i-1] = input;
-
-    i++;
+    input_path[i++] = input;
   }
 
   return 0;
