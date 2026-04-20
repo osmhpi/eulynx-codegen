@@ -6,7 +6,7 @@ inputs   = build/CMakeFiles/Point.dir$(basepath)/EulynxBaseline4Release3/04_Outp
 all: klee-docker
 
 klee-docker:
-	docker run --rm -it --user $(id -u):$(id -g) -v $(realpath $(PWD)/../../..):$(realpath $(PWD)/../../..) -w $(PWD) klee/klee:3.1 bash -c "make klee-last"
+	docker run --rm --user $(id -u):$(id -g) -v $(realpath $(PWD)/../../..):$(realpath $(PWD)/../../..) -w $(PWD) klee/klee:3.1 bash -c "make klee-last"
 
 build/Point.bc: main.c
 	mkdir -p build && cd build && cmake -DCMAKE_C_COMPILER=$(shell which clang) .. && make
