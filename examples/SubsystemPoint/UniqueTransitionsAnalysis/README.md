@@ -19,7 +19,7 @@ Example output, reporting a violation of the unique transitions property:
 $ make klee-docker
 [...]
 klee --max-memory=16000 --optimize --emit-all-errors --exit-on-error build/Point.bc
-KLEE: output directory is "/_/examples/SubsystemPoint/UniqueTransitionsAnalysis/build/klee-out-5"
+KLEE: output directory is "/_/examples/SubsystemPoint/UniqueTransitionsAnalysis/build/klee-out-0"
 KLEE: Using STP solver backend
 KLEE: SAT solver: MiniSat
 KLEE: Deterministic allocator: Using quarantine queue size 8
