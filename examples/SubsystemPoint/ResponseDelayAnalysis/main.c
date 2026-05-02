@@ -160,7 +160,7 @@ int main() {
       break;
     }
 
-    assert(i < 1);
+    assert(i < 3);
 
     input_path[i++] = input;
   }
