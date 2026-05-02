@@ -10,6 +10,7 @@ add_definitions(-DNOLOG)
 
 set(sources
     main.c
+    heap.c
     helpers.c
     ../cycle.c
     ../../../EulynxBaseline4Release3/04_OutputC/GenericRequirementsForSci/FSciEfesSec.c

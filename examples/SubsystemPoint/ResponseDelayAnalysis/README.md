@@ -31,7 +31,7 @@ Example output:
 $ make klee-docker
 [...]
 klee --emit-all-errors --exit-on-error build/Point.bc
-KLEE: output directory is "/_/examples/SubsystemPoint/SymbolicExecutionTesting/build/klee-out-0"
+KLEE: output directory is "/_/examples/SubsystemPoint/ResponseDelayAnalysis/build/klee-out-0"
 KLEE: Using STP solver backend
 KLEE: SAT solver: MiniSat
 KLEE: Deterministic allocator: Using quarantine queue size 8
