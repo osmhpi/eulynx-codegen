@@ -6,13 +6,6 @@
 #include <klee/klee.h>
 
 #include "helpers.h"
-#include "heap.h"
-
-#define MAX_PATHLEN 1024
-
-static system_inputs_t input_path[MAX_PATHLEN];
-static Heap states_heap;
-static SubsystemPoint states_heap_storage[MAX_PATHLEN];
 
 void initialize(SubsystemPoint *point) {
     // Configuration
@@ -113,26 +106,17 @@ void initialize(SubsystemPoint *point) {
 }
 
 int main() {
-  // Initialize the heap for storing path hashes
-  newHeap(&states_heap, MAX_PATHLEN, states_heap_storage);
-
   SubsystemPoint state;
   memset(&state, 0, sizeof(state));
   initialize(&state);
 
-  int i = 0;
-  assert(insertIfNotPresent(&states_heap, &state, sizeof(state)));
+  bool pointPositionReported = false;
 
-  for (;;)
+  for (int i = 0; i < 3; i++)
   {
-    // Safety abort, user must increase MAX_PATHLEN to obtain a conclusive result.
-    if (i >= MAX_PATHLEN) {
-      printf("Reached maximum path length of %d. Please increase MAX_PATHLEN and rerun.\n", MAX_PATHLEN);
-      assert(false);
-    }
-
     system_inputs_t input;
     klee_make_symbolic(&input, sizeof(input), "input");
+    
     if (i == 0) {
       // As the first input, provide a detected end position.
       klee_assume(input.D27in4WPmPosition.IsSignalled == true);
@@ -150,20 +134,11 @@ int main() {
 
     apply_inputs(&input, &state);
     cycle(&state);
-    if (insertIfNotPresent(&states_heap, &state, sizeof(state)) == false) {
-      // State has been seen before, stop exploration
-      break;
-    }
-
-    if (state.fSciPReport.OutMsgPointPosition__27c1.HasMessage) {
-      // Analysis was successful, do not explore further.
-      break;
-    }
-
-    assert(i < 3);
-
-    input_path[i++] = input;
+    
+    pointPositionReported |= state.fSciPReport.OutMsgPointPosition__27c1.HasMessage;
   }
+
+  assert(pointPositionReported == true);
 
   return 0;
 }
